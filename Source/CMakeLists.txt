@@ -28,7 +28,6 @@ SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_20,code=sm_20;${CUDA_NVCC_FLAGS}")
 SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_20,code=compute_20;${CUDA_NVCC_FLAGS}")
 #SET(CUDA_NVCC_FLAGS "-OPT:Olimit=99999;${CUDA_NVCC_FLAGS}")
 
-# Add CUDA includes
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
@@ -36,13 +35,10 @@ INCLUDE_DIRECTORIES(
 	${CUDA_TOOLKIT_INCLUDE}
 )
 
-# Export symbols
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 
-# Make the "Core" source group
 SOURCE_GROUP("Core" FILES ${vtkErCoreSources})
 
-# General
 SET(General
 	device.h
 	utilities.h
@@ -96,10 +92,8 @@ SET(General
 	singlescattering.h
 )
 
-# General group
 SOURCE_GROUP("General" FILES ${General})
 
-# Shapes
 SET(Shapes
 	shapes.h
 	plane.h
@@ -110,10 +104,8 @@ SET(Shapes
 	cylinder.h
 )
 
-# Shapes group
 SOURCE_GROUP("Shapes" FILES ${Shapes})
 
-# API
 SET(Bindable
 	erbindable.h
 	ertracer.h
@@ -125,10 +117,8 @@ SET(Bindable
 	erbitmap.h
 )
 
-# API group
 SOURCE_GROUP("Bindable" FILES ${Bindable})
 
-# Filters
 SET(Cuda
 	singlescattering.cuh
 	estimate.cuh
@@ -143,8 +133,97 @@ SET(Cuda
 	core.cu
 )
 
-# Filters group
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
-# Make the library
 CUDA_ADD_LIBRARY(ErCore ${General} ${Shapes} ${Bindable} ${Cuda} SHARED)
+
+IF(NOT VTK_BINARY_DIR)
+	FIND_PACKAGE(VTK)
+	IF(NOT VTK_DIR)
+	 MESSAGE(FATAL_ERROR "Please set VTK_DIR.")
+	ENDIF(NOT VTK_DIR)
+	INCLUDE(${VTK_USE_FILE})
+ENDIF(NOT VTK_BINARY_DIR)
+
+INCLUDE(CMakeOptions.cmake)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
+
+INCLUDE_DIRECTORIES(
+	${CMAKE_CURRENT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+SET(General
+	vtkErBitmap.h
+	vtkErBitmap.cpp
+	vtkErClippingObjectSource.h
+	vtkErClippingObjectSource.cpp
+	vtkErLightSource.h
+	vtkErLightSource.cpp
+	vtkErLocatable.h
+	vtkErLocatable.cpp
+	vtkErObjectSource.h
+	vtkErObjectSource.cpp
+	vtkErShapable.h
+	vtkErShapable.cpp
+	vtkErVolume.h
+	vtkErVolume.cpp
+	vtkErVolumeMapper.h
+	vtkErVolumeMapper.cpp
+	vtkErTextureSource.h
+	vtkErTextureSource.cpp
+	vtkErBindable.h
+	vtkErBindable.cpp
+	vtkErStable.h
+	vtkErStable.cpp
+	vtkErConfigure.h
+	vtkErDll.h
+)
+
+SOURCE_GROUP("General" FILES ${General})
+
+SET(WrapPython
+	vtkErBitmap.h
+	vtkErBitmap.cpp
+	vtkErClippingObjectSource.h
+	vtkErClippingObjectSource.cpp
+	vtkErLightSource.h
+	vtkErLightSource.cpp
+	vtkErLocatable.h
+	vtkErLocatable.cpp
+	vtkErObjectSource.h
+	vtkErObjectSource.cpp
+	vtkErShapable.h
+	vtkErShapable.cpp
+	vtkErVolume.h
+	vtkErVolume.cpp
+	vtkErVolumeMapper.h
+	vtkErVolumeMapper.cpp
+	vtkErTextureSource.h
+	vtkErTextureSource.cpp
+)
+
+ADD_LIBRARY(VtkEr ${General})
+TARGET_LINK_LIBRARIES(VtkEr vtkCommon vtkRendering vtkGraphics vtkVolumeRendering ErCore)
+
+if (MSVC)
+   set_target_properties(VtkEr PROPERTIES COMPILE_FLAGS "/YuvtkErStable.h")
+   set_source_files_properties(vtkErStable.cpp PROPERTIES COMPILE_FLAGS "/YcvtkErStable.h")
+endif(MSVC)
+
+IF(VTK_WRAP_PYTHON)
+	INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_PATH}")
+	VTK_WRAP_PYTHON3(vtkErPython vtkErPython_SRCS "${WrapPython}")
+	ADD_LIBRARY(vtkErPythonD ${vtkErPython_SRCS})
+	PYTHON_ADD_MODULE(vtkErPython vtkErPythonInit.cxx)
+	TARGET_LINK_LIBRARIES(vtkErPython vtkErPythonD)
+	TARGET_LINK_LIBRARIES(vtkErPythonD VtkEr vtkCommonPythonD vtkRenderingPythonD vtkGraphicsPythonD vtkVolumeRenderingPythonD)
+ENDIF(VTK_WRAP_PYTHON)
+
+ADD_EXECUTABLE(vtkErExample vtkErExample.cpp)
+TARGET_LINK_LIBRARIES(vtkErExample VtkEr)
+
+
+
+
