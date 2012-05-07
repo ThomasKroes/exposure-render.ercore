@@ -19,7 +19,7 @@
 namespace VtkExposureRender
 {
 
-class VTK_ER_EXPORT vtkErBitmap : public vtkErBindable<ExposureRender::ErBitmap>
+class VTK_ER_EXPORT vtkErBitmap : public vtkErBindableBitmap
 {
 public:
 	vtkErBitmap()

@@ -19,7 +19,7 @@
 namespace VtkExposureRender
 {
 
-class VTK_ER_EXPORT vtkErClippingObjectSource : public vtkErBindable<ExposureRender::ErClippingObject>
+class VTK_ER_EXPORT vtkErClippingObjectSource : public vtkErBindableClippingObject
 {
 public:
 	vtkErClippingObjectSource()

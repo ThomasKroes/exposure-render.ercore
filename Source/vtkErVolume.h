@@ -16,24 +16,22 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
+#include "vtkImageAlgorithm.h"
+
 namespace VtkExposureRender
 {
 
-class VTK_ER_EXPORT vtkErVolume : public vtkErBindable<ExposureRender::ErVolume>
+class VTK_ER_EXPORT vtkErVolume : public vtkImageAlgorithm, vtkErBindableVolume
 {
 public:
-	vtkErVolume()
-	{
-	}
+	vtkErVolume();
+    virtual ~vtkErVolume();
 
-	~vtkErVolume()
-	{
-	}
+	vtkTypeMacro(vtkErVolume, vtkImageAlgorithm);
+    static vtkErVolume* New();
 
-	vtkErVolume(const vtkErVolume& Other)
-	{
-		*this = Other;
-	}
+	virtual int RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual void ExecuteData(vtkDataObject* Output);
 };
 
 }

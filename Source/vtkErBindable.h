@@ -17,14 +17,36 @@
 
 #include "exposurerender.h"
 
+using namespace ExposureRender;
+
 namespace VtkExposureRender
 {
 
-template<class T>
-class VTK_ER_EXPORT vtkErBindable
-{
-public:
-	T	ErObject;
+#define ER_BINDABLE(type, name)												\
+																			\
+class VTK_ER_EXPORT vtkErBindable##type##									\
+{																			\
+public:																		\
+	void ErBind()															\
+	{																		\
+		ExposureRender::Bind##type##(this->Bindable, true);					\
+	}																		\
+																			\
+	void ErUnbind()															\
+	{																		\
+		ExposureRender::Bind##type##(this->Bindable, false);				\
+	}																		\
+																			\
+	ExposureRender::Er##type	Bindable;									\
+																			\
 };
+
+ER_BINDABLE(Tracer)
+ER_BINDABLE(Volume)
+ER_BINDABLE(Light)
+ER_BINDABLE(Object)
+ER_BINDABLE(ClippingObject)
+ER_BINDABLE(Texture)
+ER_BINDABLE(Bitmap)
 
 }

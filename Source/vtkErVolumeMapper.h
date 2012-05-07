@@ -20,7 +20,7 @@
 namespace VtkExposureRender
 {
 
-class VTK_ER_EXPORT vtkErVolumeMapper : public vtkVolumeMapper, vtkErBindable<ExposureRender::ErTracer>
+class VTK_ER_EXPORT vtkErVolumeMapper : public vtkVolumeMapper, vtkErBindableTracer
 {
 public:
 	vtkErVolumeMapper();
@@ -29,7 +29,9 @@ public:
 	vtkTypeMacro(vtkErVolumeMapper, vtkVolumeMapper);
     static vtkErVolumeMapper* New();
 
-	virtual void Render(vtkRenderer* pRenderer, vtkVolume* pVolume);
+	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
+
+	virtual void ExecuteData(vtkDataObject* Output);
 };
 
 }

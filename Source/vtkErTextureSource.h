@@ -19,7 +19,7 @@
 namespace VtkExposureRender
 {
 
-class VTK_ER_EXPORT vtkErTextureSource : public vtkErBindable<ExposureRender::ErTexture>
+class VTK_ER_EXPORT vtkErTextureSource : public vtkErBindableTexture
 {
 public:
 	vtkErTextureSource()

@@ -19,16 +19,37 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkMetaImageReader.h>
 
+#include "vtkErVolume.h"
 #include "vtkErVolumeMapper.h"
+
+using namespace VtkExposureRender;
+
+char gFileName[] = "C://Volumes//engine.mhd";
 
 int main(int, char *[])
 {
-	//Create a cone
-	vtkSmartPointer<vtkConeSource> coneSource =
-	vtkSmartPointer<vtkConeSource>::New();
-	coneSource->Update();
+	vtkSmartPointer<vtkMetaImageReader> Reader = vtkSmartPointer<vtkMetaImageReader>::New();
 
+	Reader->SetFileName(gFileName);
+	
+	if (Reader->CanReadFile(gFileName) == 0)
+		printf("can't read file!");
+
+	Reader->Update();
+
+	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
+	vtkSmartPointer<vtkErVolumeMapper> VolumeMapper = vtkSmartPointer<vtkErVolumeMapper>::New();
+
+	Volume->SetInputConnection(Reader->GetOutputPort());
+	Volume->Update();
+
+	VolumeMapper->SetInputConnection(Volume->GetOutputPort());
+	
+	VolumeMapper->Update();
+
+	/*
 	//Create a mapper and actor
 	vtkSmartPointer<vtkPolyDataMapper> mapper =
 	vtkSmartPointer<vtkPolyDataMapper>::New();
@@ -55,6 +76,7 @@ int main(int, char *[])
 	//Render and interact
 	renderWindow->Render();
 	renderWindowInteractor->Start();
+	*/
 
 	return EXIT_SUCCESS;
 }

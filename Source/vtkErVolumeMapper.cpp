@@ -23,14 +23,22 @@ vtkStandardNewMacro(vtkErVolumeMapper);
 
 vtkErVolumeMapper::vtkErVolumeMapper(void)
 {
+	this->ErBind();
 }
 
 vtkErVolumeMapper::~vtkErVolumeMapper(void)
 {
+	this->ErUnbind();
 }
 
-void vtkErVolumeMapper::Render(vtkRenderer* pRenderer, vtkVolume* pVolume)
+void vtkErVolumeMapper::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 {
+	printf(__FUNCTION__);
+}
+
+void vtkErVolumeMapper::ExecuteData(vtkDataObject* Output)
+{
+	ExposureRender::DebugLog(__FUNCTION__);
 }
 
 }

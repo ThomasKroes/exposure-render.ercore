@@ -19,4 +19,59 @@
 namespace VtkExposureRender
 {
 
+vtkStandardNewMacro(vtkErVolume);
+
+vtkErVolume::vtkErVolume(void)
+{
+}
+
+vtkErVolume::~vtkErVolume(void)
+{
+}
+
+int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	vtkImageAlgorithm::RequestData(Request, InputVector, OutputVector);
+
+	// Get the info objects
+	vtkInformation *inInfo = InputVector[0]->GetInformationObject(0);
+	vtkInformation *outInfo = OutputVector->GetInformationObject(0);
+
+	// Get the input and ouptut
+	vtkImageData *input = vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkImageData *output = vtkImageData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	vtkSmartPointer<vtkImageData> image =
+	vtkSmartPointer<vtkImageData>::New();
+	image->ShallowCopy(input);
+
+	image->SetScalarComponentFromDouble(0,0,0,0, 5.0);
+
+	output->ShallowCopy(image);
+
+	// Without these lines, the output will appear real but will not work as the input to any other filters
+	output->SetExtent(input->GetExtent());
+	output->SetUpdateExtent(output->GetExtent());
+	output->SetWholeExtent(output->GetExtent());
+
+	return 1;
+}
+
+void vtkErVolume::ExecuteData(vtkDataObject* Output)
+{
+	vtkImageAlgorithm::ExecuteData(Output);
+
+	vtkImageData* pImageData = this->AllocateOutputData(Output);
+
+	if (!pImageData)
+		return;
+
+	const Vec3i Resolution(pImageData->GetExtent()[1], pImageData->GetExtent()[3], pImageData->GetExtent()[5]);
+	const Vec3f Spacing(pImageData->GetSpacing()[1], pImageData->GetSpacing()[3], pImageData->GetSpacing()[5]);
+
+	this->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)pImageData->GetScalarPointer(), true);
+
+	this->ErBind();
+}
+
 }

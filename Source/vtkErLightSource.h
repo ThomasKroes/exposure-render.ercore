@@ -19,7 +19,7 @@
 namespace VtkExposureRender
 {
 
-class VTK_ER_EXPORT vtkErLightSource : public vtkErBindable<ExposureRender::ErLight>
+class VTK_ER_EXPORT vtkErLightSource : public vtkErBindableLight
 {
 public:
 	vtkErLightSource()
