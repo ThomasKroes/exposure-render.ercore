@@ -26,7 +26,7 @@ HOST inline void DebugLog(const char* format, ...)
 	char buffer[1024];
 
 	va_start(fmtargs,format);
-	vsnprintf(buffer,sizeof(buffer)-1,format,fmtargs);
+	vsnprintf_s(buffer, 1024, sizeof(buffer) - 1, format,fmtargs);
 	va_end(fmtargs);
 
 	printf("%s\n", buffer);

@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErLightSource.h"
+#include "vtkErLight.h"
 
 vtkStandardNewMacro(vtkErLightData);
 vtkCxxRevisionMacro(vtkErLightData, "$Revision: 1.0 $");

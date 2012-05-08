@@ -159,22 +159,24 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 SET(General
 	vtkErBitmap.h
 	vtkErBitmap.cpp
-	vtkErClippingObjectSource.h
-	vtkErClippingObjectSource.cpp
-	vtkErLightSource.h
-	vtkErLightSource.cpp
+	vtkErClippingObject.h
+	vtkErClippingObject.cpp
+	vtkErLight.h
+	vtkErLight.cpp
 	vtkErLocatable.h
 	vtkErLocatable.cpp
-	vtkErObjectSource.h
-	vtkErObjectSource.cpp
+	vtkErObject.h
+	vtkErObject.cpp
 	vtkErShapable.h
 	vtkErShapable.cpp
 	vtkErVolume.h
 	vtkErVolume.cpp
-	vtkErVolumeMapper.h
-	vtkErVolumeMapper.cpp
-	vtkErTextureSource.h
-	vtkErTextureSource.cpp
+	vtkErTracer.h
+	vtkErTracer.cpp
+	vtkErTexture.h
+	vtkErTexture.cpp
+	vtkErVolumeProperty.h
+	vtkErVolumeProperty.cpp
 	vtkErBindable.h
 	vtkErBindable.cpp
 	vtkErStable.h

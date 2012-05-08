@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErClippingObjectSource.h"
+#include "vtkErClippingObject.h"
 
 vtkStandardNewMacro(vtkErClippingObjectData);
 vtkCxxRevisionMacro(vtkErClippingObjectData, "$Revision: 1.0 $");

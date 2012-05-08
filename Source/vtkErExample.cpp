@@ -22,9 +22,9 @@
 #include <vtkMetaImageReader.h>
 
 #include "vtkErVolume.h"
-#include "vtkErLightSource.h"
-#include "vtkErTextureSource.h"
-#include "vtkErVolumeMapper.h"
+#include "vtkErLight.h"
+#include "vtkErTexture.h"
+#include "vtkErTracer.h"
 
 char gFileName[] = "C://Volumes//engine.mhd";
 
@@ -35,7 +35,10 @@ int main(int, char *[])
 	Reader->SetFileName(gFileName);
 	
 	if (Reader->CanReadFile(gFileName) == 0)
+	{
 		printf("can't read file!");
+		return EXIT_FAILURE;
+	}
 
 	Reader->Update();
 
@@ -77,35 +80,6 @@ int main(int, char *[])
 
 	RenderWindow->Render();
 	RenderWindowInteractor->Start();
-
-	/*
-	//Create a mapper and actor
-	vtkSmartPointer<vtkPolyDataMapper> mapper =
-	vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper->SetInputConnection(coneSource->GetOutputPort());
-
-	vtkSmartPointer<vtkActor> actor =
-	vtkSmartPointer<vtkActor>::New();
-	actor->SetMapper(mapper);
-
-	//Create a renderer, render window, and interactor
-	vtkSmartPointer<vtkRenderer> renderer =
-	vtkSmartPointer<vtkRenderer>::New();
-	vtkSmartPointer<vtkRenderWindow> renderWindow =
-	vtkSmartPointer<vtkRenderWindow>::New();
-	renderWindow->AddRenderer(renderer);
-	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-	vtkSmartPointer<vtkRenderWindowInteractor>::New();
-	renderWindowInteractor->SetRenderWindow(renderWindow);
-
-	//Add the actors to the scene
-	renderer->AddActor(actor);
-	renderer->SetBackground(.3, .2, .1); // Background color dark red
-
-	//Render and interact
-	renderWindow->Render();
-	renderWindowInteractor->Start();
-	*/
 
 	return EXIT_SUCCESS;
 }

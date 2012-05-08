@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErVolumeMapper.h"
+#include "vtkErTracer.h"
 
 #include "vtkgl.h"
 

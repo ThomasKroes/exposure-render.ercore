@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErObjectSource.h"
+#include "vtkErObject.h"
 
 vtkStandardNewMacro(vtkErObjectData);
 vtkCxxRevisionMacro(vtkErObjectData, "$Revision: 1.0 $");
