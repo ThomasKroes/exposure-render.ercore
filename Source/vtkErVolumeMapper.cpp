@@ -16,29 +16,142 @@
 #include "vtkErStable.h"
 #include "vtkErVolumeMapper.h"
 
-namespace VtkExposureRender
-{
+#include "vtkgl.h"
 
-vtkStandardNewMacro(vtkErVolumeMapper);
+vtkStandardNewMacro(vtkErTracerData);
+vtkCxxRevisionMacro(vtkErTracerData, "$Revision: 1.0 $");
 
-vtkErVolumeMapper::vtkErVolumeMapper(void)
+vtkStandardNewMacro(vtkErTracer);
+vtkCxxRevisionMacro(vtkErTracer, "$Revision: 1.0 $");
+
+vtkErTracer::vtkErTracer(void)
 {
-	this->ErBind();
+	this->SetNumberOfInputPorts(4);
+	this->SetNumberOfOutputPorts(0);
+
+	glGenTextures(1, &TextureID);
 }
 
-vtkErVolumeMapper::~vtkErVolumeMapper(void)
+vtkErTracer::~vtkErTracer(void)
 {
-	this->ErUnbind();
+	delete[] this->ImageBuffer;
 }
 
-void vtkErVolumeMapper::Render(vtkRenderer* Renderer, vtkVolume* Volume)
+int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	printf(__FUNCTION__);
+	switch (Port)
+	{
+		case 0:
+		{
+			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErVolumeData");
+			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+			return 1;
+		}
+
+		case 1:
+		{
+			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErLightData");
+			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
+			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+			return 1;
+		}
+
+		case 2:
+		{
+			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErObjectData");
+			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
+			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+			return 1;
+		}
+
+		case 3:
+		{
+			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErClippingObjectData");
+			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
+			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
-void vtkErVolumeMapper::ExecuteData(vtkDataObject* Output)
+int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
-	ExposureRender::DebugLog(__FUNCTION__);
+	if (Port == 0)
+	{
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErTracerData");
+	}
+
+	return 1;
 }
 
+bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
+{
+	return true;
+}
+
+void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
+{
+	if (!this->BeforeRender(Renderer, Volume))
+		return;
+
+	int RenderSize[2];
+
+	int* WindowSize = Renderer->GetRenderWindow()->GetSize();
+
+	RenderSize[0] = WindowSize[0];
+	RenderSize[1] = WindowSize[1];
+
+	glEnable(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, TextureID);
+    
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+
+	glColor4f(1.0f, 0.0f, 1.0f, 0.5f);
+
+	double d = 0.5;
+	
+    Renderer->SetDisplayPoint(0,0,d);
+    Renderer->DisplayToWorld();
+    double coordinatesA[4];
+    Renderer->GetWorldPoint(coordinatesA);
+
+    Renderer->SetDisplayPoint(RenderSize[0],0,d);
+    Renderer->DisplayToWorld();
+    double coordinatesB[4];
+    Renderer->GetWorldPoint(coordinatesB);
+
+    Renderer->SetDisplayPoint(RenderSize[0], RenderSize[1],d);
+    Renderer->DisplayToWorld();
+    double coordinatesC[4];
+    Renderer->GetWorldPoint(coordinatesC);
+
+    Renderer->SetDisplayPoint(0,RenderSize[1],d);
+    Renderer->DisplayToWorld();
+    double coordinatesD[4];
+    Renderer->GetWorldPoint(coordinatesD);
+	
+	glPushAttrib(GL_LIGHTING);
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_QUADS);
+		glTexCoord2i(1,1);
+		glVertex4dv(coordinatesA);
+		glTexCoord2i(0,1);
+		glVertex4dv(coordinatesB);
+		glTexCoord2i(0,0);
+		glVertex4dv(coordinatesC);
+		glTexCoord2i(1,0);
+		glVertex4dv(coordinatesD);
+	glEnd();
+
+	glPopAttrib();
 }

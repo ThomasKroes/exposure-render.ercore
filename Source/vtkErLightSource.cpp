@@ -16,7 +16,102 @@
 #include "vtkErStable.h"
 #include "vtkErLightSource.h"
 
-namespace VtkExposureRender
-{
+vtkStandardNewMacro(vtkErLightData);
+vtkCxxRevisionMacro(vtkErLightData, "$Revision: 1.0 $");
 
+vtkStandardNewMacro(vtkErLight);
+vtkCxxRevisionMacro(vtkErLight, "$Revision: 1.0 $");
+
+vtkErLight::vtkErLight(void)
+{
+	this->SetNumberOfInputPorts(1);
+	this->SetNumberOfOutputPorts(1);
+}
+
+vtkErLight::~vtkErLight(void)
+{
+}
+
+int vtkErLight::FillInputPortInformation(int Port, vtkInformation* Info)
+{
+	if (Port == 0)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+	}
+
+	return 1;
+}
+
+int vtkErLight::FillOutputPortInformation(int Port, vtkInformation* Info)
+{
+	if (Port == 0)
+	{
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErLightData");
+	}
+
+	return 1;
+}
+
+int vtkErLight::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+{
+	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
+	vtkErLightData* Output = vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!Output)
+	{
+		Output = vtkErLightData::New();
+		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
+		Output->FastDelete();
+		Output->SetPipelineInformation(OutInfo);
+
+		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), Output->GetExtentType());
+	}
+ 
+	return 1;
+}
+
+int vtkErLight::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	return 1;
+}
+
+int vtkErLight::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+	
+	vtkErLightData* Input	= vtkErLightData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErLightData* Output	= vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	
+	Output->ShallowCopy(Input);
+
+	return 1;
+}
+
+int vtkErLight::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+{
+	return 1;
+}
+
+int vtkErLight::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
+		return this->RequestDataObject(Request, InputVector, OutputVector);
+	
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+		return this->RequestData(Request, InputVector, OutputVector);
+
+	if (Request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
+		return this->RequestUpdateExtent(Request, InputVector, OutputVector);
+
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+		return this->RequestInformation(Request, InputVector, OutputVector);
+	
+	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
+}
+
+void vtkErLight::Execute()
+{
 }

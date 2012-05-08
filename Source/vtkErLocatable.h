@@ -15,9 +15,6 @@
 
 #include "vtkErDll.h"
 
-namespace VtkExposureRender
-{
-
 class VTK_ER_EXPORT vtkErLocatable
 {
 public:
@@ -34,5 +31,3 @@ public:
 		*this = Other;
 	}
 };
-
-}

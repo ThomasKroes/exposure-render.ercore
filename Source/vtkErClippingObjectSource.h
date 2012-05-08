@@ -16,24 +16,43 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
-namespace VtkExposureRender
-{
-
-class VTK_ER_EXPORT vtkErClippingObjectSource : public vtkErBindableClippingObject
+class vtkErClippingObjectData : public vtkDataObject, public vtkErBindableClippingObject
 {
 public:
-	vtkErClippingObjectSource()
-	{
-	}
+	static vtkErClippingObjectData* New();
+	vtkTypeRevisionMacro(vtkErClippingObjectData, vtkDataObject);
+	
+protected:
+	vtkErClippingObjectData() {};
+	virtual ~vtkErClippingObjectData() {};
 
-	~vtkErClippingObjectSource()
-	{
-	}
-
-	vtkErClippingObjectSource(const vtkErClippingObjectSource& Other)
-	{
-		*this = Other;
-	}
+private:
+	vtkErClippingObjectData(const vtkErClippingObjectData& Other);	// Not implemented.
+    void operator = (const vtkErClippingObjectData& Other);			// Not implemented.
 };
 
-}
+class VTK_ER_EXPORT vtkErClippingObject : public vtkAlgorithm
+{
+public:
+	static vtkErClippingObject* New();
+	vtkTypeRevisionMacro(vtkErClippingObject, vtkAlgorithm);
+
+	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+
+protected:
+	vtkErClippingObject();
+	virtual ~vtkErClippingObject();
+
+	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
+	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
+
+	virtual int RequestDataObject(vtkInformation* vtkNotUsed(Request), vtkInformationVector** vtkNotUsed(InputVector), vtkInformationVector* OutputVector);
+	virtual int RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual int RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
+	virtual void Execute();
+
+private:
+	vtkErClippingObject(const vtkErClippingObject& Other);	// Not implemented
+    void operator = (const vtkErClippingObject& Other);		// Not implemented
+};

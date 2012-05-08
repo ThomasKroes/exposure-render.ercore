@@ -16,24 +16,43 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
-namespace VtkExposureRender
-{
-
-class VTK_ER_EXPORT vtkErTextureSource : public vtkErBindableTexture
+class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture
 {
 public:
-	vtkErTextureSource()
-	{
-	}
+	static vtkErTextureData* New();
+	vtkTypeRevisionMacro(vtkErTextureData, vtkDataObject);
+	
+protected:
+	vtkErTextureData() {};
+	virtual ~vtkErTextureData() {};
 
-	~vtkErTextureSource()
-	{
-	}
-
-	vtkErTextureSource(const vtkErTextureSource& Other)
-	{
-		*this = Other;
-	}
+private:
+	vtkErTextureData(const vtkErTextureData& Other);		// Not implemented.
+    void operator = (const vtkErTextureData& Other);		// Not implemented.
 };
 
-}
+class VTK_ER_EXPORT vtkErTexture : public vtkAlgorithm
+{
+public:
+	static vtkErTexture* New();
+	vtkTypeRevisionMacro(vtkErTexture, vtkAlgorithm);
+
+	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+
+protected:
+	vtkErTexture();
+	virtual ~vtkErTexture();
+
+	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
+	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
+
+	virtual int RequestDataObject(vtkInformation* vtkNotUsed(Request), vtkInformationVector** vtkNotUsed(InputVector), vtkInformationVector* OutputVector);
+	virtual int RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual int RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
+	virtual void Execute();
+
+private:
+	vtkErTexture(const vtkErTexture& Other);			// Not implemented
+    void operator = (const vtkErTexture& Other);		// Not implemented
+};

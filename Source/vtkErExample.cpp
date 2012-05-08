@@ -22,9 +22,9 @@
 #include <vtkMetaImageReader.h>
 
 #include "vtkErVolume.h"
+#include "vtkErLightSource.h"
+#include "vtkErTextureSource.h"
 #include "vtkErVolumeMapper.h"
-
-using namespace VtkExposureRender;
 
 char gFileName[] = "C://Volumes//engine.mhd";
 
@@ -39,15 +39,44 @@ int main(int, char *[])
 
 	Reader->Update();
 
-	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
-	vtkSmartPointer<vtkErVolumeMapper> VolumeMapper = vtkSmartPointer<vtkErVolumeMapper>::New();
+	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
-	Volume->SetInputConnection(Reader->GetOutputPort());
+	vtkSmartPointer<vtkErLight> ErLight = vtkSmartPointer<vtkErLight>::New();
+	
+	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
+
+	ErLight->SetInputConnection(ErTexture->GetOutputPort());
+
+	vtkSmartPointer<vtkErTracer> VolumeMapper = vtkSmartPointer<vtkErTracer>::New();
+
+	ErVolume->SetInputConnection(0, Reader->GetOutputPort());
+		
+	ErVolume->Update();
+
+//	vtkOutpu
+	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
+	VolumeMapper->SetInputConnection(1, ErLight->GetOutputPort());
+
+	VolumeMapper->Update();
+
+	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
 	Volume->Update();
 
-	VolumeMapper->SetInputConnection(Volume->GetOutputPort());
+	Volume->SetMapper(VolumeMapper);
+
+	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
+	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+
+	RenderWindow->AddRenderer(Renderer);
 	
-	VolumeMapper->Update();
+	vtkSmartPointer<vtkRenderWindowInteractor> RenderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+
+	RenderWindowInteractor->SetRenderWindow(RenderWindow);
+
+	Renderer->AddVolume(Volume);
+
+	RenderWindow->Render();
+	RenderWindowInteractor->Start();
 
 	/*
 	//Create a mapper and actor

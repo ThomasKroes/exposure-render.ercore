@@ -15,8 +15,3 @@
 
 #include "vtkErStable.h"
 #include "vtkErLocatable.h"
-
-namespace VtkExposureRender
-{
-
-}

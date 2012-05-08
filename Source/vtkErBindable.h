@@ -19,20 +19,27 @@
 
 using namespace ExposureRender;
 
-namespace VtkExposureRender
-{
-
 #define ER_BINDABLE(type, name)												\
 																			\
 class VTK_ER_EXPORT vtkErBindable##type##									\
 {																			\
 public:																		\
-	void ErBind()															\
+	vtkErBindable##type##()													\
+	{																		\
+		this->Bind();														\
+	}																		\
+																			\
+	virtual ~vtkErBindable##type##()										\
+	{																		\
+		this->Unbind();														\
+	}																		\
+																			\
+	void Bind()																\
 	{																		\
 		ExposureRender::Bind##type##(this->Bindable, true);					\
 	}																		\
 																			\
-	void ErUnbind()															\
+	void Unbind()															\
 	{																		\
 		ExposureRender::Bind##type##(this->Bindable, false);				\
 	}																		\
@@ -48,5 +55,3 @@ ER_BINDABLE(Object)
 ER_BINDABLE(ClippingObject)
 ER_BINDABLE(Texture)
 ER_BINDABLE(Bitmap)
-
-}

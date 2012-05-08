@@ -16,24 +16,43 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
-namespace VtkExposureRender
-{
-
-class VTK_ER_EXPORT vtkErLightSource : public vtkErBindableLight
+class vtkErLightData : public vtkDataObject, public vtkErBindableLight
 {
 public:
-	vtkErLightSource()
-	{
-	}
+	static vtkErLightData* New();
+	vtkTypeRevisionMacro(vtkErLightData, vtkDataObject);
+	
+protected:
+	vtkErLightData() {};
+	virtual ~vtkErLightData() {};
 
-	~vtkErLightSource()
-	{
-	}
-
-	vtkErLightSource(const vtkErLightSource& Other)
-	{
-		*this = Other;
-	}
+private:
+	vtkErLightData(const vtkErLightData& Other);	// Not implemented.
+    void operator = (const vtkErLightData& Other);	// Not implemented.
 };
 
-}
+class VTK_ER_EXPORT vtkErLight : public vtkAlgorithm
+{
+public:
+	static vtkErLight* New();
+	vtkTypeRevisionMacro(vtkErLight, vtkAlgorithm);
+
+	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+
+protected:
+	vtkErLight();
+	virtual ~vtkErLight();
+
+	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
+	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
+
+	virtual int RequestDataObject(vtkInformation* vtkNotUsed(Request), vtkInformationVector** vtkNotUsed(InputVector), vtkInformationVector* OutputVector);
+	virtual int RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual int RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
+	virtual void Execute();
+
+private:
+	vtkErLight(const vtkErLight& Other);		// Not implemented
+    void operator = (const vtkErLight& Other);  // Not implemented
+};

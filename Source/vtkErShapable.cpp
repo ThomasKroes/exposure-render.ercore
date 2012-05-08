@@ -15,8 +15,3 @@
 
 #include "vtkErStable.h"
 #include "vtkErShapable.h"
-
-namespace VtkExposureRender
-{
-
-}

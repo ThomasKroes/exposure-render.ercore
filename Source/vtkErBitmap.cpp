@@ -16,7 +16,119 @@
 #include "vtkErStable.h"
 #include "vtkErBitmap.h"
 
-namespace VtkExposureRender
-{
+vtkStandardNewMacro(vtkErBitmapData);
+vtkCxxRevisionMacro(vtkErBitmapData, "$Revision: 1.0 $");
 
+vtkStandardNewMacro(vtkErBitmap);
+vtkCxxRevisionMacro(vtkErBitmap, "$Revision: 1.0 $");
+
+vtkErBitmap::vtkErBitmap(void)
+{
+	this->SetNumberOfInputPorts(1);
+	this->SetNumberOfOutputPorts(1);
+}
+
+vtkErBitmap::~vtkErBitmap(void)
+{
+}
+
+int vtkErBitmap::FillInputPortInformation(int Port, vtkInformation* Info)
+{
+	if (Port == 0)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErBitmapData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+	}
+
+	return 1;
+}
+
+int vtkErBitmap::FillOutputPortInformation(int Port, vtkInformation* Info)
+{
+	if (Port == 0)
+	{
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErBitmapData");
+	}
+
+	return 1;
+}
+
+int vtkErBitmap::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+{
+	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
+	vtkErBitmapData* Output = vtkErBitmapData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!Output)
+	{
+		Output = vtkErBitmapData::New();
+		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
+		Output->FastDelete();
+		Output->SetPipelineInformation(OutInfo);
+
+		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), Output->GetExtentType());
+	}
+ 
+	return 1;
+}
+
+int vtkErBitmap::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	return 1;
+}
+
+int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+	
+	vtkErBitmapData* Input	= vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErBitmapData* Output	= vtkErBitmapData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	
+	Output->ShallowCopy(Input);
+
+	return 1;
+}
+
+int vtkErBitmap::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+{
+	return 1;
+}
+
+int vtkErBitmap::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
+		return this->RequestDataObject(Request, InputVector, OutputVector);
+	
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+		return this->RequestData(Request, InputVector, OutputVector);
+
+	if (Request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
+		return this->RequestUpdateExtent(Request, InputVector, OutputVector);
+
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+		return this->RequestInformation(Request, InputVector, OutputVector);
+	
+	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
+}
+
+void vtkErBitmap::Execute()
+{
+	DebugLog(__FUNCTION__);
+
+	/*
+	vtkImageAlgorithm::ExecuteData(Output);
+
+	vtkImageData* pImageData = this->AllocateOutputData(Output);
+
+	if (!pImageData)
+		return;
+
+	const Vec3i Resolution(pImageData->GetExtent()[1], pImageData->GetExtent()[3], pImageData->GetExtent()[5]);
+	const Vec3f Spacing(pImageData->GetSpacing()[1], pImageData->GetSpacing()[3], pImageData->GetSpacing()[5]);
+
+	this->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)pImageData->GetScalarPointer(), true);
+
+	this->ErBind();
+	*/
 }

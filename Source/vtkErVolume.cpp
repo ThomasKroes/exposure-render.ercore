@@ -16,49 +16,121 @@
 #include "vtkErStable.h"
 #include "vtkErVolume.h"
 
-namespace VtkExposureRender
-{
+vtkStandardNewMacro(vtkErVolumeData);
+vtkCxxRevisionMacro(vtkErVolumeData, "$Revision: 1.0 $");
 
 vtkStandardNewMacro(vtkErVolume);
 
 vtkErVolume::vtkErVolume(void)
 {
+	this->SetNumberOfInputPorts(1);
+	this->SetNumberOfOutputPorts(1);
 }
 
 vtkErVolume::~vtkErVolume(void)
 {
 }
 
-int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErVolume::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	vtkImageAlgorithm::RequestData(Request, InputVector, OutputVector);
-
-	// Get the info objects
-	vtkInformation *inInfo = InputVector[0]->GetInformationObject(0);
-	vtkInformation *outInfo = OutputVector->GetInformationObject(0);
-
-	// Get the input and ouptut
-	vtkImageData *input = vtkImageData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkImageData *output = vtkImageData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-
-	vtkSmartPointer<vtkImageData> image =
-	vtkSmartPointer<vtkImageData>::New();
-	image->ShallowCopy(input);
-
-	image->SetScalarComponentFromDouble(0,0,0,0, 5.0);
-
-	output->ShallowCopy(image);
-
-	// Without these lines, the output will appear real but will not work as the input to any other filters
-	output->SetExtent(input->GetExtent());
-	output->SetUpdateExtent(output->GetExtent());
-	output->SetWholeExtent(output->GetExtent());
+	if (Port == 0)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+	}
 
 	return 1;
 }
 
-void vtkErVolume::ExecuteData(vtkDataObject* Output)
+int vtkErVolume::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
+	if (Port == 0)
+	{
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErVolumeData");
+	}
+
+	return 1;
+}
+
+int vtkErVolume::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+{
+	vtkInformation* outInfo = OutputVector->GetInformationObject(0);
+	vtkErVolumeData* output = vtkErVolumeData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!output)
+	{
+		output = vtkErVolumeData::New();
+		outInfo->Set(vtkDataObject::DATA_OBJECT(), output);
+		output->FastDelete();
+		output->SetPipelineInformation(outInfo);
+
+		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), output->GetExtentType());
+	}
+ 
+	return 1;
+}
+
+int vtkErVolume::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	return 1;
+}
+
+int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	vtkInformation*	InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
+
+	vtkImageData* Input		= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErVolumeData* Output	= vtkErVolumeData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (Output)
+	{
+		const Vec3i Resolution(Input->GetExtent()[1], Input->GetExtent()[3], Input->GetExtent()[5]);
+		const Vec3f Spacing(Input->GetSpacing()[1], Input->GetSpacing()[3], Input->GetSpacing()[5]);
+
+		Output->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)Input->GetScalarPointer(), true);
+		Output->Bind();
+	}
+
+	return 1;
+}
+
+int vtkErVolume::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+{
+	return 1;
+}
+
+int vtkErVolume::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
+	{
+		return this->RequestDataObject(Request, InputVector, OutputVector);
+	}
+	
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+	{
+		return this->RequestData(Request, InputVector, OutputVector);
+	}
+
+	if (Request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
+	{
+		return this->RequestUpdateExtent(Request, InputVector, OutputVector);
+	}
+
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+	{
+		return this->RequestInformation(Request, InputVector, OutputVector);
+	}
+
+	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
+}
+
+void vtkErVolume::Execute()
+{
+	DebugLog(__FUNCTION__);
+
+	/*
 	vtkImageAlgorithm::ExecuteData(Output);
 
 	vtkImageData* pImageData = this->AllocateOutputData(Output);
@@ -72,6 +144,5 @@ void vtkErVolume::ExecuteData(vtkDataObject* Output)
 	this->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)pImageData->GetScalarPointer(), true);
 
 	this->ErBind();
-}
-
+	*/
 }

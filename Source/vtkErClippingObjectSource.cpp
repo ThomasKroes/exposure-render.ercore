@@ -16,7 +16,119 @@
 #include "vtkErStable.h"
 #include "vtkErClippingObjectSource.h"
 
-namespace VtkExposureRender
-{
+vtkStandardNewMacro(vtkErClippingObjectData);
+vtkCxxRevisionMacro(vtkErClippingObjectData, "$Revision: 1.0 $");
 
+vtkStandardNewMacro(vtkErClippingObject);
+vtkCxxRevisionMacro(vtkErClippingObject, "$Revision: 1.0 $");
+
+vtkErClippingObject::vtkErClippingObject(void)
+{
+	this->SetNumberOfInputPorts(1);
+	this->SetNumberOfOutputPorts(1);
+}
+
+vtkErClippingObject::~vtkErClippingObject(void)
+{
+}
+
+int vtkErClippingObject::FillInputPortInformation(int Port, vtkInformation* Info)
+{
+	if (Port == 0)
+	{
+//		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+//		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+//		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+	}
+
+	return 1;
+}
+
+int vtkErClippingObject::FillOutputPortInformation(int Port, vtkInformation* Info)
+{
+	if (Port == 0)
+	{
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErClippingObjectData");
+	}
+
+	return 1;
+}
+
+int vtkErClippingObject::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+{
+	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
+	vtkErClippingObjectData* Output = vtkErClippingObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!Output)
+	{
+		Output = vtkErClippingObjectData::New();
+		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
+		Output->FastDelete();
+		Output->SetPipelineInformation(OutInfo);
+
+		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), Output->GetExtentType());
+	}
+ 
+	return 1;
+}
+
+int vtkErClippingObject::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	return 1;
+}
+
+int vtkErClippingObject::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+	
+	vtkErClippingObjectData* Input	= vtkErClippingObjectData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErClippingObjectData* Output = vtkErClippingObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	
+	Output->ShallowCopy(Input);
+
+	return 1;
+}
+
+int vtkErClippingObject::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+{
+	return 1;
+}
+
+int vtkErClippingObject::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+{
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
+		return this->RequestDataObject(Request, InputVector, OutputVector);
+	
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA()))
+		return this->RequestData(Request, InputVector, OutputVector);
+
+	if (Request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT()))
+		return this->RequestUpdateExtent(Request, InputVector, OutputVector);
+
+	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION()))
+		return this->RequestInformation(Request, InputVector, OutputVector);
+	
+	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
+}
+
+void vtkErClippingObject::Execute()
+{
+	DebugLog(__FUNCTION__);
+
+	/*
+	vtkImageAlgorithm::ExecuteData(Output);
+
+	vtkImageData* pImageData = this->AllocateOutputData(Output);
+
+	if (!pImageData)
+		return;
+
+	const Vec3i Resolution(pImageData->GetExtent()[1], pImageData->GetExtent()[3], pImageData->GetExtent()[5]);
+	const Vec3f Spacing(pImageData->GetSpacing()[1], pImageData->GetSpacing()[3], pImageData->GetSpacing()[5]);
+
+	this->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)pImageData->GetScalarPointer(), true);
+
+	this->ErBind();
+	*/
 }

@@ -17,21 +17,38 @@
 #include "vtkErBindable.h"
 #include "vtkVolumeMapper.h"
 
-namespace VtkExposureRender
-{
-
-class VTK_ER_EXPORT vtkErVolumeMapper : public vtkVolumeMapper, vtkErBindableTracer
+class vtkErTracerData : public vtkDataObject, public vtkErBindableTexture
 {
 public:
-	vtkErVolumeMapper();
-    virtual ~vtkErVolumeMapper();
+	static vtkErTracerData* New();
+	vtkTypeRevisionMacro(vtkErTracerData, vtkDataObject);
+	
+protected:
+	vtkErTracerData() {};
+	virtual ~vtkErTracerData() {};
 
-	vtkTypeMacro(vtkErVolumeMapper, vtkVolumeMapper);
-    static vtkErVolumeMapper* New();
-
-	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
-
-	virtual void ExecuteData(vtkDataObject* Output);
+private:
+	vtkErTracerData(const vtkErTracerData& Other);		// Not implemented.
+    void operator = (const vtkErTracerData& Other);		// Not implemented.
 };
 
-}
+class VTK_ER_EXPORT vtkErTracer : public vtkVolumeMapper
+{
+public:
+	static vtkErTracer* New();
+	vtkTypeRevisionMacro(vtkErTracer, vtkVolumeMapper);
+
+protected:
+	vtkErTracer();
+    virtual ~vtkErTracer();
+
+	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
+	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
+
+	virtual bool BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume);
+	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
+
+private:
+	unsigned int	TextureID;
+	unsigned char*	ImageBuffer;
+};
