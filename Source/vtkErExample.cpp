@@ -85,6 +85,7 @@ int main(int, char *[])
 
 	Renderer->AddVolume(Volume);
 	Renderer->SetActiveCamera(Camera);
+	Renderer->ResetCamera();
 
 	RenderWindow->Render();
 	RenderWindowInteractor->Start();

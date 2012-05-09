@@ -54,7 +54,7 @@ vtkErTracer::vtkErTracer(void)
 	for (int i = 0; i < 3; i++)
 	{
 		Diffuse[i]->AddPoint(Min, 0.0, 0.5, 0);
-		Diffuse[i]->AddPoint(Max, 1.0, 0.5, 0);
+		Diffuse[i]->AddPoint(Max, 0.01, 0.5, 0);
 	}
 
 	for (int i = 0; i < 3; i++)
@@ -63,8 +63,8 @@ vtkErTracer::vtkErTracer(void)
 		Specular[i]->AddPoint(Max, 0, 0.5, 0);
 	}
 
-	Glossiness->AddPoint(Min, 10000, 0.5, 0);
-	Glossiness->AddPoint(Max, 10000, 0.5, 0);
+	Glossiness->AddPoint(Min, 1, 0.5, 0);
+	Glossiness->AddPoint(Max, 1, 0.5, 0);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -77,7 +77,7 @@ vtkErTracer::vtkErTracer(void)
 	this->SetShadows(true);
 	this->SetMaxShadowDistance(2.0f);
 	this->SetShadingType(1);
-	this->SetDensityScale(100.0f);
+	this->SetDensityScale(0.1f);
 	this->SetOpacityModulated(true);
 	this->SetGradientComputation(1);
 	this->SetGradientThreshold(0.5f);
@@ -251,7 +251,7 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
 	glBindTexture(GL_TEXTURE_2D, TextureID);
 
-//	glColor4f(1.0f, 0.0f, 1.0f, 0.0f);
+//	glColor4f(1.0f, 0.0f, 1.0f, 1.0f);
 
 	double d = 0.5;
 	
