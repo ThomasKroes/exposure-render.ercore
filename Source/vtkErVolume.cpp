@@ -89,7 +89,7 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 		const Vec3i Resolution(Input->GetExtent()[1], Input->GetExtent()[3], Input->GetExtent()[5]);
 		const Vec3f Spacing(Input->GetSpacing()[1], Input->GetSpacing()[3], Input->GetSpacing()[5]);
 
-		Output->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)Input->GetScalarPointer(), true);
+		Output->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)Input->GetScalarPointer(), false);
 		Output->Bind();
 	}
 
@@ -124,25 +124,4 @@ int vtkErVolume::ProcessRequest(vtkInformation* Request, vtkInformationVector** 
 	}
 
 	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
-}
-
-void vtkErVolume::Execute()
-{
-	DebugLog(__FUNCTION__);
-
-	/*
-	vtkImageAlgorithm::ExecuteData(Output);
-
-	vtkImageData* pImageData = this->AllocateOutputData(Output);
-
-	if (!pImageData)
-		return;
-
-	const Vec3i Resolution(pImageData->GetExtent()[1], pImageData->GetExtent()[3], pImageData->GetExtent()[5]);
-	const Vec3f Spacing(pImageData->GetSpacing()[1], pImageData->GetSpacing()[3], pImageData->GetSpacing()[5]);
-
-	this->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)pImageData->GetScalarPointer(), true);
-
-	this->ErBind();
-	*/
 }

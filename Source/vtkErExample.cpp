@@ -25,6 +25,7 @@
 #include "vtkErLight.h"
 #include "vtkErTexture.h"
 #include "vtkErTracer.h"
+#include "vtkErCamera.h"
 
 char gFileName[] = "C://Volumes//engine.mhd";
 
@@ -51,6 +52,11 @@ int main(int, char *[])
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
 
 	vtkSmartPointer<vtkErTracer> VolumeMapper = vtkSmartPointer<vtkErTracer>::New();
+	
+	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
+
+	Camera->SetClippingRange(0, 100000);
+
 
 	ErVolume->SetInputConnection(0, Reader->GetOutputPort());
 		
@@ -64,6 +70,7 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
 	Volume->Update();
+	
 
 	Volume->SetMapper(VolumeMapper);
 
@@ -77,6 +84,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetRenderWindow(RenderWindow);
 
 	Renderer->AddVolume(Volume);
+	Renderer->SetActiveCamera(Camera);
 
 	RenderWindow->Render();
 	RenderWindowInteractor->Start();

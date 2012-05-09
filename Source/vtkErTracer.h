@@ -15,9 +15,12 @@
 
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
-#include "vtkVolumeMapper.h"
 
-class vtkErTracerData : public vtkDataObject, public vtkErBindableTexture
+#include <vtkVolumeMapper.h>
+#include <vtkPiecewiseFunction.h>
+#include <vtkColorTransferFunction.h>
+
+class vtkErTracerData : public vtkDataObject, public vtkErBindableTracer
 {
 public:
 	static vtkErTracerData* New();
@@ -32,11 +35,59 @@ private:
     void operator = (const vtkErTracerData& Other);		// Not implemented.
 };
 
-class VTK_ER_EXPORT vtkErTracer : public vtkVolumeMapper
+class VTK_ER_EXPORT vtkErTracer : public vtkAbstractVolumeMapper
 {
 public:
 	static vtkErTracer* New();
-	vtkTypeRevisionMacro(vtkErTracer, vtkVolumeMapper);
+	vtkTypeRevisionMacro(vtkErTracer, vtkAbstractVolumeMapper);
+
+	void SetOpacity(vtkPiecewiseFunction* pPiecewiseFunction);
+	vtkPiecewiseFunction* GetOpacity(void);
+
+	void SetDiffuse(int Index, vtkPiecewiseFunction* pPiecewiseFunction);
+	vtkPiecewiseFunction* GetDiffuse(int Index);
+
+	void SetSpecular(int Index, vtkPiecewiseFunction* pPiecewiseFunction);
+	vtkPiecewiseFunction* GetSpecular(int Index);
+
+	void SetGlossiness(vtkPiecewiseFunction* pPiecewiseFunction);
+	vtkPiecewiseFunction* GetGlossiness(void);
+
+	void SetIOR(vtkPiecewiseFunction* pPiecewiseFunction);
+	vtkPiecewiseFunction* GetIOR(void);
+
+	void SetEmission(int Index, vtkPiecewiseFunction* pPiecewiseFunction);
+	vtkPiecewiseFunction* GetEmission(int Index);
+
+	vtkGetMacro(StepFactorPrimary, float);
+	vtkSetMacro(StepFactorPrimary, float);
+	
+	vtkGetMacro(StepFactorShadow, float);
+	vtkSetMacro(StepFactorShadow, float);
+
+	vtkGetMacro(Shadows, bool);
+	vtkSetMacro(Shadows, bool);
+	
+	vtkGetMacro(MaxShadowDistance, float);
+	vtkSetMacro(MaxShadowDistance, float);
+
+	vtkGetMacro(ShadingType, int);
+	vtkSetMacro(ShadingType, int);
+
+	vtkGetMacro(DensityScale, float);
+	vtkSetMacro(DensityScale, float);
+
+	vtkGetMacro(OpacityModulated, bool);
+	vtkSetMacro(OpacityModulated, bool);
+
+	vtkGetMacro(GradientComputation, int);
+	vtkSetMacro(GradientComputation, int);
+
+	vtkGetMacro(GradientThreshold, float);
+	vtkSetMacro(GradientThreshold, float);
+
+	vtkGetMacro(GradientFactor, float);
+	vtkSetMacro(GradientFactor, float);
 
 protected:
 	vtkErTracer();
@@ -49,6 +100,23 @@ protected:
 	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
 
 private:
-	unsigned int	TextureID;
-	unsigned char*	ImageBuffer;
+	unsigned int							TextureID;
+	unsigned char*							ImageBuffer;
+	int										RenderSize[2];
+	vtkSmartPointer<vtkPiecewiseFunction>	Opacity;
+	vtkSmartPointer<vtkPiecewiseFunction>	Diffuse[3];
+	vtkSmartPointer<vtkPiecewiseFunction>	Specular[3];
+	vtkSmartPointer<vtkPiecewiseFunction>	Glossiness;
+	vtkSmartPointer<vtkPiecewiseFunction>	Emission[3];
+	float									StepFactorPrimary;
+	float									StepFactorShadow;
+	bool									Shadows;
+	float									MaxShadowDistance;
+	int										ShadingType;
+	float									DensityScale;
+	bool									OpacityModulated;
+	int										GradientComputation;
+	float									GradientThreshold;
+	float									GradientFactor;
+	ExposureRender::ErTracer				Tracer;
 };

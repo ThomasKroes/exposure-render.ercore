@@ -111,24 +111,3 @@ int vtkErBitmap::ProcessRequest(vtkInformation* Request, vtkInformationVector** 
 	
 	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
 }
-
-void vtkErBitmap::Execute()
-{
-	DebugLog(__FUNCTION__);
-
-	/*
-	vtkImageAlgorithm::ExecuteData(Output);
-
-	vtkImageData* pImageData = this->AllocateOutputData(Output);
-
-	if (!pImageData)
-		return;
-
-	const Vec3i Resolution(pImageData->GetExtent()[1], pImageData->GetExtent()[3], pImageData->GetExtent()[5]);
-	const Vec3f Spacing(pImageData->GetSpacing()[1], pImageData->GetSpacing()[3], pImageData->GetSpacing()[5]);
-
-	this->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)pImageData->GetScalarPointer(), true);
-
-	this->ErBind();
-	*/
-}

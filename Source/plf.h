@@ -60,6 +60,11 @@ public:
 		this->Count++;
 	}
 
+	HOST void Reset()
+	{
+		PiecewiseFunction<Size>::Reset();
+	}
+
 	HOST_DEVICE float Evaluate(const float& Position) const
 	{
 		if (this->Count <= 0)

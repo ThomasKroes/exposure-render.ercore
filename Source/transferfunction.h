@@ -70,6 +70,27 @@ public:
 
 		return *this;
 	}
+	
+	HOST static ColorNode FromRGB(const float& Position, const ColorRGBf& RGB)
+	{
+		const ColorXYZf XYZ = ColorXYZf::FromRGBf(RGB);
+
+		return ColorNode::FromXYZ(Position, XYZ);
+	}
+	
+	HOST static ColorNode FromXYZ(const float& Position, const ColorXYZf& XYZ)
+	{
+		ColorNode Result;
+
+		Result.ScalarNodes[0].Position	= Position;
+		Result.ScalarNodes[0].Value		= XYZ[0];
+		Result.ScalarNodes[1].Position	= Position;
+		Result.ScalarNodes[1].Value		= XYZ[1];
+		Result.ScalarNodes[2].Position	= Position;
+		Result.ScalarNodes[2].Value		= XYZ[2];
+
+		return Result;
+	}
 
 	ScalarNode	ScalarNodes[3];
 };
@@ -100,6 +121,11 @@ public:
 	HOST void AddNode(const ScalarNode& Node)
 	{
 		this->PLF.AddNode(Node.Position, Node.Value);
+	}
+
+	HOST void Reset()
+	{
+		this->PLF.Reset();
 	}
 
 	HOST_DEVICE float Evaluate(const float& Intensity) const
@@ -138,6 +164,13 @@ public:
 	{
 		for (int i = 0; i < 3; i++)
 			this->PLF[i].AddNode(Node.ScalarNodes[i].Position, Node.ScalarNodes[i].Value);
+	}
+
+	HOST void Reset()
+	{
+		this->PLF[0].Reset();
+		this->PLF[1].Reset();
+		this->PLF[2].Reset();
 	}
 
 	HOST_DEVICE ColorXYZf Evaluate(const float& Intensity) const

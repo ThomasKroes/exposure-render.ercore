@@ -59,6 +59,12 @@ public:
 		return *this;
 	}
 
+	HOST void Reset()
+	{
+		this->NodeRange	= Vec2f(0.0f);
+		this->Count		= 0;
+	}
+
 	Vec2f				NodeRange;
 	NodesVector<Size>	Position;
 	NodesVector<Size>	Value;

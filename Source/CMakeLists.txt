@@ -179,6 +179,8 @@ SET(General
 	vtkErVolumeProperty.cpp
 	vtkErBindable.h
 	vtkErBindable.cpp
+	vtkErCamera.h
+	vtkErCamera.cpp
 	vtkErStable.h
 	vtkErStable.cpp
 	vtkErConfigure.h
@@ -206,10 +208,12 @@ SET(WrapPython
 	vtkErVolumeMapper.cpp
 	vtkErTextureSource.h
 	vtkErTextureSource.cpp
+	vtkErCamera.h
+	vtkErCamera.cpp
 )
 
 ADD_LIBRARY(VtkEr ${General})
-TARGET_LINK_LIBRARIES(VtkEr vtkCommon vtkRendering vtkGraphics vtkVolumeRendering ErCore)
+TARGET_LINK_LIBRARIES(VtkEr vtkCommon vtkRendering vtkGraphics vtkVolumeRendering ErCore OpenGL32.lib)
 
 if (MSVC)
    set_target_properties(VtkEr PROPERTIES COMPILE_FLAGS "/YuvtkErStable.h")

@@ -15,3 +15,16 @@
 
 #include "vtkErStable.h"
 #include "vtkErVolumeProperty.h"
+
+vtkStandardNewMacro(vtkErVolumeProperty);
+vtkCxxRevisionMacro(vtkErVolumeProperty, "$Revision: 1.0 $");
+
+vtkErVolumeProperty::vtkErVolumeProperty()
+{
+	
+}
+
+vtkErVolumeProperty::~vtkErVolumeProperty()
+{
+}
+

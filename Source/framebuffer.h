@@ -56,16 +56,16 @@ public:
 		this->RandomSeedsCopy2.Resize(this->Resolution);
 		this->HostDisplayEstimate.Resize(this->Resolution);
 
-		RandomSeedsCopy1 = RandomSeeds1;
-		RandomSeedsCopy2 = RandomSeeds2;
+//		RandomSeedsCopy1 = RandomSeeds1;
+//		RandomSeedsCopy2 = RandomSeeds2;
 
 		this->Reset();
 	}
 
 	void Reset(void)
 	{
-		RandomSeeds1 = RandomSeedsCopy1;
-		RandomSeeds2 = RandomSeedsCopy2;
+//		RandomSeeds1 = RandomSeedsCopy1;
+//		RandomSeeds2 = RandomSeedsCopy2;
 	}
 
 	void Free(void)

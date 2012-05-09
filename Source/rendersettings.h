@@ -63,7 +63,7 @@ public:
 	public:
 		HOST ShadingSettings()
 		{
-			this->Type					= 0;
+			this->Type					= Enums::BrdfOnly;
 			this->DensityScale			= 100.0f;
 			this->OpacityModulated		= true;
 			this->GradientComputation	= 1;
@@ -92,12 +92,12 @@ public:
 			return *this;
 		}
 
-		int		Type;
-		float	DensityScale;
-		bool	OpacityModulated;
-		int		GradientComputation;
-		float	GradientThreshold;
-		float	GradientFactor;
+		Enums::ShadingMode		Type;
+		float					DensityScale;
+		bool					OpacityModulated;
+		int						GradientComputation;
+		float					GradientThreshold;
+		float					GradientFactor;
 	};
 
 	HOST RenderSettings()

@@ -84,8 +84,6 @@ int vtkErLight::RequestData(vtkInformation* Request, vtkInformationVector** Inpu
 	
 	vtkErLightData* Input	= vtkErLightData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
 	vtkErLightData* Output	= vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
-	
-	Output->ShallowCopy(Input);
 
 	return 1;
 }
@@ -110,8 +108,4 @@ int vtkErLight::ProcessRequest(vtkInformation* Request, vtkInformationVector** I
 		return this->RequestInformation(Request, InputVector, OutputVector);
 	
 	return this->Superclass::ProcessRequest(Request, InputVector, OutputVector);
-}
-
-void vtkErLight::Execute()
-{
 }

@@ -13,26 +13,16 @@
 
 #pragma once
 
-#include "vtkErDll.h"
-#include "vtkErBindable.h"
+#include "vtkErStable.h"
+#include "vtkErCamera.h"
 
-#include <vtkVolumeProperty.h>
-#include <vtkSmartPointer.h>
-#include <vtkPiecewiseFunction.h>
-#include <vtkColorTransferFunction.h>
+vtkStandardNewMacro(vtkErCamera);
+vtkCxxRevisionMacro(vtkErCamera, "$Revision: 1.0 $");
 
-
-class VTK_ER_EXPORT vtkErVolumeProperty : public vtkVolumeProperty
+vtkErCamera::vtkErCamera(void)
 {
-public:
-	static vtkErVolumeProperty *New();
-	vtkTypeRevisionMacro(vtkErVolumeProperty, vtkVolumeProperty);
-	
-	
+}
 
-protected:
-	vtkErVolumeProperty();
-	virtual ~vtkErVolumeProperty();
-
-	
-};
+vtkErCamera::~vtkErCamera(void)
+{
+}

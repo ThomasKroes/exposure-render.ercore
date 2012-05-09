@@ -16,42 +16,36 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
-class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture
+#include <vtkOpenGLCamera.h>
+
+class vtkRenderer;
+
+class VTK_ER_EXPORT vtkErCamera : public vtkOpenGLCamera
 {
 public:
-	static vtkErTextureData* New();
-	vtkTypeRevisionMacro(vtkErTextureData, vtkDataObject);
+	static vtkErCamera *New();
+	vtkTypeRevisionMacro(vtkErCamera, vtkOpenGLCamera);
+
+	vtkGetMacro(Renderer, vtkRenderer*);
+	vtkSetMacro(Renderer, vtkRenderer*);
+
+	vtkGetMacro(FocalDistance, float);
+	vtkSetMacro(FocalDistance, float);
 	
-protected:
-	vtkErTextureData() {};
-	virtual ~vtkErTextureData() {};
+	vtkGetMacro(Exposure, float);
+	vtkSetMacro(Exposure, float);
 
-private:
-	vtkErTextureData(const vtkErTextureData& Other);		// Not implemented.
-    void operator = (const vtkErTextureData& Other);		// Not implemented.
-};
-
-class VTK_ER_EXPORT vtkErTexture : public vtkAlgorithm
-{
-public:
-	static vtkErTexture* New();
-	vtkTypeRevisionMacro(vtkErTexture, vtkAlgorithm);
-
-	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	vtkGetMacro(Gamma, float);
+	vtkSetMacro(Gamma, float);
 
 protected:
-	vtkErTexture();
-	virtual ~vtkErTexture();
+	vtkErCamera();
+	virtual ~vtkErCamera();
 
-	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
-	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
-
-	virtual int RequestDataObject(vtkInformation* vtkNotUsed(Request), vtkInformationVector** vtkNotUsed(InputVector), vtkInformationVector* OutputVector);
-	virtual int RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
-	virtual int RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
-	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
-
-private:
-	vtkErTexture(const vtkErTexture& Other);			// Not implemented
-    void operator = (const vtkErTexture& Other);		// Not implemented
+	//BTX
+	vtkRenderer*	Renderer;
+	float			FocalDistance;
+	float			Exposure;
+	float			Gamma;
+	//ETX
 };
