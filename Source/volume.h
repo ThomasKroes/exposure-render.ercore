@@ -129,7 +129,7 @@ public:
 		
 		const Vec3f LocalXYZ = Offset * this->InvSize * Vec3f(this->Voxels.Resolution[0], this->Voxels.Resolution[1], this->Voxels.Resolution[2]);
 
-		return this->Voxels(LocalXYZ);
+		return this->Voxels(Vec3i(LocalXYZ[0], LocalXYZ[1], LocalXYZ[2]));
 	}
 
 	BoundingBox					BoundingBox;

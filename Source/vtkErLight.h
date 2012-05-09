@@ -54,4 +54,10 @@ protected:
 private:
 	vtkErLight(const vtkErLight& Other);		// Not implemented
     void operator = (const vtkErLight& Other);  // Not implemented
+
+	bool					Visible;
+	Shape					Shape;
+	int						TextureID;
+	float					Multiplier;
+	Enums::EmissionUnit		Unit;
 };

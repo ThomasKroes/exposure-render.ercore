@@ -16,6 +16,8 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
+#include "vtkDataObject.h"
+
 class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture
 {
 public:

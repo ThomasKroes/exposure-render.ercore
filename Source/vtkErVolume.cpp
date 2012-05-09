@@ -86,7 +86,7 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	if (Output)
 	{
-		const Vec3i Resolution(Input->GetExtent()[1], Input->GetExtent()[3], Input->GetExtent()[5]);
+		const Vec3i Resolution(Input->GetExtent()[1] + 1, Input->GetExtent()[3] + 1, Input->GetExtent()[5] + 1);
 		const Vec3f Spacing(Input->GetSpacing()[0], Input->GetSpacing()[1], Input->GetSpacing()[2]);
 
 		Output->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)Input->GetScalarPointer(), true);

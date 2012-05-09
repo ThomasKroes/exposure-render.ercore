@@ -28,6 +28,8 @@ vtkCxxRevisionMacro(vtkErTracer, "$Revision: 1.0 $");
 
 vtkErTracer::vtkErTracer(void)
 {
+	this->ImageBuffer = NULL;
+
 	this->RenderSize[0]	= 0;
 	this->RenderSize[1]	= 0;
 
@@ -54,7 +56,7 @@ vtkErTracer::vtkErTracer(void)
 	for (int i = 0; i < 3; i++)
 	{
 		Diffuse[i]->AddPoint(Min, 0.0, 0.5, 0);
-		Diffuse[i]->AddPoint(Max, 0.01, 0.5, 0);
+		Diffuse[i]->AddPoint(Max, 1.0, 0.5, 0);
 	}
 
 	for (int i = 0; i < 3; i++)
@@ -68,7 +70,7 @@ vtkErTracer::vtkErTracer(void)
 
 	for (int i = 0; i < 3; i++)
 	{
-		Emission[i]->AddPoint(Min, 1000, 0.5, 0);
+		Emission[i]->AddPoint(Min, 10000000, 0.5, 0);
 		Emission[i]->AddPoint(Max, 1000, 0.5, 0);
 	}
 
@@ -77,7 +79,7 @@ vtkErTracer::vtkErTracer(void)
 	this->SetShadows(true);
 	this->SetMaxShadowDistance(2.0f);
 	this->SetShadingType(1);
-	this->SetDensityScale(0.1f);
+	this->SetDensityScale(100.1f);
 	this->SetOpacityModulated(true);
 	this->SetGradientComputation(1);
 	this->SetGradientThreshold(0.5f);
@@ -138,17 +140,19 @@ int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 
 bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
+	this->Tracer.Opacity1D.Reset();
+	
 	for (int i = 0; i < this->Opacity->GetSize(); i++)
 	{
-		this->Tracer.Opacity1D.Reset();
 		double NodeValue[4];
 		this->Opacity->GetNodeValue(i, NodeValue);
 		this->Tracer.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
 	}
 
+	this->Tracer.Diffuse1D.Reset();
+
 	for (int i = 0; i < this->Diffuse[0]->GetSize(); i++)
 	{
-		this->Tracer.Diffuse1D.Reset();
 		double NodeValue[3][4];
 		this->Diffuse[0]->GetNodeValue(i, NodeValue[0]);
 		this->Diffuse[1]->GetNodeValue(i, NodeValue[1]);
@@ -156,9 +160,10 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0][0], ExposureRender::ColorRGBf(NodeValue[0][1], NodeValue[1][1], NodeValue[2][1])));
 	}
 	
+	this->Tracer.Specular1D.Reset();
+
 	for (int i = 0; i < this->Specular[0]->GetSize(); i++)
 	{
-		this->Tracer.Specular1D.Reset();
 		double NodeValue[3][4];
 		this->Specular[0]->GetNodeValue(i, NodeValue[0]);
 		this->Specular[1]->GetNodeValue(i, NodeValue[1]);
@@ -166,9 +171,10 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0][0], ExposureRender::ColorRGBf(NodeValue[0][1], NodeValue[1][1], NodeValue[2][1])));
 	}
 
+	this->Tracer.Emission1D.Reset();
+
 	for (int i = 0; i < this->Emission[0]->GetSize(); i++)
 	{
-		this->Tracer.Emission1D.Reset();
 		double NodeValue[3][4];
 		this->Emission[0]->GetNodeValue(i, NodeValue[0]);
 		this->Emission[1]->GetNodeValue(i, NodeValue[1]);
@@ -176,8 +182,8 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0][0], ExposureRender::ColorRGBf(NodeValue[0][1], NodeValue[1][1], NodeValue[2][1])));
 	}
 
-	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= this->StepFactorPrimary;
-	this->Tracer.RenderSettings.Traversal.StepFactorShadow		= this->StepFactorShadow;
+	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= 5;//this->StepFactorPrimary;
+	this->Tracer.RenderSettings.Traversal.StepFactorShadow		= 5;//this->StepFactorShadow;
 	this->Tracer.RenderSettings.Traversal.Shadows				= this->Shadows;
 	this->Tracer.RenderSettings.Traversal.MaxShadowDistance		= this->MaxShadowDistance;
 
@@ -196,19 +202,19 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Camera.Pos				= Vec3f(Camera->GetPosition()[0], Camera->GetPosition()[1], Camera->GetPosition()[2]);
 		this->Tracer.Camera.Target			= Vec3f(Camera->GetFocalPoint()[0], Camera->GetFocalPoint()[1], Camera->GetFocalPoint()[2]);
 		this->Tracer.Camera.Up				= Vec3f(Camera->GetViewUp()[0], Camera->GetViewUp()[1], Camera->GetViewUp()[2]);
-		this->Tracer.Camera.ApertureSize	= Camera->GetFocalDisk();
-		this->Tracer.Camera.ClipNear		= Camera->GetClippingRange()[0];
-		this->Tracer.Camera.ClipFar			= Camera->GetClippingRange()[1];
-		this->Tracer.Camera.FOV				= Camera->GetViewAngle();
+		this->Tracer.Camera.ApertureSize	= 0.0f;//Camera->GetFocalDisk();
+		this->Tracer.Camera.ClipNear		= 0.0f;//Camera->GetClippingRange()[0];
+		this->Tracer.Camera.ClipFar			= 1000.0f;//Camera->GetClippingRange()[1];
+		this->Tracer.Camera.FOV				= 45;//Camera->GetViewAngle();
 	}
 
 	vtkErCamera* ErCamera = dynamic_cast<vtkErCamera*>(Camera);
 
 	if (ErCamera)
 	{
-		this->Tracer.Camera.FocalDistance	= ErCamera->GetFocalDistance();
-		this->Tracer.Camera.Exposure		= ErCamera->GetExposure();
-		this->Tracer.Camera.Gamma			= ErCamera->GetGamma();
+		this->Tracer.Camera.FocalDistance	= 1.0f;//ErCamera->GetFocalDistance();
+		this->Tracer.Camera.Exposure		= 100.0f;//ErCamera->GetExposure();
+		this->Tracer.Camera.Gamma			= 2.2f;//ErCamera->GetGamma();
 	}
 	
 	vtkErVolumeData* VolumeData = dynamic_cast<vtkErVolumeData*>(this->GetInputDataObject(0, 0));
@@ -250,8 +256,6 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
 	glBindTexture(GL_TEXTURE_2D, TextureID);
-
-//	glColor4f(1.0f, 0.0f, 1.0f, 1.0f);
 
 	double d = 0.5;
 	

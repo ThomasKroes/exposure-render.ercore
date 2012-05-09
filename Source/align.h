@@ -13,108 +13,11 @@
 
 #pragma once
 
+#include "defines.h"
+#include "enums.h"
+#include "vector.h"
+
 namespace ExposureRender
 {
-
-namespace Enums
-{
-	enum MemoryType
-	{
-		Host,
-		Device
-	};
-
-	enum MemoryUnit
-	{
-		KiloByte,
-		MegaByte,
-		GigaByte
-	};
-
-	enum ProceduralType
-	{
-		Uniform = 0,
-		Checker,
-		Gradient
-	};
-
-	enum TextureType
-	{
-		Procedural = 0,
-		Bitmap
-	};
-
-	enum ShapeType
-	{
-		Plane = 0,
-		Disk,
-		Ring,
-		Box,
-		Sphere,
-		Cylinder,
-		Cone
-	};
-
-	enum ShadingMode
-	{
-		BrdfOnly = 0,
-		PhaseFunctionOnly,
-		Hybrid,
-		Modulation,
-		Threshold,
-		GradientMagnitude
-	};
-
-	enum GradientMode
-	{
-		ForwardDifferences = 0,
-		CentralDifferences,
-		Filtered,
-	};
-
-	enum ExceptionLevel
-	{
-		Info = 0,
-		Warning,
-		Error,
-		Fatal
-	};
-
-	enum EmissionUnit
-	{
-		Power = 0,
-		Lux,
-		Intensity
-	};
-
-	enum ScatterFunction
-	{
-		Brdf,
-		PhaseFunction
-	};
-
-	enum ScatterType
-	{
-		Volume,
-		Light,
-		Object,
-		SlicePlane
-	};
-
-	enum LocationType
-	{
-		AxisAlign = 0,
-		LookAt,
-		Spherical,
-		Manual
-	};
-
-	enum Axis
-	{
-		X = 0,
-		Y,
-		Z
-	};
-}
 
 }
