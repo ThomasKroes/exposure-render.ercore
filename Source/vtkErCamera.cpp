@@ -21,6 +21,8 @@ vtkCxxRevisionMacro(vtkErCamera, "$Revision: 1.0 $");
 
 vtkErCamera::vtkErCamera(void)
 {
+	this->SetExposure(10000000.0f);
+	this->SetGamma(2.2f);
 }
 
 vtkErCamera::~vtkErCamera(void)

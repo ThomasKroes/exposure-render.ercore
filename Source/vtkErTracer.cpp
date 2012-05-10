@@ -201,8 +201,8 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	if (ErCamera)
 	{
 		this->Tracer.Camera.FocalDistance	= 1.0f;//ErCamera->GetFocalDistance();
-		this->Tracer.Camera.Exposure		= 0.001f;//ErCamera->GetExposure();
-		this->Tracer.Camera.Gamma			= 1.0f;//ErCamera->GetGamma();
+		this->Tracer.Camera.Exposure		= ErCamera->GetExposure();
+		this->Tracer.Camera.Gamma			= ErCamera->GetGamma();
 	}
 	
 	vtkErVolumeData* VolumeData = dynamic_cast<vtkErVolumeData*>(this->GetInputDataObject(0, 0));
@@ -248,6 +248,8 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
 	glBindTexture(GL_TEXTURE_2D, TextureID);
 
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
 	double d = 0.5;
 	
     Renderer->SetDisplayPoint(0,0,d);
@@ -274,13 +276,13 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 	glDisable(GL_LIGHTING);
 
 	glBegin(GL_QUADS);
-		glTexCoord2i(1,1);
+		glTexCoord2i(0, 0);
 		glVertex4dv(coordinatesA);
-		glTexCoord2i(0,1);
+		glTexCoord2i(1, 0);
 		glVertex4dv(coordinatesB);
-		glTexCoord2i(0,0);
+		glTexCoord2i(1, 1);
 		glVertex4dv(coordinatesC);
-		glTexCoord2i(1,0);
+		glTexCoord2i(0, 1);
 		glVertex4dv(coordinatesD);
 	glEnd();
 

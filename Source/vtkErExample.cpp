@@ -20,6 +20,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkMetaImageReader.h>
+#include <vtkInteractorStyleTrackballCamera.h>
 
 #include "vtkErVolume.h"
 #include "vtkErLight.h"
@@ -49,34 +50,37 @@ int main(int, char *[])
 	
 	ErLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	ErLight->SetElevation(45.0f);
-	ErLight->SetAzimuth(45.0f);
-	ErLight->SetOffset(2.0f);
+	ErLight->SetAzimuth(135.0f);
+	ErLight->SetOffset(1.0f);
+	ErLight->SetMultiplier(200.0f);
+	ErLight->SetSize(0.1f, 0.1f, 0.1f);
 
 	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
 
-	ErTexture->SetProceduralType(Enums::Checker);
+//	ErTexture->SetProceduralType(Enums::Checker);
+	ErTexture->SetRepeat(2.0f, 2.0f);
 
 	vtkSmartPointer<vtkErTracer> VolumeMapper = vtkSmartPointer<vtkErTracer>::New();
 	
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetClippingRange(0, 100000);
-	Camera->SetExposure(0.01);
+	Camera->SetExposure(1);
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(32000, 0);
+	Opacity->AddPoint(32750, 0);
 	Opacity->AddPoint(65000, 1);
 
 	VolumeMapper->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 
-	Diffuse->AddRGBPoint(0, 1, 0, 0);
-	Diffuse->AddRGBPoint(65000, 1, 0, 0);
+	Diffuse->AddRGBPoint(0, 1, 1, 1);
+	Diffuse->AddRGBPoint(65000, 1, 1, 1);
 
 	VolumeMapper->SetDiffuse(Diffuse);
 
@@ -95,6 +99,8 @@ int main(int, char *[])
 	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
 	VolumeMapper->SetInputConnection(1, ErLight->GetOutputPort());
 	VolumeMapper->SetDensityScale(100.0f);
+	VolumeMapper->SetStepFactorPrimary(10);
+	VolumeMapper->SetStepFactorShadow(10);
 
 	VolumeMapper->Update();
 
@@ -113,11 +119,16 @@ int main(int, char *[])
 
 	RenderWindowInteractor->SetRenderWindow(RenderWindow);
 
+	vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New(); //like paraview
+ 
+	RenderWindowInteractor->SetInteractorStyle( style );
+
 	Renderer->AddVolume(Volume);
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
 
 	RenderWindow->Render();
+	RenderWindow->SetSize(512, 512);
 	RenderWindowInteractor->Start();
 
 	return EXIT_SUCCESS;

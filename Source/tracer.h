@@ -43,6 +43,15 @@ public:
 		
 		this->FrameBuffer.Resize(Other.Camera.FilmSize);
 
+		if (this->NoIterations == 0)
+		{
+			this->FrameBuffer.RandomSeedsCopy1.Dirty = true;
+			this->FrameBuffer.RandomSeedsCopy2.Dirty = true;
+
+			this->FrameBuffer.RandomSeeds1 = this->FrameBuffer.RandomSeedsCopy1;
+			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;
+		}
+
 		return *this;
 	}
 

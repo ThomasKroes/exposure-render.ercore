@@ -267,6 +267,11 @@ public:
 
 	void Resize(const Vec2i& Resolution)
 	{
+		if (this->Resolution == Resolution)
+			return;
+		
+		printf(__FUNCTION__);
+
 		const int NoSeeds = Resolution[0] * Resolution[1];
 
 		unsigned int* pSeeds = new unsigned int[NoSeeds];

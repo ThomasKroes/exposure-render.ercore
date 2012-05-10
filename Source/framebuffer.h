@@ -31,8 +31,8 @@ public:
 		DisplayEstimateFiltered(Enums::Device, "Filtered Display Estimate RGBA"),
 		RandomSeeds1(Enums::Device, "Random Seeds 1"),
 		RandomSeeds2(Enums::Device, "Random Seeds 2"),
-		RandomSeedsCopy1(Enums::Device, "Random Seeds 1 (Cache)"),
-		RandomSeedsCopy2(Enums::Device, "Random Seeds 2 (Cache)"),
+		RandomSeedsCopy1(Enums::Device, "Random Seeds 1 Copy"),
+		RandomSeedsCopy2(Enums::Device, "Random Seeds 2 Copy"),
 		HostDisplayEstimate(Enums::Host, "Display Estimate RGBA")
 	{
 	}
@@ -41,7 +41,7 @@ public:
 	{
 		if (this->Resolution == Resolution)
 			return;
-
+		
 		this->Resolution = Resolution;
 
 		this->FrameEstimate.Resize(this->Resolution);
@@ -52,37 +52,10 @@ public:
 		this->DisplayEstimateFiltered.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
-		this->RandomSeedsCopy1.Resize(this->Resolution);
-		this->RandomSeedsCopy2.Resize(this->Resolution);
 		this->HostDisplayEstimate.Resize(this->Resolution);
 
-//		RandomSeedsCopy1 = RandomSeeds1;
-//		RandomSeedsCopy2 = RandomSeeds2;
-
-		this->Reset();
-	}
-
-	void Reset(void)
-	{
-//		RandomSeeds1 = RandomSeedsCopy1;
-//		RandomSeeds2 = RandomSeedsCopy2;
-	}
-
-	void Free(void)
-	{
-		this->FrameEstimate.Free();
-		this->FrameEstimateTemp.Free();
-		this->RunningEstimateXyza.Free();
-		this->DisplayEstimate.Free();
-		this->DisplayEstimateTemp.Free();
-		this->DisplayEstimateFiltered.Free();
-		this->RandomSeeds1.Free();
-		this->RandomSeeds2.Free();
-		this->RandomSeedsCopy1.Free();
-		this->RandomSeedsCopy2.Free();
-		this->HostDisplayEstimate.Free();
-
-		this->Resolution = Vec2i(0);
+		this->RandomSeedsCopy1 = this->RandomSeeds1;
+		this->RandomSeedsCopy2 = this->RandomSeeds2;
 	}
 
 	Vec2i					Resolution;
