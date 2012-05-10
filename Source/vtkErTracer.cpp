@@ -37,16 +37,10 @@ vtkErTracer::vtkErTracer(void)
 	this->SetNumberOfOutputPorts(0);
 
 	this->Opacity		= vtkPiecewiseFunction::New();
-	this->Diffuse[0]	= vtkPiecewiseFunction::New();
-	this->Diffuse[1]	= vtkPiecewiseFunction::New();
-	this->Diffuse[2]	= vtkPiecewiseFunction::New();
-	this->Specular[0]	= vtkPiecewiseFunction::New();
-	this->Specular[1]	= vtkPiecewiseFunction::New();
-	this->Specular[2]	= vtkPiecewiseFunction::New();
+	this->Diffuse		= vtkColorTransferFunction::New();
+	this->Specular		= vtkColorTransferFunction::New();
 	this->Glossiness	= vtkPiecewiseFunction::New();
-	this->Emission[0]	= vtkPiecewiseFunction::New();
-	this->Emission[1]	= vtkPiecewiseFunction::New();
-	this->Emission[2]	= vtkPiecewiseFunction::New();
+	this->Emission		= vtkColorTransferFunction::New();
 
 	double Min = 0, Max = 255;
 
@@ -55,14 +49,14 @@ vtkErTracer::vtkErTracer(void)
 
 	for (int i = 0; i < 3; i++)
 	{
-		Diffuse[i]->AddPoint(Min, 0.0, 0.5, 0);
-		Diffuse[i]->AddPoint(Max, 1.0, 0.5, 0);
+		Diffuse->AddRGBPoint(Min, 0.0, 0.5, 0);
+		Diffuse->AddRGBPoint(Max, 1.0, 0.5, 0);
 	}
 
 	for (int i = 0; i < 3; i++)
 	{
-		Specular[i]->AddPoint(Min, 0, 0.5, 0);
-		Specular[i]->AddPoint(Max, 0, 0.5, 0);
+		Specular->AddRGBPoint(Min, 0, 0.5, 0);
+		Specular->AddRGBPoint(Max, 0, 0.5, 0);
 	}
 
 	Glossiness->AddPoint(Min, 1, 0.5, 0);
@@ -70,8 +64,8 @@ vtkErTracer::vtkErTracer(void)
 
 	for (int i = 0; i < 3; i++)
 	{
-		Emission[i]->AddPoint(Min, 10000000, 0.5, 0);
-		Emission[i]->AddPoint(Max, 1000, 0.5, 0);
+		Emission->AddRGBPoint(Min, 0, 0.5, 0);
+		Emission->AddRGBPoint(Max, 0, 0.5, 0);
 	}
 
 	this->SetStepFactorPrimary(1.0f);
@@ -79,7 +73,7 @@ vtkErTracer::vtkErTracer(void)
 	this->SetShadows(true);
 	this->SetMaxShadowDistance(2.0f);
 	this->SetShadingType(1);
-	this->SetDensityScale(100.1f);
+	this->SetDensityScale(10.0f);
 	this->SetOpacityModulated(true);
 	this->SetGradientComputation(1);
 	this->SetGradientThreshold(0.5f);
@@ -151,35 +145,29 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	this->Tracer.Diffuse1D.Reset();
 
-	for (int i = 0; i < this->Diffuse[0]->GetSize(); i++)
+	for (int i = 0; i < this->Diffuse->GetSize(); i++)
 	{
-		double NodeValue[3][4];
-		this->Diffuse[0]->GetNodeValue(i, NodeValue[0]);
-		this->Diffuse[1]->GetNodeValue(i, NodeValue[1]);
-		this->Diffuse[2]->GetNodeValue(i, NodeValue[2]);
-		this->Tracer.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0][0], ExposureRender::ColorRGBf(NodeValue[0][1], NodeValue[1][1], NodeValue[2][1])));
+		double NodeValue[6];
+		this->Diffuse->GetNodeValue(i, NodeValue);
+		this->Tracer.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 	
 	this->Tracer.Specular1D.Reset();
 
-	for (int i = 0; i < this->Specular[0]->GetSize(); i++)
+	for (int i = 0; i < this->Specular->GetSize(); i++)
 	{
-		double NodeValue[3][4];
-		this->Specular[0]->GetNodeValue(i, NodeValue[0]);
-		this->Specular[1]->GetNodeValue(i, NodeValue[1]);
-		this->Specular[2]->GetNodeValue(i, NodeValue[2]);
-		this->Tracer.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0][0], ExposureRender::ColorRGBf(NodeValue[0][1], NodeValue[1][1], NodeValue[2][1])));
+		double NodeValue[6];
+		this->Specular->GetNodeValue(i, NodeValue);
+		this->Tracer.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
 	this->Tracer.Emission1D.Reset();
 
-	for (int i = 0; i < this->Emission[0]->GetSize(); i++)
+	for (int i = 0; i < this->Emission->GetSize(); i++)
 	{
-		double NodeValue[3][4];
-		this->Emission[0]->GetNodeValue(i, NodeValue[0]);
-		this->Emission[1]->GetNodeValue(i, NodeValue[1]);
-		this->Emission[2]->GetNodeValue(i, NodeValue[2]);
-		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0][0], ExposureRender::ColorRGBf(NodeValue[0][1], NodeValue[1][1], NodeValue[2][1])));
+		double NodeValue[6];
+		this->Emission->GetNodeValue(i, NodeValue);
+		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
 	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= 5;//this->StepFactorPrimary;
@@ -213,13 +201,16 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	if (ErCamera)
 	{
 		this->Tracer.Camera.FocalDistance	= 1.0f;//ErCamera->GetFocalDistance();
-		this->Tracer.Camera.Exposure		= 100.0f;//ErCamera->GetExposure();
-		this->Tracer.Camera.Gamma			= 2.2f;//ErCamera->GetGamma();
+		this->Tracer.Camera.Exposure		= 0.001f;//ErCamera->GetExposure();
+		this->Tracer.Camera.Gamma			= 1.0f;//ErCamera->GetGamma();
 	}
 	
 	vtkErVolumeData* VolumeData = dynamic_cast<vtkErVolumeData*>(this->GetInputDataObject(0, 0));
 
 	this->Tracer.VolumeID = VolumeData->Bindable.ID;
+	this->Tracer.LightIDs.Count = 1;
+	this->Tracer.LightIDs[0] = 0;
+
 	
 	ExposureRender::BindTracer(this->Tracer);
 
@@ -294,74 +285,4 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 	glEnd();
 
 	glPopAttrib();
-}
-
-void vtkErTracer::SetOpacity(vtkPiecewiseFunction* Opacity)
-{
-	if (this->Opacity != Opacity)
-	{
-		this->Opacity = Opacity;
-		this->Modified();
-	}
-}
-
-vtkPiecewiseFunction* vtkErTracer::GetOpacity(void)
-{
-	return Opacity.GetPointer();
-}
-
-void vtkErTracer::SetDiffuse(int Index, vtkPiecewiseFunction* Diffuse)
-{
-	if (this->Diffuse[Index] != Diffuse)
-	{
-		this->Diffuse[Index] = Diffuse;
-		this->Modified();
-	}
-}
-
-vtkPiecewiseFunction* vtkErTracer::GetDiffuse(int Index)
-{
-	return Diffuse[Index];
-}
-
-void vtkErTracer::SetSpecular(int Index, vtkPiecewiseFunction* Specular)
-{
-	if (this->Specular[Index] != Specular)
-	{
-		this->Specular[Index] = Specular;
-		this->Modified();
-	}
-}
-
-vtkPiecewiseFunction* vtkErTracer::GetSpecular(int Index)
-{
-	return Specular[Index];
-}
-
-void vtkErTracer::SetGlossiness(vtkPiecewiseFunction* Glossiness)
-{
-	if (this->Glossiness != Glossiness)
-	{
-		this->Glossiness = Glossiness;
-		this->Modified();
-	}
-}
-
-vtkPiecewiseFunction* vtkErTracer::GetGlossiness(void)
-{
-	return Glossiness.GetPointer();
-}
-
-void vtkErTracer::SetEmission(int Index, vtkPiecewiseFunction* Emission)
-{
-	if (this->Emission[Index] != Emission)
-	{
-		this->Emission[Index] = Emission;
-		this->Modified();
-	}
-}
-
-vtkPiecewiseFunction* vtkErTracer::GetEmission(int Index)
-{
-	return Emission[Index];
 }

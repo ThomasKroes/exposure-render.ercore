@@ -16,6 +16,7 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
+#include <vtkDataObject.h>
 #include <vtkVolumeMapper.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
@@ -41,23 +42,20 @@ public:
 	static vtkErTracer* New();
 	vtkTypeRevisionMacro(vtkErTracer, vtkAbstractVolumeMapper);
 
-	void SetOpacity(vtkPiecewiseFunction* pPiecewiseFunction);
-	vtkPiecewiseFunction* GetOpacity(void);
+	vtkPiecewiseFunction* GetOpacity(void) { return this->Opacity.GetPointer(); };
+	void SetOpacity(vtkPiecewiseFunction* Opacity) { this->Opacity = Opacity; };
+	
+	vtkColorTransferFunction* GetDiffuse() { return this->Diffuse.GetPointer(); };
+	void SetDiffuse(vtkColorTransferFunction* Diffuse) { this->Diffuse = Diffuse; };
 
-	void SetDiffuse(int Index, vtkPiecewiseFunction* pPiecewiseFunction);
-	vtkPiecewiseFunction* GetDiffuse(int Index);
+	vtkColorTransferFunction* GetSpecular() { return this->Specular.GetPointer(); };
+	void SetSpecular(vtkColorTransferFunction* Specular) { this->Specular = Specular; };
 
-	void SetSpecular(int Index, vtkPiecewiseFunction* pPiecewiseFunction);
-	vtkPiecewiseFunction* GetSpecular(int Index);
-
-	void SetGlossiness(vtkPiecewiseFunction* pPiecewiseFunction);
-	vtkPiecewiseFunction* GetGlossiness(void);
-
-	void SetIOR(vtkPiecewiseFunction* pPiecewiseFunction);
-	vtkPiecewiseFunction* GetIOR(void);
-
-	void SetEmission(int Index, vtkPiecewiseFunction* pPiecewiseFunction);
-	vtkPiecewiseFunction* GetEmission(int Index);
+	vtkPiecewiseFunction* GetGlossiness(void) { return this->Glossiness.GetPointer(); };
+	void SetGlossiness(vtkPiecewiseFunction* Glossiness) { this->Glossiness = Glossiness; };
+	
+	vtkColorTransferFunction* GetEmission() { return this->Emission.GetPointer(); };
+	void SetEmission(vtkColorTransferFunction* Emission) { this->Emission = Emission; };
 
 	vtkGetMacro(StepFactorPrimary, float);
 	vtkSetMacro(StepFactorPrimary, float);
@@ -100,23 +98,23 @@ protected:
 	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
 
 private:
-	unsigned int							TextureID;
-	unsigned char*							ImageBuffer;
-	int										RenderSize[2];
-	vtkSmartPointer<vtkPiecewiseFunction>	Opacity;
-	vtkSmartPointer<vtkPiecewiseFunction>	Diffuse[3];
-	vtkSmartPointer<vtkPiecewiseFunction>	Specular[3];
-	vtkSmartPointer<vtkPiecewiseFunction>	Glossiness;
-	vtkSmartPointer<vtkPiecewiseFunction>	Emission[3];
-	float									StepFactorPrimary;
-	float									StepFactorShadow;
-	bool									Shadows;
-	float									MaxShadowDistance;
-	int										ShadingType;
-	float									DensityScale;
-	bool									OpacityModulated;
-	int										GradientComputation;
-	float									GradientThreshold;
-	float									GradientFactor;
-	ExposureRender::ErTracer				Tracer;
+	unsigned int								TextureID;
+	unsigned char*								ImageBuffer;
+	int											RenderSize[2];
+	vtkSmartPointer<vtkPiecewiseFunction>		Opacity;
+	vtkSmartPointer<vtkColorTransferFunction>	Diffuse;
+	vtkSmartPointer<vtkColorTransferFunction>	Specular;
+	vtkSmartPointer<vtkPiecewiseFunction>		Glossiness;
+	vtkSmartPointer<vtkColorTransferFunction>	Emission;
+	float										StepFactorPrimary;
+	float										StepFactorShadow;
+	bool										Shadows;
+	float										MaxShadowDistance;
+	int											ShadingType;
+	float										DensityScale;
+	bool										OpacityModulated;
+	int											GradientComputation;
+	float										GradientThreshold;
+	float										GradientFactor;
+	ExposureRender::ErTracer					Tracer;
 };

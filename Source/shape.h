@@ -13,8 +13,7 @@
 
 #pragma once
 
-#include "vector.h"
-#include "Matrix.h"
+#include "alignment.h"
 
 namespace ExposureRender
 {
@@ -52,13 +51,16 @@ EXPOSURE_RENDER_DLL inline float CylinderArea(const float& Radius, const float& 
 class EXPOSURE_RENDER_DLL Shape
 {
 public:
-	HOST Shape()
+	HOST Shape() :
+		Alignment(),
+		Transform(),
+		OneSided(false),
+		Type(Enums::Plane),
+		Size(1.0f),
+		Area(1.0f),
+		InnerRadius(0.0f),
+		OuterRadius(1.0f)
 	{
-		this->OneSided		= false;
-		this->Type			= Enums::Plane;
-		this->Area			= 0.0f;
-		this->InnerRadius	= 0.0f;
-		this->OuterRadius	= 0.0f;
 	}
 
 	HOST ~Shape()
@@ -72,8 +74,8 @@ public:
 	
 	HOST Shape& operator = (const Shape& Other)
 	{
-		this->TM			= Other.TM;
-		this->InvTM			= Other.InvTM;
+		this->Alignment		= Other.Alignment;
+		this->Transform		= Other.Transform;
 		this->OneSided		= Other.OneSided;
 		this->Type			= Other.Type;
 		this->Size			= Other.Size;
@@ -95,10 +97,12 @@ public:
 			case Enums::Sphere:		this->Area = SphereArea(this->OuterRadius);									break;
 			case Enums::Cylinder:	this->Area = CylinderArea(this->OuterRadius, this->Size[2]);				break;
 		}
+
+		this->Transform = this->Alignment.GetTransform();
 	}
 
-	Matrix44			TM;
-	Matrix44			InvTM;
+	Alignment			Alignment;
+	Transform			Transform;
 	bool				OneSided;
 	Enums::ShapeType	Type;
 	Vec3f				Size;

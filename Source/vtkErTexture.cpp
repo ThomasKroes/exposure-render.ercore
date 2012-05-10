@@ -26,6 +26,20 @@ vtkErTexture::vtkErTexture(void)
 {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
+
+	this->SetTextureType(Enums::Procedural);
+	this->SetOutputLevel(1.0f);
+	this->SetProceduralType(Enums::Uniform);
+	this->SetUniformColor(1.0f, 1.0f, 1.0f);
+	this->SetCheckerColor1(1.0f, 1.0f, 1.0f);
+	this->SetCheckerColor2(0.0f, 0.0f, 0.0f);
+	this->Gradient = vtkColorTransferFunction::New();
+	this->Gradient->AddRGBPoint(0, 0, 0, 0);
+	this->Gradient->AddRGBPoint(1, 1, 1, 1);
+	this->SetOffset(0.0f, 0.0f);
+	this->SetRepeat(1.0f, 1.0f);
+	this->SetFlip(0, 0);
+	this->BitmapID = -1;
 }
 
 vtkErTexture::~vtkErTexture(void)
@@ -36,7 +50,7 @@ int vtkErTexture::FillInputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == 0)
 	{
-		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErBitmap");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
 		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 	}
@@ -79,15 +93,41 @@ int vtkErTexture::RequestInformation(vtkInformation* Request, vtkInformationVect
 
 int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	return 1;
-
 	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 	
-	vtkErTextureData* Input	= vtkErTextureData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkErTextureData* Output	= vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
-	
-	Output->ShallowCopy(Input);
+//	vtkImageData* ImageDataIn			= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErTextureData* TextureDataOut	= vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (TextureDataOut)
+	{
+		TextureDataOut->Bindable.Type						= this->TextureType;
+		TextureDataOut->Bindable.OutputLevel				= this->OutputLevel;
+		
+		ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
+
+		Procedural.Type				= this->ProceduralType;
+		Procedural.UniformColor		= this->UniformColor;
+		Procedural.CheckerColor1	= this->CheckerColor1;
+		Procedural.CheckerColor2	= this->CheckerColor2;
+		
+		Procedural.Gradient.Reset();
+
+		for (int i = 0; i < this->Gradient->GetSize(); i++)
+		{
+			double NodeValue[6];
+			this->Gradient->GetNodeValue(i, NodeValue);
+			Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		}
+
+		TextureDataOut->Bindable.Offset		= this->Offset;
+		TextureDataOut->Bindable.Repeat		= this->Repeat;
+		TextureDataOut->Bindable.Flip		= Flip;
+		TextureDataOut->Bindable.BitmapID	= -1;
+
+		TextureDataOut->Bind();
+	}
+
 
 	return 1;
 }

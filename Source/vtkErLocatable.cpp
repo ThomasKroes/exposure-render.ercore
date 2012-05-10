@@ -13,51 +13,6 @@
 
 #pragma once
 
-#include "erbindable.h"
-#include "shape.h"
+#include "vtkErStable.h"
+#include "vtkErTexture.h"
 
-namespace ExposureRender
-{
-
-class EXPOSURE_RENDER_DLL ErLight : public ErBindable
-{
-public:
-	HOST ErLight() :
-		ErBindable(),
-		Visible(),
-		TextureID(-1),
-		Multiplier(0.0f),
-		EmissionUnit(Enums::Power)
-	{
-	}
-
-	HOST virtual ~ErLight()
-	{
-	}
-
-	HOST ErLight(const ErLight& Other)
-	{
-		*this = Other;
-	}
-	
-	HOST ErLight& operator = (const ErLight& Other)
-	{
-		ErBindable::operator=(Other);
-
-		this->Visible		= Other.Visible;
-		this->Shape			= Other.Shape;
-		this->TextureID		= Other.TextureID;
-		this->Multiplier	= Other.Multiplier;
-		this->EmissionUnit	= Other.EmissionUnit;
-
-		return *this;
-	}
-
-	bool					Visible;
-	Shape					Shape;
-	int						TextureID;
-	float					Multiplier;
-	Enums::EmissionUnit		EmissionUnit;
-};
-
-}

@@ -20,7 +20,7 @@ namespace ExposureRender
 
 HOST_DEVICE_NI void IntersectObject(const Object& Object, const Ray& R, ScatterEvent& RS)
 {
-	Ray Rt = TransformRay(Object.Shape.InvTM, R);
+	Ray Rt = TransformRay(Object.Shape.Transform.InvTM, R);
 
 	Intersection Int;
 
@@ -29,8 +29,8 @@ HOST_DEVICE_NI void IntersectObject(const Object& Object, const Ray& R, ScatterE
 	if (Int.Valid)
 	{
 		RS.Valid	= true;
-		RS.N 		= TransformVector(Object.Shape.TM, Int.N);
-		RS.P 		= TransformPoint(Object.Shape.TM, Int.P);
+		RS.N 		= TransformVector(Object.Shape.Transform.TM, Int.N);
+		RS.P 		= TransformPoint(Object.Shape.Transform.TM, Int.P);
 		RS.T 		= Length(RS.P - R.O);
 		RS.Wo		= -R.D;
 		RS.Le		= ColorXYZf(0.0f);
@@ -62,7 +62,7 @@ HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
 
 HOST_DEVICE_NI bool IntersectsObject(const Object& Object, const Ray& R)
 {
-	return IntersectsShape(Object.Shape, TransformRay(Object.Shape.InvTM, R));
+	return IntersectsShape(Object.Shape, TransformRay(Object.Shape.Transform.InvTM, R));
 }
 
 HOST_DEVICE_NI bool IntersectsObject(const Ray& R)

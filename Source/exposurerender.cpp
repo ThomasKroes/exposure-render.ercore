@@ -13,4 +13,4 @@
 
 #define __CUDA_ARCH__ 200
 
-#include "matrix.h"
+#include "align.h"

@@ -173,6 +173,8 @@ SET(General
 	vtkErBindable.cpp
 	vtkErCamera.h
 	vtkErCamera.cpp
+	vtkErLocatable.h
+	vtkErLocatable.cpp
 	vtkErStable.h
 	vtkErStable.cpp
 	vtkErConfigure.h

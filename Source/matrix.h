@@ -83,7 +83,7 @@ public:
 	}
 	*/
 
-	HOST bool Invert(Matrix44& Result)
+	HOST bool Invert(Matrix44& Result) const
 	{
 		using std::abs; // use overloaded abs
 		float t;
@@ -145,67 +145,47 @@ public:
 		return true;
 	}
 
-	HOST void AxisAlign(const Enums::Axis& Axis, const Vec3f& Position, const bool& AutoFlip)
+	HOST static Matrix44 Inverse(const Matrix44& M)
 	{
-		Matrix44 Offset, Translation, Rotation;
+		Matrix44 Result;
 
-		Translation.NN[0][3] = Position[0];
-		Translation.NN[1][3] = Position[1];
-		Translation.NN[2][3] = Position[2];
+		M.Invert(Result);
 
-		switch (Axis)
-		{
-			case Enums::X:
-			{
-				Rotation.NN[0][0] = 0.0f;
-				Rotation.NN[1][0] = 0.0f;
-				Rotation.NN[2][0] = 1.0f;
+		return Result;
+	}
 
-				Rotation.NN[0][1] = 0.0f;
-				Rotation.NN[1][1] = 1.0f;
-				Rotation.NN[2][1] = 0.0f;
+	HOST static Matrix44 CreateTranslation(const Vec3f& Translation)
+	{
+		Matrix44 Result;
 
-				Rotation.NN[0][2] = AutoFlip ? (Position[0] > 0.0f ? -1.0f : 1.0f) : 1.0f;
-				Rotation.NN[1][2] = 0.0f;
-				Rotation.NN[2][2] = 0.0f;
-				
-				*this = Offset * Translation * Rotation;
-			}
+		Result.NN[0][3] = Translation[0];
+		Result.NN[1][3] = Translation[1];
+		Result.NN[2][3] = Translation[2];
 
-			case Enums::Y:
-			{
-				Rotation.NN[0][0] = 1.0f;
-				Rotation.NN[1][0] = 0.0f;
-				Rotation.NN[2][0] = 0.0f;
+		return Result;
+	}
 
-				Rotation.NN[0][1] = 0.0f;
-				Rotation.NN[1][1] = 0.0f;
-				Rotation.NN[2][1] = 1.0f;
+	HOST static Matrix44 CreateLookAt(const Vec3f& Position, const Vec3f& Target, const Vec3f& Up)
+	{
+		const Vec3f W = Normalize(Target - Position);
+		const Vec3f U = Normalize(Cross(W, Up));
+		const Vec3f V = Normalize(Cross(W, U));
 
-				Rotation.NN[0][2] = 0.0f;
-				Rotation.NN[1][2] = AutoFlip ? (Position[1] > 0.0f ? -1.0f : 1.0f) : 1.0f;
-				Rotation.NN[2][2] = 0.0f;
-				
-				*this = Offset * Translation * Rotation;
-			}
+		Matrix44 Rotation, Translation = Matrix44::CreateTranslation(Position);
 
-			case Enums::Z:
-			{
-				Rotation.NN[0][0] = 1.0f;
-				Rotation.NN[1][0] = 0.0f;
-				Rotation.NN[2][0] = 0.0f;
+		Translation.NN[0][0] = U[0];
+		Translation.NN[1][0] = U[1];
+		Translation.NN[2][0] = U[2];
 
-				Rotation.NN[0][1] = 0.0f;
-				Rotation.NN[1][1] = 1.0f;
-				Rotation.NN[2][1] = 0.0f;
+		Translation.NN[0][1] = V[0];
+		Translation.NN[1][1] = V[1];
+		Translation.NN[2][1] = V[2];
 
-				Rotation.NN[0][2] = 0.0f;
-				Rotation.NN[1][2] = 0.0f;
-				Rotation.NN[2][2] = AutoFlip ? (Position[2] > 0.0f ? -1.0f : 1.0f) : 1.0f;
-				
-				*this = Offset * Translation * Rotation;
-			}
-		}
+		Translation.NN[0][2] = W[0];
+		Translation.NN[1][2] = W[1];
+		Translation.NN[2][2] = W[2];
+
+		return Rotation * Translation;
 	}
 
 	float NN[4][4];

@@ -15,6 +15,7 @@
 
 #include "vtkErStable.h"
 #include "vtkErLight.h"
+#include "vtkErTexture.h"
 
 vtkStandardNewMacro(vtkErLightData);
 vtkCxxRevisionMacro(vtkErLightData, "$Revision: 1.0 $");
@@ -26,6 +27,16 @@ vtkErLight::vtkErLight(void)
 {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
+
+	this->SetVisible(true);
+	this->SetOneSided(false);
+	this->SetShapeType(Enums::Plane);
+	this->SetSize(1.0f, 1.0f, 1.0f);
+	this->SetInnerRadius(0.5f);
+	this->SetOuterRadius(1.0f);
+	this->SetMultiplier(100000.0f);
+	this->SetEmissionUnit(Enums::Lux);
+	this->TextureID = -1;
 }
 
 vtkErLight::~vtkErLight(void)
@@ -82,8 +93,23 @@ int vtkErLight::RequestData(vtkInformation* Request, vtkInformationVector** Inpu
 	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 	
-	vtkErLightData* Input	= vtkErLightData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkErLightData* Output	= vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErTextureData* TextureDataIn	= vtkErTextureData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErLightData* LightDataOut = vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (TextureDataIn && LightDataOut)
+	{
+		LightDataOut->Bindable.Visible				= this->Visible;
+		LightDataOut->Bindable.Shape.OneSided		= this->OneSided;
+		LightDataOut->Bindable.Shape.Type			= this->ShapeType;
+		LightDataOut->Bindable.Shape.Size			= this->Size;
+		LightDataOut->Bindable.Shape.InnerRadius	= this->InnerRadius;
+		LightDataOut->Bindable.Shape.OuterRadius	= this->OuterRadius;
+		LightDataOut->Bindable.Multiplier			= this->Multiplier;
+		LightDataOut->Bindable.EmissionUnit			= this->EmissionUnit;
+		LightDataOut->Bindable.TextureID			= TextureDataIn->Bindable.ID;
+
+		LightDataOut->Bind();
+	}
 
 	return 1;
 }

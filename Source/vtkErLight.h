@@ -15,6 +15,7 @@
 
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
+#include "vtkErLocatable.h"
 
 class vtkErLightData : public vtkDataObject, public vtkErBindableLight
 {
@@ -31,13 +32,37 @@ private:
     void operator = (const vtkErLightData& Other);	// Not implemented.
 };
 
-class VTK_ER_EXPORT vtkErLight : public vtkAlgorithm
+class VTK_ER_EXPORT vtkErLight : public vtkAlgorithm, public vtkErLocatable
 {
 public:
 	static vtkErLight* New();
 	vtkTypeRevisionMacro(vtkErLight, vtkAlgorithm);
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+
+	vtkGetMacro(Visible, bool);
+	vtkSetMacro(Visible, bool);
+
+	vtkGetMacro(OneSided, bool);
+	vtkSetMacro(OneSided, bool);
+
+	vtkGetMacro(ShapeType, Enums::ShapeType);
+	vtkSetMacro(ShapeType, Enums::ShapeType);
+
+	vtkGetVector3Macro(Size, float);
+	vtkSetVector3Macro(Size, float);
+	
+	vtkGetMacro(InnerRadius, float);
+	vtkSetMacro(InnerRadius, float);
+
+	vtkGetMacro(OuterRadius, float);
+	vtkSetMacro(OuterRadius, float);
+
+	vtkGetMacro(Multiplier, float);
+	vtkSetMacro(Multiplier, float);
+
+	vtkGetMacro(EmissionUnit, Enums::EmissionUnit);
+	vtkSetMacro(EmissionUnit, Enums::EmissionUnit);
 
 protected:
 	vtkErLight();
@@ -56,8 +81,12 @@ private:
     void operator = (const vtkErLight& Other);  // Not implemented
 
 	bool					Visible;
-	Shape					Shape;
-	int						TextureID;
+	bool					OneSided;
+	Enums::ShapeType		ShapeType;
+	float					Size[3];
+	float					InnerRadius;
+	float					OuterRadius;
 	float					Multiplier;
-	Enums::EmissionUnit		Unit;
+	Enums::EmissionUnit		EmissionUnit;
+	int						TextureID;
 };

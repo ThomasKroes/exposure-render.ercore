@@ -13,11 +13,42 @@
 
 #pragma once
 
-#include "defines.h"
-#include "enums.h"
-#include "vector.h"
+#include "matrix.h"
 
 namespace ExposureRender
 {
+
+class EXPOSURE_RENDER_DLL Transform
+{
+public:
+	HOST Transform() :
+		TM(),
+		InvTM()
+	{
+	}
+
+	HOST Transform(const Matrix44& M) :
+		TM(),
+		InvTM(Matrix44::Inverse(M))
+	{
+	}
+
+	HOST Transform& operator = (const Transform& Other)
+	{
+		this->TM	= Other.TM;
+		this->InvTM	= Other.InvTM;
+
+		return *this;
+	}
+
+	HOST void Set(const Matrix44& M)
+	{
+		this->TM	= M;
+		this->InvTM	= Matrix44::Inverse(this->TM);
+	}
+
+	Matrix44	TM;
+	Matrix44	InvTM;
+};
 
 }

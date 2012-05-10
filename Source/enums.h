@@ -101,7 +101,7 @@ namespace Enums
 		SlicePlane
 	};
 
-	enum LocationType
+	enum AlignmentType
 	{
 		AxisAlign = 0,
 		LookAt,

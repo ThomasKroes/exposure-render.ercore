@@ -27,7 +27,7 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 
-char gFileName[] = "C://Volumes//engine.mhd";
+char gFileName[] = "C://Volumes//manix.mhd";
 
 int main(int, char *[])
 {
@@ -61,11 +61,24 @@ int main(int, char *[])
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(50, 0);
-	Opacity->AddPoint(150, 1);
-	Opacity->AddPoint(255, 1);
+	Opacity->AddPoint(32000, 0);
+	Opacity->AddPoint(65000, 1);
 
 	VolumeMapper->SetOpacity(Opacity);
+
+	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
+
+	Diffuse->AddRGBPoint(0, 1, 0, 0);
+	Diffuse->AddRGBPoint(65000, 1, 0, 0);
+
+	VolumeMapper->SetDiffuse(Diffuse);
+
+	vtkSmartPointer<vtkColorTransferFunction> Emission = vtkSmartPointer<vtkColorTransferFunction>::New();
+
+	Emission->AddRGBPoint(0, 1, 1, 1);
+	Emission->AddRGBPoint(65000, 1, 1, 1);
+
+//	VolumeMapper->SetEmission(Emission);
 
 	ErVolume->SetInputConnection(0, Reader->GetOutputPort());
 		

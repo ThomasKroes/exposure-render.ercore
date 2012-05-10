@@ -32,8 +32,8 @@ HOST_DEVICE_NI void SampleLightSurface(const Light& Light, LightSample& LS, Surf
 //		case 5:	SampleCylinder(SS, LS.SurfaceUVW, Light.Shape.OuterRadius, Light.Shape.Size[2]);	break;
 	}
 
-	SS.P = TransformPoint(Light.Shape.TM, SS.P);
-	SS.N = TransformVector(Light.Shape.TM, SS.N);
+	SS.P = TransformPoint(Light.Shape.Transform.TM, SS.P);
+	SS.N = TransformVector(Light.Shape.Transform.TM, SS.N);
 }
 
 HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSample& SS, ScatterEvent& SE, Vec3f& Wi, ColorXYZf& Le)
@@ -47,13 +47,13 @@ HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSamp
 	if (Light.Shape.OneSided && Dot(SE.P - SS.P, SS.N) < 0.0f)
 		Le = ColorXYZf::Black();
 
-	if (Light.Unit == 1)
+	if (Light.EmissionUnit == Enums::Lux)
 		Le /= Light.Shape.Area;
 }
 
 HOST_DEVICE_NI void IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
 {
-	Ray Rt = TransformRay(Light.Shape.InvTM, R);
+	Ray Rt = TransformRay(Light.Shape.Transform.InvTM, R);
 
 	Intersection Int;
 
@@ -70,14 +70,14 @@ HOST_DEVICE_NI void IntersectLight(const Light& Light, const Ray& R, ScatterEven
 	if (Int.Valid)
 	{
 		SE.Valid	= true;
-		SE.P 		= TransformPoint(Light.Shape.TM, Int.P);
-		SE.N 		= TransformVector(Light.Shape.TM, Int.N);
+		SE.P 		= TransformPoint(Light.Shape.Transform.TM, Int.P);
+		SE.N 		= TransformVector(Light.Shape.Transform.TM, Int.N);
 		SE.T 		= Length(SE.P - R.O);
 		SE.Wo		= -R.D;
 		SE.UV		= Int.UV;
 		SE.Le		= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
 		
-		if (Light.Unit == 1)
+		if (Light.EmissionUnit == Enums::Lux)
 			SE.Le /= Light.Shape.Area;
 	}
 }
@@ -109,7 +109,7 @@ HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool Respect
 
 HOST_DEVICE_NI bool IntersectsLight(const Light& Light, const Ray& R)
 {
-	return IntersectsShape(Light.Shape, TransformRay(Light.Shape.InvTM, R));
+	return IntersectsShape(Light.Shape, TransformRay(Light.Shape.Transform.InvTM, R));
 }
 
 HOST_DEVICE_NI bool IntersectsLight(const Ray& R)

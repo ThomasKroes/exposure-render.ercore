@@ -13,51 +13,53 @@
 
 #pragma once
 
-#include "erbindable.h"
-#include "shape.h"
+#include "vtkErDll.h"
+#include "vtkErBindable.h"
 
-namespace ExposureRender
-{
+#include "vtkDataObject.h"
 
-class EXPOSURE_RENDER_DLL ErLight : public ErBindable
+using namespace ExposureRender;
+
+class vtkErLocatable
 {
 public:
-	HOST ErLight() :
-		ErBindable(),
-		Visible(),
-		TextureID(-1),
-		Multiplier(0.0f),
-		EmissionUnit(Enums::Power)
-	{
-	}
+	vtkGetMacro(LocationType, Enums::LocationType);
+	vtkSetMacro(LocationType, Enums::LocationType);
 
-	HOST virtual ~ErLight()
-	{
-	}
+	vtkGetMacro(AlignTo, Enums::AlignTo);
+	vtkSetMacro(AlignTo, Enums::AlignTo);
 
-	HOST ErLight(const ErLight& Other)
-	{
-		*this = Other;
-	}
-	
-	HOST ErLight& operator = (const ErLight& Other)
-	{
-		ErBindable::operator=(Other);
+	vtkGetMacro(AutoFlip, bool);
+	vtkSetMacro(AutoFlip, bool);
 
-		this->Visible		= Other.Visible;
-		this->Shape			= Other.Shape;
-		this->TextureID		= Other.TextureID;
-		this->Multiplier	= Other.Multiplier;
-		this->EmissionUnit	= Other.EmissionUnit;
+	vtkGetVector3Macro(Position, float);
+	vtkSetVector3Macro(Position, float);
 
-		return *this;
-	}
+	vtkGetVector3Macro(Target, float);
+	vtkSetVector3Macro(Target, float);
 
-	bool					Visible;
-	Shape					Shape;
-	int						TextureID;
-	float					Multiplier;
-	Enums::EmissionUnit		EmissionUnit;
+	vtkGetVector3Macro(Up, float);
+	vtkSetVector3Macro(Up, float);
+
+	vtkGetMacro(Elevation, float);
+	vtkSetMacro(Elevation, float);
+
+	vtkGetMacro(Azimuth, float);
+	vtkSetMacro(Azimuth, float);
+
+	vtkGetMacro(Offset, float);
+	vtkSetMacro(Offset, float);
+
+protected:
+
+private:
+	Enums::LocationType		LocationType;
+	Enums::Axis				AlignTo;
+	bool					AutoFlip;
+	float					Position[3];
+	float					Target[3];
+	float					Up[3];
+	float					Elevation;
+	float					Azimuth;
+	float					Offset;
 };
-
-}
