@@ -50,6 +50,8 @@ public:
 		this->Multiplier	= Other.Multiplier;
 		this->EmissionUnit	= Other.EmissionUnit;
 
+		this->Shape.Update();
+
 		return *this;
 	}
 

@@ -90,7 +90,7 @@ SET(General
 	plf.h
 	pcf.h
 	singlescattering.h
-	align.h
+	alignment.h
 	transform.h
 )
 

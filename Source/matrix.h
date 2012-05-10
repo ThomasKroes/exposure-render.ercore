@@ -97,7 +97,7 @@ public:
 
 			for (size_t j = i + 1; j < 4; ++j)
 			{
-				if (abs(tmp.NN[j][i]) > abs(tmp.NN[i][i]))
+				if (fabs(tmp.NN[j][i]) > fabs(tmp.NN[i][i]))
 					swap = j;
 			}
 
@@ -117,6 +117,7 @@ public:
 
 			if (tmp.NN[i][i] == 0)
 			{
+				printf("Singular matrix!\n");
 				return false;
 			}
 

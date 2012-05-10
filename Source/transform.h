@@ -28,7 +28,7 @@ public:
 	}
 
 	HOST Transform(const Matrix44& M) :
-		TM(),
+		TM(M),
 		InvTM(Matrix44::Inverse(M))
 	{
 	}
