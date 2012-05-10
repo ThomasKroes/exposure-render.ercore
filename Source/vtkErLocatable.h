@@ -20,14 +20,14 @@
 
 using namespace ExposureRender;
 
-class vtkErLocatable
+class vtkErLocatable : public vtkAlgorithm
 {
 public:
-	vtkGetMacro(LocationType, Enums::LocationType);
-	vtkSetMacro(LocationType, Enums::LocationType);
+	vtkGetMacro(AlignmentType, Enums::AlignmentType);
+	vtkSetMacro(AlignmentType, Enums::AlignmentType);
 
-	vtkGetMacro(AlignTo, Enums::AlignTo);
-	vtkSetMacro(AlignTo, Enums::AlignTo);
+	vtkGetMacro(Axis, Enums::Axis);
+	vtkSetMacro(Axis, Enums::Axis);
 
 	vtkGetMacro(AutoFlip, bool);
 	vtkSetMacro(AutoFlip, bool);
@@ -53,8 +53,8 @@ public:
 protected:
 
 private:
-	Enums::LocationType		LocationType;
-	Enums::Axis				AlignTo;
+	Enums::AlignmentType	AlignmentType;
+	Enums::Axis				Axis;
 	bool					AutoFlip;
 	float					Position[3];
 	float					Target[3];

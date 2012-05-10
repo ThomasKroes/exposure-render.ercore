@@ -47,9 +47,16 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkErLight> ErLight = vtkSmartPointer<vtkErLight>::New();
 	
+	ErLight->SetAlignmentType(ExposureRender::Enums::Spherical);
+	ErLight->SetElevation(45.0f);
+	ErLight->SetAzimuth(45.0f);
+	ErLight->SetOffset(2.0f);
+
 	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
+
+	ErTexture->SetProceduralType(Enums::Checker);
 
 	vtkSmartPointer<vtkErTracer> VolumeMapper = vtkSmartPointer<vtkErTracer>::New();
 	
@@ -57,7 +64,7 @@ int main(int, char *[])
 
 	Camera->SetClippingRange(0, 100000);
 	Camera->SetExposure(0.01);
-
+	
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
@@ -87,6 +94,7 @@ int main(int, char *[])
 //	vtkOutpu
 	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
 	VolumeMapper->SetInputConnection(1, ErLight->GetOutputPort());
+	VolumeMapper->SetDensityScale(100.0f);
 
 	VolumeMapper->Update();
 

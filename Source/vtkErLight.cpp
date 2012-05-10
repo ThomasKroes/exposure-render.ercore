@@ -98,15 +98,24 @@ int vtkErLight::RequestData(vtkInformation* Request, vtkInformationVector** Inpu
 
 	if (TextureDataIn && LightDataOut)
 	{
-		LightDataOut->Bindable.Visible				= this->Visible;
-		LightDataOut->Bindable.Shape.OneSided		= this->OneSided;
-		LightDataOut->Bindable.Shape.Type			= this->ShapeType;
-		LightDataOut->Bindable.Shape.Size			= this->Size;
-		LightDataOut->Bindable.Shape.InnerRadius	= this->InnerRadius;
-		LightDataOut->Bindable.Shape.OuterRadius	= this->OuterRadius;
-		LightDataOut->Bindable.Multiplier			= this->Multiplier;
-		LightDataOut->Bindable.EmissionUnit			= this->EmissionUnit;
-		LightDataOut->Bindable.TextureID			= TextureDataIn->Bindable.ID;
+		LightDataOut->Bindable.Visible						= this->GetVisible();
+		LightDataOut->Bindable.Shape.OneSided				= this->GetOneSided();
+		LightDataOut->Bindable.Shape.Type					= this->GetShapeType();
+		LightDataOut->Bindable.Shape.Size					= this->GetSize();
+		LightDataOut->Bindable.Shape.InnerRadius			= this->GetInnerRadius();
+		LightDataOut->Bindable.Shape.OuterRadius			= this->GetOuterRadius();
+		LightDataOut->Bindable.Shape.Alignment.Type			= this->GetAlignmentType();
+		LightDataOut->Bindable.Shape.Alignment.Axis			= this->GetAxis();
+		LightDataOut->Bindable.Shape.Alignment.AutoFlip		= this->GetAutoFlip();
+		LightDataOut->Bindable.Shape.Alignment.Position		= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
+		LightDataOut->Bindable.Shape.Alignment.Target		= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
+		LightDataOut->Bindable.Shape.Alignment.Up			= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
+		LightDataOut->Bindable.Shape.Alignment.Elevation	= this->GetElevation();
+		LightDataOut->Bindable.Shape.Alignment.Azimuth		= this->GetAzimuth();
+		LightDataOut->Bindable.Shape.Alignment.Offset		= this->GetOffset();
+		LightDataOut->Bindable.Multiplier					= this->GetMultiplier();
+		LightDataOut->Bindable.EmissionUnit					= this->GetEmissionUnit();
+		LightDataOut->Bindable.TextureID					= TextureDataIn->Bindable.ID;
 
 		LightDataOut->Bind();
 	}

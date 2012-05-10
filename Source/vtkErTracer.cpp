@@ -68,14 +68,14 @@ vtkErTracer::vtkErTracer(void)
 		Emission->AddRGBPoint(Max, 0, 0.5, 0);
 	}
 
-	this->SetStepFactorPrimary(1.0f);
-	this->SetStepFactorShadow(1.0f);
+	this->SetStepFactorPrimary(3.0f);
+	this->SetStepFactorShadow(3.0f);
 	this->SetShadows(true);
 	this->SetMaxShadowDistance(2.0f);
-	this->SetShadingType(1);
+	this->SetShadingMode(Enums::PhaseFunctionOnly);
 	this->SetDensityScale(10.0f);
 	this->SetOpacityModulated(true);
-	this->SetGradientComputation(1);
+	this->SetGradientMode(Enums::CentralDifferences);
 	this->SetGradientThreshold(0.5f);
 	this->SetGradientFactor(1.0f);
 
@@ -170,17 +170,17 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
-	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= 5;//this->StepFactorPrimary;
-	this->Tracer.RenderSettings.Traversal.StepFactorShadow		= 5;//this->StepFactorShadow;
-	this->Tracer.RenderSettings.Traversal.Shadows				= this->Shadows;
-	this->Tracer.RenderSettings.Traversal.MaxShadowDistance		= this->MaxShadowDistance;
+	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= this->GetStepFactorPrimary();
+	this->Tracer.RenderSettings.Traversal.StepFactorShadow		= this->GetStepFactorShadow();
+	this->Tracer.RenderSettings.Traversal.Shadows				= this->GetShadows();
+	this->Tracer.RenderSettings.Traversal.MaxShadowDistance		= this->GetMaxShadowDistance();
 
-	this->Tracer.RenderSettings.Shading.Type				= (ExposureRender::Enums::ShadingMode)this->ShadingType;
-	this->Tracer.RenderSettings.Shading.DensityScale		= this->DensityScale;
-	this->Tracer.RenderSettings.Shading.OpacityModulated	= this->OpacityModulated;
-	this->Tracer.RenderSettings.Shading.GradientComputation	= this->GradientComputation;
-	this->Tracer.RenderSettings.Shading.GradientThreshold	= this->GradientThreshold;
-	this->Tracer.RenderSettings.Shading.GradientFactor		= this->GradientFactor;
+	this->Tracer.RenderSettings.Shading.Type				= this->GetShadingMode();
+	this->Tracer.RenderSettings.Shading.DensityScale		= this->GetDensityScale();
+	this->Tracer.RenderSettings.Shading.OpacityModulated	= this->GetOpacityModulated();
+	this->Tracer.RenderSettings.Shading.GradientMode		= this->GetGradientMode();
+	this->Tracer.RenderSettings.Shading.GradientThreshold	= this->GetGradientThreshold();
+	this->Tracer.RenderSettings.Shading.GradientFactor		= this->GetGradientFactor();
 
 	vtkCamera* Camera = Renderer->GetActiveCamera();
 	

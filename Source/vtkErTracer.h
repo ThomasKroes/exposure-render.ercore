@@ -21,6 +21,8 @@
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 
+using namespace ExposureRender;
+
 class vtkErTracerData : public vtkDataObject, public vtkErBindableTracer
 {
 public:
@@ -69,8 +71,8 @@ public:
 	vtkGetMacro(MaxShadowDistance, float);
 	vtkSetMacro(MaxShadowDistance, float);
 
-	vtkGetMacro(ShadingType, int);
-	vtkSetMacro(ShadingType, int);
+	vtkGetMacro(ShadingMode, Enums::ShadingMode);
+	vtkSetMacro(ShadingMode, Enums::ShadingMode);
 
 	vtkGetMacro(DensityScale, float);
 	vtkSetMacro(DensityScale, float);
@@ -78,8 +80,8 @@ public:
 	vtkGetMacro(OpacityModulated, bool);
 	vtkSetMacro(OpacityModulated, bool);
 
-	vtkGetMacro(GradientComputation, int);
-	vtkSetMacro(GradientComputation, int);
+	vtkGetMacro(GradientMode, Enums::GradientMode);
+	vtkSetMacro(GradientMode, Enums::GradientMode);
 
 	vtkGetMacro(GradientThreshold, float);
 	vtkSetMacro(GradientThreshold, float);
@@ -110,10 +112,10 @@ private:
 	float										StepFactorShadow;
 	bool										Shadows;
 	float										MaxShadowDistance;
-	int											ShadingType;
+	Enums::ShadingMode							ShadingMode;
 	float										DensityScale;
 	bool										OpacityModulated;
-	int											GradientComputation;
+	Enums::GradientMode							GradientMode;
 	float										GradientThreshold;
 	float										GradientFactor;
 	ExposureRender::ErTracer					Tracer;

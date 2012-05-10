@@ -32,7 +32,7 @@ private:
     void operator = (const vtkErLightData& Other);	// Not implemented.
 };
 
-class VTK_ER_EXPORT vtkErLight : public vtkAlgorithm, public vtkErLocatable
+class VTK_ER_EXPORT vtkErLight : public vtkErLocatable
 {
 public:
 	static vtkErLight* New();

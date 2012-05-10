@@ -66,7 +66,7 @@ public:
 			this->Type					= Enums::BrdfOnly;
 			this->DensityScale			= 100.0f;
 			this->OpacityModulated		= true;
-			this->GradientComputation	= 1;
+			this->GradientMode			= Enums::CentralDifferences;
 			this->GradientThreshold		= 0.5f;
 			this->GradientFactor		= 0.5f;
 		}
@@ -85,7 +85,7 @@ public:
 			this->Type					= Other.Type;
 			this->DensityScale			= Other.DensityScale;
 			this->OpacityModulated		= Other.OpacityModulated;
-			this->GradientComputation	= Other.GradientComputation;
+			this->GradientMode			= Other.GradientMode;
 			this->GradientThreshold		= Other.GradientThreshold;
 			this->GradientFactor		= Other.GradientFactor;
 
@@ -95,7 +95,7 @@ public:
 		Enums::ShadingMode		Type;
 		float					DensityScale;
 		bool					OpacityModulated;
-		int						GradientComputation;
+		Enums::GradientMode		GradientMode;
 		float					GradientThreshold;
 		float					GradientFactor;
 	};

@@ -70,7 +70,7 @@ HOST_DEVICE_NI Vec3f GradientFiltered(const int& VolumeID, const Vec3f& P)
 
 HOST_DEVICE_NI Vec3f Gradient(const int& VolumeID, const Vec3f& P)
 {
-	switch (gpTracer->RenderSettings.Shading.GradientComputation)
+	switch (gpTracer->RenderSettings.Shading.GradientMode)
 	{
 		case Enums::ForwardDifferences:	return GradientFD(VolumeID, P);
 		case Enums::CentralDifferences:	return GradientCD(VolumeID, P);
