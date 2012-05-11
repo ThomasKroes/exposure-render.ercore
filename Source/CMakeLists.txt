@@ -186,6 +186,10 @@ SET(General
 SOURCE_GROUP("General" FILES ${General})
 
 SET(WrapPython
+	vtkErShape.h
+	vtkErShape.cpp
+	vtkErAlignment.h
+	vtkErAlignment.cpp
 	vtkErLight.h
 	vtkErLight.cpp
 	vtkErObject.h

@@ -17,6 +17,8 @@
 #include "vtkErBindable.h"
 
 #include <vtkDataObject.h>
+#include <vtkAlgorithm.h>
+#include <vtkSmartPointer.h>
 #include <vtkColorTransferFunction.h>
 
 class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture

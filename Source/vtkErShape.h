@@ -13,53 +13,42 @@
 
 #pragma once
 
-#include "vtkErDll.h"
-#include "vtkErBindable.h"
-
-#include "vtkDataObject.h"
+#include "vtkErAlignment.h"
 
 using namespace ExposureRender;
 
-class vtkErLocatable : public vtkAlgorithm
+class VTK_ER_EXPORT vtkErShape : public vtkErAlignment
 {
 public:
-	vtkGetMacro(AlignmentType, Enums::AlignmentType);
-	vtkSetMacro(AlignmentType, Enums::AlignmentType);
+	static vtkErShape* New();
+	vtkTypeRevisionMacro(vtkErShape, vtkErAlignment);
 
-	vtkGetMacro(Axis, Enums::Axis);
-	vtkSetMacro(Axis, Enums::Axis);
+	vtkGetMacro(OneSided, bool);
+	vtkSetMacro(OneSided, bool);
 
-	vtkGetMacro(AutoFlip, bool);
-	vtkSetMacro(AutoFlip, bool);
+	vtkGetMacro(ShapeType, Enums::ShapeType);
+	vtkSetMacro(ShapeType, Enums::ShapeType);
 
-	vtkGetVector3Macro(Position, float);
-	vtkSetVector3Macro(Position, float);
+	vtkGetVector3Macro(Size, float);
+	vtkSetVector3Macro(Size, float);
+	
+	vtkGetMacro(InnerRadius, float);
+	vtkSetMacro(InnerRadius, float);
 
-	vtkGetVector3Macro(Target, float);
-	vtkSetVector3Macro(Target, float);
-
-	vtkGetVector3Macro(Up, float);
-	vtkSetVector3Macro(Up, float);
-
-	vtkGetMacro(Elevation, float);
-	vtkSetMacro(Elevation, float);
-
-	vtkGetMacro(Azimuth, float);
-	vtkSetMacro(Azimuth, float);
-
-	vtkGetMacro(Offset, float);
-	vtkSetMacro(Offset, float);
+	vtkGetMacro(OuterRadius, float);
+	vtkSetMacro(OuterRadius, float);
 
 protected:
+	vtkErShape() {};
+	virtual ~vtkErShape() {};
 
 private:
-	Enums::AlignmentType	AlignmentType;
-	Enums::Axis				Axis;
-	bool					AutoFlip;
-	float					Position[3];
-	float					Target[3];
-	float					Up[3];
-	float					Elevation;
-	float					Azimuth;
-	float					Offset;
+	vtkErShape(const vtkErShape& Other);		// Not implemented
+    void operator = (const vtkErShape& Other);  // Not implemented
+
+	bool				OneSided;
+	Enums::ShapeType	ShapeType;
+	float				Size[3];
+	float				InnerRadius;
+	float				OuterRadius;
 };

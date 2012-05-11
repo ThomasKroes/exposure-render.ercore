@@ -14,5 +14,7 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErTexture.h"
+#include "vtkErAlignment.h"
 
+vtkStandardNewMacro(vtkErAlignment);
+vtkCxxRevisionMacro(vtkErAlignment, "$Revision: 1.0 $");

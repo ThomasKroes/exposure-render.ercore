@@ -16,13 +16,16 @@
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
 
-#include "vtkDataObject.h"
+#include <vtkAlgorithm.h>
 
 using namespace ExposureRender;
 
-class vtkErLocatable : public vtkAlgorithm
+class VTK_ER_EXPORT vtkErAlignment : public vtkAlgorithm
 {
 public:
+	static vtkErAlignment* New();
+	vtkTypeRevisionMacro(vtkErAlignment, vtkAlgorithm);
+
 	vtkGetMacro(AlignmentType, Enums::AlignmentType);
 	vtkSetMacro(AlignmentType, Enums::AlignmentType);
 
@@ -51,8 +54,13 @@ public:
 	vtkSetMacro(Offset, float);
 
 protected:
+	vtkErAlignment() {};
+	virtual ~vtkErAlignment() {};
 
 private:
+	vtkErAlignment(const vtkErAlignment& Other);	// Not implemented
+    void operator = (const vtkErAlignment& Other);	// Not implemented
+
 	Enums::AlignmentType	AlignmentType;
 	Enums::Axis				Axis;
 	bool					AutoFlip;

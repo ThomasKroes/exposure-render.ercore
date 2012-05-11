@@ -18,6 +18,7 @@
 
 #include <vtkDataObject.h>
 #include <vtkVolumeMapper.h>
+#include <vtkSmartPointer.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 

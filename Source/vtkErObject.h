@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include "vtkErDll.h"
-#include "vtkErBindable.h"
+#include "vtkErShape.h"
+
+#include <vtkDataObject.h>
 
 class vtkErObjectData : public vtkDataObject, public vtkErBindableObject
 {
