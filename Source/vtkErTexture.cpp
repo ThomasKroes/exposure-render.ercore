@@ -101,15 +101,15 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 
 	if (TextureDataOut)
 	{
-		TextureDataOut->Bindable.Type						= this->TextureType;
-		TextureDataOut->Bindable.OutputLevel				= this->OutputLevel;
+		TextureDataOut->Bindable.Type			= this->GetTextureType();
+		TextureDataOut->Bindable.OutputLevel	= this->GetOutputLevel();
 		
 		ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
 
-		Procedural.Type				= this->ProceduralType;
-		Procedural.UniformColor		= this->UniformColor;
-		Procedural.CheckerColor1	= this->CheckerColor1;
-		Procedural.CheckerColor2	= this->CheckerColor2;
+		Procedural.Type				= this->GetProceduralType();
+		Procedural.UniformColor		= ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]));
+		Procedural.CheckerColor1	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor1()[0], this->GetCheckerColor1()[1], this->GetCheckerColor1()[2]));
+		Procedural.CheckerColor2	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor2()[0], this->GetCheckerColor2()[1], this->GetCheckerColor2()[2]));
 		
 		Procedural.Gradient.Reset();
 
@@ -120,9 +120,9 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 			Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 		}
 
-		TextureDataOut->Bindable.Offset		= this->Offset;
-		TextureDataOut->Bindable.Repeat		= this->Repeat;
-		TextureDataOut->Bindable.Flip		= Flip;
+		TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
+		TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
+		TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
 		TextureDataOut->Bindable.BitmapID	= -1;
 
 		TextureDataOut->Bind();

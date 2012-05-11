@@ -29,11 +29,6 @@ vtkErLight::vtkErLight(void)
 	this->SetNumberOfOutputPorts(1);
 
 	this->SetVisible(true);
-	this->SetOneSided(false);
-	this->SetShapeType(Enums::Plane);
-	this->SetSize(1.0f, 1.0f, 1.0f);
-	this->SetInnerRadius(0.5f);
-	this->SetOuterRadius(1.0f);
 	this->SetMultiplier(100000.0f);
 	this->SetEmissionUnit(Enums::Lux);
 	this->TextureID = -1;

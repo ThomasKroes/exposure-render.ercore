@@ -54,7 +54,7 @@ public:
 	vtkSetMacro(Offset, float);
 
 protected:
-	vtkErAlignment() {};
+	vtkErAlignment();
 	virtual ~vtkErAlignment() {};
 
 private:

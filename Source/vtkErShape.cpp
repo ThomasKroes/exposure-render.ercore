@@ -18,3 +18,12 @@
 
 vtkStandardNewMacro(vtkErShape);
 vtkCxxRevisionMacro(vtkErShape, "$Revision: 1.0 $");
+
+vtkErShape::vtkErShape()
+{
+	this->SetOneSided(true);
+	this->SetShapeType(Enums::Plane);
+	this->SetSize(1.0f, 1.0f, 1.0f);
+	this->SetInnerRadius(0.5f);
+	this->SetOuterRadius(1.0f);
+}

@@ -39,7 +39,7 @@ public:
 	vtkSetMacro(OuterRadius, float);
 
 protected:
-	vtkErShape() {};
+	vtkErShape();
 	virtual ~vtkErShape() {};
 
 private:

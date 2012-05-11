@@ -27,8 +27,9 @@
 #include "vtkErTexture.h"
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
+#include "vtkErObject.h"
 
-char gFileName[] = "C://Volumes//manix.mhd";
+char gFileName[] = "C://Volumes//engine.mhd";
 
 int main(int, char *[])
 {
@@ -47,20 +48,38 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
 	vtkSmartPointer<vtkErLight> ErLight = vtkSmartPointer<vtkErLight>::New();
+	vtkSmartPointer<vtkErLight> ErLight2 = vtkSmartPointer<vtkErLight>::New();
 	
 	ErLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	ErLight->SetElevation(45.0f);
 	ErLight->SetAzimuth(135.0f);
 	ErLight->SetOffset(1.0f);
-	ErLight->SetMultiplier(2.0f);
+	ErLight->SetMultiplier(20.0f);
 	ErLight->SetSize(0.1f, 0.1f, 0.1f);
+
+	ErLight2->SetMultiplier(20.0f);
+	ErLight2->SetOffset(2.0f);
+
+	vtkSmartPointer<vtkErObject> ErObject = vtkSmartPointer<vtkErObject>::New();
+
+	ErObject->SetAlignmentType(Enums::AxisAlign);
+	ErObject->SetAxis(Enums::Y);
+	ErObject->SetPosition(0.0f, -0.5f, 0.0f);
+	ErObject->SetSize(10.0f, 10.0f, 10.0f);
 
 	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
+	ErLight2->SetInputConnection(ErTexture->GetOutputPort());
+	
+	ErObject->SetInputConnection(0, ErTexture->GetOutputPort());
+	ErObject->SetInputConnection(1, ErTexture->GetOutputPort());
+	ErObject->SetInputConnection(2, ErTexture->GetOutputPort());
 
-//	ErTexture->SetProceduralType(Enums::Checker);
+	ErTexture->SetProceduralType(Enums::Checker);
 	ErTexture->SetRepeat(2.0f, 2.0f);
+	ErTexture->SetCheckerColor1(0.8f, 0.8f, 0.8f);
+	ErTexture->SetCheckerColor2(0.3f, 0.3f, 0.3f);
 
 	vtkSmartPointer<vtkErTracer> VolumeMapper = vtkSmartPointer<vtkErTracer>::New();
 	
@@ -72,15 +91,16 @@ int main(int, char *[])
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(32750, 0);
-	Opacity->AddPoint(65000, 1);
+	Opacity->AddPoint(100, 0);
+	Opacity->AddPoint(1000, 1);
 
 	VolumeMapper->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 
 	Diffuse->AddRGBPoint(0, 1, 1, 1);
-	Diffuse->AddRGBPoint(65000, 1, 1, 1);
+	Diffuse->AddRGBPoint(32750, 1, 0, 0);
+	Diffuse->AddRGBPoint(35750, 0, 1, 0);
 
 	VolumeMapper->SetDiffuse(Diffuse);
 
@@ -97,10 +117,11 @@ int main(int, char *[])
 
 //	vtkOutpu
 	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
-	VolumeMapper->SetInputConnection(1, ErLight->GetOutputPort());
-	VolumeMapper->SetDensityScale(100.0f);
-	VolumeMapper->SetStepFactorPrimary(10);
-	VolumeMapper->SetStepFactorShadow(10);
+	VolumeMapper->AddInputConnection(1, ErLight->GetOutputPort());
+	VolumeMapper->AddInputConnection(1, ErLight2->GetOutputPort());
+	VolumeMapper->SetDensityScale(1000.0f);
+	VolumeMapper->SetStepFactorPrimary(5);
+	VolumeMapper->SetStepFactorShadow(5);
 
 	VolumeMapper->Update();
 
@@ -109,6 +130,8 @@ int main(int, char *[])
 	
 
 	Volume->SetMapper(VolumeMapper);
+
+	VolumeMapper->SetInputConnection(2, ErObject->GetOutputPort());
 
 	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();

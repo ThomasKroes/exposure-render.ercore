@@ -51,6 +51,8 @@ public:
 		this->GlossinessTextureID	= Other.GlossinessTextureID;
 		this->Ior					= Other.Ior;
 
+		this->Shape.Update();
+
 		return *this;
 	}
 

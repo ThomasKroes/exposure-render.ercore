@@ -17,6 +17,8 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErVolume.h"
+#include "vtkErLight.h"
+#include "vtkErObject.h"
 
 #include "vtkgl.h"
 
@@ -91,7 +93,7 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 {
 	switch (Port)
 	{
-		case 0:
+		case VolumePort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErVolumeData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
@@ -99,7 +101,7 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 			return 1;
 		}
 
-		case 1:
+		case LightsPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErLightData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
@@ -107,7 +109,7 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 			return 1;
 		}
 
-		case 2:
+		case ObjectsPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErObjectData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
@@ -115,7 +117,7 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 			return 1;
 		}
 
-		case 3:
+		case ClippingObjectsPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErClippingObjectData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
@@ -167,7 +169,7 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	{
 		double NodeValue[6];
 		this->Emission->GetNodeValue(i, NodeValue);
-		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(0.0f/*NodeValue[1], NodeValue[2], NodeValue[3]*/)));
 	}
 
 	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= this->GetStepFactorPrimary();
@@ -208,10 +210,27 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	vtkErVolumeData* VolumeData = dynamic_cast<vtkErVolumeData*>(this->GetInputDataObject(0, 0));
 
 	this->Tracer.VolumeID = VolumeData->Bindable.ID;
-	this->Tracer.LightIDs.Count = 1;
-	this->Tracer.LightIDs[0] = 0;
 
+	const int NoLights = this->GetNumberOfInputConnections(LightsPort);
+
+	this->Tracer.LightIDs.Count = NoLights;
 	
+	for (int i = 0; i < NoLights; i++)
+	{
+		vtkErLightData* Light = vtkErLightData::SafeDownCast(this->GetInputDataObject(LightsPort, i));
+		this->Tracer.LightIDs[i] = Light->Bindable.ID;
+	}
+
+	const int NoObjects = this->GetNumberOfInputConnections(ObjectsPort);
+
+	this->Tracer.ObjectIDs.Count = NoObjects;
+	
+	for (int i = 0; i < NoObjects; i++)
+	{
+		vtkErObjectData* Object = vtkErObjectData::SafeDownCast(this->GetInputDataObject(ObjectsPort, i));
+		this->Tracer.ObjectIDs[i] = Object->Bindable.ID;
+	}
+
 	ExposureRender::BindTracer(this->Tracer);
 
 	return true;
@@ -236,6 +255,9 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	ExposureRender::RenderEstimate(this->Tracer.ID);
 	ExposureRender::GetEstimate(this->Tracer.ID, this->ImageBuffer);
+
+	glPushAttrib(GL_LIGHTING);
+	glDisable(GL_LIGHTING);
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -272,8 +294,7 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
     double coordinatesD[4];
     Renderer->GetWorldPoint(coordinatesD);
 	
-	glPushAttrib(GL_LIGHTING);
-	glDisable(GL_LIGHTING);
+	
 
 	glBegin(GL_QUADS);
 		glTexCoord2i(0, 0);

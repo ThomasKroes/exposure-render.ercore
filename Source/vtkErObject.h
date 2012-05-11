@@ -32,11 +32,11 @@ private:
     void operator = (const vtkErObjectData& Other);		// Not implemented.
 };
 
-class VTK_ER_EXPORT vtkErObject : public vtkAlgorithm
+class VTK_ER_EXPORT vtkErObject : public vtkErShape
 {
 public:
 	static vtkErObject* New();
-	vtkTypeRevisionMacro(vtkErObject, vtkAlgorithm);
+	vtkTypeRevisionMacro(vtkErObject, vtkErShape);
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 

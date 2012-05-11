@@ -18,3 +18,16 @@
 
 vtkStandardNewMacro(vtkErAlignment);
 vtkCxxRevisionMacro(vtkErAlignment, "$Revision: 1.0 $");
+
+vtkErAlignment::vtkErAlignment()
+{
+	this->SetAlignmentType(Enums::Spherical);
+	this->SetAxis(Enums::X);
+	this->SetAutoFlip(true);
+	this->SetPosition(1.0f, 1.0f, 1.0f);
+	this->SetTarget(0.0f, 0.0f, 0.0f);
+	this->SetUp(0.0f, 1.0f, 0.0f);
+	this->SetElevation(45.0f);
+	this->SetAzimuth(180.0f);
+	this->SetOffset(1.0f);
+}

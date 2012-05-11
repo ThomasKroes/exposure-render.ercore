@@ -45,6 +45,14 @@ public:
 	static vtkErTracer* New();
 	vtkTypeRevisionMacro(vtkErTracer, vtkAbstractVolumeMapper);
 
+	enum Ports
+	{
+		VolumePort = 0,
+		LightsPort,
+		ObjectsPort,
+		ClippingObjectsPort
+	};
+
 	vtkPiecewiseFunction* GetOpacity(void) { return this->Opacity.GetPointer(); };
 	void SetOpacity(vtkPiecewiseFunction* Opacity) { this->Opacity = Opacity; };
 	
