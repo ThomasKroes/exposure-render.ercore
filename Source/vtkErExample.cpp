@@ -52,7 +52,7 @@ int main(int, char *[])
 	ErLight->SetElevation(45.0f);
 	ErLight->SetAzimuth(135.0f);
 	ErLight->SetOffset(1.0f);
-	ErLight->SetMultiplier(200.0f);
+	ErLight->SetMultiplier(2.0f);
 	ErLight->SetSize(0.1f, 0.1f, 0.1f);
 
 	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
