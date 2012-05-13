@@ -51,7 +51,7 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
 	vtkSmartPointer<vtkJPEGReader> Image = vtkSmartPointer<vtkJPEGReader>::New();
-	Image->SetFileName("C://Users//Thomas Kroes//Desktop//griduv.jpg");
+	Image->SetFileName("C://Users//Thomas Kroes//Desktop//travertine-tile-flooring-2.jpg");
 	Image->Update();
 	
 	vtkSmartPointer<vtkErBitmap> ErBitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -65,9 +65,9 @@ int main(int, char *[])
 	ErLight->SetElevation(45.0f);
 	ErLight->SetAzimuth(135.0f);
 	ErLight->SetOffset(1.0f);
-	ErLight->SetMultiplier(20.0f);
+	ErLight->SetMultiplier(200.0f);
 	ErLight->SetSize(0.1f, 0.1f, 0.1f);
-	ErLight->SetEnabled(false);
+//	ErLight->SetEnabled(false);
 	
 	ErLight2->SetShapeType(Enums::Plane);
 	ErLight2->SetOuterRadius(10.0f);
@@ -91,7 +91,7 @@ int main(int, char *[])
 
 	ErTexture->SetInputConnection(0, ErBitmap->GetOutputPort());
 	ErTexture->SetTextureType(Enums::Bitmap);
-	ErTexture->SetOutputLevel(0.5f);
+	ErTexture->SetOutputLevel(0.1f);
 
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
 	ErLight2->SetInputConnection(ErTexture->GetOutputPort());
