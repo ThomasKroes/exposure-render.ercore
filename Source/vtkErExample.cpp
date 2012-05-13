@@ -21,6 +21,8 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkMetaImageReader.h>
 #include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkJPEGReader.h>
+#include <vtkImageCast.h>
 
 #include "vtkErVolume.h"
 #include "vtkErLight.h"
@@ -28,8 +30,9 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErObject.h"
+#include "vtkErBitmap.h"
 
-char gFileName[] = "C://Volumes//manix.mhd";
+char gFileName[] = "C://Volumes//engine.mhd";
 
 int main(int, char *[])
 {
@@ -47,6 +50,14 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
+	vtkSmartPointer<vtkJPEGReader> Image = vtkSmartPointer<vtkJPEGReader>::New();
+	Image->SetFileName("C://Users//Thomas Kroes//Desktop//griduv.jpg");
+	Image->Update();
+	
+	vtkSmartPointer<vtkErBitmap> ErBitmap = vtkSmartPointer<vtkErBitmap>::New();
+
+	ErBitmap->SetInputConnection(0, Image->GetOutputPort());
+
 	vtkSmartPointer<vtkErLight> ErLight = vtkSmartPointer<vtkErLight>::New();
 	vtkSmartPointer<vtkErLight> ErLight2 = vtkSmartPointer<vtkErLight>::New();
 	
@@ -56,9 +67,18 @@ int main(int, char *[])
 	ErLight->SetOffset(1.0f);
 	ErLight->SetMultiplier(20.0f);
 	ErLight->SetSize(0.1f, 0.1f, 0.1f);
-
-	ErLight2->SetMultiplier(20.0f);
+	ErLight->SetEnabled(false);
+	
+	ErLight2->SetShapeType(Enums::Plane);
+	ErLight2->SetOuterRadius(10.0f);
+	ErLight2->SetMultiplier(200.0f);
 	ErLight2->SetOffset(2.0f);
+	ErLight2->SetAlignmentType(Enums::AxisAlign);
+	ErLight2->SetAxis(Enums::X);
+	ErLight2->SetPosition(0.0f, 0.0f, 0.0f);
+	ErLight2->SetAlignmentType(Enums::AxisAlign);
+	ErLight2->SetAxis(Enums::Y);
+	ErLight2->SetPosition(0.0f, 1.5f, 0.0f);
 
 	vtkSmartPointer<vtkErObject> ErObject = vtkSmartPointer<vtkErObject>::New();
 
@@ -68,6 +88,10 @@ int main(int, char *[])
 	ErObject->SetSize(10.0f, 10.0f, 10.0f);
 
 	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
+
+	ErTexture->SetInputConnection(0, ErBitmap->GetOutputPort());
+	ErTexture->SetTextureType(Enums::Bitmap);
+	ErTexture->SetOutputLevel(0.5f);
 
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
 	ErLight2->SetInputConnection(ErTexture->GetOutputPort());

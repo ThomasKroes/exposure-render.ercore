@@ -40,6 +40,9 @@ public:
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
+	vtkGetMacro(Enabled, bool);
+	vtkSetMacro(Enabled, bool);
+
 protected:
 	vtkErObject();
 	virtual ~vtkErObject();
@@ -55,4 +58,6 @@ protected:
 private:
 	vtkErObject(const vtkErObject& Other);			// Not implemented
     void operator = (const vtkErObject& Other);		// Not implemented
+
+	bool					Enabled;
 };

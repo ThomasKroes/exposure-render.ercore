@@ -21,62 +21,32 @@
 #include <vtkSmartPointer.h>
 #include <vtkColorTransferFunction.h>
 
-class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture
+class vtkErBitmapData : public vtkDataObject, public vtkErBindableBitmap
 {
 public:
-	static vtkErTextureData* New();
-	vtkTypeRevisionMacro(vtkErTextureData, vtkDataObject);
+	static vtkErBitmapData* New();
+	vtkTypeRevisionMacro(vtkErBitmapData, vtkDataObject);
 	
 protected:
-	vtkErTextureData() {};
-	virtual ~vtkErTextureData() {};
+	vtkErBitmapData() {};
+	virtual ~vtkErBitmapData() {};
 
 private:
-	vtkErTextureData(const vtkErTextureData& Other);		// Not implemented.
-    void operator = (const vtkErTextureData& Other);		// Not implemented.
+	vtkErBitmapData(const vtkErBitmapData& Other);		// Not implemented.
+    void operator = (const vtkErBitmapData& Other);		// Not implemented.
 };
 
-class VTK_ER_EXPORT vtkErTexture : public vtkAlgorithm
+class VTK_ER_EXPORT vtkErBitmap : public vtkAlgorithm
 {
 public:
-	static vtkErTexture* New();
-	vtkTypeRevisionMacro(vtkErTexture, vtkAlgorithm);
+	static vtkErBitmap* New();
+	vtkTypeRevisionMacro(vtkErBitmap, vtkAlgorithm);
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
-	vtkGetMacro(TextureType, Enums::TextureType);
-	vtkSetMacro(TextureType, Enums::TextureType);
-
-	vtkGetMacro(OutputLevel, float);
-	vtkSetMacro(OutputLevel, float);
-
-	vtkGetMacro(ProceduralType, Enums::ProceduralType);
-	vtkSetMacro(ProceduralType, Enums::ProceduralType);
-
-	vtkGetVector3Macro(UniformColor, float);
-	vtkSetVector3Macro(UniformColor, float);
-
-	vtkGetVector3Macro(CheckerColor1, float);
-	vtkSetVector3Macro(CheckerColor1, float);
-
-	vtkGetVector3Macro(CheckerColor2, float);
-	vtkSetVector3Macro(CheckerColor2, float);
-	
-	vtkColorTransferFunction* GetGradient() { return this->Gradient; }
-	void SetGradient(vtkColorTransferFunction* Gradient) { this->Gradient->DeepCopy(Gradient); }
-
-	vtkGetVector2Macro(Offset, float);
-	vtkSetVector2Macro(Offset, float);
-
-	vtkGetVector2Macro(Repeat, float);
-	vtkSetVector2Macro(Repeat, float);
-
-	vtkGetVector2Macro(Flip, int);
-	vtkSetVector2Macro(Flip, int);
-
 protected:
-	vtkErTexture();
-	virtual ~vtkErTexture();
+	vtkErBitmap();
+	virtual ~vtkErBitmap();
 
 	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
 	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
@@ -87,18 +57,6 @@ protected:
 	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
 
 private:
-	vtkErTexture(const vtkErTexture& Other);			// Not implemented
-    void operator = (const vtkErTexture& Other);		// Not implemented
-
-	Enums::TextureType							TextureType;
-	float										OutputLevel;
-	Enums::ProceduralType						ProceduralType;
-	float										UniformColor[3];
-	float										CheckerColor1[3];
-	float										CheckerColor2[3];
-	vtkSmartPointer<vtkColorTransferFunction>	Gradient;
-	float										Offset[2];
-	float										Repeat[2];
-	int											Flip[2];
-	int											BitmapID;
+	vtkErBitmap(const vtkErBitmap& Other);			// Not implemented
+    void operator = (const vtkErBitmap& Other);		// Not implemented
 };

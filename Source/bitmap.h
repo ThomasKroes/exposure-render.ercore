@@ -65,7 +65,7 @@ public:
 		return *this;
 	}
 
-	Buffer2D<ColorRGBAuc> Pixels;
+	Buffer2D<ColorXYZf> Pixels;
 };
 
 }

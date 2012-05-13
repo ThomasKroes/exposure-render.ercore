@@ -115,6 +115,13 @@ namespace Enums
 		Y,
 		Z
 	};
+
+	enum InterpolationType
+	{
+		None = 0,
+		Linear,
+		Bicubic
+	};
 }
 
 }

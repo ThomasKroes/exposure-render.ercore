@@ -27,6 +27,8 @@ vtkErObject::vtkErObject(void)
 {
 	this->SetNumberOfInputPorts(3);
 	this->SetNumberOfOutputPorts(1);
+
+	this->SetEnabled(true);
 }
 
 vtkErObject::~vtkErObject(void)

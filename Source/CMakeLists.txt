@@ -175,6 +175,8 @@ SET(General
 	vtkErCamera.cpp
 	vtkErAlignment.h
 	vtkErAlignment.cpp
+	vtkErBitmap.h
+	vtkErBitmap.cpp
 	vtkErShape.h
 	vtkErShape.cpp
 	vtkErStable.h
@@ -202,6 +204,8 @@ SET(WrapPython
 	vtkErTexture.cpp
 	vtkErCamera.h
 	vtkErCamera.cpp
+	vtkErBitmap.h
+	vtkErBitmap.cpp
 )
 
 ADD_LIBRARY(VtkEr ${General})

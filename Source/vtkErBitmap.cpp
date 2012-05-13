@@ -14,43 +14,29 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErTexture.h"
+#include "vtkErBitmap.h"
 
-vtkStandardNewMacro(vtkErTextureData);
-vtkCxxRevisionMacro(vtkErTextureData, "$Revision: 1.0 $");
+vtkStandardNewMacro(vtkErBitmapData);
+vtkCxxRevisionMacro(vtkErBitmapData, "$Revision: 1.0 $");
 
-vtkStandardNewMacro(vtkErTexture);
-vtkCxxRevisionMacro(vtkErTexture, "$Revision: 1.0 $");
+vtkStandardNewMacro(vtkErBitmap);
+vtkCxxRevisionMacro(vtkErBitmap, "$Revision: 1.0 $");
 
-vtkErTexture::vtkErTexture(void)
+vtkErBitmap::vtkErBitmap(void)
 {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
-
-	this->SetTextureType(Enums::Procedural);
-	this->SetOutputLevel(1.0f);
-	this->SetProceduralType(Enums::Uniform);
-	this->SetUniformColor(1.0f, 1.0f, 1.0f);
-	this->SetCheckerColor1(1.0f, 1.0f, 1.0f);
-	this->SetCheckerColor2(0.0f, 0.0f, 0.0f);
-	this->Gradient = vtkColorTransferFunction::New();
-	this->Gradient->AddRGBPoint(0, 0, 0, 0);
-	this->Gradient->AddRGBPoint(1, 1, 1, 1);
-	this->SetOffset(0.0f, 0.0f);
-	this->SetRepeat(1.0f, 1.0f);
-	this->SetFlip(0, 0);
-	this->BitmapID = -1;
 }
 
-vtkErTexture::~vtkErTexture(void)
+vtkErBitmap::~vtkErBitmap(void)
 {
 }
 
-int vtkErTexture::FillInputPortInformation(int Port, vtkInformation* Info)
+int vtkErBitmap::FillInputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == 0)
 	{
-		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErBitmap");
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
 		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 	}
@@ -58,24 +44,24 @@ int vtkErTexture::FillInputPortInformation(int Port, vtkInformation* Info)
 	return 1;
 }
 
-int vtkErTexture::FillOutputPortInformation(int Port, vtkInformation* Info)
+int vtkErBitmap::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == 0)
 	{
-		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErTextureData");
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErBitmapData");
 	}
 
 	return 1;
 }
 
-int vtkErTexture::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+int vtkErBitmap::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
 {
 	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
-	vtkErTextureData* Output = vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErBitmapData* Output = vtkErBitmapData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
 	if (!Output)
 	{
-		Output = vtkErTextureData::New();
+		Output = vtkErBitmapData::New();
 		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
 		Output->FastDelete();
 		Output->SetPipelineInformation(OutInfo);
@@ -86,58 +72,73 @@ int vtkErTexture::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInfo
 	return 1;
 }
 
-int vtkErTexture::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErBitmap::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	return 1;
 }
 
-int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 	
-//	vtkImageData* ImageDataIn			= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkErTextureData* TextureDataOut	= vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkImageData* ImageDataIn		= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErBitmapData* BitmapDataOut	= vtkErBitmapData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-	if (TextureDataOut)
+	if (!ImageDataIn)
+		return 0;
+	
+	if (!BitmapDataOut)
+		return 0;
+
+	if (ImageDataIn->GetDataDimension() != 2)
+		return 0;
+	
+	ColorXYZf* Pixels = new ColorXYZf[ImageDataIn->GetNumberOfElements(0)];
+
+	const Vec2i Resolution(ImageDataIn->GetExtent()[1] + 1, ImageDataIn->GetExtent()[3] + 1);
+
+	for (int x = 0; x < Resolution[0]; x++)
 	{
-		TextureDataOut->Bindable.Type			= this->GetTextureType();
-		TextureDataOut->Bindable.OutputLevel	= this->GetOutputLevel();
-		
-		ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
-
-		Procedural.Type				= this->GetProceduralType();
-		Procedural.UniformColor		= ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]));
-		Procedural.CheckerColor1	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor1()[0], this->GetCheckerColor1()[1], this->GetCheckerColor1()[2]));
-		Procedural.CheckerColor2	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor2()[0], this->GetCheckerColor2()[1], this->GetCheckerColor2()[2]));
-		
-		Procedural.Gradient.Reset();
-
-		for (int i = 0; i < this->Gradient->GetSize(); i++)
+		for (int y = 0; y < Resolution[1]; y++)
 		{
-			double NodeValue[6];
-			this->Gradient->GetNodeValue(i, NodeValue);
-			Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+			const int PID = y * Resolution[0] + x;
+
+			ColorRGBf Color;
+
+			if (ImageDataIn->GetNumberOfScalarComponents() == 1)
+				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), 0.0f, 0.0f);
+
+			if (ImageDataIn->GetNumberOfScalarComponents() == 2)
+				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 1), 0.0f);
+
+			if (ImageDataIn->GetNumberOfScalarComponents() == 3)
+				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 1), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 2));
+
+			if (ImageDataIn->GetNumberOfScalarComponents() == 4)
+				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 1), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 2));
+
+			if (ImageDataIn->GetScalarType() == VTK_CHAR || ImageDataIn->GetScalarType() == VTK_SIGNED_CHAR || ImageDataIn->GetScalarType() == VTK_UNSIGNED_CHAR)
+				Color /= 255.0f;
+
+			Pixels[PID] = ColorXYZf::FromRGBf(Color);
 		}
-
-		TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
-		TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
-		TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
-		TextureDataOut->Bindable.BitmapID	= -1;
-
-		TextureDataOut->Bind();
 	}
+	
+	BitmapDataOut->Bindable.BindPixels(Resolution, (ColorXYZf*)Pixels);
+	BitmapDataOut->Bind();
 
+	delete[] Pixels;
 
 	return 1;
 }
 
-int vtkErTexture::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+int vtkErBitmap::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
 {
 	return 1;
 }
 
-int vtkErTexture::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErBitmap::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
 		return this->RequestDataObject(Request, InputVector, OutputVector);

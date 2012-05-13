@@ -39,6 +39,9 @@ public:
 	vtkTypeRevisionMacro(vtkErLight, vtkErShape);
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	
+	vtkGetMacro(Enabled, bool);
+	vtkSetMacro(Enabled, bool);
 
 	vtkGetMacro(Visible, bool);
 	vtkSetMacro(Visible, bool);
@@ -65,6 +68,7 @@ private:
 	vtkErLight(const vtkErLight& Other);		// Not implemented
     void operator = (const vtkErLight& Other);  // Not implemented
 
+	bool					Enabled;
 	bool					Visible;
 	float					Multiplier;
 	Enums::EmissionUnit		EmissionUnit;

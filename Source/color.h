@@ -68,6 +68,19 @@ public:
 	DATA(float, 3)
 };
 
+class EXPOSURE_RENDER_DLL ColorRGBAf
+{
+public:
+	CONSTRUCTORS(ColorRGBAf, float, 4)
+	VEC3_CONSTRUCTOR(ColorRGBAf, float)
+	ALL_OPERATORS(ColorRGBAf, float, 4)
+	MIN_MAX(ColorRGBAf, float, 4)
+	CLAMP(ColorRGBAf, float, 4)
+	IS_BLACK(3)
+
+	DATA(float, 4)
+};
+
 class EXPOSURE_RENDER_DLL ColorXYZf
 {
 public:
@@ -252,12 +265,14 @@ HOST_DEVICE ColorRGBAuc ColorRGBAuc::FromXYZf(const ColorXYZf& XYZ)
 	return Result;
 };
 
-static inline HOST_DEVICE ColorRGBf operator * (ColorRGBf& RGB, const float& F)									{ return RGB *= F; 								};
-static inline HOST_DEVICE ColorRGBf operator * (const float& F, ColorRGBf& RGB)									{ return RGB *= F; 								};
+static inline HOST_DEVICE ColorRGBf operator * (ColorRGBf& RGB, const float& F)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
+static inline HOST_DEVICE ColorRGBf operator * (const float& F, ColorRGBf& RGB)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
+
 static inline HOST_DEVICE ColorRGBf Lerp(const float& LerpC, const ColorRGBf& A, const ColorRGBf& B)			{ return LerpC * (B - A);						};
 
-static inline HOST_DEVICE ColorXYZf operator * (ColorXYZf& XYZ, const float& F)									{ return XYZ *= F; 								};
-static inline HOST_DEVICE ColorXYZf operator * (const float& F, ColorXYZf& XYZ)									{ return XYZ *= F; 								};
+static inline HOST_DEVICE ColorXYZf operator * (ColorXYZf& XYZ, const float& F)									{ return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F); };
+static inline HOST_DEVICE ColorXYZf operator * (const float& F, ColorXYZf& XYZ)									{ return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F); };
+
 static inline HOST_DEVICE ColorXYZf Lerp(const float& LerpC, const ColorXYZf& A, const ColorXYZf& B)			{ return LerpC * (B - A);						};
 
 static inline HOST_DEVICE ColorXYZAf operator * (ColorXYZAf& XYZA, const float& F)

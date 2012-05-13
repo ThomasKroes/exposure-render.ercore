@@ -15,6 +15,7 @@
 
 #include "vtkErStable.h"
 #include "vtkErTexture.h"
+#include "vtkErBitmap.h"
 
 vtkStandardNewMacro(vtkErTextureData);
 vtkCxxRevisionMacro(vtkErTextureData, "$Revision: 1.0 $");
@@ -50,7 +51,7 @@ int vtkErTexture::FillInputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == 0)
 	{
-		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErBitmap");
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErBitmapData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
 		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 	}
@@ -96,7 +97,7 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 	
-//	vtkImageData* ImageDataIn			= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+//	
 	vtkErTextureData* TextureDataOut	= vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
 	if (TextureDataOut)
@@ -123,7 +124,10 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 		TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
 		TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
 		TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
-		TextureDataOut->Bindable.BitmapID	= -1;
+		
+		vtkErBitmapData* BitmapDataIn = vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+		TextureDataOut->Bindable.BitmapID	= BitmapDataIn ? BitmapDataIn->Bindable.ID : -1;
 
 		TextureDataOut->Bind();
 	}
