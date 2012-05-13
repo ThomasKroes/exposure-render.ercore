@@ -29,7 +29,7 @@
 #include "vtkErCamera.h"
 #include "vtkErObject.h"
 
-char gFileName[] = "C://Volumes//engine.mhd";
+char gFileName[] = "C://Volumes//manix.mhd";
 
 int main(int, char *[])
 {
