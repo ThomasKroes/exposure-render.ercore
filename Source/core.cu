@@ -40,8 +40,8 @@ ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErCli
 ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
 ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
 
+#include "autofocus.cuh"
 #include "singlescattering.cuh"
-#include "filterframeestimate.cuh"
 #include "estimate.cuh"
 #include "toneMap.cuh"
 
@@ -120,10 +120,25 @@ EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*=
 
 EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 {
+	if (gTracers[TracerID].NoIterations == 0)
+	{
+		gTracers[TracerID].FrameBuffer.AccumulationXyza.Reset();
+		gTracers[TracerID].FrameBuffer.Weight.Reset();
+
+		if (gTracers[TracerID].Camera.FocusMode == Enums::AutoFocus)
+		{
+			float AutoFocusDistance = -1.0f;
+
+			ComputeAutoFocusDistance(gTracers[TracerID].Camera.FocusUV[0] * (float)gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].Camera.FocusUV[1] * (float)gTracers[TracerID].FrameBuffer.Resolution[1], AutoFocusDistance);
+
+			if (AutoFocusDistance >= 0.0f)
+				gTracers[TracerID].Camera.FocalDistance = AutoFocusDistance;
+		}
+	}
+
 	gTracers.Synchronize(TracerID);
 
 	SingleScattering(gTracers[TracerID]);
-	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 
@@ -135,16 +150,6 @@ EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, unsigned char* pData)
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 
 	Cuda::MemCopyDeviceToHost(FB.DisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.DisplayEstimate.GetNoElements());
-}
-
-EXPOSURE_RENDER_DLL void GetAutoFocusDistance(int TracerID, int FilmU, int FilmV, float& AutoFocusDistance)
-{
-//	ComputeAutoFocusDistance(FilmU, FilmV, AutoFocusDistance);
-}
-
-EXPOSURE_RENDER_DLL void GetNoIterations(int TracerID, int& NoIterations)
-{
-//	NoIterations = gTracers[TracerID].NoIterations; 
 }
 
 }

@@ -13,62 +13,9 @@
 
 #pragma once
 
-#include "macros.cuh"
-#include "montecarlo.h"
-#include "raymarching.h"
+#include "buffer.h"
 
 namespace ExposureRender
 {
-
-KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, int FilmU, int FilmV, unsigned int Seed1, unsigned int Seed2)
-{
-	CRNG RNG(&Seed1, &Seed2);
-
-	Ray Rc;
-
-	ScatterEvent SE(Enums::Volume);
-
-	float Sum = 0.0f, SumWeight = 0.0f;
-
-	for (int i = 0; i < 100; i++)
-	{
-		Vec2f ScreenPoint;
-
-		ScreenPoint[0] = gpTracer->Camera.Screen[0][0] + (gpTracer->Camera.InvScreen[0] * (float)FilmU);
-		ScreenPoint[1] = gpTracer->Camera.Screen[1][0] + (gpTracer->Camera.InvScreen[1] * (float)FilmV);
-
-		ScreenPoint += 0.01f * ConcentricSampleDisk(RNG.Get2());
-
-		Rc.O	= gpTracer->Camera.Pos;
-		Rc.D	= Normalize(gpTracer->Camera.N + (ScreenPoint[0] * gpTracer->Camera.U) - (ScreenPoint[1] * gpTracer->Camera.V));
-		Rc.MinT	= gpTracer->Camera.ClipNear;
-		Rc.MaxT	= gpTracer->Camera.ClipFar;
-
-		SampleVolume(Rc, RNG, SE);
-
-		if (SE.Valid)
-		{
-			Sum += (SE.P - Rc.O).Length();
-			SumWeight += 1.0f;
-		}
-	}
-
-	if (Sum <= 0.0f)
-		*pAutoFocusDistance = (SE.P - Rc.O).Length();
-	else
-		*pAutoFocusDistance = Sum / SumWeight;
-}
-
-void ComputeAutoFocusDistance(int FilmU, int FilmV, float& AutoFocusDistance)
-{
-	float* pAutoFocusDistance = NULL;
-
-	Cuda::Allocate(pAutoFocusDistance);
-
-	LAUNCH_CUDA_KERNEL((KrnlComputeAutoFocusDistance<<<1, 1>>>(pAutoFocusDistance, FilmU, FilmV, rand(), rand())));
-	
-	Cuda::MemCopyDeviceToHost(pAutoFocusDistance, &AutoFocusDistance);
-	Cuda::Free(pAutoFocusDistance);
-}
 
 }

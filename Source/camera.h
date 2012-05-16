@@ -21,7 +21,25 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL Camera
 {
 public:
-	HOST Camera()
+	HOST Camera() :
+		FilmSize(0, 0),
+		Pos(1.0f),
+		Target(0.0f),
+		Up(0.0f, 1.0f, 0.0f),
+		FocusMode(Enums::AutoFocus),
+		FocusUV(0.5f),
+		FocalDistance(0.0f),
+		ApertureSize(0.0f),
+		ClipNear(0.0f),
+		ClipFar(10000.0f),
+		Exposure(1.0f),
+		Gamma(2.2f),
+		FOV(35.0f),
+		N(0.0f),
+		U(0.0f),
+		V(0.0f),
+		InvExposure(1.0f),
+		InvGamma(1.0f / 2.2f)
 	{
 	}
 
@@ -40,6 +58,8 @@ public:
 		this->Pos			= Other.Pos;
 		this->Target		= Other.Target;
 		this->Up			= Other.Up;
+		this->FocusMode		= Other.FocusMode;
+		this->FocusUV		= Other.FocusUV;
 		this->FocalDistance	= Other.FocalDistance;
 		this->ApertureSize	= Other.ApertureSize;
 		this->ClipNear		= Other.ClipNear;
@@ -90,24 +110,26 @@ public:
 		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->FilmSize[1];
 	}
 
-	Vec2i	FilmSize;
-	Vec3f	Pos;
-	Vec3f	Target;
-	Vec3f	Up;
-	float	FocalDistance;
-	float	ApertureSize;
-	float	ClipNear;
-	float	ClipFar;
-	float	Exposure;
-	float	Gamma;
-	float	FOV;
-	Vec3f	N;
-	Vec3f	U;
-	Vec3f	V;
-	float	Screen[2][2];
-	float	InvScreen[2];
-	float	InvExposure;
-	float	InvGamma;
+	Vec2i				FilmSize;
+	Vec3f				Pos;
+	Vec3f				Target;
+	Vec3f				Up;
+	Enums::FocusMode	FocusMode;
+	Vec2f				FocusUV;
+	float				FocalDistance;
+	float				ApertureSize;
+	float				ClipNear;
+	float				ClipFar;
+	float				Exposure;
+	float				Gamma;
+	float				FOV;
+	Vec3f				N;
+	Vec3f				U;
+	Vec3f				V;
+	float				Screen[2][2];
+	float				InvScreen[2];
+	float				InvExposure;
+	float				InvGamma;
 };
 
 }

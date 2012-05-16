@@ -135,7 +135,7 @@ public:
 		this->Reset();
 	}
 
-	HOST void Set(const Enums::MemoryType& MemoryType, const Vec1i& Resolution, T* Data)
+	HOST void Set(const Enums::MemoryType& MemoryType, const int& Resolution, T* Data)
 	{
 		DebugLog("%s: %s, %d", __FUNCTION__, this->GetFullName(), Resolution);
 

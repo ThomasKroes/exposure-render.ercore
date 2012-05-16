@@ -257,30 +257,4 @@ public:
 	Vec2i	Resolution;
 };
 
-class RandomSeedBuffer2D : public Buffer2D<unsigned int>
-{
-public:
-	HOST RandomSeedBuffer2D(const Enums::MemoryType& MemoryType, const char* pName) :
-		Buffer2D(MemoryType, pName)
-	{
-	}
-
-	void Resize(const Vec2i& Resolution)
-	{
-		if (this->Resolution == Resolution)
-			return;
-		
-		const int NoSeeds = Resolution[0] * Resolution[1];
-
-		unsigned int* pSeeds = new unsigned int[NoSeeds];
-
-		for (int i = 0; i < NoSeeds; i++)
-			pSeeds[i] = rand();
-
-		this->Set(Enums::Host, Resolution, pSeeds);
-
-		delete[] pSeeds;
-	}
-};
-
 }

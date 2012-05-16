@@ -20,6 +20,7 @@
 namespace ExposureRender
 {
 
+	/*
 HOST_DEVICE_NI float Gauss2D(const float& Sigma, const int& X, const int& Y)
 {
 	return expf(-((X * X + Y * Y) / (2 * Sigma * Sigma)));
@@ -67,5 +68,6 @@ void FilterFrameEstimate(Tracer& Tracer)
 
 	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.FrameEstimateTemp;
 }
+*/
 
 }

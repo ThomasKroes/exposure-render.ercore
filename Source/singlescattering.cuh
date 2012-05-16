@@ -19,11 +19,38 @@
 namespace ExposureRender
 {
 
+HOST_DEVICE_NI float Gauss2D(const float& Sigma, const int& X, const int& Y)
+{
+	return expf(-((X * X + Y * Y) / (2 * Sigma * Sigma)));
+}
+
 KERNEL void KrnlSingleScattering()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = SingleScattering(gpTracer, Vec2i(IDx, IDy));
+	const ColorXYZAf Ls = SingleScattering(gpTracer, Vec2i(IDx, IDy));
+
+	int KernelRadius = 1, float Sigma = 1.0f;
+
+	int Range[2][2];
+
+	Range[0][0] = max((int)ceilf(IDx - KernelRadius), 0);
+	Range[0][1] = min((int)floorf(IDx + KernelRadius), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - KernelRadius), 0);
+	Range[1][1] = min((int)floorf(IDy + KernelRadius), gpTracer->FrameBuffer.Resolution[1] - 1);
+
+	for (int y = Range[1][0]; y <= Range[1][1]; y++)
+	{
+		for (int x = Range[0][0]; x <= Range[0][1]; x++)
+		{
+			const float Weight = Gauss2D(Sigma, x - IDx, y - IDy);
+
+			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[0], Ls[0] * Weight);
+			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[1], Ls[1] * Weight);
+			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[2], Ls[2] * Weight);
+			atomicAdd(&gpTracer->FrameBuffer.Weight(x, y), Weight);
+		}
+	}
 }
 
 void SingleScattering(Tracer& Tracer)

@@ -213,26 +213,32 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	const int NoLights = this->GetNumberOfInputConnections(LightsPort);
 
-	this->Tracer.LightIDs.Count = NoLights;
-	
+	this->Tracer.LightIDs.Count = 0;
+
 	for (int i = 0; i < NoLights; i++)
 	{
 		vtkErLightData* LightData = vtkErLightData::SafeDownCast(this->GetInputDataObject(LightsPort, i));
 
 		if (LightData && LightData->Bindable.Enabled)
+		{
 			this->Tracer.LightIDs[i] = LightData->Bindable.ID;
+			this->Tracer.LightIDs.Count++;
+		}
 	}
 
 	const int NoObjects = this->GetNumberOfInputConnections(ObjectsPort);
 
-	this->Tracer.ObjectIDs.Count = NoObjects;
+	this->Tracer.ObjectIDs.Count = 0;
 	
 	for (int i = 0; i < NoObjects; i++)
 	{
 		vtkErObjectData* ObjectData = vtkErObjectData::SafeDownCast(this->GetInputDataObject(ObjectsPort, i));
 
 		if (ObjectData && ObjectData->Bindable.Enabled)
+		{
 			this->Tracer.ObjectIDs[i] = ObjectData->Bindable.ID;
+			this->Tracer.ObjectIDs.Count++;
+		}
 	}
 
 	ExposureRender::BindTracer(this->Tracer);

@@ -14,6 +14,7 @@
 #pragma once
 
 #include "buffer2d.h"
+#include "randomseedbuffer.h"
 
 namespace ExposureRender
 {
@@ -21,46 +22,15 @@ namespace ExposureRender
 class FrameBuffer
 {
 public:
-	FrameBuffer(void) :
-		Resolution(),
-		FrameEstimate(Enums::Device, "Frame Estimate XYZA"),
-		FrameEstimateTemp(Enums::Device, "Temp Frame Estimate XYZA"),
-		RunningEstimateXyza(Enums::Device, "Running Estimate XYZA"),
-		DisplayEstimate(Enums::Device, "Display Estimate RGBA"),
-		DisplayEstimateTemp(Enums::Device, "Temp Display Estimate RGBA"),
-		DisplayEstimateFiltered(Enums::Device, "Filtered Display Estimate RGBA"),
-		RandomSeeds1(Enums::Device, "Random Seeds 1"),
-		RandomSeeds2(Enums::Device, "Random Seeds 2"),
-		RandomSeedsCopy1(Enums::Device, "Random Seeds 1 Copy"),
-		RandomSeedsCopy2(Enums::Device, "Random Seeds 2 Copy"),
-		HostDisplayEstimate(Enums::Host, "Display Estimate RGBA")
-	{
-	}
+	FrameBuffer(void);
 
-	void Resize(const Vec2i& Resolution)
-	{
-		if (this->Resolution == Resolution)
-			return;
-		
-		this->Resolution = Resolution;
-
-		this->FrameEstimate.Resize(this->Resolution);
-		this->FrameEstimateTemp.Resize(this->Resolution);
-		this->RunningEstimateXyza.Resize(this->Resolution);
-		this->DisplayEstimate.Resize(this->Resolution);
-		this->DisplayEstimateTemp.Resize(this->Resolution);
-		this->DisplayEstimateFiltered.Resize(this->Resolution);
-		this->RandomSeeds1.Resize(this->Resolution);
-		this->RandomSeeds2.Resize(this->Resolution);
-		this->HostDisplayEstimate.Resize(this->Resolution);
-
-		this->RandomSeedsCopy1 = this->RandomSeeds1;
-		this->RandomSeedsCopy2 = this->RandomSeeds2;
-	}
+	void Resize(const Vec2i& Resolution);
 
 	Vec2i					Resolution;
 	Buffer2D<ColorXYZAf>	FrameEstimate;
 	Buffer2D<ColorXYZAf>	FrameEstimateTemp;
+	Buffer2D<ColorXYZAf>	AccumulationXyza;
+	Buffer2D<float>			Weight;
 	Buffer2D<ColorXYZAf>	RunningEstimateXyza;
 	Buffer2D<ColorRGBAuc>	DisplayEstimate;
 	Buffer2D<ColorRGBAuc>	DisplayEstimateTemp;

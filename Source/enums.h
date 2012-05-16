@@ -122,6 +122,12 @@ namespace Enums
 		Linear,
 		Bicubic
 	};
+
+	enum FocusMode
+	{
+		AutoFocus = 0,
+		ManualFocus,
+	};
 }
 
 }

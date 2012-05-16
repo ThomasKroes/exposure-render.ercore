@@ -32,7 +32,7 @@
 #include "vtkErObject.h"
 #include "vtkErBitmap.h"
 
-char gFileName[] = "C://Volumes//engine.mhd";
+char gFileName[] = "C://Volumes//manix.mhd";
 
 int main(int, char *[])
 {
@@ -65,13 +65,13 @@ int main(int, char *[])
 	ErLight->SetElevation(45.0f);
 	ErLight->SetAzimuth(135.0f);
 	ErLight->SetOffset(1.0f);
-	ErLight->SetMultiplier(200.0f);
+	ErLight->SetMultiplier(100.0f);
 	ErLight->SetSize(0.1f, 0.1f, 0.1f);
-//	ErLight->SetEnabled(false);
+	//ErLight->SetEnabled(false);
 	
 	ErLight2->SetShapeType(Enums::Plane);
 	ErLight2->SetOuterRadius(10.0f);
-	ErLight2->SetMultiplier(200.0f);
+	ErLight2->SetMultiplier(100.0f);
 	ErLight2->SetOffset(2.0f);
 	ErLight2->SetAlignmentType(Enums::AxisAlign);
 	ErLight2->SetAxis(Enums::X);
@@ -79,6 +79,7 @@ int main(int, char *[])
 	ErLight2->SetAlignmentType(Enums::AxisAlign);
 	ErLight2->SetAxis(Enums::Y);
 	ErLight2->SetPosition(0.0f, 1.5f, 0.0f);
+	// ErLight2->SetEnabled(true);
 
 	vtkSmartPointer<vtkErObject> ErObject = vtkSmartPointer<vtkErObject>::New();
 
@@ -115,8 +116,8 @@ int main(int, char *[])
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(100, 0);
-	Opacity->AddPoint(1000, 1);
+	Opacity->AddPoint(32750, 0);
+	Opacity->AddPoint(32751, 1);
 
 	VolumeMapper->SetOpacity(Opacity);
 
@@ -143,9 +144,9 @@ int main(int, char *[])
 	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
 	VolumeMapper->AddInputConnection(1, ErLight->GetOutputPort());
 	VolumeMapper->AddInputConnection(1, ErLight2->GetOutputPort());
-	VolumeMapper->SetDensityScale(1000.0f);
-	VolumeMapper->SetStepFactorPrimary(5);
-	VolumeMapper->SetStepFactorShadow(5);
+	VolumeMapper->SetDensityScale(10.0f);
+	VolumeMapper->SetStepFactorPrimary(3);
+	VolumeMapper->SetStepFactorShadow(10);
 
 	VolumeMapper->Update();
 
@@ -155,7 +156,7 @@ int main(int, char *[])
 
 	Volume->SetMapper(VolumeMapper);
 
-	VolumeMapper->SetInputConnection(2, ErObject->GetOutputPort());
+//	VolumeMapper->SetInputConnection(2, ErObject->GetOutputPort());
 
 	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
