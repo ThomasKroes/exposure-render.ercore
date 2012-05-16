@@ -14,7 +14,7 @@
 #pragma once
 
 #include "buffer2d.h"
-#include "randomseedbuffer.h"
+#include "randomseedbuffer2d.h"
 
 namespace ExposureRender
 {
@@ -24,19 +24,19 @@ class FrameBuffer
 public:
 	HOST FrameBuffer(void) :
 		Resolution(),
-		FrameEstimate(Enums::Device, "Frame Estimate XYZA"),
-		FrameEstimateTemp(Enums::Device, "Temp Frame Estimate XYZA"),
-		AccumulationXyza(Enums::Device, "Accumulation XYZA"),
-		Weight(Enums::Device, "Weight"),
-		RunningEstimateXyza(Enums::Device, "Running Estimate Xyza"),
-		DisplayEstimate(Enums::Device, "Display Estimate RGBA"),
-		DisplayEstimateTemp(Enums::Device, "Temp Display Estimate RGBA"),
-		DisplayEstimateFiltered(Enums::Device, "Filtered Display Estimate RGBA"),
-		RandomSeeds1(Enums::Device, "Random Seeds 1"),
-		RandomSeeds2(Enums::Device, "Random Seeds 2"),
-		RandomSeedsCopy1(Enums::Device, "Random Seeds 1 Copy"),
-		RandomSeedsCopy2(Enums::Device, "Random Seeds 2 Copy"),
-		HostDisplayEstimate(Enums::Host, "Display Estimate RGBA")
+		FrameEstimate("Frame Estimate XYZA", Enums::Device),
+		FrameEstimateTemp("Temp Frame Estimate XYZA", Enums::Device),
+		AccumulationXyza("Accumulation XYZA", Enums::Device),
+		Weight("Weight", Enums::Device),
+		RunningEstimateXyza("Running Estimate Xyza", Enums::Device),
+		DisplayEstimate("Display Estimate RGBA", Enums::Device),
+		DisplayEstimateTemp("Temp Display Estimate RGBA", Enums::Device),
+		DisplayEstimateFiltered("Filtered Display Estimate RGBA", Enums::Device),
+		RandomSeeds1("Random Seeds 1", Enums::Device),
+		RandomSeeds2("Random Seeds 2", Enums::Device),
+		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
+		RandomSeedsCopy2("Random Seeds 2 Copy", Enums::Device),
+		HostDisplayEstimate("Display Estimate RGBA", Enums::Host)
 	{
 	}
 

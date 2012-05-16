@@ -25,7 +25,7 @@ class EXPOSURE_RENDER_DLL ErVolume : public ErBindable
 public:
 	HOST ErVolume() :
 		ErBindable(),
-		Voxels(Enums::Host, "Host Voxels"),
+		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
 		Spacing(1.0f)
 	{
@@ -37,7 +37,7 @@ public:
 
 	HOST ErVolume(const ErVolume& Other) :
 		ErBindable(),
-		Voxels(Enums::Host, "Host Voxels"),
+		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
 		Spacing(1.0f)
 	{

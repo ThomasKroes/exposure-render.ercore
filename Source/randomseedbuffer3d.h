@@ -13,59 +13,35 @@
 
 #pragma once
 
-#include "erbitmap.h"
-#include "buffer.h"
+#include "buffer3d.h"
 
 namespace ExposureRender
 {
 
-class Bitmap
+class RandomSeedBuffer3D : public Buffer3D<unsigned int>
 {
 public:
-	HOST Bitmap() :
-		Pixels("Device Pixels", Enums::Device)
+	HOST RandomSeedBuffer2D(const char* pName = "RandomSeedBuffer3D", const Enums::MemoryType& MemoryType) :
+		Buffer3D(pName, MemoryType)
 	{
-		DebugLog(__FUNCTION__);
 	}
 
-	HOST virtual ~Bitmap(void)
+	HOST void Resize(const Vec3i& Resolution)
 	{
-		DebugLog(__FUNCTION__);
-	}
-
-	HOST Bitmap(const Bitmap& Other) :
-		Pixels("Device Pixels", Enums::Device)
-	{
-		DebugLog(__FUNCTION__);
-		*this = Other;
-	}
+		if (this->Resolution == Resolution)
+			return;
 		
-	HOST Bitmap(const ErBitmap& Other) :
-		Pixels("Device Pixels", Enums::Device)
-	{
-		DebugLog(__FUNCTION__);
-		*this = Other;
+		const int NoSeeds = Resolution[0] * Resolution[1] * Resolution[2];
+
+		unsigned int* pSeeds = new unsigned int[NoSeeds];
+
+		for (int i = 0; i < NoSeeds; i++)
+			pSeeds[i] = rand();
+
+		this->Set(Host, Resolution, pSeeds);
+
+		delete[] pSeeds;
 	}
-
-	HOST Bitmap& operator = (const Bitmap& Other)
-	{
-		DebugLog(__FUNCTION__);
-
-		this->Pixels = Other.Pixels;
-
-		return *this;
-	}
-
-	HOST Bitmap& operator = (const ErBitmap& Other)
-	{
-		DebugLog(__FUNCTION__);
-
-		this->Pixels = Other.Pixels;
-
-		return *this;
-	}
-
-	Buffer2D<ColorXYZf> Pixels;
 };
 
 }

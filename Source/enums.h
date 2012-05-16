@@ -116,11 +116,10 @@ namespace Enums
 		Z
 	};
 
-	enum InterpolationType
+	enum FilterMode
 	{
-		None = 0,
+		Point = 0,
 		Linear,
-		Bicubic
 	};
 
 	enum FocusMode

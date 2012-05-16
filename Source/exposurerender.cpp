@@ -13,4 +13,4 @@
 
 #define __CUDA_ARCH__ 200
 
-#include "buffer3d.h"
+#include "buffer1d.h"

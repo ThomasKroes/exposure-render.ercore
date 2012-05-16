@@ -25,7 +25,7 @@ class EXPOSURE_RENDER_DLL ErBitmap : public ErBindable
 public:
 	HOST ErBitmap() :
 		ErBindable(),
-		Pixels(Enums::Host, "Host Pixels")
+		Pixels("Host Pixels", Enums::Host)
 	{
 	}
 
@@ -35,7 +35,7 @@ public:
 
 	HOST ErBitmap(const ErBitmap& Other) :
 		ErBindable(),
-		Pixels(Enums::Host, "Host Pixels")
+		Pixels("Host Pixels", Enums::Host)
 	{
 		*this = Other;
 	}
