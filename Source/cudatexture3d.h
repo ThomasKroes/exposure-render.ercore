@@ -19,32 +19,29 @@ namespace ExposureRender
 {
 
 template<class T>
-class EXPOSURE_RENDER_DLL Buffer2D : public Buffer<T>
+class EXPOSURE_RENDER_DLL Texture3D : public Buffer<T>
 {
 public:
-	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType MemoryType = Enums::Host, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
-		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
-		Resolution(0)
-	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
+	HOST Texture3D(const char* pName = "Texture3D", Enums::FilterMode& FilterMode = Enums::Linear) :
+		Buffer<T>(pName, Enums::Device),
+		Resolution(0),
+		CudaArray(NULL)
+	{cudaTextureFilterMode 
 	}
 
-	HOST Buffer2D(const Buffer2D& Other) :
+	HOST Texture3D(const Texture3D& Other) :
 		Buffer<T>(),
 		Resolution(0)
 	{
-		DebugLog("%s: Other = %s", __FUNCTION__, Other.GetFullName());
-		
 		*this = Other;
 	}
 
-	HOST virtual ~Buffer2D(void)
+	HOST virtual ~Buffer3D(void)
 	{
-		DebugLog(__FUNCTION__);
 		this->Free();
 	}
 
-	HOST Buffer2D& operator = (const Buffer2D& Other)
+	HOST Buffer3D& operator = (const Buffer3D& Other)
 	{
 		DebugLog("%s: this = %s, Other = %s", __FUNCTION__, this->GetFullName(), Other.GetFullName());
 		
@@ -61,42 +58,13 @@ public:
 
 	HOST void Free(void)
 	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-
-		char MemoryString[MAX_CHAR_SIZE];
-		
-		this->GetMemoryString(MemoryString, Enums::MegaByte);
-
-		if (this->Data)
-		{
-			if (this->MemoryType == Enums::Host)
-			{
-				free(this->Data);
-				this->Data = NULL;
-				DebugLog("Freed %s on host", MemoryString);
-			}
-
 #ifdef __CUDA_ARCH__
-			if (this->MemoryType == Enums::Device)
-			{
-				Cuda::Free(this->Data);
-				DebugLog("Freed %s on device", MemoryString);
-			}
+		Cuda::FreeArray(this->CudaArray);
 #endif
-		}
 				
-		this->Resolution	= Vec2i(0);
+		this->Resolution	= Vec3i(0);
 		this->NoElements	= 0;
 		this->Dirty			= true;
-	}
-
-	HOST void Destroy(void)
-	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-
-		this->Resize(Vec2i(0));
-		
-		this->Dirty = true;
 	}
 
 	HOST void Reset(void)
@@ -108,35 +76,35 @@ public:
 		
 		if (this->MemoryType == Enums::Host)
 			memset(this->Data, 0, this->GetNoBytes());
-
+/*
 #ifdef __CUDA_ARCH__
 		if (this->MemoryType == Enums::Device)
 			Cuda::MemSet(this->Data, 0, this->GetNoElements());
 #endif
-		
+*/		
 		this->Dirty = true;
 	}
 
-	HOST void Resize(const Vec2i& Resolution)
+	HOST void Resize(const Vec3i& Resolution)
 	{
 		DebugLog("%s", __FUNCTION__);
-
+		
 		if (this->Resolution == Resolution)
 			return;
 		else
 			this->Free();
-
+		
 		this->Resolution = Resolution;
+		
+		DebugLog("Resolution = [%d x %d x %d]", this->Resolution[0], this->Resolution[1], this->Resolution[2]);
 
-		DebugLog("Resolution = [%d x %d]", this->Resolution[0], this->Resolution[1]);
-
-		this->NoElements = this->Resolution[0] * this->Resolution[1];
-
+		this->NoElements = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+		
 		if (this->NoElements <= 0)
 			return;
 		
 		DebugLog("No. Elements = %d", this->NoElements);
-		
+
 		char MemoryString[MAX_CHAR_SIZE];
 		
 		this->GetMemoryString(MemoryString, Enums::MegaByte);
@@ -158,9 +126,9 @@ public:
 		this->Reset();
 	}
 
-	HOST void Set(const Enums::MemoryType& MemoryType, const Vec2i& Resolution, T* Data)
+	HOST void Set(const Enums::MemoryType& MemoryType, const Vec3i& Resolution, T* Data)
 	{
-		DebugLog("%s: %s, %d x %d", __FUNCTION__, this->GetFullName(), Resolution[0], Resolution[1]);
+		DebugLog("%s: %s, %d x %d x %d", __FUNCTION__, this->GetFullName(), Resolution[0], Resolution[1], Resolution[2]);
 
 		this->Resize(Resolution);
 
@@ -192,69 +160,11 @@ public:
 		this->Dirty = true;
 	}
 
-	HOST_DEVICE int GetNoElements(void) const
-	{
-		return this->NoElements;
-	}
-
-	HOST_DEVICE virtual int GetNoBytes(void) const
-	{
-		return this->GetNoElements() * sizeof(T);
-	}
-
-	HOST_DEVICE T* GetData(void) const
-	{
-		return this->Data;
-	}
-
-	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0) const
-	{
-		const Vec2i ClampedXY(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1));
-		return this->Data[ClampedXY[1] * this->Resolution[0] + ClampedXY[0]];
-	}
-
-	HOST_DEVICE T& operator()(const Vec2i& XY) const
-	{
-		const Vec2i ClampedXY(Clamp(XY[0], 0, this->Resolution[0] - 1), Clamp(XY[1], 0, this->Resolution[1] - 1));
-		return this->Data[ClampedXY[1] * this->Resolution[0] + ClampedXY[0]];
-	}
-
-	HOST_DEVICE T operator()(const Vec2f& XY, const bool Normalized = false) const
-	{
-		const Vec2f UV = Normalized ? XY * Vec2f((float)this->Resolution[0], (float)this->Resolution[1]) : XY;
-
-		int Coord[2][2] =
-		{
-			{ floorf(UV[0]), ceilf(UV[0]) },
-			{ floorf(UV[1]), ceilf(UV[1]) },
-		};
-
-		const float du = UV[0] - Coord[0][0];
-		const float dv = UV[1] - Coord[1][0];
-
-		Coord[0][0] = min(max(Coord[0][0], 0), this->Resolution[0] - 1);
-		Coord[0][1] = min(max(Coord[0][1], 0), this->Resolution[0] - 1);
-		Coord[1][0] = min(max(Coord[1][0], 0), this->Resolution[1] - 1);
-		Coord[1][1] = min(max(Coord[1][1], 0), this->Resolution[1] - 1);
-
-		T Values[4] = 
-		{
-			T((*this)(Coord[0][0], Coord[1][0])),
-			T((*this)(Coord[0][1], Coord[1][0])),
-			T((*this)(Coord[0][0], Coord[1][1])),
-			T((*this)(Coord[0][1], Coord[1][1]))
-		};
-
-		return (1.0f - dv) * ((1.0f - du) * Values[0] + du * Values[1]) + dv * ((1.0f - du) * Values[2] + du * Values[3]);
-	}
-
-	HOST_DEVICE T& operator[](const int& ID) const
-	{
-		const int ClampedID = Clamp(ID, 0, this->NoElements - 1);
-		return this->Data[ClampedID];
-	}
-
-	Vec2i	Resolution;
+private:
+	Vec3i	Resolution;
+#ifdef __CUDA_ARCH__
+	cudaArray*	CudaArray
+#endif
 };
 
 }

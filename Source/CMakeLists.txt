@@ -96,7 +96,8 @@ SET(Buffer
 	buffer1d.h
 	buffer2d.h
 	buffer3d.h
-	texture3d.h
+	cudatexture.h
+	cudatexture3d.h
 	randomseedbuffer2d.h
 	randomseedbuffer3d.h
 	framebuffer.h

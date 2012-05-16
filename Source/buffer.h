@@ -23,8 +23,10 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer
 {
 public:
-	HOST Buffer(const char* pName = "Untitled", const Enums::MemoryType& MemoryType = Enums::Host) :
+	HOST Buffer(const char* pName = "Untitled", const Enums::MemoryType MemoryType = Enums::Host, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
 		MemoryType(MemoryType),
+		FilterMode(FilterMode),
+		AddressMode(AddressMode),
 		Data(NULL),
 		NoElements(0),
 		Dirty(false)
@@ -107,12 +109,20 @@ public:
 		}
 	}
 
-	Enums::MemoryType	MemoryType;
-	char				Name[MAX_CHAR_SIZE];
-	char				FullName[MAX_CHAR_SIZE];
-	T*					Data;
-	int					NoElements;
-	mutable bool		Dirty;
+	HOST Enums::MemoryType GetMemoryType() const { return this->MemoryType; }
+	HOST Enums::FilterMode GetFilterMode() const { return this->FilterMode; }
+	HOST Enums::AddressMode GetAddressMode() const { return this->AddressMode; }
+	HOST void SetDirty(const bool& Dirty = true) { this->Dirty = Dirty; }
+
+protected:
+	Enums::MemoryType		MemoryType;
+	Enums::FilterMode		FilterMode;
+	Enums::AddressMode		AddressMode;
+	char					Name[MAX_CHAR_SIZE];
+	char					FullName[MAX_CHAR_SIZE];
+	T*						Data;
+	int						NoElements;
+	mutable bool			Dirty;
 };
 
 }

@@ -23,8 +23,8 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T>
 {
 public:
-	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType& MemoryType = Enums::Host) :
-		Buffer<T>(pName, MemoryType),
+	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType MemoryType = Enums::Host, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
+		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
 		Resolution(0)
 	{
 		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());

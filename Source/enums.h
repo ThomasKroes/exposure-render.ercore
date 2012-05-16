@@ -133,6 +133,14 @@ namespace Enums
 		Cuda = 0,
 		OpenCL,
 	};
+
+	enum AddressMode
+	{
+		Wrap = 0,
+		Clamp,
+		Mirror,
+		Border
+	};
 }
 
 }

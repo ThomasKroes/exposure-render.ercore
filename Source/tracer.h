@@ -45,8 +45,8 @@ public:
 
 		if (this->NoIterations == 0)
 		{
-			this->FrameBuffer.RandomSeedsCopy1.Dirty = true;
-			this->FrameBuffer.RandomSeedsCopy2.Dirty = true;
+			this->FrameBuffer.RandomSeedsCopy1.SetDirty();
+			this->FrameBuffer.RandomSeedsCopy2.SetDirty();
 
 			this->FrameBuffer.RandomSeeds1 = this->FrameBuffer.RandomSeedsCopy1;
 			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;
