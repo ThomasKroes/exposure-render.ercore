@@ -21,8 +21,8 @@ namespace ExposureRender
 class RandomSeedBuffer2D : public Buffer2D<unsigned int>
 {
 public:
-	HOST RandomSeedBuffer2D(const Enums::MemoryType& MemoryType, const char* pName) :
-		Buffer2D(MemoryType, pName)
+	HOST RandomSeedBuffer2D(const char* pName = "RandomSeedBuffer2D", const Enums::MemoryType& MemoryType ,const Enums::DeviceType DeviceType = Cuda) :
+		Buffer2D(pName, MemoryType, DeviceType)
 	{
 	}
 
@@ -38,7 +38,7 @@ public:
 		for (int i = 0; i < NoSeeds; i++)
 			pSeeds[i] = rand();
 
-		this->Set(Enums::Host, Resolution, pSeeds);
+		this->Set(Host, Resolution, pSeeds);
 
 		delete[] pSeeds;
 	}

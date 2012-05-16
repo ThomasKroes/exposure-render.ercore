@@ -16,6 +16,8 @@
 #include "geometry.h"
 #include "wrapper.cuh"
 
+using namespace ExposureRender::Enums;
+
 namespace ExposureRender
 {
 
@@ -23,8 +25,9 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer
 {
 public:
-	HOST Buffer(const Enums::MemoryType& MemoryType = Enums::Host, const char* pName = "Untitled") :
+	HOST Buffer(const char* pName = "Untitled", const Enums::MemoryType& MemoryType = Host, const Enums::DeviceType DeviceType = Cuda) :
 		MemoryType(MemoryType),
+		DeviceType(DeviceType),
 		Data(NULL),
 		NoElements(0),
 		Dirty(false)
@@ -59,11 +62,11 @@ public:
 
 		switch (this->MemoryType)
 		{
-			case Enums::Host:
+			case Host:
 				sprintf_s(MemoryTypeName, MAX_CHAR_SIZE, "%s", "H");
 				break;
 			
-			case Enums::Device:
+			case Device:
 				sprintf_s(MemoryTypeName, MAX_CHAR_SIZE, "%s", "D");
 				break;
 
@@ -80,39 +83,40 @@ public:
 		return 0;
 	}
 
-	HOST virtual float GetMemorySize(const Enums::MemoryUnit& MemoryUnit) const
+	HOST virtual float GetMemorySize(const MemoryUnit& MemoryUnit) const
 	{
 		switch (MemoryUnit)
 		{
-			case Enums::KiloByte:
+			case KiloByte:
 				return (float)this->GetNoBytes() / (1024.0f);
 
-			case Enums::MegaByte:
+			case MegaByte:
 				return (float)this->GetNoBytes() / (1024.0f * 1024.0f);
 			
-			case Enums::GigaByte:
+			case GigaByte:
 				return (float)this->GetNoBytes() / (1024.0f * 1024.0f * 1024.0f);
 		}
 
 		return 0.0f;
 	}
 
-	HOST virtual void GetMemoryString(char* pMemoryString, const Enums::MemoryUnit& MemoryUnit = Enums::MegaByte) const
+	HOST virtual void GetMemoryString(char* pMemoryString, const MemoryUnit& MemoryUnit = MegaByte) const
 	{
 		switch (MemoryUnit)
 		{
-			case Enums::KiloByte:	sprintf_s(pMemoryString, MAX_CHAR_SIZE, "%0.2f KB", this->GetMemorySize(Enums::KiloByte));		break;
-			case Enums::MegaByte:	sprintf_s(pMemoryString, MAX_CHAR_SIZE, "%0.2f MB", this->GetMemorySize(Enums::MegaByte));		break;
-			case Enums::GigaByte:	sprintf_s(pMemoryString, MAX_CHAR_SIZE, "%0.2f GB", this->GetMemorySize(Enums::GigaByte));		break;
+			case KiloByte:	sprintf_s(pMemoryString, MAX_CHAR_SIZE, "%0.2f KB", this->GetMemorySize(KiloByte));		break;
+			case MegaByte:	sprintf_s(pMemoryString, MAX_CHAR_SIZE, "%0.2f MB", this->GetMemorySize(MegaByte));		break;
+			case GigaByte:	sprintf_s(pMemoryString, MAX_CHAR_SIZE, "%0.2f GB", this->GetMemorySize(GigaByte));		break;
 		}
 	}
 
-	Enums::MemoryType	MemoryType;
-	char				Name[MAX_CHAR_SIZE];
-	char				FullName[MAX_CHAR_SIZE];
-	T*					Data;
-	int					NoElements;
-	mutable bool		Dirty;
+	MemoryType		MemoryType;
+	DeviceType		DeviceType;
+	char			Name[MAX_CHAR_SIZE];
+	char			FullName[MAX_CHAR_SIZE];
+	T*				Data;
+	int				NoElements;
+	mutable bool	Dirty;
 };
 
 }

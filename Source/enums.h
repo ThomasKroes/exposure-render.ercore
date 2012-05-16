@@ -128,6 +128,12 @@ namespace Enums
 		AutoFocus = 0,
 		ManualFocus,
 	};
+
+	enum DeviceType
+	{
+		Cuda = 0,
+		OpenCL,
+	};
 }
 
 }

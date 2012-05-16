@@ -13,4 +13,4 @@
 
 #define __CUDA_ARCH__ 200
 
-#include "alignment.h"
+#include "buffer3d.h"

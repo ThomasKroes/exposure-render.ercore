@@ -15,6 +15,7 @@
 
 #include "buffer.h"
 
+
 namespace ExposureRender
 {
 
@@ -22,7 +23,7 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T>
 {
 public:
-	HOST Buffer3D(const Enums::MemoryType& MemoryType = Enums::Host, const char* pName = "Buffer (3D)") :
+	HOST Buffer3D(const char* pName = "Buffer3D", const MemoryType& MemoryType = Host, const DeviceType& DeviceType = Cuda) :
 		Buffer<T>(MemoryType, pName),
 		Resolution(0)
 	{
@@ -65,11 +66,11 @@ public:
 
 		char MemoryString[MAX_CHAR_SIZE];
 		
-		this->GetMemoryString(MemoryString, Enums::MegaByte);
+		this->GetMemoryString(MemoryString, MegaByte);
 
 		if (this->Data)
 		{
-			if (this->MemoryType == Enums::Host)
+			if (this->MemoryType == Host)
 			{
 				free(this->Data);
 				this->Data = NULL;
@@ -77,7 +78,7 @@ public:
 			}
 
 #ifdef __CUDA_ARCH__
-			if (this->MemoryType == Enums::Device)
+			if (this->MemoryType == Device)
 			{
 				Cuda::Free(this->Data);
 				DebugLog("Freed %s on device", MemoryString);
@@ -90,15 +91,6 @@ public:
 		this->Dirty			= true;
 	}
 
-	HOST void Destroy(void)
-	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-
-		this->Resize(Vec3i(0));
-		
-		this->Dirty = true;
-	}
-
 	HOST void Reset(void)
 	{
 		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
@@ -106,11 +98,11 @@ public:
 		if (this->GetNoElements() <= 0)
 			return;
 		
-		if (this->MemoryType == Enums::Host)
+		if (this->MemoryType == Host)
 			memset(this->Data, 0, this->GetNoBytes());
 
 #ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
+		if (this->MemoryType == Device)
 			Cuda::MemSet(this->Data, 0, this->GetNoElements());
 #endif
 		
@@ -139,16 +131,16 @@ public:
 
 		char MemoryString[MAX_CHAR_SIZE];
 		
-		this->GetMemoryString(MemoryString, Enums::MegaByte);
+		this->GetMemoryString(MemoryString, MegaByte);
 
-		if (this->MemoryType == Enums::Host)
+		if (this->MemoryType == Host)
 		{
 			this->Data = (T*)malloc(this->GetNoBytes());
 			DebugLog("Allocated %s on host", MemoryString);
 		}
 
 #ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
+		if (this->MemoryType == Device)
 		{
 			Cuda::Allocate(this->Data, this->GetNoElements());
 			DebugLog("Allocated %s on device", MemoryString);
@@ -158,7 +150,7 @@ public:
 		this->Reset();
 	}
 
-	HOST void Set(const Enums::MemoryType& MemoryType, const Vec3i& Resolution, T* Data)
+	HOST void Set(const MemoryType& MemoryType, const Vec3i& Resolution, T* Data)
 	{
 		DebugLog("%s: %s, %d x %d x %d", __FUNCTION__, this->GetFullName(), Resolution[0], Resolution[1], Resolution[2]);
 
@@ -167,24 +159,24 @@ public:
 		if (this->NoElements <= 0)
 			return;
 
-		if (this->MemoryType == Enums::Host)
+		if (this->MemoryType == Host)
 		{
-			if (MemoryType == Enums::Host)
+			if (MemoryType == Host)
 				memcpy(this->Data, Data, this->GetNoBytes());
 			
 #ifdef __CUDA_ARCH__
-			if (MemoryType == Enums::Device)
+			if (MemoryType == Device)
 				Cuda::MemCopyDeviceToHost(Data, this->Data, this->GetNoElements());
 #endif
 		}
 
 #ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
+		if (this->MemoryType == Device)
 		{
-			if (MemoryType == Enums::Host)
+			if (MemoryType == Host)
 				Cuda::MemCopyHostToDevice(Data, this->Data, this->GetNoElements());
 
-			if (MemoryType == Enums::Device)
+			if (MemoryType == Device)
 				Cuda::MemCopyDeviceToDevice(Data, this->Data, this->GetNoElements());
 		}
 #endif
