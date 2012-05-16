@@ -28,11 +28,6 @@ public:
 		DebugLog(__FUNCTION__);
 	}
 
-	HOST virtual ~Bitmap(void)
-	{
-		DebugLog(__FUNCTION__);
-	}
-
 	HOST Bitmap(const Bitmap& Other) :
 		Pixels("Device Pixels", Enums::Device)
 	{
@@ -45,6 +40,11 @@ public:
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
+	}
+
+	HOST virtual ~Bitmap(void)
+	{
+		DebugLog(__FUNCTION__);
 	}
 
 	HOST Bitmap& operator = (const Bitmap& Other)

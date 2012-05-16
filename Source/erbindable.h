@@ -57,8 +57,13 @@ public:
 	GET_SET(Dirty, bool)
 	*/
 
+	HOST bool GetDirty() const { return this->Dirty; }
+	HOST void SetDirty(const bool& Dirty = true) { this->Dirty = Dirty; }
+
 	mutable int		ID;
 	bool			Enabled;
+
+protected:
 	bool			Dirty;
 };
 

@@ -136,6 +136,8 @@ int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 
 bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
+	this->Tracer.SetDirty(false);
+
 	this->Tracer.Opacity1D.Reset();
 	
 	for (int i = 0; i < this->Opacity->GetSize(); i++)
@@ -186,6 +188,15 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	vtkCamera* Camera = Renderer->GetActiveCamera();
 	
+//	printf("%d\n", Camera->GetMTime());
+//	printf("%d\n", this->LastCameraMTime);
+
+	if (Camera->GetMTime() != this->LastCameraMTime)
+	{
+		this->Tracer.SetDirty();
+		this->LastCameraMTime = Camera->GetMTime();
+	}
+
 	if (Camera)
 	{
 		this->Tracer.Camera.FilmSize		= Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
@@ -261,7 +272,6 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 		delete[] this->ImageBuffer;
 		this->ImageBuffer = new unsigned char[4 * this->RenderSize[0] * this->RenderSize[1]];
 	}
-	
 
 	ExposureRender::RenderEstimate(this->Tracer.ID);
 	ExposureRender::GetEstimate(this->Tracer.ID, this->ImageBuffer);

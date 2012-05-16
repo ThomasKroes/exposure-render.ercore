@@ -200,22 +200,36 @@ public:
 	{
 		const Vec3f UVW = Normalized ? XYZ * Vec3f((float)this->Resolution[0], (float)this->Resolution[1], (float)this->Resolution[2]) : XYZ;
 
-		const int vx = (int)floorf(UVW[0]);
-		const int vy = (int)floorf(UVW[1]);
-		const int vz = (int)floorf(UVW[2]);
+		switch (this->FilterMode)
+		{
+			case Enums::Point:
+			{
+				return (*this)((int)floorf(UVW[0]), (int)floorf(UVW[1]), (int)floorf(UVW[2]));
+			}
 
-		const float dx = UVW[0] - vx;
-		const float dy = UVW[1] - vy;
-		const float dz = UVW[2] - vz;
+			case Enums::Linear:
+			{
+				const int vx = (int)floorf(UVW[0]);
+				const int vy = (int)floorf(UVW[1]);
+				const int vz = (int)floorf(UVW[2]);
 
-		const T d00 = Lerp(dx, (*this)(vx, vy, vz), (*this)(vx+1, vy, vz));
-		const T d10 = Lerp(dx, (*this)(vx, vy+1, vz), (*this)(vx+1, vy+1, vz));
-		const T d01 = Lerp(dx, (*this)(vx, vy, vz+1), (*this)(vx+1, vy, vz+1));
-		const T d11 = Lerp(dx, (*this)(vx, vy+1, vz+1), (*this)(vx+1, vy+1, vz+1));
-		const T d0	= Lerp(dy, d00, d10);
-		const T d1 	= Lerp(dy, d01, d11);
+				const float dx = UVW[0] - vx;
+				const float dy = UVW[1] - vy;
+				const float dz = UVW[2] - vz;
 
-		return Lerp(dz, d0, d1);
+				const T d00 = Lerp(dx, (*this)(vx, vy, vz), (*this)(vx+1, vy, vz));
+				const T d10 = Lerp(dx, (*this)(vx, vy+1, vz), (*this)(vx+1, vy+1, vz));
+				const T d01 = Lerp(dx, (*this)(vx, vy, vz+1), (*this)(vx+1, vy, vz+1));
+				const T d11 = Lerp(dx, (*this)(vx, vy+1, vz+1), (*this)(vx+1, vy+1, vz+1));
+				const T d0	= Lerp(dy, d00, d10);
+				const T d1 	= Lerp(dy, d01, d11);
+
+				return Lerp(dz, d0, d1);
+			}
+
+			default:
+				return T();
+		}
 	}
 
 	HOST_DEVICE T& operator[](const int& ID) const

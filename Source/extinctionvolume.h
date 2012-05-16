@@ -13,35 +13,22 @@
 
 #pragma once
 
-#include "ervolume.h"
-#include "boundingbox.h"
+#include "volume.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Volume
+class EXPOSURE_RENDER_DLL ExtinctionVolume : public Volume
 {
 public:
-	HOST Volume() :
-		BoundingBox(),
-		Spacing(1.0f),
-		InvSpacing(1.0f),
-		Size(1.0f),
-		InvSize(1.0f),
-		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point)
+	HOST ExtinctionVolume() :
+		Volume(),
 	{
 		DebugLog(__FUNCTION__);
 	}
 
 	HOST Volume(const Volume& Other) :
-		BoundingBox(),
-		Spacing(1.0f),
-		InvSpacing(1.0f),
-		Size(1.0f),
-		InvSize(1.0f),
-		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device)
+		Volume()
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
@@ -49,6 +36,9 @@ public:
 
 	HOST Volume(const ErVolume& Other) :
 		BoundingBox(),
+		GradientDeltaX(),
+		GradientDeltaY(),
+		GradientDeltaZ(),
 		Spacing(1.0f),
 		InvSpacing(1.0f),
 		Size(1.0f),
@@ -103,6 +93,7 @@ public:
 		this->BoundingBox.SetMaxP(0.5f * Size);
 
 		this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
+
 
 		return *this;
 	}

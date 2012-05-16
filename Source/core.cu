@@ -13,7 +13,6 @@
 
 #define __CUDA_ARCH__ 200
 
-
 #include "tracer.h"
 #include "volume.h"
 #include "light.h"
@@ -22,18 +21,20 @@
 #include "texture.h"
 #include "bitmap.h"
 
-DEVICE ExposureRender::Tracer*			gpTracer			= NULL;
-DEVICE ExposureRender::Volume* 			gpVolumes			= NULL;
-DEVICE ExposureRender::Light*			gpLights			= NULL;
-DEVICE ExposureRender::Object*			gpObjects			= NULL;
-DEVICE ExposureRender::ClippingObject*	gpClippingObjects	= NULL;
-DEVICE ExposureRender::Texture*			gpTextures			= NULL;
-DEVICE ExposureRender::Bitmap*			gpBitmaps			= NULL;
+DEVICE ExposureRender::Tracer*			gpTracer				= NULL;
+DEVICE ExposureRender::Volume* 			gpVolumes				= NULL;
+DEVICE ExposureRender::Volume* 			gpExtinctionVolumes		= NULL;
+DEVICE ExposureRender::Light*			gpLights				= NULL;
+DEVICE ExposureRender::Object*			gpObjects				= NULL;
+DEVICE ExposureRender::ClippingObject*	gpClippingObjects		= NULL;
+DEVICE ExposureRender::Texture*			gpTextures				= NULL;
+DEVICE ExposureRender::Bitmap*			gpBitmaps				= NULL;
 
 #include "list.cuh"
 
 ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::ErTracer>					gTracers("gpTracer");
 ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::ErVolume>					gVolumes("gpVolumes");
+ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::ErVolume>					gExtinctionVolumes("gpExtinctionVolumes");
 ExposureRender::Cuda::List<ExposureRender::Light, ExposureRender::ErLight>						gLights("gpLights");
 ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::ErObject>					gObjects("gpObjects");
 ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErClippingObject>	gClippingObjects("gpClippingObjects");
@@ -63,9 +64,15 @@ EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*=
 	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
 
 	if (Bind)
+	{
 		gVolumes.Bind(Volume);
+		gExtinctionVolumes.Bind(Volume);
+	}
 	else
+	{
 		gVolumes.Unbind(Volume);
+		gExtinctionVolumes.Unbind(Volume);
+	}
 }
 
 EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind /*= true*/)
@@ -120,7 +127,7 @@ EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*=
 
 EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 {
-	if (gTracers[TracerID].NoIterations == 0)
+	if (gTracers[TracerID].NoEstimates == 0)
 	{
 		gTracers[TracerID].FrameBuffer.AccumulationXyza.Reset();
 		gTracers[TracerID].FrameBuffer.Weight.Reset();
@@ -142,7 +149,7 @@ EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 
-	gTracers[TracerID].NoIterations++;
+	gTracers[TracerID].NoEstimates++;
 }
 
 EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, unsigned char* pData)

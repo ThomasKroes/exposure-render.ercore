@@ -114,6 +114,7 @@ public:
 		}
 	}
 
+	HOST_DEVICE T* GetData() { return this->Data; }
 	HOST Enums::MemoryType GetMemoryType() const { return this->MemoryType; }
 	HOST Enums::FilterMode GetFilterMode() const { return this->FilterMode; }
 	HOST Enums::AddressMode GetAddressMode() const { return this->AddressMode; }

@@ -15,7 +15,7 @@
 #pragma once
 
 #include "geometry.h"
-#include "volumes.h"
+#include "volume.h"
 #include "transferfunction.h"
 #include "shapes.h"
 #include "scatterevent.h"
@@ -44,7 +44,7 @@ HOST_DEVICE_NI void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 
 	Vec3f Ps;
 
-	const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
+	const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
 
 	MinT += RNG.Get1() * StepSize;
 
@@ -86,7 +86,7 @@ HOST_DEVICE_NI bool ScatterEventInVolume(Ray R, CRNG& RNG)
 	float Sum		= 0.0f;
 	float SigmaT	= 0.0f;
 
-	const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
+	const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
 
 	MinT += RNG.Get1() * StepSize;
 

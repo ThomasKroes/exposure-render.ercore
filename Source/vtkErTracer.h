@@ -128,4 +128,5 @@ private:
 	float										GradientThreshold;
 	float										GradientFactor;
 	ExposureRender::ErTracer					Tracer;
+	unsigned long								LastCameraMTime;
 };

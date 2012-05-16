@@ -50,7 +50,6 @@ SET(General
 	rng.h
 	montecarlo.h
 	ray.h
-	volumes.h
 	lights.h
 	objects.h
 	clippingobjects.h
@@ -74,6 +73,7 @@ SET(General
 	exposurerender.cpp
 	tracer.h
 	volume.h
+	extinctionvolume.h
 	light.h
 	scatterevent.h
 	intersection.h

@@ -28,7 +28,8 @@ class Tracer : public ErTracer
 public:
 	HOST Tracer() :
 		ErTracer(),
-		FrameBuffer()
+		FrameBuffer(),
+		NoEstimates(0)
 	{
 	}
 
@@ -43,8 +44,10 @@ public:
 		
 		this->FrameBuffer.Resize(Other.Camera.FilmSize);
 
-		if (this->NoIterations == 0)
+		if (Other.GetDirty())
 		{
+			this->NoEstimates = 0;
+
 			this->FrameBuffer.RandomSeedsCopy1.SetDirty();
 			this->FrameBuffer.RandomSeedsCopy2.SetDirty();
 
@@ -55,7 +58,8 @@ public:
 		return *this;
 	}
 
-	FrameBuffer	FrameBuffer;
+	FrameBuffer		FrameBuffer;
+	int				NoEstimates;
 };
 
 }

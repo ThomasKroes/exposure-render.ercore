@@ -192,20 +192,7 @@ public:
 		this->Dirty = true;
 	}
 
-	HOST_DEVICE int GetNoElements(void) const
-	{
-		return this->NoElements;
-	}
-
-	HOST_DEVICE virtual int GetNoBytes(void) const
-	{
-		return this->GetNoElements() * sizeof(T);
-	}
-
-	HOST_DEVICE T* GetData(void) const
-	{
-		return this->Data;
-	}
+	
 
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0) const
 	{
@@ -223,29 +210,43 @@ public:
 	{
 		const Vec2f UV = Normalized ? XY * Vec2f((float)this->Resolution[0], (float)this->Resolution[1]) : XY;
 
-		int Coord[2][2] =
+		switch (this->FilterMode)
 		{
-			{ floorf(UV[0]), ceilf(UV[0]) },
-			{ floorf(UV[1]), ceilf(UV[1]) },
-		};
+			case Enums::Point:
+			{
+				return (*this)((int)floorf(UV[0]), (int)floorf(UV[1]));
+			}
 
-		const float du = UV[0] - Coord[0][0];
-		const float dv = UV[1] - Coord[1][0];
+			case Enums::Linear:
+			{
+				int Coord[2][2] =
+				{
+					{ floorf(UV[0]), ceilf(UV[0]) },
+					{ floorf(UV[1]), ceilf(UV[1]) },
+				};
 
-		Coord[0][0] = min(max(Coord[0][0], 0), this->Resolution[0] - 1);
-		Coord[0][1] = min(max(Coord[0][1], 0), this->Resolution[0] - 1);
-		Coord[1][0] = min(max(Coord[1][0], 0), this->Resolution[1] - 1);
-		Coord[1][1] = min(max(Coord[1][1], 0), this->Resolution[1] - 1);
+				const float du = UV[0] - Coord[0][0];
+				const float dv = UV[1] - Coord[1][0];
 
-		T Values[4] = 
-		{
-			T((*this)(Coord[0][0], Coord[1][0])),
-			T((*this)(Coord[0][1], Coord[1][0])),
-			T((*this)(Coord[0][0], Coord[1][1])),
-			T((*this)(Coord[0][1], Coord[1][1]))
-		};
+				Coord[0][0] = min(max(Coord[0][0], 0), this->Resolution[0] - 1);
+				Coord[0][1] = min(max(Coord[0][1], 0), this->Resolution[0] - 1);
+				Coord[1][0] = min(max(Coord[1][0], 0), this->Resolution[1] - 1);
+				Coord[1][1] = min(max(Coord[1][1], 0), this->Resolution[1] - 1);
 
-		return (1.0f - dv) * ((1.0f - du) * Values[0] + du * Values[1]) + dv * ((1.0f - du) * Values[2] + du * Values[3]);
+				T Values[4] = 
+				{
+					T((*this)(Coord[0][0], Coord[1][0])),
+					T((*this)(Coord[0][1], Coord[1][0])),
+					T((*this)(Coord[0][0], Coord[1][1])),
+					T((*this)(Coord[0][1], Coord[1][1]))
+				};
+
+				return (1.0f - dv) * ((1.0f - du) * Values[0] + du * Values[1]) + dv * ((1.0f - du) * Values[2] + du * Values[3]);
+			}
+
+			default:
+				return T();
+		}
 	}
 
 	HOST_DEVICE T& operator[](const int& ID) const

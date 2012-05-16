@@ -37,7 +37,6 @@ public:
 		Emission1D(),
 		Camera(),
 		RenderSettings(),
-		NoIterations(0),
 		VolumeID(0),
 		LightIDs(),
 		ObjectIDs(),
@@ -65,7 +64,6 @@ public:
 		this->Emission1D			= Other.Emission1D;
 		this->Camera				= Other.Camera;
 		this->RenderSettings		= Other.RenderSettings;
-		this->NoIterations			= Other.NoIterations;
 		this->VolumeID				= Other.VolumeID;
 		this->LightIDs				= Other.LightIDs;
 		this->ObjectIDs				= Other.ObjectIDs;
@@ -104,7 +102,6 @@ public:
 	ColorTransferFunction1D		Emission1D;
 	Camera						Camera;
 	RenderSettings				RenderSettings;
-	int							NoIterations;
 	int							VolumeID;
 	Indices						LightIDs;
 	Indices						ObjectIDs;
