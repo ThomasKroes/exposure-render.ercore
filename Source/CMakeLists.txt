@@ -93,19 +93,12 @@ SOURCE_GROUP("General" FILES ${General})
 
 SET(Buffer
 	buffer.h
-	buffer.cpp
 	buffer1d.h
-	buffer1d.cpp
 	buffer2d.h
-	buffer2d.cpp
 	buffer3d.h
-	buffer3d.cpp
 	texture3d.h
-	texture3d.cpp
 	randomseedbuffer.h
-	randomseedbuffer.cpp
 	framebuffer.h
-	framebuffer.cpp
 )
 
 SOURCE_GROUP("Buffer" FILES ${Buffer})
