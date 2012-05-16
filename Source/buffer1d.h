@@ -184,6 +184,9 @@ public:
 		return this->Data[i];
 	}
 
+	HOST_DEVICE int GetResolution() const { return this->Resolution; }
+
+protected:
 	int		Resolution;
 };
 

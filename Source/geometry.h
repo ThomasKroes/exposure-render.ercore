@@ -79,7 +79,7 @@ HOST_DEVICE inline Vec2f SphericalToUV(const Vec3f& W)
 	return Vec2f(INV_TWO_PI_F * SphericalPhi(V), 1.0f - (INV_PI_F * SphericalTheta(V)));
 }
 
-HOST_DEVICE inline float Lerp(float t, float v1, float v2)
+HOST_DEVICE inline float Lerp(const float& t, const float& v1, const float& v2)
 {
 	return (1.f - t) * v1 + t * v2;
 }

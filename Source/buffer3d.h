@@ -184,16 +184,6 @@ public:
 		this->Dirty = true;
 	}
 
-	HOST_DEVICE int GetNoElements(void) const
-	{
-		return this->NoElements;
-	}
-
-	HOST_DEVICE virtual int GetNoBytes(void) const
-	{
-		return this->GetNoElements() * sizeof(T);
-	}
-
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0, const int& Z = 0) const
 	{
 		const Vec3i ClampedXYZ(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1), Clamp(Z, 0, this->Resolution[2] - 1));
@@ -234,6 +224,9 @@ public:
 		return this->Data[ClampedID];
 	}
 
+	HOST_DEVICE Vec3i GetResolution() const { return this->Resolution; }
+
+protected:
 	Vec3i	Resolution;
 };
 

@@ -109,7 +109,7 @@ HOST_DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, Ligh
 {
 	ColorXYZf Ld;
 
-	const float Intensity = GetIntensity(gpTracer->VolumeID, SE.P);
+	const float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(SE.P);
 
 	Ld += gpTracer->Emission1D.Evaluate(Intensity);
 

@@ -55,7 +55,7 @@ HOST_DEVICE_NI void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 		if (MinT >= MaxT)
 			return;
 		
-		float Intensity = GetIntensity(gpTracer->VolumeID, Ps);
+		float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
 
 		SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
 
@@ -63,7 +63,7 @@ HOST_DEVICE_NI void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 		MinT	+= StepSize;
 	}
 
-	SE.SetValid(MinT, Ps, NormalizedGradient(gpTracer->VolumeID, Ps), -R.D, ColorXYZf());
+	SE.SetValid(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, ColorXYZf());
 }
 
 HOST_DEVICE_NI bool ScatterEventInVolume(Ray R, CRNG& RNG)
@@ -97,7 +97,7 @@ HOST_DEVICE_NI bool ScatterEventInVolume(Ray R, CRNG& RNG)
 		if (MinT > MaxT)
 			return false;
 		
-		float Intensity = GetIntensity(gpTracer->VolumeID, Ps);
+		float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
 
 		SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
 

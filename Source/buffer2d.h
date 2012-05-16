@@ -254,6 +254,9 @@ public:
 		return this->Data[ClampedID];
 	}
 
+	HOST_DEVICE Vec2i GetResolution() const { return this->Resolution; }
+
+protected:
 	Vec2i	Resolution;
 };
 

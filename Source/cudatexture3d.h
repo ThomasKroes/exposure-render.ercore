@@ -26,7 +26,7 @@ public:
 		Buffer<T>(pName, Enums::Device),
 		Resolution(0),
 		CudaArray(NULL)
-	{cudaTextureFilterMode 
+	{ 
 	}
 
 	HOST Texture3D(const Texture3D& Other) :

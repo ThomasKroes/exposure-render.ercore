@@ -102,13 +102,13 @@ public:
 
 		if (Other.NormalizeSize)
 		{
-			const Vec3f PhysicalSize = Vec3f((float)this->Voxels.Resolution[0], (float)this->Voxels.Resolution[1], (float)this->Voxels.Resolution[2]) * Other.Spacing;
+			const Vec3f PhysicalSize = Vec3f((float)this->Voxels.GetResolution()[0], (float)this->Voxels.GetResolution()[1], (float)this->Voxels.GetResolution()[2]) * Other.Spacing;
 			Scale = 1.0f / max(PhysicalSize[0], max(PhysicalSize[1], PhysicalSize[2]));
 		}
 
 		this->Spacing		= Scale * Other.Spacing;
 		this->InvSpacing	= 1.0f / this->Spacing;
-		this->Size			= Vec3f((float)this->Voxels.Resolution[0] * this->Spacing[0], (float)this->Voxels.Resolution[1] *this->Spacing[1], (float)this->Voxels.Resolution[2] * this->Spacing[2]);
+		this->Size			= Vec3f((float)this->Voxels.GetResolution()[0] * this->Spacing[0], (float)this->Voxels.GetResolution()[1] *this->Spacing[1], (float)this->Voxels.GetResolution()[2] * this->Spacing[2]);
 		this->InvSize		= 1.0f / this->Size;
 
 		this->BoundingBox.SetMinP(-0.5 * Size);
@@ -127,9 +127,99 @@ public:
 	{
 		const Vec3f Offset = XYZ - this->BoundingBox.MinP;
 		
-		const Vec3f LocalXYZ = Offset * this->InvSize * Vec3f(this->Voxels.Resolution[0], this->Voxels.Resolution[1], this->Voxels.Resolution[2]);
+		const Vec3f LocalXYZ = Offset * this->InvSize * Vec3f(this->Voxels.GetResolution()[0], this->Voxels.GetResolution()[1], this->Voxels.GetResolution()[2]);
 
 		return this->Voxels(Vec3i(LocalXYZ[0], LocalXYZ[1], LocalXYZ[2]));
+	}
+
+	HOST_DEVICE float GetIntensity(const Vec3f& P)
+	{
+		return (*this)(P);
+	}
+
+	HOST_DEVICE Vec3f GradientCD(const Vec3f& P)
+	{
+		const float Intensity[3][2] = 
+		{
+			{ GetIntensity(P + this->GradientDeltaX), GetIntensity(P - this->GradientDeltaX) },
+			{ GetIntensity(P + this->GradientDeltaY), GetIntensity(P - this->GradientDeltaY) },
+			{ GetIntensity(P + this->GradientDeltaZ), GetIntensity(P - this->GradientDeltaZ) }
+		};
+
+		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
+	}
+
+	HOST_DEVICE Vec3f GradientFD(const Vec3f& P)
+	{
+		const float Intensity[4] = 
+		{
+			GetIntensity(P),
+			GetIntensity(P + this->GradientDeltaX),
+			GetIntensity(P + this->GradientDeltaY),
+			GetIntensity(P + this->GradientDeltaZ)
+		};
+
+		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
+	}
+
+	HOST_DEVICE Vec3f GradientFiltered(const Vec3f& P)
+	{
+		Vec3f Offset(this->GradientDeltaX[0], this->GradientDeltaY[1], this->GradientDeltaZ[2]);
+
+		Vec3f G0 = GradientCD(P);
+		Vec3f G1 = GradientCD(P + Vec3f(-Offset[0], -Offset[1], -Offset[2]));
+		Vec3f G2 = GradientCD(P + Vec3f( Offset[0],  Offset[1],  Offset[2]));
+		Vec3f G3 = GradientCD(P + Vec3f(-Offset[0],  Offset[1], -Offset[2]));
+		Vec3f G4 = GradientCD(P + Vec3f( Offset[0], -Offset[1],  Offset[2]));
+		Vec3f G5 = GradientCD(P + Vec3f(-Offset[0], -Offset[1],  Offset[2]));
+		Vec3f G6 = GradientCD(P + Vec3f( Offset[0],  Offset[1], -Offset[2]));
+		Vec3f G7 = GradientCD(P + Vec3f(-Offset[0],  Offset[1],  Offset[2]));
+		Vec3f G8 = GradientCD(P + Vec3f( Offset[0], -Offset[1], -Offset[2]));
+	    
+		Vec3f L0 = Lerp(Lerp(G1, G2, 0.5), Lerp(G3, G4, 0.5), 0.5);
+		Vec3f L1 = Lerp(Lerp(G5, G6, 0.5), Lerp(G7, G8, 0.5), 0.5);
+	    
+		return Lerp(G0, Lerp(L0, L1, 0.5), 0.75);
+	}
+
+	HOST_DEVICE Vec3f Gradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
+	{
+		switch (GradientMode)
+		{
+			case Enums::ForwardDifferences:		return GradientFD(P);
+			case Enums::CentralDifferences:		return GradientCD(P);
+			case Enums::Filtered:				return GradientFiltered(P);
+		}
+
+		return GradientFD(P);
+	}
+
+	HOST_DEVICE Vec3f NormalizedGradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
+	{
+		return Normalize(Gradient(P, GradientMode));
+	}
+
+	HOST_DEVICE float GradientMagnitude(const Vec3f& P)
+	{
+		Vec3f Pts[3][2];
+
+		Pts[0][0] = P + this->GradientDeltaX;
+		Pts[0][1] = P - this->GradientDeltaX;
+		Pts[1][0] = P + this->GradientDeltaY;
+		Pts[1][1] = P - this->GradientDeltaY;
+		Pts[2][0] = P + this->GradientDeltaZ;
+		Pts[2][1] = P - this->GradientDeltaZ;
+
+		float D = 0.0f, Sum = 0.0f;
+
+		for (int i = 0; i < 3; i++)
+		{
+			D = GetIntensity(Pts[i][1]) - GetIntensity(Pts[i][0]);
+			D *= 0.5f / this->Spacing[i];
+			Sum += D * D;
+		}
+
+		return sqrtf(Sum);
 	}
 
 	BoundingBox					BoundingBox;

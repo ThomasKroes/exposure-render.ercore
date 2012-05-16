@@ -145,7 +145,7 @@ int main(int, char *[])
 	VolumeMapper->AddInputConnection(1, ErLight->GetOutputPort());
 	VolumeMapper->AddInputConnection(1, ErLight2->GetOutputPort());
 	VolumeMapper->SetDensityScale(10.0f);
-	VolumeMapper->SetStepFactorPrimary(3);
+	VolumeMapper->SetStepFactorPrimary(10);
 	VolumeMapper->SetStepFactorShadow(10);
 
 	VolumeMapper->Update();

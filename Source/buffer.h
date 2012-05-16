@@ -77,10 +77,15 @@ public:
 		sprintf_s(this->FullName, MAX_CHAR_SIZE, "['%s', %s]", this->Name, MemoryTypeName);
 	}
 
-	HOST virtual int GetNoBytes() const
+	HOST_DEVICE int GetNoElements(void) const
 	{
-		return 0;
+		return this->NoElements;
 	}
+
+	HOST_DEVICE virtual int GetNoBytes(void) const
+	{
+		return this->GetNoElements() * sizeof(T);
+	} 
 
 	HOST virtual float GetMemorySize(const Enums::MemoryUnit& MemoryUnit) const
 	{
