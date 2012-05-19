@@ -61,10 +61,7 @@ int vtkErTexture::FillInputPortInformation(int Port, vtkInformation* Info)
 
 int vtkErTexture::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
-	{
-		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErTextureData");
-	}
+	Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErTextureData");
 
 	return 1;
 }
@@ -94,44 +91,45 @@ int vtkErTexture::RequestInformation(vtkInformation* Request, vtkInformationVect
 
 int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+
+	if (!InInfo || !OutInfo)
+		return 0;
 	
-//	
-	vtkErTextureData* TextureDataOut	= vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErTextureData* TextureDataOut = vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-	if (TextureDataOut)
+	if (!TextureDataOut)
+		return 0;
+
+	TextureDataOut->Bindable.Type			= this->GetTextureType();
+	TextureDataOut->Bindable.OutputLevel	= this->GetOutputLevel();
+	
+	ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
+
+	Procedural.Type				= this->GetProceduralType();
+	Procedural.UniformColor		= ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]));
+	Procedural.CheckerColor1	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor1()[0], this->GetCheckerColor1()[1], this->GetCheckerColor1()[2]));
+	Procedural.CheckerColor2	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor2()[0], this->GetCheckerColor2()[1], this->GetCheckerColor2()[2]));
+	
+	Procedural.Gradient.Reset();
+
+	for (int i = 0; i < this->Gradient->GetSize(); i++)
 	{
-		TextureDataOut->Bindable.Type			= this->GetTextureType();
-		TextureDataOut->Bindable.OutputLevel	= this->GetOutputLevel();
-		
-		ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
-
-		Procedural.Type				= this->GetProceduralType();
-		Procedural.UniformColor		= ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]));
-		Procedural.CheckerColor1	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor1()[0], this->GetCheckerColor1()[1], this->GetCheckerColor1()[2]));
-		Procedural.CheckerColor2	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor2()[0], this->GetCheckerColor2()[1], this->GetCheckerColor2()[2]));
-		
-		Procedural.Gradient.Reset();
-
-		for (int i = 0; i < this->Gradient->GetSize(); i++)
-		{
-			double NodeValue[6];
-			this->Gradient->GetNodeValue(i, NodeValue);
-			Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
-		}
-
-		TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
-		TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
-		TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
-		
-		vtkErBitmapData* BitmapDataIn = vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-
-		TextureDataOut->Bindable.BitmapID	= BitmapDataIn ? BitmapDataIn->Bindable.ID : -1;
-
-		TextureDataOut->Bind();
+		double NodeValue[6];
+		this->Gradient->GetNodeValue(i, NodeValue);
+		Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
+	TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
+	TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
+	TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
+	
+	vtkErBitmapData* BitmapDataIn = vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	TextureDataOut->Bindable.BitmapID	= BitmapDataIn ? BitmapDataIn->Bindable.ID : -1;
+
+	TextureDataOut->Bind();
 
 	return 1;
 }

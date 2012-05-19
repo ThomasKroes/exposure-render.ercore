@@ -30,8 +30,8 @@ protected:
 	virtual ~vtkErVolumeData() {};
 
 private:
-	vtkErVolumeData(const vtkErVolumeData& Other); // Not implemented.
-    void operator = (const vtkErVolumeData& Other); // Not implemented.
+	vtkErVolumeData(const vtkErVolumeData& Other);		// Not implemented.
+    void operator = (const vtkErVolumeData& Other);		// Not implemented.
 };
 
 class VTK_ER_EXPORT vtkErVolume : public vtkAlgorithm

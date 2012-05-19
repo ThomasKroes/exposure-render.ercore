@@ -27,3 +27,14 @@ vtkErShape::vtkErShape()
 	this->SetInnerRadius(0.5f);
 	this->SetOuterRadius(1.0f);
 }
+
+void vtkErShape::RequestData(ExposureRender::Shape& Shape)
+{
+	vtkErAlignment::RequestData(Shape.Alignment);
+
+	Shape.OneSided		= this->GetOneSided();
+	Shape.Type			= this->GetShapeType();
+	Shape.Size			= this->GetSize();
+	Shape.InnerRadius	= this->GetInnerRadius();
+	Shape.OuterRadius	= this->GetOuterRadius();
+}

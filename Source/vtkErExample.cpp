@@ -33,7 +33,7 @@
 #include "vtkErObject.h"
 #include "vtkErBitmap.h"
 
-char gFileName[] = "C://Volumes//manix.mhd";
+char gFileName[] = "C://Volumes//engine_small.mhd";
 
 class vtkTimerCallback : public vtkCommand
 {
@@ -67,16 +67,13 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
-	vtkSmartPointer<vtkJPEGReader> Image = vtkSmartPointer<vtkJPEGReader>::New();
-	Image->SetFileName("C://Users//Thomas Kroes//Desktop//travertine-tile-flooring-2.jpg");
-	Image->Update();
-	
-	vtkSmartPointer<vtkErBitmap> ErBitmap = vtkSmartPointer<vtkErBitmap>::New();
+	ErVolume->SetInputConnection(0, Reader->GetOutputPort());
+		
+	ErVolume->Update();
 
-	ErBitmap->SetInputConnection(0, Image->GetOutputPort());
+	return 0;
 
 	vtkSmartPointer<vtkErLight> ErLight = vtkSmartPointer<vtkErLight>::New();
-	vtkSmartPointer<vtkErLight> ErLight2 = vtkSmartPointer<vtkErLight>::New();
 	
 	ErLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	ErLight->SetElevation(45.0f);
@@ -84,40 +81,11 @@ int main(int, char *[])
 	ErLight->SetOffset(1.0f);
 	ErLight->SetMultiplier(100.0f);
 	ErLight->SetSize(0.1f, 0.1f, 0.1f);
-	//ErLight->SetEnabled(false);
-	
-	ErLight2->SetShapeType(Enums::Plane);
-	ErLight2->SetOuterRadius(10.0f);
-	ErLight2->SetMultiplier(100.0f);
-	ErLight2->SetOffset(2.0f);
-	ErLight2->SetAlignmentType(Enums::AxisAlign);
-	ErLight2->SetAxis(Enums::X);
-	ErLight2->SetPosition(0.0f, 0.0f, 0.0f);
-	ErLight2->SetAlignmentType(Enums::AxisAlign);
-	ErLight2->SetAxis(Enums::Y);
-	ErLight2->SetPosition(0.0f, 1.5f, 0.0f);
-	// ErLight2->SetEnabled(true);
-
-	vtkSmartPointer<vtkErObject> ErObject = vtkSmartPointer<vtkErObject>::New();
-
-	ErObject->SetAlignmentType(Enums::AxisAlign);
-	ErObject->SetAxis(Enums::Y);
-	ErObject->SetPosition(0.0f, -0.5f, 0.0f);
-	ErObject->SetSize(10.0f, 10.0f, 10.0f);
 
 	vtkSmartPointer<vtkErTexture> ErTexture = vtkSmartPointer<vtkErTexture>::New();
 
-	ErTexture->SetInputConnection(0, ErBitmap->GetOutputPort());
-//	ErTexture->SetTextureType(Enums::Bitmap);
-	ErTexture->SetOutputLevel(0.1f);
-
 	ErLight->SetInputConnection(ErTexture->GetOutputPort());
-	ErLight2->SetInputConnection(ErTexture->GetOutputPort());
 	
-	ErObject->SetInputConnection(0, ErTexture->GetOutputPort());
-	ErObject->SetInputConnection(1, ErTexture->GetOutputPort());
-	ErObject->SetInputConnection(2, ErTexture->GetOutputPort());
-
 	ErTexture->SetProceduralType(Enums::Checker);
 	ErTexture->SetRepeat(2.0f, 2.0f);
 	ErTexture->SetCheckerColor1(0.8f, 0.8f, 0.8f);
@@ -125,10 +93,6 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkErTracer> VolumeMapper = vtkSmartPointer<vtkErTracer>::New();
 	
-	vtkSmartPointer<vtkTimerCallback> TimerCallback = vtkSmartPointer<vtkTimerCallback>::New();
-	
-	
-
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetClippingRange(0, 100000);
@@ -157,14 +121,8 @@ int main(int, char *[])
 
 //	VolumeMapper->SetEmission(Emission);
 
-	ErVolume->SetInputConnection(0, Reader->GetOutputPort());
-		
-	ErVolume->Update();
-
-//	vtkOutpu
-	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
+//	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
 	VolumeMapper->AddInputConnection(1, ErLight->GetOutputPort());
-	VolumeMapper->AddInputConnection(1, ErLight2->GetOutputPort());
 	VolumeMapper->SetDensityScale(1000.0f);
 	VolumeMapper->SetStepFactorPrimary(5);
 	VolumeMapper->SetStepFactorShadow(5);
@@ -174,34 +132,24 @@ int main(int, char *[])
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
 	Volume->Update();
 	
-
 	Volume->SetMapper(VolumeMapper);
-
-//	VolumeMapper->SetInputConnection(2, ErObject->GetOutputPort());
 
 	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 
 	RenderWindow->AddRenderer(Renderer);
 	
-	TimerCallback->Renderer = Renderer.GetPointer();
-
 	vtkSmartPointer<vtkRenderWindowInteractor> RenderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
 
 	RenderWindowInteractor->SetRenderWindow(RenderWindow);
 
 	vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New(); //like paraview
  
+	RenderWindowInteractor->SetInteractorStyle( style );
 	RenderWindowInteractor->Initialize();
 
-	RenderWindowInteractor->SetInteractorStyle( style );
-	RenderWindowInteractor->CreateRepeatingTimer(1);
-	RenderWindowInteractor->AddObserver(vtkCommand::TimerEvent, TimerCallback);
-
-	
-
 	Renderer->AddVolume(Volume);
-	Renderer->SetActiveCamera(Camera);
+//	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
 
 	RenderWindow->Render();

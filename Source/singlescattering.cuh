@@ -45,10 +45,12 @@ KERNEL void KrnlSingleScattering()
 		{
 			const float Weight = Gauss2D(Sigma, x - IDx, y - IDy);
 
-			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[0], Ls[0] * Weight);
-			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[1], Ls[1] * Weight);
-			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[2], Ls[2] * Weight);
-			atomicAdd(&gpTracer->FrameBuffer.Weight(x, y), Weight);
+			gpTracer->FrameBuffer.AccumulationXyza(x, y) += Ls * Weight;
+			gpTracer->FrameBuffer.Weight(x, y) += Weight;
+//			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[0], Ls[0] * Weight);
+//			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[1], Ls[1] * Weight);
+//			atomicAdd(&gpTracer->FrameBuffer.AccumulationXyza(x, y)[2], Ls[2] * Weight);
+//			atomicAdd(&gpTracer->FrameBuffer.Weight(x, y), Weight);
 		}
 	}
 }

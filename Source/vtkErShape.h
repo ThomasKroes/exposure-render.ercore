@@ -23,6 +23,8 @@ public:
 	static vtkErShape* New();
 	vtkTypeRevisionMacro(vtkErShape, vtkErAlignment);
 
+	void RequestData(ExposureRender::Shape& Shape);
+
 	vtkGetMacro(OneSided, bool);
 	vtkSetMacro(OneSided, bool);
 

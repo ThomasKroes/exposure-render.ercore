@@ -33,39 +33,37 @@ vtkErVolume::~vtkErVolume(void)
 
 int vtkErVolume::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
-	{
-		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
-		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
-		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
-	}
+	Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+	Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+	Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 
 	return 1;
 }
 
 int vtkErVolume::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
-	{
-		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErVolumeData");
-	}
+	Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErVolumeData");
 
 	return 1;
 }
 
 int vtkErVolume::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
 {
-	vtkInformation* outInfo = OutputVector->GetInformationObject(0);
-	vtkErVolumeData* output = vtkErVolumeData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
 
-	if (!output)
+	if (!OutInfo)
+		return 0;
+
+	vtkErVolumeData* VolumeDataOut = vtkErVolumeData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!VolumeDataOut)
 	{
-		output = vtkErVolumeData::New();
-		outInfo->Set(vtkDataObject::DATA_OBJECT(), output);
-		output->FastDelete();
-		output->SetPipelineInformation(outInfo);
+		VolumeDataOut = vtkErVolumeData::New();
+		OutInfo->Set(vtkDataObject::DATA_OBJECT(), VolumeDataOut);
+		VolumeDataOut->FastDelete();
+		VolumeDataOut->SetPipelineInformation(OutInfo);
 
-		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), output->GetExtentType());
+		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), VolumeDataOut->GetExtentType());
 	}
  
 	return 1;
@@ -78,20 +76,45 @@ int vtkErVolume::RequestInformation(vtkInformation* Request, vtkInformationVecto
 
 int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation*	InInfo	= InputVector[0]->GetInformationObject(0);
-	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
+	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
+	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 
-	vtkImageData* Input		= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkErVolumeData* Output	= vtkErVolumeData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	if (!InInfo || !OutInfo)
+		return 0;
 
-	if (Output)
+	vtkImageData* ImageDataIn = vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!ImageDataIn)
+		return 0;
+
+	if (ImageDataIn->GetDataDimension() != 3)
 	{
-		const Vec3i Resolution(Input->GetExtent()[1] + 1, Input->GetExtent()[3] + 1, Input->GetExtent()[5] + 1);
-		const Vec3f Spacing(Input->GetSpacing()[0], Input->GetSpacing()[1], Input->GetSpacing()[2]);
-
-		Output->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)Input->GetScalarPointer(), true);
-		Output->Bind();
+		vtkErrorMacro("vtkErVolume onlys works with 3 dimensional image data!");
+		return 0;
 	}
+
+	if (ImageDataIn->GetNumberOfScalarComponents() != 1)
+	{
+		vtkErrorMacro("vtkErVolume onlys works with 1 scalar component per voxel!");
+		return 0;
+	}
+
+	if (ImageDataIn->GetScalarType() != VTK_UNSIGNED_SHORT)
+	{
+		vtkErrorMacro("vtkErVolume onlys works with unsigned short input data!");
+		return 0;
+	}
+
+	vtkErVolumeData* VolumeDataOut = vtkErVolumeData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!VolumeDataOut)
+		return 0;
+
+	const Vec3i Resolution(ImageDataIn->GetExtent()[1] + 1, ImageDataIn->GetExtent()[3] + 1, ImageDataIn->GetExtent()[5] + 1);
+	const Vec3f Spacing(ImageDataIn->GetSpacing()[0], ImageDataIn->GetSpacing()[1], ImageDataIn->GetSpacing()[2]);
+
+	VolumeDataOut->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)ImageDataIn->GetScalarPointer(), true);
+	VolumeDataOut->Bind();
 
 	return 1;
 }

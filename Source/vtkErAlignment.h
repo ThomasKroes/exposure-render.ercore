@@ -26,6 +26,8 @@ public:
 	static vtkErAlignment* New();
 	vtkTypeRevisionMacro(vtkErAlignment, vtkAlgorithm);
 
+	void RequestData(ExposureRender::Alignment& Alignment);
+
 	vtkGetMacro(AlignmentType, Enums::AlignmentType);
 	vtkSetMacro(AlignmentType, Enums::AlignmentType);
 

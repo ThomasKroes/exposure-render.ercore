@@ -49,6 +49,7 @@ HOST_DEVICE_NI ScatterEvent SampleRay(Ray R, CRNG& RNG)
 	ScatterEvent SE[3] = { ScatterEvent(Enums::Volume), ScatterEvent(Enums::Light), ScatterEvent(Enums::Object) };
 
 	SampleVolume(R, RNG, SE[0]);
+
 	IntersectLights(R, SE[1], true);
 	IntersectObjects(R, SE[2]);
 
@@ -82,6 +83,7 @@ HOST_DEVICE_NI ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCo
 
 	ScatterEvent SE;
 
+	/*
 	SE = SampleRay(R, RNG);
 
 	if (SE.Valid && SE.Type == Enums::Volume)
@@ -92,6 +94,7 @@ HOST_DEVICE_NI ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCo
 	
 	if (SE.Valid && SE.Type == Enums::Object)
 		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+	*/
 
 	return ColorXYZAf(Lv[0], Lv[1], Lv[2], SE.Valid ? 1.0f : 0.0f);
 }

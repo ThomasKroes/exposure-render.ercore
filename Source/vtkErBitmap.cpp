@@ -79,24 +79,39 @@ int vtkErBitmap::RequestInformation(vtkInformation* Request, vtkInformationVecto
 
 int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+
+	if (!InInfo || !OutInfo)
+		return 0;
 	
-	vtkImageData* ImageDataIn		= vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkErBitmapData* BitmapDataOut	= vtkErBitmapData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkImageData* ImageDataIn = vtkImageData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
 
 	if (!ImageDataIn)
 		return 0;
+
+	if (ImageDataIn->GetDataDimension() != 2)
+	{
+		vtkErrorMacro("vtkErBitmap onlys works with 2 dimensional image data!");
+		return 0;
+	}
+
+	vtkErBitmapData* BitmapDataOut = vtkErBitmapData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 	
 	if (!BitmapDataOut)
 		return 0;
 
-	if (ImageDataIn->GetDataDimension() != 2)
-		return 0;
-	
 	ColorXYZf* Pixels = new ColorXYZf[ImageDataIn->GetNumberOfElements(0)];
 
 	const Vec2i Resolution(ImageDataIn->GetExtent()[1] + 1, ImageDataIn->GetExtent()[3] + 1);
+
+	const int NoScalarComponents = ImageDataIn->GetNumberOfScalarComponents() == 1;
+
+	if (NoScalarComponents > 4)
+	{
+		vtkErrorMacro("vtkErBitmap does not support more than 4 scalar components per pixel!");
+		return 0;
+	}
 
 	for (int x = 0; x < Resolution[0]; x++)
 	{
@@ -106,16 +121,16 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 			ColorRGBf Color;
 
-			if (ImageDataIn->GetNumberOfScalarComponents() == 1)
+			if (NoScalarComponents == 1)
 				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), 0.0f, 0.0f);
 
-			if (ImageDataIn->GetNumberOfScalarComponents() == 2)
+			if (NoScalarComponents == 2)
 				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 1), 0.0f);
 
-			if (ImageDataIn->GetNumberOfScalarComponents() == 3)
+			if (NoScalarComponents == 3)
 				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 1), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 2));
 
-			if (ImageDataIn->GetNumberOfScalarComponents() == 4)
+			if (NoScalarComponents == 4)
 				Color = ColorRGBf(ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 0), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 1), ImageDataIn->GetScalarComponentAsFloat(x, y, 0, 2));
 
 			if (ImageDataIn->GetScalarType() == VTK_CHAR || ImageDataIn->GetScalarType() == VTK_SIGNED_CHAR || ImageDataIn->GetScalarType() == VTK_UNSIGNED_CHAR)

@@ -96,35 +96,30 @@ int vtkErObject::RequestInformation(vtkInformation* Request, vtkInformationVecto
 
 int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+
+	if (!InInfo || !OutInfo)
+		return 0;
 	
 	vtkErObjectData* ObjectDataOut = vtkErObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 	
-	ObjectDataOut->Bindable.Shape.OneSided				= this->GetOneSided();
-	ObjectDataOut->Bindable.Shape.Type					= this->GetShapeType();
-	ObjectDataOut->Bindable.Shape.Size					= this->GetSize();
-	ObjectDataOut->Bindable.Shape.InnerRadius			= this->GetInnerRadius();
-	ObjectDataOut->Bindable.Shape.OuterRadius			= this->GetOuterRadius();
-	ObjectDataOut->Bindable.Shape.Alignment.Type		= this->GetAlignmentType();
-	ObjectDataOut->Bindable.Shape.Alignment.Axis		= this->GetAxis();
-	ObjectDataOut->Bindable.Shape.Alignment.AutoFlip	= this->GetAutoFlip();
-	ObjectDataOut->Bindable.Shape.Alignment.Position	= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
-	ObjectDataOut->Bindable.Shape.Alignment.Target		= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
-	ObjectDataOut->Bindable.Shape.Alignment.Up			= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
-	ObjectDataOut->Bindable.Shape.Alignment.Elevation	= this->GetElevation();
-	ObjectDataOut->Bindable.Shape.Alignment.Azimuth		= this->GetAzimuth();
-	ObjectDataOut->Bindable.Shape.Alignment.Offset		= this->GetOffset();
+	if (!ObjectDataOut)
+		return 0;
 
-	vtkErTextureData* Diffuse		= vtkErTextureData::SafeDownCast(this->GetInputDataObject(0, 0));
-	vtkErTextureData* Specular		= vtkErTextureData::SafeDownCast(this->GetInputDataObject(1, 0));
-	vtkErTextureData* Glossiness	= vtkErTextureData::SafeDownCast(this->GetInputDataObject(2, 0));
+	vtkErShape::RequestData(ObjectDataOut->Bindable.Shape);
+
+	vtkErTextureData* Diffuse = vtkErTextureData::SafeDownCast(this->GetInputDataObject(0, 0));
 
 	if (Diffuse)
 		ObjectDataOut->Bindable.DiffuseTextureID = Diffuse->Bindable.ID;
 
+	vtkErTextureData* Specular = vtkErTextureData::SafeDownCast(this->GetInputDataObject(1, 0));
+
 	if (Specular)
 		ObjectDataOut->Bindable.SpecularTextureID = Specular->Bindable.ID;
+
+	vtkErTextureData* Glossiness = vtkErTextureData::SafeDownCast(this->GetInputDataObject(2, 0));
 
 	if (Glossiness)
 		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;

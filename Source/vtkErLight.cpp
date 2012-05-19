@@ -86,38 +86,34 @@ int vtkErLight::RequestInformation(vtkInformation* Request, vtkInformationVector
 
 int vtkErLight::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation* InInfo	= InputVector[0]->GetInformationObject(0);
+	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
+
+	if (!InInfo || !OutInfo)
+		return 0;
 	
 	vtkErTextureData* TextureDataIn	= vtkErTextureData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!TextureDataIn)
+		return 0;
+
 	vtkErLightData* LightDataOut = vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-	if (TextureDataIn && LightDataOut)
-	{
-		ExposureRender::ErLight& ErLight = LightDataOut->Bindable;
+	if (!LightDataOut)
+		return 0;
 
-		ErLight.Enabled						= this->GetEnabled();
-		ErLight.Visible						= this->GetVisible();
-		ErLight.Shape.OneSided				= this->GetOneSided();
-		ErLight.Shape.Type					= this->GetShapeType();
-		ErLight.Shape.Size					= this->GetSize();
-		ErLight.Shape.InnerRadius			= this->GetInnerRadius();
-		ErLight.Shape.OuterRadius			= this->GetOuterRadius();
-		ErLight.Shape.Alignment.Type		= this->GetAlignmentType();
-		ErLight.Shape.Alignment.Axis		= this->GetAxis();
-		ErLight.Shape.Alignment.AutoFlip	= this->GetAutoFlip();
-		ErLight.Shape.Alignment.Position	= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
-		ErLight.Shape.Alignment.Target		= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
-		ErLight.Shape.Alignment.Up			= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
-		ErLight.Shape.Alignment.Elevation	= this->GetElevation();
-		ErLight.Shape.Alignment.Azimuth		= this->GetAzimuth();
-		ErLight.Shape.Alignment.Offset		= this->GetOffset();
-		ErLight.Multiplier					= this->GetMultiplier();
-		ErLight.EmissionUnit				= this->GetEmissionUnit();
-		ErLight.TextureID					= TextureDataIn->Bindable.ID;
+	ExposureRender::ErLight& ErLight = LightDataOut->Bindable;
 
-		LightDataOut->Bind();
-	}
+	ErLight.Enabled						= this->GetEnabled();
+	ErLight.Visible						= this->GetVisible();
+
+	vtkErShape::RequestData(ErLight.Shape);
+
+	ErLight.Multiplier					= this->GetMultiplier();
+	ErLight.EmissionUnit				= this->GetEmissionUnit();
+	ErLight.TextureID					= TextureDataIn->Bindable.ID;
+
+	LightDataOut->Bind();
 
 	return 1;
 }

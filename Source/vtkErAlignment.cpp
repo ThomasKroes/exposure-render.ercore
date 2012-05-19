@@ -31,3 +31,16 @@ vtkErAlignment::vtkErAlignment()
 	this->SetAzimuth(180.0f);
 	this->SetOffset(1.0f);
 }
+
+void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
+{
+	Alignment.Type		= this->GetAlignmentType();
+	Alignment.Axis		= this->GetAxis();
+	Alignment.AutoFlip	= this->GetAutoFlip();
+	Alignment.Position	= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
+	Alignment.Target	= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
+	Alignment.Up		= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
+	Alignment.Elevation	= this->GetElevation();
+	Alignment.Azimuth	= this->GetAzimuth();
+	Alignment.Offset	= this->GetOffset();
+}
