@@ -23,90 +23,94 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
-{
-	float MinT;
-	float MaxT;
-	
-	Intersection Int;
-
-	IntersectBox(R, gpVolumes[gpTracer->VolumeID].BoundingBox.MinP, gpVolumes[gpTracer->VolumeID].BoundingBox.MaxP, Int);
-
-	if (!Int.Valid)
-		return;
-
-	MinT = max(Int.NearT, R.MinT);
-	MaxT = min(Int.FarT, R.MaxT);
-
-	const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
-	float Sum		= 0.0f;
-	float SigmaT	= 0.0f;
-
-	Vec3f Ps;
-
-	const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
-
-	MinT += RNG.Get1() * StepSize;
-
-	while (Sum < S)
+class RayMarcher
+{	
+public:
+	HOST_DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 	{
-		Ps = R.O + MinT * R.D;
+		float MinT;
+		float MaxT;
+		
+		Intersection Int;
 
-		if (MinT >= MaxT)
+		IntersectBox(R, gpVolumes[gpTracer->VolumeID].BoundingBox.MinP, gpVolumes[gpTracer->VolumeID].BoundingBox.MaxP, Int);
+
+		if (!Int.Valid)
 			return;
-		
-		float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
 
-		SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
+		MinT = max(Int.NearT, R.MinT);
+		MaxT = min(Int.FarT, R.MaxT);
 
-		Sum		+= SigmaT * StepSize;
-		MinT	+= StepSize;
+		const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
+		float Sum		= 0.0f;
+		float SigmaT	= 0.0f;
+
+		Vec3f Ps;
+
+		const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
+
+		MinT += RNG.Get1() * StepSize;
+
+		while (Sum < S)
+		{
+			Ps = R.O + MinT * R.D;
+
+			if (MinT >= MaxT)
+				return;
+			
+			float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
+
+			SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
+
+			Sum		+= SigmaT * StepSize;
+			MinT	+= StepSize;
+		}
+
+		SE.SetValid(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, ColorXYZf());
 	}
 
-	SE.SetValid(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, ColorXYZf());
-}
-
-HOST_DEVICE_NI bool ScatterEventInVolume(Ray R, CRNG& RNG)
-{
-	float MinT;
-	float MaxT;
-	Vec3f Ps;
-
-	Intersection Int;
-		
-	IntersectBox(R, gpVolumes[gpTracer->VolumeID].BoundingBox.MinP, gpVolumes[gpTracer->VolumeID].BoundingBox.MaxP, Int);
-	
-	if (!Int.Valid)
-		return false;
-
-	MinT = max(Int.NearT, R.MinT);
-	MaxT = min(Int.FarT, R.MaxT);
-
-	const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
-	float Sum		= 0.0f;
-	float SigmaT	= 0.0f;
-
-	const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
-
-	MinT += RNG.Get1() * StepSize;
-
-	while (Sum < S)
+	HOST_DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG)
 	{
-		Ps = R.O + MinT * R.D;
+		float MinT;
+		float MaxT;
+		Vec3f Ps;
 
-		if (MinT > MaxT)
-			return false;
+		Intersection Int;
+			
+		IntersectBox(R, gpVolumes[gpTracer->VolumeID].BoundingBox.MinP, gpVolumes[gpTracer->VolumeID].BoundingBox.MaxP, Int);
 		
-		float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
+		if (!Int.Valid)
+			return false;
 
-		SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
+		MinT = max(Int.NearT, R.MinT);
+		MaxT = min(Int.FarT, R.MaxT);
 
-		Sum		+= SigmaT * StepSize;
-		MinT	+= StepSize;
+		const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
+		float Sum		= 0.0f;
+		float SigmaT	= 0.0f;
+
+		const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
+
+		MinT += RNG.Get1() * StepSize;
+
+		while (Sum < S)
+		{
+			Ps = R.O + MinT * R.D;
+
+			if (MinT > MaxT)
+				return false;
+			
+			float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
+
+			SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
+
+			Sum		+= SigmaT * StepSize;
+			MinT	+= StepSize;
+		}
+
+		return true;
 	}
-
-	return true;
-}
+};
 
 /*
 struct Photon{

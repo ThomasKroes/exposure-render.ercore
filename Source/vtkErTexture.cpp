@@ -69,18 +69,22 @@ int vtkErTexture::FillOutputPortInformation(int Port, vtkInformation* Info)
 int vtkErTexture::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
 {
 	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
-	vtkErTextureData* Output = vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-	if (!Output)
+	if (!OutInfo)
+		return 0;
+
+	vtkErTextureData* TextureDataOut = vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+	if (!TextureDataOut)
 	{
-		Output = vtkErTextureData::New();
-		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
-		Output->FastDelete();
-		Output->SetPipelineInformation(OutInfo);
+		TextureDataOut = vtkErTextureData::New();
+		OutInfo->Set(vtkDataObject::DATA_OBJECT(), TextureDataOut);
+		TextureDataOut->FastDelete();
+		TextureDataOut->SetPipelineInformation(OutInfo);
 
-		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), Output->GetExtentType());
+		this->GetOutputPortInformation(0)->Set(vtkDataObject::DATA_EXTENT_TYPE(), TextureDataOut->GetExtentType());
 	}
- 
+
 	return 1;
 }
 
@@ -94,7 +98,7 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 
-	if (!InInfo || !OutInfo)
+	if (!OutInfo)
 		return 0;
 	
 	vtkErTextureData* TextureDataOut = vtkErTextureData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
@@ -124,10 +128,7 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
 	TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
 	TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
-	
-	vtkErBitmapData* BitmapDataIn = vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-
-	TextureDataOut->Bindable.BitmapID	= BitmapDataIn ? BitmapDataIn->Bindable.ID : -1;
+	TextureDataOut->Bindable.BitmapID	= InInfo ? vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()))->Bindable.ID : -1;
 
 	TextureDataOut->Bind();
 

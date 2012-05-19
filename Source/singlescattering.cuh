@@ -30,6 +30,10 @@ KERNEL void KrnlSingleScattering()
 
 	const ColorXYZAf Ls = SingleScattering(gpTracer, Vec2i(IDx, IDy));
 
+	gpTracer->FrameBuffer.AccumulationXyza(IDx, IDy) += Ls;
+	gpTracer->FrameBuffer.Weight(IDx, IDy) += 1.0f;
+
+	/*
 	int KernelRadius = 1, float Sigma = 1.0f;
 
 	int Range[2][2];
@@ -53,11 +57,12 @@ KERNEL void KrnlSingleScattering()
 //			atomicAdd(&gpTracer->FrameBuffer.Weight(x, y), Weight);
 		}
 	}
+	*/
 }
 
 void SingleScattering(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 8, 8, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlSingleScattering<<<GridDim, BlockDim>>>()), "Single Scattering"); 
 }
 

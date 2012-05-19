@@ -13,18 +13,43 @@
 
 #pragma once
 
-#include "vtkErStable.h"
-#include "vtkErCamera.h"
-
-vtkStandardNewMacro(vtkErCamera);
-vtkCxxRevisionMacro(vtkErCamera, "$Revision: 1.0 $");
-
-vtkErCamera::vtkErCamera(void)
-{
-	this->SetExposure(1.0f);
-	this->SetGamma(2.2f);
-}
-
-vtkErCamera::~vtkErCamera(void)
-{
+#define ER_CALL(call)																	\
+																						\
+try																						\
+{																						\
+	call;																				\
+}																						\
+catch(ExposureRender::Exception& Exception)												\
+{																						\
+	char ErrorMessage[256];																\
+	sprintf_s(ErrorMessage, 256, "%s\n", Exception.Message);								\
+																						\
+	switch (Exception.Level)															\
+	{																					\
+		case ExposureRender::Enums::Info:												\
+		{																				\
+			printf(ErrorMessage);														\
+			break;																		\
+		}																				\
+																						\
+		case ExposureRender::Enums::Warning:											\
+		{																				\
+			printf(ErrorMessage);														\
+			break;																		\
+		}																				\
+																						\
+		case ExposureRender::Enums::Error:												\
+		{																				\
+			printf(ErrorMessage);														\
+			exit(EXIT_FAILURE);															\
+			break;																		\
+		}																				\
+																						\
+		case ExposureRender::Enums::Fatal:												\
+		{																				\
+			printf(ErrorMessage);														\
+			exit(EXIT_FAILURE);															\
+			break;																		\
+		}																				\
+	}																					\
 }

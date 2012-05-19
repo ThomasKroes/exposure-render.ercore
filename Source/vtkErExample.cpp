@@ -65,13 +65,16 @@ int main(int, char *[])
 
 	Reader->Update();
 
+	vtkSmartPointer<vtkImageCast> Cast = vtkSmartPointer<vtkImageCast>::New();
+
+	Cast->SetInputConnection(0, Reader->GetOutputPort());
+	Cast->SetOutputScalarTypeToUnsignedShort();
+	Cast->Update();
+
 	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
-	ErVolume->SetInputConnection(0, Reader->GetOutputPort());
-		
+	ErVolume->SetInputConnection(0, Cast->GetOutputPort());
 	ErVolume->Update();
-
-	return 0;
 
 	vtkSmartPointer<vtkErLight> ErLight = vtkSmartPointer<vtkErLight>::New();
 	
@@ -96,12 +99,12 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetClippingRange(0, 100000);
-	Camera->SetExposure(1);
+	Camera->SetExposure(1.0f);
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(32750, 0);
+	Opacity->AddPoint(10, 0);
 	Opacity->AddPoint(32751, 1);
 
 	VolumeMapper->SetOpacity(Opacity);
@@ -121,7 +124,7 @@ int main(int, char *[])
 
 //	VolumeMapper->SetEmission(Emission);
 
-//	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
+	VolumeMapper->SetInputConnection(0, ErVolume->GetOutputPort());
 	VolumeMapper->AddInputConnection(1, ErLight->GetOutputPort());
 	VolumeMapper->SetDensityScale(1000.0f);
 	VolumeMapper->SetStepFactorPrimary(5);
@@ -142,14 +145,14 @@ int main(int, char *[])
 	vtkSmartPointer<vtkRenderWindowInteractor> RenderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
 
 	RenderWindowInteractor->SetRenderWindow(RenderWindow);
+	RenderWindowInteractor->Initialize();
 
 	vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New(); //like paraview
  
 	RenderWindowInteractor->SetInteractorStyle( style );
-	RenderWindowInteractor->Initialize();
 
 	Renderer->AddVolume(Volume);
-//	Renderer->SetActiveCamera(Camera);
+	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
 
 	RenderWindow->Render();

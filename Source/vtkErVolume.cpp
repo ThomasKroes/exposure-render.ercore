@@ -101,7 +101,7 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	if (ImageDataIn->GetScalarType() != VTK_UNSIGNED_SHORT)
 	{
-		vtkErrorMacro("vtkErVolume onlys works with unsigned short input data!");
+		vtkErrorMacro("vtkErVolume onlys works with unsigned short image data!");
 		return 0;
 	}
 

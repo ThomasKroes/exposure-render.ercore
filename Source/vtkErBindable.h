@@ -14,6 +14,7 @@
 #pragma once
 
 #include "vtkErDll.h"
+#include "vtkErUtilities.h"
 
 #include "exposurerender.h"
 
@@ -26,12 +27,12 @@ class VTK_ER_EXPORT vtkErBindable##type##									\
 public:																		\
 	vtkErBindable##type##()													\
 	{																		\
-		this->Bind();														\
+		ER_CALL(this->Bind());												\
 	}																		\
 																			\
 	virtual ~vtkErBindable##type##()										\
 	{																		\
-		this->Unbind();														\
+		ER_CALL(this->Unbind());											\
 	}																		\
 																			\
 	void Bind()																\

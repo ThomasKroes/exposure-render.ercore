@@ -21,7 +21,7 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& V, CameraSample& CS)
+HOST_DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& V, CameraSample& CS)
 {
 	Vec2f ScreenPoint;
 
@@ -44,11 +44,13 @@ HOST_DEVICE_NI void SampleCamera(const Camera& Camera, Ray& R, const int& U, con
 	}
 }
 
-HOST_DEVICE_NI ScatterEvent SampleRay(Ray R, CRNG& RNG)
+HOST_DEVICE ScatterEvent SampleRay(Ray R, CRNG& RNG)
 {
 	ScatterEvent SE[3] = { ScatterEvent(Enums::Volume), ScatterEvent(Enums::Light), ScatterEvent(Enums::Object) };
 
-	SampleVolume(R, RNG, SE[0]);
+	RayMarcher RM;
+
+	RM.SampleVolume(R, RNG, SE[0]);
 
 	IntersectLights(R, SE[1], true);
 	IntersectObjects(R, SE[2]);
@@ -69,7 +71,7 @@ HOST_DEVICE_NI ScatterEvent SampleRay(Ray R, CRNG& RNG)
 	return NearestRS;
 }
 
-HOST_DEVICE_NI ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
+HOST_DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 {
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
 
@@ -81,7 +83,13 @@ HOST_DEVICE_NI ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCo
 
 	SampleCamera(gpTracer->Camera, R, PixelCoord[0], PixelCoord[1], Sample.CameraSample);
 
+	RayMarcher RM;
+
 	ScatterEvent SE;
+
+	RM.SampleVolume(R, RNG, SE);
+
+	return SE.Valid ? ColorXYZAf(0.0f, 1.0f, 0.0f, 1.0f) : ColorXYZAf(1.0f, 0.0f, 0.0f, 1.0f);
 
 	/*
 	SE = SampleRay(R, RNG);
@@ -94,9 +102,9 @@ HOST_DEVICE_NI ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCo
 	
 	if (SE.Valid && SE.Type == Enums::Object)
 		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
-	*/
-
+	
 	return ColorXYZAf(Lv[0], Lv[1], Lv[2], SE.Valid ? 1.0f : 0.0f);
+	*/
 }
 
 }

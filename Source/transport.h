@@ -32,7 +32,9 @@ HOST_DEVICE_NI bool Intersect(const Ray& R, CRNG& RNG)
 	if (IntersectsObject(R))
 		return true;
 
-	if (ScatterEventInVolume(R, RNG))
+	RayMarcher RM;
+
+	if (RM.ScatterEventInVolume(R, RNG))
 		return true;
 
 	return false;
