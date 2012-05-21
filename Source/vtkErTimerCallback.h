@@ -13,25 +13,31 @@
 
 #pragma once
 
-#include "ertracer.h"
-#include "ervolume.h"
-#include "erlight.h"
-#include "erobject.h"
-#include "erclippingobject.h"
-#include "ertexture.h"
-#include "erbitmap.h"
+#include "vtkErDll.h"
+#include "vtkErBindable.h"
 
-namespace ExposureRender
+#include <vtkCommand.h>
+#include <vtkObject.h>
+#include <vtkRenderWindowInteractor.h>
+
+class vtkErTimerCallback : public vtkCommand
 {
+public:
+	static vtkErTimerCallback *New()
+	{
+		return new vtkErTimerCallback;
+	}
+ 
+	virtual void Execute(vtkObject *vtkNotUsed(caller), unsigned long eventId, void *vtkNotUsed(callData))
+	{
+		if (!this->RenderWindowInteractor)
+			return;
 
-EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindClippingObject(const ErClippingObject& ClippingObject, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID);
-EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, ColorRGBAuc* pData);
+		this->RenderWindowInteractor->Render();
+	}
 
-}
+	void SetRenderWindowInteractor(vtkRenderWindowInteractor* RenderWindowInteractor) { this->RenderWindowInteractor = RenderWindowInteractor; };
+
+protected:
+	vtkRenderWindowInteractor*	RenderWindowInteractor;
+};

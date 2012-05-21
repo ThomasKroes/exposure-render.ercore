@@ -20,7 +20,6 @@
 namespace ExposureRender
 {
 
-	/*
 HOST_DEVICE_NI float Gauss2D(const float& Sigma, const int& X, const int& Y)
 {
 	return expf(-((X * X + Y * Y) / (2 * Sigma * Sigma)));
@@ -62,12 +61,11 @@ KERNEL void KrnlFilterFrameEstimate(int KernelRadius, float Sigma)
 void FilterFrameEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 8, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterFrameEstimate<<<GridDim, BlockDim>>>(1, 1.0f)), "Gaussian filter (Horizontal)");
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterFrameEstimate<<<GridDim, BlockDim>>>(2, 1.5f)), "FilterFrameEstimate");
 
-	Tracer.FrameBuffer.FrameEstimateTemp.Dirty = true;
+	Tracer.FrameBuffer.FrameEstimateTemp.SetDirty();
 
 	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.FrameEstimateTemp;
 }
-*/
 
 }

@@ -105,12 +105,12 @@ protected:
 	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
 	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
 
-	virtual bool BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume);
+	virtual void BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume);
 	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
 
 private:
 	unsigned int								TextureID;
-	unsigned char*								ImageBuffer;
+	ExposureRender::ColorRGBAuc*				ImageBuffer;
 	int											RenderSize[2];
 	vtkSmartPointer<vtkPiecewiseFunction>		Opacity;
 	vtkSmartPointer<vtkColorTransferFunction>	Diffuse;

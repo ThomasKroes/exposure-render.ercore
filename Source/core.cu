@@ -43,6 +43,7 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
+#include "filterframeestimate.cuh"
 #include "estimate.cuh"
 #include "toneMap.cuh"
 
@@ -129,8 +130,7 @@ EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 {
 	if (gTracers[TracerID].NoEstimates == 0)
 	{
-		gTracers[TracerID].FrameBuffer.AccumulationXyza.Reset();
-		gTracers[TracerID].FrameBuffer.Weight.Reset();
+		//gTracers[TracerID].FrameBuffer.AccumulationXyza.Reset();
 
 		if (gTracers[TracerID].Camera.FocusMode == Enums::AutoFocus)
 		{
@@ -146,13 +146,14 @@ EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 	gTracers.Synchronize(TracerID);
 
 	SingleScattering(gTracers[TracerID]);
+	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 
 	gTracers[TracerID].NoEstimates++;
 }
 
-EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, unsigned char* pData)
+EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, ColorRGBAuc* pData)
 {
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 

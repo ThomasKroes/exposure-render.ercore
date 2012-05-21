@@ -40,7 +40,7 @@ public:
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		ErTracer::operator=(Other);
+		ErTracer::operator = (Other);
 		
 		this->FrameBuffer.Resize(Other.Camera.FilmSize);
 

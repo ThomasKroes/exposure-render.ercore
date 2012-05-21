@@ -89,9 +89,6 @@ HOST_DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord
 
 	RM.SampleVolume(R, RNG, SE);
 
-	return SE.Valid ? ColorXYZAf(0.0f, 1.0f, 0.0f, 1.0f) : ColorXYZAf(1.0f, 0.0f, 0.0f, 1.0f);
-
-	/*
 	SE = SampleRay(R, RNG);
 
 	if (SE.Valid && SE.Type == Enums::Volume)
@@ -104,7 +101,6 @@ HOST_DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord
 		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 	
 	return ColorXYZAf(Lv[0], Lv[1], Lv[2], SE.Valid ? 1.0f : 0.0f);
-	*/
 }
 
 }

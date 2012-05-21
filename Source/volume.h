@@ -29,7 +29,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point)
+		Voxels("Device Voxels", Enums::Device, Enums::Linear)
 	{
 		DebugLog(__FUNCTION__);
 	}
@@ -41,7 +41,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device)
+		Voxels("Device Voxels", Enums::Device, Enums::Linear)
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
@@ -54,7 +54,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device)
+		Voxels("Device Voxels", Enums::Device, Enums::Linear)
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
@@ -113,7 +113,7 @@ public:
 		
 		const Vec3f LocalXYZ = Offset * this->InvSize * Vec3f(this->Voxels.GetResolution()[0], this->Voxels.GetResolution()[1], this->Voxels.GetResolution()[2]);
 
-		return this->Voxels(Vec3i(LocalXYZ[0], LocalXYZ[1], LocalXYZ[2]));
+		return this->Voxels(LocalXYZ);
 	}
 
 	HOST_DEVICE float GetIntensity(const Vec3f& P)

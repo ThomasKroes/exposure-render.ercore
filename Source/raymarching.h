@@ -47,7 +47,7 @@ public:
 
 		Vec3f Ps;
 
-		const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
+		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
 
 		MinT += RNG.Get1() * StepSize;
 
@@ -89,7 +89,7 @@ public:
 		float Sum		= 0.0f;
 		float SigmaT	= 0.0f;
 
-		const float StepSize = 0.1f;//gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
+		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
 
 		MinT += RNG.Get1() * StepSize;
 

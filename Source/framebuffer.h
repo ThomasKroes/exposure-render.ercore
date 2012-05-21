@@ -26,8 +26,6 @@ public:
 		Resolution(),
 		FrameEstimate("Frame Estimate XYZA", Enums::Device),
 		FrameEstimateTemp("Temp Frame Estimate XYZA", Enums::Device),
-		AccumulationXyza("Accumulation XYZA", Enums::Device),
-		Weight("Weight", Enums::Device),
 		RunningEstimateXyza("Running Estimate Xyza", Enums::Device),
 		DisplayEstimate("Display Estimate RGBA", Enums::Device),
 		DisplayEstimateTemp("Temp Display Estimate RGBA", Enums::Device),
@@ -49,8 +47,6 @@ public:
 
 		this->FrameEstimate.Resize(this->Resolution);
 		this->FrameEstimateTemp.Resize(this->Resolution);
-		this->AccumulationXyza.Resize(this->Resolution);
-		this->Weight.Resize(this->Resolution);
 		this->RunningEstimateXyza.Resize(this->Resolution);
 		this->DisplayEstimate.Resize(this->Resolution);
 		this->DisplayEstimateTemp.Resize(this->Resolution);
@@ -66,8 +62,6 @@ public:
 	Vec2i					Resolution;
 	Buffer2D<ColorXYZAf>	FrameEstimate;
 	Buffer2D<ColorXYZAf>	FrameEstimateTemp;
-	Buffer2D<ColorXYZAf>	AccumulationXyza;
-	Buffer2D<float>			Weight;
 	Buffer2D<ColorXYZAf>	RunningEstimateXyza;
 	Buffer2D<ColorRGBAuc>	DisplayEstimate;
 	Buffer2D<ColorRGBAuc>	DisplayEstimateTemp;

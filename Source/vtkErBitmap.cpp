@@ -105,7 +105,7 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	const Vec2i Resolution(ImageDataIn->GetExtent()[1] + 1, ImageDataIn->GetExtent()[3] + 1);
 
-	const int NoScalarComponents = ImageDataIn->GetNumberOfScalarComponents() == 1;
+	const int NoScalarComponents = ImageDataIn->GetNumberOfScalarComponents();
 
 	if (NoScalarComponents > 4)
 	{

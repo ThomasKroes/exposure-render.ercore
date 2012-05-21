@@ -82,6 +82,8 @@ vtkErTracer::vtkErTracer(void)
 	this->SetGradientFactor(1.0f);
 
 	glGenTextures(1, &TextureID);
+
+	this->Tracer.SetDirty();
 }
 
 vtkErTracer::~vtkErTracer(void)
@@ -134,10 +136,8 @@ int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 	return 1;
 }
 
-bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
+void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
-	this->Tracer.SetDirty(false);
-
 	this->Tracer.Opacity1D.Reset();
 	
 	for (int i = 0; i < this->Opacity->GetSize(); i++)
@@ -252,15 +252,18 @@ bool vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		}
 	}
 
-	ExposureRender::BindTracer(this->Tracer);
-
-	return true;
+	if (this->Tracer.GetDirty())
+	{
+		ER_CALL(ExposureRender::BindTracer(this->Tracer));
+		this->Tracer.SetDirty(false);
+	}
 }
 
 void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 {
-	if (!this->BeforeRender(Renderer, Volume))
-		return;
+	this->InvokeEvent(vtkCommand::VolumeMapperRenderStartEvent,0);
+
+	this->BeforeRender(Renderer, Volume);
 
 	int* WindowSize = Renderer->GetRenderWindow()->GetSize();
 
@@ -270,18 +273,60 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 		RenderSize[1] = WindowSize[1];
 
 		delete[] this->ImageBuffer;
-		this->ImageBuffer = new unsigned char[4 * this->RenderSize[0] * this->RenderSize[1]];
+		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->RenderSize[0] * this->RenderSize[1]];
 	}
 
 	ER_CALL(ExposureRender::RenderEstimate(this->Tracer.ID));
 	ER_CALL(ExposureRender::GetEstimate(this->Tracer.ID, this->ImageBuffer));
 
+	glEnable(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, TextureID);
+    
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)this->ImageBuffer);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+
+	double d = 0.5;
+	
+    Renderer->SetDisplayPoint(0,0,d);
+    Renderer->DisplayToWorld();
+    double coordinatesA[4];
+    Renderer->GetWorldPoint(coordinatesA);
+
+    Renderer->SetDisplayPoint(RenderSize[0],0,d);
+    Renderer->DisplayToWorld();
+    double coordinatesB[4];
+    Renderer->GetWorldPoint(coordinatesB);
+
+    Renderer->SetDisplayPoint(RenderSize[0], RenderSize[1],d);
+    Renderer->DisplayToWorld();
+    double coordinatesC[4];
+    Renderer->GetWorldPoint(coordinatesC);
+
+    Renderer->SetDisplayPoint(0,RenderSize[1],d);
+    Renderer->DisplayToWorld();
+    double coordinatesD[4];
+    Renderer->GetWorldPoint(coordinatesD);
+	
 	glPushAttrib(GL_LIGHTING);
 	glDisable(GL_LIGHTING);
 
-	glEnable(GL_TEXTURE_2D);
-
-	glDrawPixels(RenderSize[0], RenderSize[1], GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
+	glBegin(GL_QUADS);
+		glTexCoord2i(0, 0);
+		glVertex4dv(coordinatesA);
+		glTexCoord2i(1, 0);
+		glVertex4dv(coordinatesB);
+		glTexCoord2i(1, 1);
+		glVertex4dv(coordinatesC);
+		glTexCoord2i(0, 1);
+		glVertex4dv(coordinatesD);
+	glEnd();
 
 	glPopAttrib();
+
+	this->InvokeEvent(vtkCommand::VolumeMapperRenderEndEvent,0);
 }
