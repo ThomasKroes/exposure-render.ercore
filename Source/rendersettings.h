@@ -30,7 +30,6 @@ public:
 			this->StepFactorPrimary	= 0.1f;
 			this->StepFactorShadow	= 0.1f;
 			this->Shadows			= true;
-			this->MaxShadowDistance	= 1.0f;
 		}
 
 		HOST ~TraversalSettings()
@@ -47,7 +46,6 @@ public:
 			this->StepFactorPrimary		= Other.StepFactorPrimary;
 			this->StepFactorShadow		= Other.StepFactorShadow;
 			this->Shadows				= Other.Shadows;
-			this->MaxShadowDistance		= Other.MaxShadowDistance;
 
 			return *this;
 		}
@@ -55,7 +53,6 @@ public:
 		float	StepFactorPrimary;
 		float	StepFactorShadow;
 		bool	Shadows;
-		float	MaxShadowDistance;
 	};
 
 	class EXPOSURE_RENDER_DLL ShadingSettings
@@ -63,7 +60,7 @@ public:
 	public:
 		HOST ShadingSettings()
 		{
-			this->Type					= Enums::BrdfOnly;
+			this->Type					= Enums::PhaseFunctionOnly;
 			this->DensityScale			= 100.0f;
 			this->OpacityModulated		= true;
 			this->GradientMode			= Enums::CentralDifferences;

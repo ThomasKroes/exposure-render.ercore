@@ -29,7 +29,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Linear)
+		Voxels("Device Voxels", Enums::Device, Enums::Point)
 	{
 		DebugLog(__FUNCTION__);
 	}
@@ -41,7 +41,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Linear)
+		Voxels("Device Voxels", Enums::Device, Enums::Point)
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
@@ -54,7 +54,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Linear)
+		Voxels("Device Voxels", Enums::Device, Enums::Point)
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;

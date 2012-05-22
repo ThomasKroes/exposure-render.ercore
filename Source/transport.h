@@ -47,7 +47,7 @@ HOST_DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 
 	Vec3f W = Normalize(P2 - P1);
 
-	const Ray R(P1 + W * RAY_EPS, W, 0.0f, min((P2 - P1).Length() - RAY_EPS_2, gpTracer->RenderSettings.Traversal.MaxShadowDistance));
+	const Ray R(P1 + W * RAY_EPS, W, 0.0f, (P2 - P1).Length() - RAY_EPS_2);
 
 	return !Intersect(R, RNG);
 }
@@ -77,6 +77,8 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 		else
 			Ld += F * Li / LightPdf;
 	}
+
+	return Ld;
 
 	F = Shader.SampleF(SE.Wo, Wi, BsdfPdf, LS.BrdfSample);
 
@@ -130,7 +132,7 @@ HOST_DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, Ligh
 	switch (SE.Type)
 	{
 		case Enums::Volume:	
-			Shader = ExposureRender::Shader(Enums::Brdf, SE.N, SE.Wo, gpTracer->Diffuse1D.Evaluate(Intensity), gpTracer->Specular1D.Evaluate(Intensity), 15.0f, GlossinessExponent(gpTracer->Glossiness1D.Evaluate(Intensity)));
+			Shader = ExposureRender::Shader(Enums::PhaseFunction, SE.N, SE.Wo, gpTracer->Diffuse1D.Evaluate(Intensity), gpTracer->Specular1D.Evaluate(Intensity), 15.0f, GlossinessExponent(gpTracer->Glossiness1D.Evaluate(Intensity)));
 			break;
 
 		case Enums::Object:

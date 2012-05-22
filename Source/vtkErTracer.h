@@ -54,19 +54,19 @@ public:
 	};
 
 	vtkPiecewiseFunction* GetOpacity(void) { return this->Opacity.GetPointer(); };
-	void SetOpacity(vtkPiecewiseFunction* Opacity) { this->Opacity = Opacity; };
-	
+	void SetOpacity(vtkPiecewiseFunction* Opacity);
+		
 	vtkColorTransferFunction* GetDiffuse() { return this->Diffuse.GetPointer(); };
-	void SetDiffuse(vtkColorTransferFunction* Diffuse) { this->Diffuse = Diffuse; };
+	void SetDiffuse(vtkColorTransferFunction* Diffuse);
 
 	vtkColorTransferFunction* GetSpecular() { return this->Specular.GetPointer(); };
-	void SetSpecular(vtkColorTransferFunction* Specular) { this->Specular = Specular; };
+	void SetSpecular(vtkColorTransferFunction* Specular);
 
 	vtkPiecewiseFunction* GetGlossiness(void) { return this->Glossiness.GetPointer(); };
-	void SetGlossiness(vtkPiecewiseFunction* Glossiness) { this->Glossiness = Glossiness; };
+	void SetGlossiness(vtkPiecewiseFunction* Glossiness);
 	
 	vtkColorTransferFunction* GetEmission() { return this->Emission.GetPointer(); };
-	void SetEmission(vtkColorTransferFunction* Emission) { this->Emission = Emission; };
+	void SetEmission(vtkColorTransferFunction* Emission);
 
 	vtkGetMacro(StepFactorPrimary, float);
 	vtkSetMacro(StepFactorPrimary, float);
@@ -77,9 +77,6 @@ public:
 	vtkGetMacro(Shadows, bool);
 	vtkSetMacro(Shadows, bool);
 	
-	vtkGetMacro(MaxShadowDistance, float);
-	vtkSetMacro(MaxShadowDistance, float);
-
 	vtkGetMacro(ShadingMode, Enums::ShadingMode);
 	vtkSetMacro(ShadingMode, Enums::ShadingMode);
 
@@ -120,7 +117,6 @@ private:
 	float										StepFactorPrimary;
 	float										StepFactorShadow;
 	bool										Shadows;
-	float										MaxShadowDistance;
 	Enums::ShadingMode							ShadingMode;
 	float										DensityScale;
 	bool										OpacityModulated;

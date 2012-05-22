@@ -38,7 +38,7 @@ vtkErTracer::vtkErTracer(void)
 	this->SetNumberOfInputPorts(4);
 	this->SetNumberOfOutputPorts(0);
 
-	this->Opacity		= vtkPiecewiseFunction::New();
+	this->Glossiness		= vtkPiecewiseFunction::New();
 	this->Diffuse		= vtkColorTransferFunction::New();
 	this->Specular		= vtkColorTransferFunction::New();
 	this->Glossiness	= vtkPiecewiseFunction::New();
@@ -46,34 +46,20 @@ vtkErTracer::vtkErTracer(void)
 
 	double Min = 0, Max = 255;
 
-	Opacity->AddPoint(Min, 0, 0.5, 0);
-	Opacity->AddPoint(Max, 1, 0.5, 0);
-
-	for (int i = 0; i < 3; i++)
-	{
-		Diffuse->AddRGBPoint(Min, 0.0, 0.5, 0);
-		Diffuse->AddRGBPoint(Max, 1.0, 0.5, 0);
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		Specular->AddRGBPoint(Min, 0, 0.5, 0);
-		Specular->AddRGBPoint(Max, 0, 0.5, 0);
-	}
-
-	Glossiness->AddPoint(Min, 1, 0.5, 0);
-	Glossiness->AddPoint(Max, 1, 0.5, 0);
-
-	for (int i = 0; i < 3; i++)
-	{
-		Emission->AddRGBPoint(Min, 0, 0.5, 0);
-		Emission->AddRGBPoint(Max, 0, 0.5, 0);
-	}
+	Glossiness->AddPoint(Min, 0);
+	Glossiness->AddPoint(Max, 1);
+	Diffuse->AddRGBPoint(Min, 1, 1, 1);
+	Diffuse->AddRGBPoint(Max, 1, 1, 1);
+	Specular->AddRGBPoint(Min, 0, 0, 0);
+	Specular->AddRGBPoint(Max, 0, 0, 0);
+	Glossiness->AddPoint(Min, 1);
+	Glossiness->AddPoint(Max, 1);
+	Emission->AddRGBPoint(Min, 0, 0, 0);
+	Emission->AddRGBPoint(Max, 0, 0, 0);
 
 	this->SetStepFactorPrimary(3.0f);
 	this->SetStepFactorShadow(3.0f);
 	this->SetShadows(true);
-	this->SetMaxShadowDistance(2.0f);
 	this->SetShadingMode(Enums::PhaseFunctionOnly);
 	this->SetDensityScale(10.0f);
 	this->SetOpacityModulated(true);
@@ -140,10 +126,10 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
 	this->Tracer.Opacity1D.Reset();
 	
-	for (int i = 0; i < this->Opacity->GetSize(); i++)
+	for (int i = 0; i < this->Glossiness->GetSize(); i++)
 	{
 		double NodeValue[4];
-		this->Opacity->GetNodeValue(i, NodeValue);
+		this->Glossiness->GetNodeValue(i, NodeValue);
 		this->Tracer.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
 	}
 
@@ -171,20 +157,18 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	{
 		double NodeValue[6];
 		this->Emission->GetNodeValue(i, NodeValue);
-		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(0.0f/*NodeValue[1], NodeValue[2], NodeValue[3]*/)));
+		this->Tracer.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
 	this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= this->GetStepFactorPrimary();
 	this->Tracer.RenderSettings.Traversal.StepFactorShadow		= this->GetStepFactorShadow();
 	this->Tracer.RenderSettings.Traversal.Shadows				= this->GetShadows();
-	this->Tracer.RenderSettings.Traversal.MaxShadowDistance		= this->GetMaxShadowDistance();
-
-	this->Tracer.RenderSettings.Shading.Type				= this->GetShadingMode();
-	this->Tracer.RenderSettings.Shading.DensityScale		= this->GetDensityScale();
-	this->Tracer.RenderSettings.Shading.OpacityModulated	= this->GetOpacityModulated();
-	this->Tracer.RenderSettings.Shading.GradientMode		= this->GetGradientMode();
-	this->Tracer.RenderSettings.Shading.GradientThreshold	= this->GetGradientThreshold();
-	this->Tracer.RenderSettings.Shading.GradientFactor		= this->GetGradientFactor();
+	this->Tracer.RenderSettings.Shading.Type					= this->GetShadingMode();
+	this->Tracer.RenderSettings.Shading.DensityScale			= this->GetDensityScale();
+	this->Tracer.RenderSettings.Shading.OpacityModulated		= this->GetOpacityModulated();
+	this->Tracer.RenderSettings.Shading.GradientMode			= this->GetGradientMode();
+	this->Tracer.RenderSettings.Shading.GradientThreshold		= this->GetGradientThreshold();
+	this->Tracer.RenderSettings.Shading.GradientFactor			= this->GetGradientFactor();
 
 	vtkCamera* Camera = Renderer->GetActiveCamera();
 	
@@ -258,6 +242,116 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.SetDirty(false);
 	}
 }
+
+void vtkErTracer::SetOpacity(vtkPiecewiseFunction* Glossiness)
+{
+	this->Glossiness = Glossiness;
+
+	if (this->Glossiness != Glossiness)
+	{
+		if (this->Glossiness != NULL) 
+		{
+			this->Glossiness->UnRegister(this);
+		}
+		
+		this->Glossiness = Glossiness;
+		
+		if (this->Glossiness != NULL) 
+		{
+			this->Glossiness->Register(this);
+		}
+
+		this->Modified();
+	}
+};
+
+void vtkErTracer::SetDiffuse(vtkColorTransferFunction* Diffuse)
+{
+	this->Diffuse = Diffuse;
+
+	if (this->Diffuse != Diffuse)
+	{
+		if (this->Diffuse != NULL) 
+		{
+			this->Diffuse->UnRegister(this);
+		}
+		
+		this->Diffuse = Diffuse;
+		
+		if (this->Diffuse != NULL) 
+		{
+			this->Diffuse->Register(this);
+		}
+
+		this->Modified();
+	}
+};
+
+void vtkErTracer::SetSpecular(vtkColorTransferFunction* Specular)
+{
+	this->Specular = Specular;
+
+	if (this->Specular != Specular)
+	{
+		if (this->Specular != NULL) 
+		{
+			this->Specular->UnRegister(this);
+		}
+		
+		this->Specular = Specular;
+		
+		if (this->Specular != NULL) 
+		{
+			this->Specular->Register(this);
+		}
+
+		this->Modified();
+	}
+};
+
+void vtkErTracer::SetGlossiness(vtkPiecewiseFunction* Glossiness)
+{
+	this->Glossiness = Glossiness;
+
+	if (this->Glossiness != Glossiness)
+	{
+		if (this->Glossiness != NULL) 
+		{
+			this->Glossiness->UnRegister(this);
+		}
+		
+		this->Glossiness = Glossiness;
+		
+		if (this->Glossiness != NULL) 
+		{
+			this->Glossiness->Register(this);
+		}
+
+		this->Modified();
+	}
+};
+
+void vtkErTracer::SetEmission(vtkColorTransferFunction* Emission)
+{
+	this->Glossiness = Glossiness;
+
+	if (this->Glossiness != Glossiness)
+	{
+		if (this->Glossiness != NULL) 
+		{
+			this->Glossiness->UnRegister(this);
+		}
+		
+		this->Glossiness = Glossiness;
+		
+		if (this->Glossiness != NULL) 
+		{
+			this->Glossiness->Register(this);
+		}
+
+		this->Modified();
+	}
+};
 
 void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 {

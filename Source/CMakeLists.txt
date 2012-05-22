@@ -67,6 +67,7 @@ SET(General
 	rendersettings.h
 	timing.h
 	exception.h
+	kelvin.h
 	enums.h
 	color.h
 	exposurerender.h
