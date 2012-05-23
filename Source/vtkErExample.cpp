@@ -35,7 +35,7 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-char gFileName[] = "C://Volumes//engine.mhd";
+char gFileName[] = "C://Volumes//manix.mhd";
 
 int main(int, char *[])
 {
@@ -116,6 +116,7 @@ int main(int, char *[])
 
 	Camera->SetClippingRange(0, 1000000);
 	Camera->SetExposure(0.1f);
+	Camera->SetFocalDisk(0.01f);
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -163,8 +164,8 @@ int main(int, char *[])
 	Tracer->AddInputConnection(1, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
 	Tracer->SetDensityScale(100);
-	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(5000000);
+	Tracer->SetStepFactorPrimary(10);
+	Tracer->SetStepFactorShadow(10);
 
 	Tracer->Update();
 

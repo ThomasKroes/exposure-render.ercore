@@ -187,10 +187,10 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Camera.Pos				= Vec3f(Camera->GetPosition()[0], Camera->GetPosition()[1], Camera->GetPosition()[2]);
 		this->Tracer.Camera.Target			= Vec3f(Camera->GetFocalPoint()[0], Camera->GetFocalPoint()[1], Camera->GetFocalPoint()[2]);
 		this->Tracer.Camera.Up				= Vec3f(Camera->GetViewUp()[0], Camera->GetViewUp()[1], Camera->GetViewUp()[2]);
-		this->Tracer.Camera.ApertureSize	= 0.0f;//Camera->GetFocalDisk();
-		this->Tracer.Camera.ClipNear		= 0.0f;//Camera->GetClippingRange()[0];
-		this->Tracer.Camera.ClipFar			= 1000.0f;//Camera->GetClippingRange()[1];
-		this->Tracer.Camera.FOV				= 45;//Camera->GetViewAngle();
+		this->Tracer.Camera.ApertureSize	= Camera->GetFocalDisk();
+		this->Tracer.Camera.ClipNear		= Camera->GetClippingRange()[0];
+		this->Tracer.Camera.ClipFar			= Camera->GetClippingRange()[1];
+		this->Tracer.Camera.FOV				= Camera->GetViewAngle();
 	}
 
 	vtkErCamera* ErCamera = dynamic_cast<vtkErCamera*>(Camera);

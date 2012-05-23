@@ -77,19 +77,13 @@ HOST_DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord
 
 	ColorXYZf Lv = ColorXYZf::Black();
 
-	MetroSample Sample(RNG); 
+	MetroSample Sample(RNG);
 
 	Ray R;
 
 	SampleCamera(gpTracer->Camera, R, PixelCoord[0], PixelCoord[1], Sample.CameraSample);
 
-	RayMarcher RM;
-
-	ScatterEvent SE;
-
-	RM.SampleVolume(R, RNG, SE);
-
-	SE = SampleRay(R, RNG);
+	ScatterEvent SE = SampleRay(R, RNG);
 
 	if (SE.Valid && SE.Type == Enums::Volume)
 		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);

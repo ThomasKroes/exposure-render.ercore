@@ -141,8 +141,8 @@ public:
 	Vec3f				Wo;
 	ColorXYZf			Le;
 	Vec2f				UV;
-	int					ObjectID;
-	int					LightID;
+	unsigned short		ObjectID;
+	unsigned short		LightID;
 };
 
 }

@@ -18,59 +18,21 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ExtinctionVolume : public Volume
+class EXPOSURE_RENDER_DLL ExtinctionVolume
 {
 public:
 	HOST ExtinctionVolume() :
-		Volume(),
-	{
-		DebugLog(__FUNCTION__);
-	}
-
-	HOST Volume(const Volume& Other) :
-		Volume()
-	{
-		DebugLog(__FUNCTION__);
-		*this = Other;
-	}
-
-	HOST Volume(const ErVolume& Other) :
 		BoundingBox(),
-		GradientDeltaX(),
-		GradientDeltaY(),
-		GradientDeltaZ(),
 		Spacing(1.0f),
 		InvSpacing(1.0f),
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device)
+		Voxels("Device Extinction Voxels", Enums::Device, Enums::Point)
 	{
-		DebugLog(__FUNCTION__);
-		*this = Other;
 	}
 
-	HOST virtual ~Volume(void)
-	{
-		DebugLog(__FUNCTION__);
-	}
-	
-	HOST Volume& Volume::operator = (const Volume& Other)
-	{
-		DebugLog(__FUNCTION__);
-
-		this->BoundingBox		= Other.BoundingBox;
-		this->Spacing			= Other.Spacing;
-		this->InvSpacing		= Other.InvSpacing;
-		this->Size				= Other.Size;
-		this->InvSize			= Other.InvSize;
-		this->MinStep			= Other.MinStep;
-		this->Voxels			= Other.Voxels;
-
-		return *this;
-	}
-
-	HOST Volume& Volume::operator = (const ErVolume& Other)
+	HOST ExtinctionVolume& ExtinctionVolume::operator = (const Volume& Other)
 	{
 		DebugLog(__FUNCTION__);
 
@@ -94,7 +56,6 @@ public:
 
 		this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
 
-
 		return *this;
 	}
 
@@ -104,97 +65,12 @@ public:
 		
 		const Vec3f LocalXYZ = Offset * this->InvSize * Vec3f(this->Voxels.GetResolution()[0], this->Voxels.GetResolution()[1], this->Voxels.GetResolution()[2]);
 
-		return this->Voxels(Vec3i(LocalXYZ[0], LocalXYZ[1], LocalXYZ[2]));
+		return this->Voxels(LocalXYZ);
 	}
 
-	HOST_DEVICE float GetIntensity(const Vec3f& P)
+	HOST_DEVICE float GetExtinction(const Vec3f& P)
 	{
 		return (*this)(P);
-	}
-
-	HOST_DEVICE Vec3f GradientCD(const Vec3f& P)
-	{
-		const float Intensity[3][2] = 
-		{
-			{ GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
-			{ GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
-			{ GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
-		};
-
-		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
-	}
-
-	HOST_DEVICE Vec3f GradientFD(const Vec3f& P)
-	{
-		const float Intensity[4] = 
-		{
-			GetIntensity(P),
-			GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
-			GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
-			GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
-		};
-
-		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
-	}
-
-	HOST_DEVICE Vec3f GradientFiltered(const Vec3f& P)
-	{
-		Vec3f Offset(Vec3f(this->Spacing[0], 0.0f, 0.0f)[0], Vec3f(0.0f, this->Spacing[1], 0.0f)[1], Vec3f(0.0f, 0.0f, this->Spacing[2])[2]);
-
-		Vec3f G0 = GradientCD(P);
-		Vec3f G1 = GradientCD(P + Vec3f(-Offset[0], -Offset[1], -Offset[2]));
-		Vec3f G2 = GradientCD(P + Vec3f( Offset[0],  Offset[1],  Offset[2]));
-		Vec3f G3 = GradientCD(P + Vec3f(-Offset[0],  Offset[1], -Offset[2]));
-		Vec3f G4 = GradientCD(P + Vec3f( Offset[0], -Offset[1],  Offset[2]));
-		Vec3f G5 = GradientCD(P + Vec3f(-Offset[0], -Offset[1],  Offset[2]));
-		Vec3f G6 = GradientCD(P + Vec3f( Offset[0],  Offset[1], -Offset[2]));
-		Vec3f G7 = GradientCD(P + Vec3f(-Offset[0],  Offset[1],  Offset[2]));
-		Vec3f G8 = GradientCD(P + Vec3f( Offset[0], -Offset[1], -Offset[2]));
-	    
-		Vec3f L0 = Lerp(Lerp(G1, G2, 0.5), Lerp(G3, G4, 0.5), 0.5);
-		Vec3f L1 = Lerp(Lerp(G5, G6, 0.5), Lerp(G7, G8, 0.5), 0.5);
-	    
-		return Lerp(G0, Lerp(L0, L1, 0.5), 0.75);
-	}
-
-	HOST_DEVICE Vec3f Gradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
-	{
-		switch (GradientMode)
-		{
-			case Enums::ForwardDifferences:		return GradientFD(P);
-			case Enums::CentralDifferences:		return GradientCD(P);
-			case Enums::Filtered:				return GradientFiltered(P);
-		}
-
-		return GradientFD(P);
-	}
-
-	HOST_DEVICE Vec3f NormalizedGradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
-	{
-		return Normalize(Gradient(P, GradientMode));
-	}
-
-	HOST_DEVICE float GradientMagnitude(const Vec3f& P)
-	{
-		Vec3f Pts[3][2];
-
-		Pts[0][0] = P + Vec3f(this->Spacing[0], 0.0f, 0.0f);
-		Pts[0][1] = P - Vec3f(this->Spacing[0], 0.0f, 0.0f);
-		Pts[1][0] = P + Vec3f(0.0f, this->Spacing[1], 0.0f);
-		Pts[1][1] = P - Vec3f(0.0f, this->Spacing[1], 0.0f);
-		Pts[2][0] = P + Vec3f(0.0f, 0.0f, this->Spacing[2]);
-		Pts[2][1] = P - Vec3f(0.0f, 0.0f, this->Spacing[2]);
-
-		float D = 0.0f, Sum = 0.0f;
-
-		for (int i = 0; i < 3; i++)
-		{
-			D = GetIntensity(Pts[i][1]) - GetIntensity(Pts[i][0]);
-			D *= 0.5f / this->Spacing[i];
-			Sum += D * D;
-		}
-
-		return sqrtf(Sum);
 	}
 
 	BoundingBox					BoundingBox;
