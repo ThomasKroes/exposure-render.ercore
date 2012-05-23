@@ -68,17 +68,17 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 
 	if (!Li.IsBlack() && !F.IsBlack() && BsdfPdf > 0.0f && Visible(SE.P, SS.P, RNG))
 	{
-		const float LightPdf = DistanceSquared(SE.P, SS.P) / (AbsDot(SS.N, -Wi) * Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SE.P, SS.P) / (Light.Shape.Area);
 
-		const float Weight = 1.0f;//PowerHeuristic(1, LightPdf, 1, BsdfPdf);
+		const float Weight = PowerHeuristic(1, LightPdf, 1, BsdfPdf);
 
 		if (Shader.Type == Enums::Brdf)
 			Ld += F * Li * (AbsDot(Wi, SE.N) * Weight / LightPdf);
 		else
-			Ld += F * Li / LightPdf;
+			Ld += F * ((Li * Weight) / LightPdf);
 	}
 
-//	return Ld;
+	return Ld;
 
 	F = Shader.SampleF(SE.Wo, Wi, BsdfPdf, LS.BrdfSample);
 
@@ -96,14 +96,14 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 
 	if (!Li.IsBlack() && Visible(SE.P, SE2.P, RNG))
 	{
-		const float LightPdf = DistanceSquared(SE.P, SE2.P) / (AbsDot(SE.N, -Wi) * Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SE.P, SE2.P) / (Light.Shape.Area);
 
-		const float Weight = 1.0f;//PowerHeuristic(1, BsdfPdf, 1, LightPdf);
+		const float Weight = PowerHeuristic(1, BsdfPdf, 1, LightPdf);
 
 		if (Shader.Type == Enums::Brdf)
 			Ld += F * Li * (AbsDot(Wi, SE.N) * Weight / BsdfPdf);
 		else
-			Ld += F * Li / BsdfPdf;
+			Ld += F * ((Li * Weight) / BsdfPdf);
 	}
 	
 	return Ld;
@@ -147,7 +147,7 @@ HOST_DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, Ligh
 	}
 	/**/
 
-	Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
+	Ld += gpTracer->Opacity1D.Evaluate(Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
 
 	return (float)gpTracer->LightIDs.Count * Ld;
 }

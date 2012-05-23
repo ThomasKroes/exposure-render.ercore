@@ -43,7 +43,6 @@ public:
 
 		const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
 		float Sum		= 0.0f;
-		float SigmaT	= 0.0f;
 
 		Vec3f Ps;
 
@@ -58,11 +57,7 @@ public:
 			if (MinT >= MaxT)
 				return;
 			
-			float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
-
-			SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
-
-			Sum		+= SigmaT * StepSize;
+			Sum		+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(gpVolumes[gpTracer->VolumeID].GetIntensity(Ps)) * StepSize;
 			MinT	+= StepSize;
 		}
 
@@ -87,7 +82,6 @@ public:
 
 		const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
 		float Sum		= 0.0f;
-		float SigmaT	= 0.0f;
 
 		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
 
@@ -100,11 +94,7 @@ public:
 			if (MinT > MaxT)
 				return false;
 			
-			float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
-
-			SigmaT	= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity);
-
-			Sum		+= SigmaT * StepSize;
+			Sum		+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(gpVolumes[gpTracer->VolumeID].GetIntensity(Ps)) * StepSize;
 			MinT	+= StepSize;
 		}
 
