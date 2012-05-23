@@ -47,8 +47,8 @@ HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSamp
 	if (Light.Shape.OneSided && Dot(SE.P - SS.P, SS.N) < 0.0f)
 		Le = ColorXYZf::Black();
 
-//	if (Light.EmissionUnit == Enums::Lux)
-//		Le /= Light.Shape.Area;
+	if (Light.EmissionUnit == Enums::Lux)
+		Le /= Light.Shape.Area;
 }
 
 HOST_DEVICE_NI void IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
@@ -77,8 +77,8 @@ HOST_DEVICE_NI void IntersectLight(const Light& Light, const Ray& R, ScatterEven
 		SE.UV		= Int.UV;
 		SE.Le		= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
 		
-//		if (Light.EmissionUnit == Enums::Lux)
-//			SE.Le /= Light.Shape.Area;
+		if (Light.EmissionUnit == Enums::Lux)
+			SE.Le /= Light.Shape.Area;
 	}
 }
 

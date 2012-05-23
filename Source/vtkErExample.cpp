@@ -37,11 +37,10 @@
 
 char gFileName[] = "C://Volumes//engine.mhd";
 
-vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
-vtkSmartPointer<vtkImageCast> ImageCast		= vtkSmartPointer<vtkImageCast>::New();
-
 int main(int, char *[])
 {
+	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
+	
 	Reader->SetFileName(gFileName);
 	
 	if (Reader->CanReadFile(gFileName) == 0)
@@ -51,6 +50,8 @@ int main(int, char *[])
 	}
 
 	Reader->Update();
+
+	vtkSmartPointer<vtkImageCast> ImageCast	= vtkSmartPointer<vtkImageCast>::New();
 
 	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
 	ImageCast->SetOutputScalarTypeToUnsignedShort();
@@ -96,7 +97,7 @@ int main(int, char *[])
 	RimLight->SetPosition(0.1f, 0.1f, 0.1f);
 	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
 	RimLight->SetOneSided(false);
-	RimLight->SetOuterRadius(10000.0f);
+	RimLight->SetOuterRadius(10.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(135.0f);
 	RimLight->SetOffset(0.0f);
@@ -110,14 +111,14 @@ int main(int, char *[])
 	
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetClippingRange(0, 100000);
+	Camera->SetClippingRange(0, 1000000);
 	Camera->SetExposure(0.1f);
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(20, 0);
-	Opacity->AddPoint(21, 1);
+	Opacity->AddPoint(40, 0);
+	Opacity->AddPoint(41, 1);
 
 	Tracer->SetOpacity(Opacity);
 
@@ -156,7 +157,7 @@ int main(int, char *[])
 	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
 	Tracer->SetDensityScale(1000.0f);
 	Tracer->SetStepFactorPrimary(3);
-	Tracer->SetStepFactorShadow(15);
+	Tracer->SetStepFactorShadow(3);
 
 	Tracer->Update();
 

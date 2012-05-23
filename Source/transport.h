@@ -70,7 +70,7 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 	{
 		const float LightPdf = DistanceSquared(SE.P, SS.P) / (AbsDot(SS.N, -Wi) * Light.Shape.Area);
 
-		const float Weight = PowerHeuristic(1, LightPdf, 1, BsdfPdf);
+		const float Weight = 1.0f;//PowerHeuristic(1, LightPdf, 1, BsdfPdf);
 
 		if (Shader.Type == Enums::Brdf)
 			Ld += F * Li * (AbsDot(Wi, SE.N) * Weight / LightPdf);
@@ -78,7 +78,7 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 			Ld += F * Li / LightPdf;
 	}
 
-	return Ld;
+//	return Ld;
 
 	F = Shader.SampleF(SE.Wo, Wi, BsdfPdf, LS.BrdfSample);
 
@@ -98,7 +98,7 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 	{
 		const float LightPdf = DistanceSquared(SE.P, SE2.P) / (AbsDot(SE.N, -Wi) * Light.Shape.Area);
 
-		const float Weight = PowerHeuristic(1, BsdfPdf, 1, LightPdf);
+		const float Weight = 1.0f;//PowerHeuristic(1, BsdfPdf, 1, LightPdf);
 
 		if (Shader.Type == Enums::Brdf)
 			Ld += F * Li * (AbsDot(Wi, SE.N) * Weight / BsdfPdf);
