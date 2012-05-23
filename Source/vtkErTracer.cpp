@@ -126,10 +126,10 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
 	this->Tracer.Opacity1D.Reset();
 	
-	for (int i = 0; i < this->Glossiness->GetSize(); i++)
+	for (int i = 0; i < this->Opacity->GetSize(); i++)
 	{
 		double NodeValue[4];
-		this->Glossiness->GetNodeValue(i, NodeValue);
+		this->Opacity->GetNodeValue(i, NodeValue);
 		this->Tracer.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
 	}
 
@@ -243,22 +243,22 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	}
 }
 
-void vtkErTracer::SetOpacity(vtkPiecewiseFunction* Glossiness)
+void vtkErTracer::SetOpacity(vtkPiecewiseFunction* Opacity)
 {
-	this->Glossiness = Glossiness;
+	this->Opacity = Opacity;
 
-	if (this->Glossiness != Glossiness)
+	if (this->Opacity != Opacity)
 	{
-		if (this->Glossiness != NULL) 
+		if (this->Opacity != NULL) 
 		{
-			this->Glossiness->UnRegister(this);
+			this->Opacity->UnRegister(this);
 		}
 		
-		this->Glossiness = Glossiness;
+		this->Opacity = Opacity;
 		
-		if (this->Glossiness != NULL) 
+		if (this->Opacity != NULL) 
 		{
-			this->Glossiness->Register(this);
+			this->Opacity->Register(this);
 		}
 
 		this->Modified();
@@ -333,20 +333,20 @@ void vtkErTracer::SetGlossiness(vtkPiecewiseFunction* Glossiness)
 
 void vtkErTracer::SetEmission(vtkColorTransferFunction* Emission)
 {
-	this->Glossiness = Glossiness;
+	this->Emission = Emission;
 
-	if (this->Glossiness != Glossiness)
+	if (this->Emission != Emission)
 	{
-		if (this->Glossiness != NULL) 
+		if (this->Emission != NULL) 
 		{
-			this->Glossiness->UnRegister(this);
+			this->Emission->UnRegister(this);
 		}
 		
-		this->Glossiness = Glossiness;
+		this->Emission = Emission;
 		
-		if (this->Glossiness != NULL) 
+		if (this->Emission != NULL) 
 		{
-			this->Glossiness->Register(this);
+			this->Emission->Register(this);
 		}
 
 		this->Modified();

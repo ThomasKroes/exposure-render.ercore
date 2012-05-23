@@ -46,6 +46,8 @@ public:
 
 	HOST Buffer2D& operator = (const Buffer2D& Other)
 	{
+		Buffer<T>::operator = (Other);
+
 		DebugLog("%s: this = %s, Other = %s", __FUNCTION__, this->GetFullName(), Other.GetFullName());
 		
 		if (Other.Dirty)

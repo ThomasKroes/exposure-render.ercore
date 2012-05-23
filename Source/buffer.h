@@ -39,6 +39,14 @@ public:
 		this->SetName(Other.GetName());
 	}
 
+	HOST Buffer& operator = (const Buffer& Other)
+	{
+		this->FilterMode	= Other.FilterMode;
+		this->AddressMode	= Other.AddressMode;
+
+		return *this;
+	}
+
 	HOST const char* GetName() const
 	{
 		return this->Name;
@@ -117,6 +125,7 @@ public:
 	HOST_DEVICE T* GetData() { return this->Data; }
 	HOST Enums::MemoryType GetMemoryType() const { return this->MemoryType; }
 	HOST Enums::FilterMode GetFilterMode() const { return this->FilterMode; }
+	HOST void SetFilterMode(const Enums::FilterMode& FilterMode) { this->FilterMode = FilterMode; }
 	HOST Enums::AddressMode GetAddressMode() const { return this->AddressMode; }
 	HOST void SetDirty(const bool& Dirty = true) { this->Dirty = Dirty; }
 

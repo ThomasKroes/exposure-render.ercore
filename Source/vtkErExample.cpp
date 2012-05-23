@@ -35,7 +35,7 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-char gFileName[] = "C://model_segmentation.mhd";
+char gFileName[] = "C://Volumes//engine.mhd";
 
 vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
 vtkSmartPointer<vtkImageCast> ImageCast		= vtkSmartPointer<vtkImageCast>::New();
@@ -59,6 +59,7 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
 
 	ErVolume->SetInputConnection(0, ImageCast->GetOutputPort());
+	ErVolume->SetFilterMode(ExposureRender::Enums::Linear);
 	ErVolume->Update();
 
 	vtkSmartPointer<vtkErTexture> KeyLightTexture = vtkSmartPointer<vtkErTexture>::New();
@@ -113,27 +114,24 @@ int main(int, char *[])
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(1, 1);
+	Opacity->AddPoint(20, 0);
+	Opacity->AddPoint(21, 1);
 
 	Tracer->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 
+	/*
 	for (int i = 0; i < 50; i++)
 	{
 		float H = (float)rand() / RAND_MAX;
 		Diffuse->AddHSVPoint(i, H, 0.75, 0.75);
 		Diffuse->AddHSVPoint(i + 1, H, 0.75, 0.75);
 	}
+	*/
 
-	Diffuse->AddRGBPoint(3, 0, 0, 1);
-	Diffuse->AddRGBPoint(4, 0, 0, 1);
-	Diffuse->AddRGBPoint(4, 0, 1, 0);
-	Diffuse->AddRGBPoint(5, 0, 1, 0);
-	Diffuse->AddRGBPoint(5, 1, 0, 0);
-	Diffuse->AddRGBPoint(6, 1, 0, 0);
-	Diffuse->AddRGBPoint(6, 1, 0, 1);
-	Diffuse->AddRGBPoint(7, 1, 0, 1);
+	Diffuse->AddRGBPoint(0, 1, 1, 1);
+	Diffuse->AddRGBPoint(1, 1, 1, 1);
 
 	Tracer->SetDiffuse(Diffuse);
 
@@ -146,17 +144,17 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkColorTransferFunction> Emission = vtkSmartPointer<vtkColorTransferFunction>::New();
 
-	Emission->AddRGBPoint(0, 1, 1, 1);
-	Emission->AddRGBPoint(65000, 1, 1, 1);
+	Emission->AddRGBPoint(0, 0, 0, 0);
+	Emission->AddRGBPoint(1, 0, 0, 0);
 
-//	Tracer->SetEmission(Emission);
+	Tracer->SetEmission(Emission);
 
 	Tracer->SetInputConnection(0, ErVolume->GetOutputPort());
 	Tracer->AddInputConnection(1, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
-	Tracer->SetDensityScale(100.0f);
+	Tracer->SetDensityScale(1000.0f);
 	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(10);
+	Tracer->SetStepFactorShadow(5);
 
 	Tracer->Update();
 

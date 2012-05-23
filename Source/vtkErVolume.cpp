@@ -25,6 +25,8 @@ vtkErVolume::vtkErVolume(void)
 {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
+
+	this->SetFilterMode(Enums::Linear);
 }
 
 vtkErVolume::~vtkErVolume(void)
@@ -114,6 +116,8 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	const Vec3f Spacing(ImageDataIn->GetSpacing()[0], ImageDataIn->GetSpacing()[1], ImageDataIn->GetSpacing()[2]);
 
 	VolumeDataOut->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)ImageDataIn->GetScalarPointer(), true);
+	VolumeDataOut->Bindable.Voxels.SetFilterMode(this->GetFilterMode());
+
 	VolumeDataOut->Bind();
 
 	return 1;
