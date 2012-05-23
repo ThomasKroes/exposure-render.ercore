@@ -223,8 +223,8 @@ public:
 			{
 				int Coord[2][2] =
 				{
-					{ floorf(UV[0]), ceilf(UV[0]) },
-					{ floorf(UV[1]), ceilf(UV[1]) },
+					{ (int)floorf(UV[0]), ceilf(UV[0]) },
+					{ (int)floorf(UV[1]), ceilf(UV[1]) },
 				};
 
 				const float du = UV[0] - Coord[0][0];

@@ -34,9 +34,9 @@ HOST_DEVICE ColorRGBuc ToneMap(const ColorXYZAf& XYZA)
 
 	ColorRGBuc RGBuc;
 
-	RGBuc[0] = 255.0f * RGBf[0];//powf(RGBf[0] / gpTracer->Camera.Gamma);
-	RGBuc[1] = 255.0f * RGBf[1];//powf(RGBf[1] / gpTracer->Camera.Gamma);
-	RGBuc[2] = 255.0f * RGBf[2];//powf(RGBf[2] / gpTracer->Camera.Gamma);
+	RGBuc[0] = (unsigned char)(255.0f * powf(RGBf[0], gpTracer->Camera.InvGamma));
+	RGBuc[1] = (unsigned char)(255.0f * powf(RGBf[1], gpTracer->Camera.InvGamma));
+	RGBuc[2] = (unsigned char)(255.0f * powf(RGBf[2], gpTracer->Camera.InvGamma));
 
 	return RGBuc;
 }

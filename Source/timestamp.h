@@ -37,6 +37,16 @@ public:
 		return this->ModifiedTime;
 	}
 
+	HOST bool operator > (const TimeStamp& Other)
+	{
+		return this->ModifiedTime > Other.ModifiedTime;
+	};
+	
+	HOST bool operator < (const TimeStamp& Other)
+	{
+		return this->ModifiedTime < Other.ModifiedTime;
+	};
+
 protected:
 	unsigned long	ModifiedTime;
 };

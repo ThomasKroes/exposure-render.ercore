@@ -29,8 +29,7 @@ public:
 		HashMap(),
 		HashMapIt(),
 		DeviceList(NULL),
-		Counter(0),
-		DeviceSymbol()
+		Counter(0)
 	{
 		DebugLog(__FUNCTION__);
 		sprintf_s(DeviceSymbol, MAX_CHAR_SIZE, "%s", pDeviceSymbol);

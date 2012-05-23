@@ -83,10 +83,10 @@ int main(int, char *[])
 	KeyLight->SetShapeType(ExposureRender::Enums::Sphere);
 	KeyLight->SetOuterRadius(0.01f);
 	KeyLight->SetOneSided(false);
-	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(45.0f);
+	KeyLight->SetElevation(-45.0f);
+	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(2.3f);
-	KeyLight->SetMultiplier(5.5f);
+	KeyLight->SetMultiplier(1.5f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -115,7 +115,7 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetClippingRange(0, 1000000);
-	Camera->SetExposure(0.1f);
+	Camera->SetExposure(0.025f);
 	Camera->SetFocalDisk(0.01f);
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -163,9 +163,9 @@ int main(int, char *[])
 	Tracer->SetInputConnection(0, ErVolume->GetOutputPort());
 	Tracer->AddInputConnection(1, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
-	Tracer->SetDensityScale(100);
-	Tracer->SetStepFactorPrimary(10);
-	Tracer->SetStepFactorShadow(10);
+	Tracer->SetDensityScale(1000);
+	Tracer->SetStepFactorPrimary(5);
+	Tracer->SetStepFactorShadow(5);
 
 	Tracer->Update();
 
