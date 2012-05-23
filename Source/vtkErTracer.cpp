@@ -216,7 +216,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 		if (LightData && LightData->Bindable.Enabled)
 		{
-			this->Tracer.LightIDs[i] = LightData->Bindable.ID;
+			this->Tracer.LightIDs[this->Tracer.LightIDs.Count] = LightData->Bindable.ID;
 			this->Tracer.LightIDs.Count++;
 		}
 	}
@@ -231,7 +231,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 		if (ObjectData && ObjectData->Bindable.Enabled)
 		{
-			this->Tracer.ObjectIDs[i] = ObjectData->Bindable.ID;
+			this->Tracer.ObjectIDs[this->Tracer.ObjectIDs.Count] = ObjectData->Bindable.ID;
 			this->Tracer.ObjectIDs.Count++;
 		}
 	}
@@ -242,116 +242,6 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.SetDirty(false);
 	}
 }
-
-void vtkErTracer::SetOpacity(vtkPiecewiseFunction* Opacity)
-{
-	this->Opacity = Opacity;
-
-	if (this->Opacity != Opacity)
-	{
-		if (this->Opacity != NULL) 
-		{
-			this->Opacity->UnRegister(this);
-		}
-		
-		this->Opacity = Opacity;
-		
-		if (this->Opacity != NULL) 
-		{
-			this->Opacity->Register(this);
-		}
-
-		this->Modified();
-	}
-};
-
-void vtkErTracer::SetDiffuse(vtkColorTransferFunction* Diffuse)
-{
-	this->Diffuse = Diffuse;
-
-	if (this->Diffuse != Diffuse)
-	{
-		if (this->Diffuse != NULL) 
-		{
-			this->Diffuse->UnRegister(this);
-		}
-		
-		this->Diffuse = Diffuse;
-		
-		if (this->Diffuse != NULL) 
-		{
-			this->Diffuse->Register(this);
-		}
-
-		this->Modified();
-	}
-};
-
-void vtkErTracer::SetSpecular(vtkColorTransferFunction* Specular)
-{
-	this->Specular = Specular;
-
-	if (this->Specular != Specular)
-	{
-		if (this->Specular != NULL) 
-		{
-			this->Specular->UnRegister(this);
-		}
-		
-		this->Specular = Specular;
-		
-		if (this->Specular != NULL) 
-		{
-			this->Specular->Register(this);
-		}
-
-		this->Modified();
-	}
-};
-
-void vtkErTracer::SetGlossiness(vtkPiecewiseFunction* Glossiness)
-{
-	this->Glossiness = Glossiness;
-
-	if (this->Glossiness != Glossiness)
-	{
-		if (this->Glossiness != NULL) 
-		{
-			this->Glossiness->UnRegister(this);
-		}
-		
-		this->Glossiness = Glossiness;
-		
-		if (this->Glossiness != NULL) 
-		{
-			this->Glossiness->Register(this);
-		}
-
-		this->Modified();
-	}
-};
-
-void vtkErTracer::SetEmission(vtkColorTransferFunction* Emission)
-{
-	this->Emission = Emission;
-
-	if (this->Emission != Emission)
-	{
-		if (this->Emission != NULL) 
-		{
-			this->Emission->UnRegister(this);
-		}
-		
-		this->Emission = Emission;
-		
-		if (this->Emission != NULL) 
-		{
-			this->Emission->Register(this);
-		}
-
-		this->Modified();
-	}
-};
 
 void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 {

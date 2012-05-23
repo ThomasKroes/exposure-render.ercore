@@ -54,19 +54,19 @@ public:
 	};
 
 	vtkPiecewiseFunction* GetOpacity(void) { return this->Opacity.GetPointer(); };
-	void SetOpacity(vtkPiecewiseFunction* Opacity);
-		
+	void SetOpacity(vtkPiecewiseFunction* Opacity) { this->Opacity = Opacity; };
+	
 	vtkColorTransferFunction* GetDiffuse() { return this->Diffuse.GetPointer(); };
-	void SetDiffuse(vtkColorTransferFunction* Diffuse);
+	void SetDiffuse(vtkColorTransferFunction* Diffuse) { this->Diffuse = Diffuse; };
 
 	vtkColorTransferFunction* GetSpecular() { return this->Specular.GetPointer(); };
-	void SetSpecular(vtkColorTransferFunction* Specular);
+	void SetSpecular(vtkColorTransferFunction* Specular) { this->Specular = Specular; };
 
 	vtkPiecewiseFunction* GetGlossiness(void) { return this->Glossiness.GetPointer(); };
-	void SetGlossiness(vtkPiecewiseFunction* Glossiness);
+	void SetGlossiness(vtkPiecewiseFunction* Glossiness) { this->Glossiness = Glossiness; };
 	
 	vtkColorTransferFunction* GetEmission() { return this->Emission.GetPointer(); };
-	void SetEmission(vtkColorTransferFunction* Emission);
+	void SetEmission(vtkColorTransferFunction* Emission) { this->Emission = Emission; };
 
 	vtkGetMacro(StepFactorPrimary, float);
 	vtkSetMacro(StepFactorPrimary, float);

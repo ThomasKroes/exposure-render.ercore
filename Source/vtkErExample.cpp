@@ -86,6 +86,7 @@ int main(int, char *[])
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
+	KeyLight->SetEnabled(false);
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
@@ -95,14 +96,15 @@ int main(int, char *[])
 	RimLight->SetPosition(0.1f, 0.1f, 0.1f);
 	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
 	RimLight->SetOneSided(false);
-	RimLight->SetOuterRadius(10.0f);
+	RimLight->SetOuterRadius(10000.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(135.0f);
-	RimLight->SetOffset(5.0f);
-	RimLight->SetMultiplier(100.0f);
+	RimLight->SetOffset(0.0f);
+	RimLight->SetMultiplier(0.1f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
-	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
+	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
+	RimLight->SetEnabled(true);
 
 	vtkSmartPointer<vtkErTracer> Tracer = vtkSmartPointer<vtkErTracer>::New();
 	
@@ -153,8 +155,8 @@ int main(int, char *[])
 	Tracer->AddInputConnection(1, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
 	Tracer->SetDensityScale(1000.0f);
-	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(5);
+	Tracer->SetStepFactorPrimary(3);
+	Tracer->SetStepFactorShadow(15);
 
 	Tracer->Update();
 

@@ -42,11 +42,10 @@ public:
 	static vtkErBitmap* New();
 	vtkTypeRevisionMacro(vtkErBitmap, vtkAlgorithm);
 
-	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
+	vtkGetMacro(FilterMode, Enums::FilterMode);
+	vtkSetMacro(FilterMode, Enums::FilterMode);
 
-protected:
-	vtkErBitmap();
-	virtual ~vtkErBitmap();
+	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
 	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
 	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
@@ -55,6 +54,12 @@ protected:
 	virtual int RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 	virtual int RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
+
+protected:
+	vtkErBitmap();
+	virtual ~vtkErBitmap();
+
+	Enums::FilterMode			FilterMode;
 
 private:
 	vtkErBitmap(const vtkErBitmap& Other);			// Not implemented

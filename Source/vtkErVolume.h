@@ -37,9 +37,6 @@ private:
 class VTK_ER_EXPORT vtkErVolume : public vtkAlgorithm
 {
 public:
-	vtkErVolume();
-    virtual ~vtkErVolume();
-
 	vtkTypeMacro(vtkErVolume, vtkAlgorithm);
     static vtkErVolume* New();
 
@@ -56,5 +53,8 @@ public:
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
 protected:
+	vtkErVolume();
+    virtual ~vtkErVolume();
+
 	Enums::FilterMode			FilterMode;
 };

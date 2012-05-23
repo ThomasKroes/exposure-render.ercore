@@ -26,6 +26,8 @@ vtkErBitmap::vtkErBitmap(void)
 {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
+
+	this->SetFilterMode(Enums::Linear);
 }
 
 vtkErBitmap::~vtkErBitmap(void)
@@ -141,6 +143,8 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	}
 	
 	BitmapDataOut->Bindable.BindPixels(Resolution, (ColorXYZf*)Pixels);
+	BitmapDataOut->Bindable.Pixels.SetFilterMode(this->GetFilterMode());
+
 	BitmapDataOut->Bind();
 
 	delete[] Pixels;
