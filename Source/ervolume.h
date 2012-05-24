@@ -27,7 +27,8 @@ public:
 		ErBindable(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
-		Spacing(1.0f)
+		Spacing(1.0f),
+		AcceleratorType(Enums::Octree)
 	{
 	}
 
@@ -39,7 +40,8 @@ public:
 		ErBindable(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
-		Spacing(1.0f)
+		Spacing(1.0f),
+		AcceleratorType(Enums::Octree)
 	{
 		*this = Other;
 	}
@@ -48,9 +50,10 @@ public:
 	{
 		ErBindable::operator=(Other);
 
-		this->Voxels		= Other.Voxels;
-		this->NormalizeSize	= Other.NormalizeSize;
-		this->Spacing		= Other.Spacing;
+		this->Voxels			= Other.Voxels;
+		this->NormalizeSize		= Other.NormalizeSize;
+		this->Spacing			= Other.Spacing;
+		this->AcceleratorType	= Other.AcceleratorType;
 
 		return *this;
 	}
@@ -66,6 +69,7 @@ public:
 	Buffer3D<unsigned short>	Voxels;
 	bool						NormalizeSize;
 	Vec3f						Spacing;
+	Enums::AcceleratorType		AcceleratorType;
 };
 
 }

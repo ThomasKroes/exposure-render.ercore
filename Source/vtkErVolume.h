@@ -43,6 +43,9 @@ public:
 	vtkGetMacro(FilterMode, Enums::FilterMode);
 	vtkSetMacro(FilterMode, Enums::FilterMode);
 
+	vtkGetMacro(AcceleratorType, Enums::AcceleratorType);
+	vtkSetMacro(AcceleratorType, Enums::AcceleratorType);
+
 	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
 	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
 
@@ -57,4 +60,5 @@ protected:
     virtual ~vtkErVolume();
 
 	Enums::FilterMode			FilterMode;
+	Enums::AcceleratorType		AcceleratorType;
 };

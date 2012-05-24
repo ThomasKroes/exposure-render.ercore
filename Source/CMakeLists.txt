@@ -89,6 +89,7 @@ SET(General
 	singlescattering.h
 	alignment.h
 	transform.h
+	octree.h
 )
 
 SOURCE_GROUP("General" FILES ${General})

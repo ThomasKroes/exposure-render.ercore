@@ -141,6 +141,12 @@ namespace Enums
 		Mirror,
 		Border
 	};
+
+	enum AcceleratorType
+	{
+		NoAcceleration = 0,
+		Octree
+	};
 }
 
 }

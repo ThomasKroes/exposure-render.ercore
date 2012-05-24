@@ -15,6 +15,7 @@
 
 #include "ervolume.h"
 #include "boundingbox.h"
+#include "octree.h"
 
 namespace ExposureRender
 {
@@ -29,7 +30,9 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point)
+		Voxels("Device Voxels", Enums::Device, Enums::Point),
+		Octree(),
+		AcceleratorType(Enums::Octree)
 	{
 		DebugLog(__FUNCTION__);
 	}
@@ -41,7 +44,9 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point)
+		Voxels("Device Voxels", Enums::Device, Enums::Point),
+		Octree(),
+		AcceleratorType(Enums::Octree)
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
@@ -54,7 +59,9 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point)
+		Voxels("Device Voxels", Enums::Device, Enums::Point),
+		Octree(),
+		AcceleratorType(Enums::Octree)
 	{
 		DebugLog(__FUNCTION__);
 		*this = Other;
@@ -84,7 +91,11 @@ public:
 	{
 		DebugLog(__FUNCTION__);
 
-		this->Voxels = Other.Voxels;
+		this->Voxels			= Other.Voxels;
+		this->AcceleratorType	= Other.AcceleratorType;
+
+		if (this->AcceleratorType == Enums::Octree)
+			this->Octree.Build(this->Voxels);
 
 		float Scale = 0.0f;
 
@@ -118,7 +129,23 @@ public:
 
 	HOST_DEVICE float GetIntensity(const Vec3f& P)
 	{
-		return (*this)(P);
+		switch (this->AcceleratorType)
+		{
+			case Enums::NoAcceleration:
+			{
+				return (*this)(P);
+			}
+
+			case Enums::Octree:
+			{
+				return this->Octree.GetIntensity(P);
+			}
+
+			default:
+			{
+				return (*this)(P);
+			}
+		}
 	}
 
 	HOST_DEVICE Vec3f GradientCD(const Vec3f& P)
@@ -213,6 +240,8 @@ public:
 	Vec3f						InvSize;
 	float						MinStep;
 	Buffer3D<unsigned short>	Voxels;
+	Enums::AcceleratorType		AcceleratorType;
+	Octree						Octree;
 };
 
 }
