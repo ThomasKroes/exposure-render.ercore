@@ -13,9 +13,12 @@ cmake_minimum_required(VERSION 2.8)
 
 PROJECT(ExposureRender)
 
+# Use CUDA
 FIND_PACKAGE(CUDA)
 
-# Supported streaming architectures
+# Supported streaming architectures, uncomment the lines that pertain to the hardware your compiling for
+
+# Tesla architecture: sm 1.0 and above
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_10,code=sm_10;${CUDA_NVCC_FLAGS}")
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_10,code=compute_10;${CUDA_NVCC_FLAGS}")
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_11,code=sm_11;${CUDA_NVCC_FLAGS}")
@@ -24,9 +27,16 @@ FIND_PACKAGE(CUDA)
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_12,code=compute_12;${CUDA_NVCC_FLAGS}")
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_13,code=sm_13;${CUDA_NVCC_FLAGS}")
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_13,code=compute_13;${CUDA_NVCC_FLAGS}")
+
+# Fermi architecture: sm 2.0 and above
 SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_20,code=sm_20;${CUDA_NVCC_FLAGS}")
 SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_20,code=compute_20;${CUDA_NVCC_FLAGS}")
-# SET(CUDA_NVCC_FLAGS "-OPT:Olimit=99999;${CUDA_NVCC_FLAGS}")
+# SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_21,code=sm_21;${CUDA_NVCC_FLAGS}")
+# SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_21,code=compute_21;${CUDA_NVCC_FLAGS}")
+
+# Kepler architecture: sm 3.0 and above
+# SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_30,code=sm_30;${CUDA_NVCC_FLAGS}")
+# SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_30,code=compute_30;${CUDA_NVCC_FLAGS}")
 
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -35,6 +45,7 @@ INCLUDE_DIRECTORIES(
 	${CUDA_TOOLKIT_INCLUDE}
 )
 
+# Make sure classes are exported
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 
 SOURCE_GROUP("Core" FILES ${vtkErCoreSources})
@@ -149,8 +160,10 @@ SET(Cuda
 
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
+# Create the ErCore project as a shared library (DLL)
 CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shapes} ${Bindable} ${Cuda} SHARED)
 
+# Use vtk
 IF(NOT VTK_BINARY_DIR)
 	FIND_PACKAGE(VTK)
 	IF(NOT VTK_DIR)
@@ -161,13 +174,12 @@ ENDIF(NOT VTK_BINARY_DIR)
 
 INCLUDE(CMakeOptions.cmake)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
-
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+# Make sure classes are exported
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 
 SET(General
@@ -202,6 +214,7 @@ SET(General
 
 SOURCE_GROUP("General" FILES ${General})
 
+# Sources that will be wrapped by python
 SET(WrapPython
 	vtkErShape.h
 	vtkErShape.cpp
@@ -223,26 +236,34 @@ SET(WrapPython
 	vtkErBitmap.cpp
 )
 
+# Create VtkEr wrapping library
 ADD_LIBRARY(VtkEr ${General})
+
+# Link against ErCore
 TARGET_LINK_LIBRARIES(VtkEr vtkCommon vtkRendering vtkGraphics vtkVolumeRendering ErCore OpenGL32.lib)
 
+# Make use of precompiled headers to speed up compilation
 if (MSVC)
    set_target_properties(VtkEr PROPERTIES COMPILE_FLAGS "/YuvtkErStable.h")
    set_source_files_properties(vtkErStable.cpp PROPERTIES COMPILE_FLAGS "/YcvtkErStable.h")
 endif(MSVC)
 
+# Python wrapping
 IF(VTK_WRAP_PYTHON)
 	INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_PATH}")
 	VTK_WRAP_PYTHON3(vtkErPython vtkErPython_SRCS "${WrapPython}")
 	ADD_LIBRARY(vtkErPythonD ${vtkErPython_SRCS})
 	PYTHON_ADD_MODULE(vtkErPython vtkErPythonInit.cxx)
+	
+	# Create the VtkEr Python wrapper
 	TARGET_LINK_LIBRARIES(vtkErPython vtkErPythonD)
+	
+	# Create the VtkEr Python debug wrapper
 	TARGET_LINK_LIBRARIES(vtkErPythonD VtkEr vtkCommonPythonD vtkRenderingPythonD vtkGraphicsPythonD vtkVolumeRenderingPythonD)
 ENDIF(VTK_WRAP_PYTHON)
 
+# Create an example project
 ADD_EXECUTABLE(vtkErExample vtkErExample.cpp)
+
+# Link it against the VtkEr wrapper
 TARGET_LINK_LIBRARIES(vtkErExample VtkEr)
-
-
-
-
