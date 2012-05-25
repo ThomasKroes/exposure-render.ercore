@@ -37,10 +37,84 @@
 
 char gFileName[] = "C://Volumes//engine.mhd";
 
+void ConfigureER(vtkRenderer* Renderer);
+void LoadVolume(vtkErTracer* Tracer);
+void SetTransferFunction(vtkErTracer* Tracer);
+void CreateCamera(vtkRenderer* Renderer);
+void CreateLighting(vtkErTracer* Tracer);
+
 int main(int, char *[])
 {
-	printf("%d", sizeof(ExposureRender::ShadeEvents));
+//	printf("%d", sizeof(ExposureRender::ShadeEvent));
+	
+	
 
+	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+
+	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
+
+	vtkSmartPointer<vtkRenderWindowInteractor> RenderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+
+	RenderWindowInteractor->SetRenderWindow(RenderWindow);
+	
+	RenderWindow->AddRenderer(Renderer);
+
+	
+
+	
+
+//	ExposureRender::SetDevice();
+
+	// Create and apply timer callback
+	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
+	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
+	
+	// Create and apply interactor style
+	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+	InteractorStyle->SetMotionFactor(10);
+		
+	RenderWindowInteractor->Initialize();
+	RenderWindowInteractor->CreateRepeatingTimer(1);
+	RenderWindowInteractor->AddObserver(vtkCommand::TimerEvent, TimerCallback);
+	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
+
+	RenderWindow->Render();
+	RenderWindow->SetSize(512, 512);
+
+	ExposureRender::SetDevice();
+	ConfigureER(Renderer);
+
+	RenderWindowInteractor->Start();
+
+	
+
+	return EXIT_SUCCESS;
+}
+
+void ConfigureER(vtkRenderer* Renderer)
+{
+	vtkSmartPointer<vtkErTracer> Tracer = vtkSmartPointer<vtkErTracer>::New();
+	
+	LoadVolume(Tracer);
+	CreateLighting(Tracer);
+	SetTransferFunction(Tracer);
+	CreateCamera(Renderer);
+
+	Tracer->SetDensityScale(10);
+	Tracer->SetStepFactorPrimary(5);
+	Tracer->SetStepFactorShadow(5);
+	Tracer->Update();
+
+	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
+	
+	Volume->Update();
+	Volume->SetMapper(Tracer);
+
+	Renderer->AddVolume(Volume);
+}
+
+void LoadVolume(vtkErTracer* Tracer)
+{
 	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
 	
 	Reader->SetFileName(gFileName);
@@ -48,7 +122,7 @@ int main(int, char *[])
 	if (Reader->CanReadFile(gFileName) == 0)
 	{
 		printf("can't read file!");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
 	Reader->Update();
@@ -59,13 +133,30 @@ int main(int, char *[])
 	ImageCast->SetOutputScalarTypeToUnsignedShort();
 	ImageCast->Update();
 
-	vtkSmartPointer<vtkErVolume> ErVolume = vtkSmartPointer<vtkErVolume>::New();
+	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
 
-	ErVolume->SetInputConnection(0, ImageCast->GetOutputPort());
-	ErVolume->SetFilterMode(ExposureRender::Enums::Linear);
-//	ErVolume->SetAcceleratorType(ExposureRender::Enums::Octree);
-	ErVolume->Update();
+	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
+	Volume->SetFilterMode(ExposureRender::Enums::Linear);
+//	Volume->SetAcceleratorType(ExposureRender::Enums::);
+	Volume->Update();
 
+	Tracer->SetInputConnection(0, Volume->GetOutputPort());
+}
+
+void CreateCamera(vtkRenderer* Renderer)
+{
+	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
+
+	Camera->SetClippingRange(0, 1000000);
+	Camera->SetExposure(0.25f);
+	Camera->SetFocalDisk(0.01f);
+
+	Renderer->SetActiveCamera(Camera);
+	Renderer->ResetCamera();
+}
+
+void CreateLighting(vtkErTracer* Tracer)
+{
 	vtkSmartPointer<vtkErTexture> KeyLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	KeyLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
@@ -113,19 +204,13 @@ int main(int, char *[])
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
 	RimLight->SetEnabled(false);
 
-	vtkSmartPointer<vtkErTracer> Tracer = vtkSmartPointer<vtkErTracer>::New();
-	
-	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
+	Tracer->AddInputConnection(1, KeyLight->GetOutputPort());
+	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
+}
 
-	Camera->SetClippingRange(0, 1000000);
-	Camera->SetExposure(0.25f);
-	Camera->SetFocalDisk(0.01f);
-	
+void SetTransferFunction(vtkErTracer* Tracer)
+{
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
-	
-//	Opacity->AddPoint(0, 0);
-//	Opacity->AddPoint(32800, 0);
-//	Opacity->AddPoint(33001, 1);
 
 	Opacity->AddPoint(0, 0.0);
 	Opacity->AddPoint(100, 0.0);
@@ -158,54 +243,8 @@ int main(int, char *[])
 
 	vtkSmartPointer<vtkColorTransferFunction> Emission = vtkSmartPointer<vtkColorTransferFunction>::New();
 
-	Emission->AddRGBPoint(0, 0.1, 0.1, 0.9);
-	Emission->AddRGBPoint(1024, 0.3, 0.8, 0.2);
+	Emission->AddRGBPoint(0, 0, 0, 0);
+	Emission->AddRGBPoint(1024, 0, 0, 0);
 
-//	Tracer->SetEmission(Emission);
-
-	Tracer->SetInputConnection(0, ErVolume->GetOutputPort());
-	Tracer->AddInputConnection(1, KeyLight->GetOutputPort());
-	Tracer->AddInputConnection(1, RimLight->GetOutputPort());
-	Tracer->SetDensityScale(10);
-	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(5);
-
-	Tracer->Update();
-
-	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
-	Volume->Update();
-	
-	Volume->SetMapper(Tracer);
-
-	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
-	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
-
-	RenderWindow->AddRenderer(Renderer);
-	
-	vtkSmartPointer<vtkRenderWindowInteractor> RenderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-
-	RenderWindowInteractor->SetRenderWindow(RenderWindow);
-	
-	// Create and apply timer callback
-	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
-	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
-	
-	// Create and apply interactor style
-	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-	InteractorStyle->SetMotionFactor(10);
-		
-	RenderWindowInteractor->Initialize();
-	RenderWindowInteractor->CreateRepeatingTimer(1);
-	RenderWindowInteractor->AddObserver(vtkCommand::TimerEvent, TimerCallback);
-	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
-
-	Renderer->AddVolume(Volume);
-	Renderer->SetActiveCamera(Camera);
-	Renderer->ResetCamera();
-
-	RenderWindow->Render();
-	RenderWindow->SetSize(512, 512);
-	RenderWindowInteractor->Start();
-
-	return EXIT_SUCCESS;
+	Tracer->SetEmission(Emission);
 }

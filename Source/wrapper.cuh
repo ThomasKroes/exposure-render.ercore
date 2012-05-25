@@ -20,6 +20,8 @@
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#include <GL/glew.h>
+#include <cuda_gl_interop.h>
 #include <map>
 
 using namespace std;
@@ -37,81 +39,84 @@ static inline void HandleCudaError(const cudaError_t& CudaError, const char* pTi
 	sprintf_s(Message, 256, "%s (%s)", cudaGetErrorString(CudaError), pTitle);
 
 	if (CudaError != cudaSuccess)
+	{
+		DEBUG_BREAK
 		throw(Exception(Enums::Error, Message));
+	}
 }
 
 static inline void ThreadSynchronize()
 {
-	Cuda::HandleCudaError(cudaThreadSynchronize(), "cudaThreadSynchronize");
+	Cuda::HandleCudaError(cudaThreadSynchronize(), __FUNCTION__);
 }
 
 template<class T> static inline void Allocate(T*& pDevicePointer, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMalloc((void**)&pDevicePointer, Num * sizeof(T)), "cudaMalloc");
+	HandleCudaError(cudaMalloc((void**)&pDevicePointer, Num * sizeof(T)), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void AllocatePiched(T*& pDevicePointer, const int Pitch, const int Width, const int Height)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMallocPitch((void**)&pDevicePointer, (size_t*)&Pitch, Width * sizeof(T), Height), "cudaMallocPitch");
+	HandleCudaError(cudaMallocPitch((void**)&pDevicePointer, (size_t*)&Pitch, Width * sizeof(T), Height), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemSet(T*& pDevicePointer, const int Value, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemset((void*)pDevicePointer, Value, (size_t)(Num * sizeof(T))), "cudaMemset");
+	HandleCudaError(cudaMemset((void*)pDevicePointer, Value, (size_t)(Num * sizeof(T))), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void HostToConstantDevice(T* pHost, char* pDeviceSymbol, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T)), "cudaMemcpyToSymbol");
+	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T)), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyHostToDeviceSymbol(T* pHost, const char* pDeviceSymbol, const int& Num = 1, const int& Offset = 0)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T), Offset, cudaMemcpyHostToDevice), "cudaMemcpyToSymbol");
+	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T), Offset, cudaMemcpyHostToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyDeviceToDeviceSymbol(T* pDevice, const char* pDeviceSymbol, const int& Num = 1, const int& Offset = 0)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pDevice, Num * sizeof(T), 0, cudaMemcpyDeviceToDevice), "cudaMemcpyToSymbol");
+	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pDevice, Num * sizeof(T), 0, cudaMemcpyDeviceToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyHostToDevice(T* pHost, T* pDevice, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpy(pDevice, pHost, Num * sizeof(T), cudaMemcpyHostToDevice), "cudaMemcpy");
+	HandleCudaError(cudaMemcpy(pDevice, pHost, Num * sizeof(T), cudaMemcpyHostToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyDeviceToHost(T* pDevice, T* pHost, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpy(pHost, pDevice, Num * sizeof(T), cudaMemcpyDeviceToHost), "cudaMemcpy");
+	HandleCudaError(cudaMemcpy(pHost, pDevice, Num * sizeof(T), cudaMemcpyDeviceToHost), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyDeviceToDevice(T* pDeviceSource, T* pDeviceDestination, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpy(pDeviceDestination, pDeviceSource, Num * sizeof(T), cudaMemcpyDeviceToDevice), "cudaMemcpy");
+	HandleCudaError(cudaMemcpy(pDeviceDestination, pDeviceSource, Num * sizeof(T), cudaMemcpyDeviceToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 static inline void FreeArray(cudaArray*& pCudaArray)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaFreeArray(pCudaArray), "cudaFreeArray");
+	HandleCudaError(cudaFreeArray(pCudaArray), __FUNCTION__);
 	pCudaArray = NULL;
 	Cuda::ThreadSynchronize();
 }
@@ -123,7 +128,7 @@ template<class T> static inline void Free(T*& pBuffer)
 
 	Cuda::ThreadSynchronize();
 	
-	HandleCudaError(cudaFree(pBuffer), "cudaFree");
+	HandleCudaError(cudaFree(pBuffer), __FUNCTION__);
 	pBuffer = NULL;
 
 	Cuda::ThreadSynchronize();
@@ -132,8 +137,47 @@ template<class T> static inline void Free(T*& pBuffer)
 static inline void GetSymbolAddress(void** pDevicePointer, char* pSymbol)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaGetSymbolAddress(pDevicePointer, pSymbol), "cudaGetSymbolAddress");
+	HandleCudaError(cudaGetSymbolAddress(pDevicePointer, pSymbol), __FUNCTION__);
 }
+
+static inline void GraphicsUnregisterResource(cudaGraphicsResource_t GraphicsResource)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGraphicsUnregisterResource(GraphicsResource), __FUNCTION__);
+}
+
+static inline void GraphicsGLRegisterBuffer(struct cudaGraphicsResource** Resource, GLuint Buffer, unsigned int Flags)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGraphicsGLRegisterBuffer(Resource, Buffer, Flags), __FUNCTION__);
+}
+
+static inline void GraphicsMapResources(int Count, cudaGraphicsResource_t* Resources, cudaStream_t Stream)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGraphicsMapResources(Count, Resources, Stream), __FUNCTION__);
+}
+
+static inline void GraphicsUnmapResources(int Count, cudaGraphicsResource_t* Resources, cudaStream_t Stream)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGraphicsUnmapResources(Count, Resources, Stream), __FUNCTION__);
+}
+
+
+static inline void GLMapBufferObject(void** DevicePointer, const GLuint& Buffer)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGLMapBufferObject(DevicePointer, Buffer), __FUNCTION__);
+}
+
+static inline void GLUnmapBufferObject(const GLuint& Buffer)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGLUnmapBufferObject(Buffer), __FUNCTION__);
+}
+
+
 
 }
 

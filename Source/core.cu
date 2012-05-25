@@ -48,6 +48,12 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 namespace ExposureRender
 {
 
+EXPOSURE_RENDER_DLL void SetDevice(const int& DeviceID /*= 0*/)
+{
+	glewInit();
+	cudaGLSetGLDevice(DeviceID);
+}
+
 EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*= true*/)
 {
 	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
@@ -137,10 +143,24 @@ EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 
 	gTracers.Synchronize(TracerID);
 
+	ColorRGBAuc* Output;
+
+	Cuda::GLMapBufferObject((void**)&Output, gTracers[TracerID].FrameBuffer.OutputPBO);
+
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
-	ToneMap(gTracers[TracerID]);
+	ToneMap(gTracers[TracerID], Output);
+
+	Cuda::GLUnmapBufferObject(gTracers[TracerID].FrameBuffer.OutputPBO);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glWindowPos2i(0, 0);
+
+    glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, gTracers[TracerID].FrameBuffer.OutputPBO);
+    glDrawPixels(gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].FrameBuffer.Resolution[1], GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
 
 	gTracers[TracerID].NoEstimates++;
 }

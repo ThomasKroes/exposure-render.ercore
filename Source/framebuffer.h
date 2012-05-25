@@ -34,8 +34,14 @@ public:
 		RandomSeeds2("Random Seeds 2", Enums::Device),
 		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
 		RandomSeedsCopy2("Random Seeds 2 Copy", Enums::Device),
-		HostDisplayEstimate("Display Estimate RGBA", Enums::Host)
+		HostDisplayEstimate("Display Estimate RGBA", Enums::Host),
+		OutputPBO(0)
 	{
+	}
+
+	HOST ~FrameBuffer()
+	{
+		glDeleteBuffersARB(1, &this->OutputPBO);
 	}
 
 	HOST void Resize(const Vec2i& Resolution)
@@ -57,6 +63,18 @@ public:
 
 		this->RandomSeedsCopy1 = this->RandomSeeds1;
 		this->RandomSeedsCopy2 = this->RandomSeeds2;
+
+		if (this->OutputPBO)
+			glDeleteBuffersARB(1, &this->OutputPBO);
+
+		glGenBuffersARB(1, &this->OutputPBO);
+		glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, this->OutputPBO);
+		glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, this->Resolution[0] * this->Resolution[1] * sizeof(unsigned int), 0, GL_STREAM_DRAW_ARB);
+		glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
+		
+		Cuda::HandleCudaError(cudaGLRegisterBufferObject(this->OutputPBO));
+//		Cuda::GraphicsGLRegisterBuffer(&this->OutputGraphics, this->OutputPBO, cudaGraphicsMapFlagsWriteDiscard);
+		
 	}
 
 	Vec2i					Resolution;
@@ -71,6 +89,8 @@ public:
 	RandomSeedBuffer2D		RandomSeedsCopy1;
 	RandomSeedBuffer2D		RandomSeedsCopy2;
 	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
+
+	GLuint					OutputPBO;
 };
 
 }

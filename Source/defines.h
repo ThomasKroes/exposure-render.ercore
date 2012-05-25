@@ -71,6 +71,12 @@ namespace ExposureRender
 #define MAX_NO_TF_NODES				128
 #define NO_COLOR_COMPONENTS			4
 
+#ifdef _MSC_VER
+#define DEBUG_BREAK __debugbreak();
+#else
+#define DEBUG_BREAK
+#endif
+
 	/*
 
 #define VEC3_CONSTRUCTOR(classname, type)													\
