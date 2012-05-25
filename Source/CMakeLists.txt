@@ -98,6 +98,7 @@ SET(General
 	plf.h
 	pcf.h
 	singlescattering.h
+	shadeevent.h
 	alignment.h
 	transform.h
 	octree.h

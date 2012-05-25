@@ -39,6 +39,8 @@ char gFileName[] = "C://Volumes//engine.mhd";
 
 int main(int, char *[])
 {
+	printf("%d", sizeof(ExposureRender::ShadeEvents));
+
 	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
 	
 	Reader->SetFileName(gFileName);
