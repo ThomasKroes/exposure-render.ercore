@@ -18,6 +18,10 @@
 
 #ifdef __CUDA_ARCH__
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <GL/glew.h>

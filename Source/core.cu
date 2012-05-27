@@ -45,13 +45,19 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "estimate.cuh"
 #include "toneMap.cuh"
 
+bool Initialized = false;
+
 namespace ExposureRender
 {
 
 EXPOSURE_RENDER_DLL void SetDevice(const int& DeviceID /*= 0*/)
 {
-	glewInit();
-	cudaGLSetGLDevice(DeviceID);
+	if (!Initialized)
+	{
+//		glewInit();
+		cudaGLSetGLDevice(DeviceID);
+		Initialized = true;
+	}
 }
 
 EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*= true*/)

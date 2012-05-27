@@ -41,7 +41,7 @@ public:
 
 	HOST ~FrameBuffer()
 	{
-		glDeleteBuffersARB(1, &this->OutputPBO);
+		glDeleteBuffers(1, &this->OutputPBO);
 	}
 
 	HOST void Resize(const Vec2i& Resolution)
@@ -73,8 +73,6 @@ public:
 		glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
 		
 		Cuda::HandleCudaError(cudaGLRegisterBufferObject(this->OutputPBO));
-//		Cuda::GraphicsGLRegisterBuffer(&this->OutputGraphics, this->OutputPBO, cudaGraphicsMapFlagsWriteDiscard);
-		
 	}
 
 	Vec2i					Resolution;

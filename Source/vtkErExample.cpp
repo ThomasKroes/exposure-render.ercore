@@ -35,6 +35,8 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
+#include <GL/glew.h>
+
 char gFileName[] = "C://Volumes//engine.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -45,10 +47,6 @@ void CreateLighting(vtkErTracer* Tracer);
 
 int main(int, char *[])
 {
-//	printf("%d", sizeof(ExposureRender::ShadeEvent));
-	
-	
-
 	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 
 	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -58,12 +56,6 @@ int main(int, char *[])
 	RenderWindowInteractor->SetRenderWindow(RenderWindow);
 	
 	RenderWindow->AddRenderer(Renderer);
-
-	
-
-	
-
-//	ExposureRender::SetDevice();
 
 	// Create and apply timer callback
 	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
@@ -81,12 +73,13 @@ int main(int, char *[])
 	RenderWindow->Render();
 	RenderWindow->SetSize(512, 512);
 
-	ExposureRender::SetDevice();
+	glewInit();
+
+	ER_CALL(ExposureRender::SetDevice());
+
 	ConfigureER(Renderer);
 
 	RenderWindowInteractor->Start();
-
-	
 
 	return EXIT_SUCCESS;
 }
@@ -100,9 +93,9 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(10);
+	Tracer->SetDensityScale(100);
 	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(5);
+	Tracer->SetStepFactorShadow(15);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -149,7 +142,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetClippingRange(0, 1000000);
 	Camera->SetExposure(0.25f);
-	Camera->SetFocalDisk(0.01f);
+	Camera->SetFocalDisk(0.0f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
