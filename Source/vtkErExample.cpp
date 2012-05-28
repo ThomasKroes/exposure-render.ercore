@@ -35,8 +35,6 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-#include <GL/glew.h>
-
 char gFileName[] = "C://Volumes//engine.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -72,8 +70,6 @@ int main(int, char *[])
 
 	RenderWindow->Render();
 	RenderWindow->SetSize(512, 512);
-
-	glewInit();
 
 	ER_CALL(ExposureRender::SetDevice());
 
