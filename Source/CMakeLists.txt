@@ -166,7 +166,7 @@ CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shapes} ${Bindable} ${Cuda} SHARE
 
 # Link against ErCore
 # TARGET_LINK_LIBRARIES(ErCore ${CUDA_SDK_ROOT_DIR}/common/lib/Win32/glew32.lib OpenGL32.lib)
-TARGET_LINK_LIBRARIES(ErCore OpenGL32.lib)
+# TARGET_LINK_LIBRARIES(ErCore OpenGL32.lib)
 
 # Use vtk
 IF(NOT VTK_BINARY_DIR)
