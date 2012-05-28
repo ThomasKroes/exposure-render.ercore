@@ -41,7 +41,6 @@ public:
 
 	HOST ~FrameBuffer()
 	{
-		glDeleteBuffers(1, &this->OutputPBO);
 	}
 
 	HOST void Resize(const Vec2i& Resolution)
