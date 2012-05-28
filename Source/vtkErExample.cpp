@@ -35,7 +35,7 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-char gFileName[] = "C://Volumes//engine.mhd";
+char gFileName[] = "D://Volumes//engine.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -124,7 +124,7 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
 	Volume->SetFilterMode(ExposureRender::Enums::Linear);
-	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
+	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration); // this will still result in Octree value
 	Volume->Update();
 
 	Tracer->SetInputConnection(0, Volume->GetOutputPort());
