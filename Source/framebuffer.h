@@ -64,6 +64,7 @@ public:
 		this->RandomSeedsCopy1 = this->RandomSeeds1;
 		this->RandomSeedsCopy2 = this->RandomSeeds2;
 
+		/*
 		if (this->OutputPBO)
 			glDeleteBuffersARB(1, &this->OutputPBO);
 
@@ -73,6 +74,7 @@ public:
 		glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
 		
 		Cuda::HandleCudaError(cudaGLRegisterBufferObject(this->OutputPBO));
+		*/
 	}
 
 	Vec2i					Resolution;

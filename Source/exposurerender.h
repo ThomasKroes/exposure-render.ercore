@@ -33,6 +33,5 @@ EXPOSURE_RENDER_DLL void BindClippingObject(const ErClippingObject& ClippingObje
 EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID);
-EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, ColorRGBAuc* pData);
 
 }

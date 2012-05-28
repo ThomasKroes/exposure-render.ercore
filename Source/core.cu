@@ -55,7 +55,7 @@ EXPOSURE_RENDER_DLL void SetDevice(const int& DeviceID /*= 0*/)
 	if (!Initialized)
 	{
 //		glewInit();
-		cudaGLSetGLDevice(DeviceID);
+//		cudaGLSetGLDevice(DeviceID);
 		Initialized = true;
 	}
 }
@@ -149,33 +149,32 @@ EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 
 	gTracers.Synchronize(TracerID);
 
+	/*
 	ColorRGBAuc* Output;
 
 	Cuda::GLMapBufferObject((void**)&Output, gTracers[TracerID].FrameBuffer.OutputPBO);
+	*/
 
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
-	ToneMap(gTracers[TracerID], Output);
+	ToneMap(gTracers[TracerID]);
+//	ToneMap(gTracers[TracerID], Output);
 
-	Cuda::GLUnmapBufferObject(gTracers[TracerID].FrameBuffer.OutputPBO);
+//	Cuda::GLUnmapBufferObject(gTracers[TracerID].FrameBuffer.OutputPBO);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glWindowPos2i(0, 0);
+	gTracers[TracerID].FrameBuffer.DisplayEstimate.SetDirty();
+	gTracers[TracerID].FrameBuffer.HostDisplayEstimate = gTracers[TracerID].FrameBuffer.DisplayEstimate;
 
-    glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, gTracers[TracerID].FrameBuffer.OutputPBO);
-    glDrawPixels(gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].FrameBuffer.Resolution[1], GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
+	glDrawPixels(gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].FrameBuffer.Resolution[1], GL_RGBA, GL_UNSIGNED_BYTE, gTracers[TracerID].FrameBuffer.HostDisplayEstimate.GetData());
+
+//	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, gTracers[TracerID].FrameBuffer.OutputPBO);
+//	glDrawPixels(gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].FrameBuffer.Resolution[1], GL_RGBA, GL_UNSIGNED_BYTE, 0);
+//	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
 
 	gTracers[TracerID].NoEstimates++;
-}
-
-EXPOSURE_RENDER_DLL void GetEstimate(int TracerID, ColorRGBAuc* pData)
-{
-	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
-
-	Cuda::MemCopyDeviceToHost(FB.DisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.DisplayEstimate.GetNoElements());
 }
 
 }
