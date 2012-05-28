@@ -30,7 +30,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::NearestNeighbour),
+		Voxels("Device Voxels", Enums::Device, Enums::Point),
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{
@@ -44,7 +44,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::NearestNeighbour),
+		Voxels("Device Voxels", Enums::Device, Enums::Point),
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{
@@ -59,7 +59,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::NearestNeighbour),
+		Voxels("Device Voxels", Enums::Device, Enums::Point),
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{

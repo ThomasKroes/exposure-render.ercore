@@ -71,8 +71,6 @@ int main(int, char *[])
 	RenderWindow->Render();
 	RenderWindow->SetSize(512, 512);
 
-	ER_CALL(ExposureRender::SetDevice());
-
 	ConfigureER(Renderer);
 
 	RenderWindowInteractor->Start();
@@ -89,9 +87,9 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(100);
+	Tracer->SetDensityScale(10);
 	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(15);
+	Tracer->SetStepFactorShadow(5);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -126,7 +124,7 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
 	Volume->SetFilterMode(ExposureRender::Enums::Linear);
-//	Volume->SetAcceleratorType(ExposureRender::Enums::);
+	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
 	Volume->Update();
 
 	Tracer->SetInputConnection(0, Volume->GetOutputPort());
@@ -138,7 +136,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetClippingRange(0, 1000000);
 	Camera->SetExposure(0.25f);
-	Camera->SetFocalDisk(0.0f);
+	Camera->SetFocalDisk(0.01f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();

@@ -58,8 +58,8 @@ public:
 		return *this;
 	}
 
-	FrameBuffer				FrameBuffer;
-	int						NoEstimates;
+	FrameBuffer		FrameBuffer;
+	int				NoEstimates;
 };
 
 }

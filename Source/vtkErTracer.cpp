@@ -197,7 +197,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	if (ErCamera)
 	{
-		this->Tracer.Camera.FocalDistance	= ErCamera->GetFocalDistance();
+		this->Tracer.Camera.FocalDistance	= 1.0f;//ErCamera->GetFocalDistance();
 		this->Tracer.Camera.Exposure		= ErCamera->GetExposure();
 		this->Tracer.Camera.Gamma			= ErCamera->GetGamma();
 	}
@@ -260,7 +260,57 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->RenderSize[0] * this->RenderSize[1]];
 	}
 
-	ER_CALL(ExposureRender::RenderEstimate(this->Tracer.ID));
+	ER_CALL(ExposureRender::Render(this->Tracer.ID));
+	ER_CALL(ExposureRender::GetRunningEstimate(this->Tracer.ID, this->ImageBuffer));
+
+	glEnable(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, TextureID);
+    
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)this->ImageBuffer);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+
+	double d = 0.5;
+	
+    Renderer->SetDisplayPoint(0,0,d);
+    Renderer->DisplayToWorld();
+    double coordinatesA[4];
+    Renderer->GetWorldPoint(coordinatesA);
+
+    Renderer->SetDisplayPoint(RenderSize[0],0,d);
+    Renderer->DisplayToWorld();
+    double coordinatesB[4];
+    Renderer->GetWorldPoint(coordinatesB);
+
+    Renderer->SetDisplayPoint(RenderSize[0], RenderSize[1],d);
+    Renderer->DisplayToWorld();
+    double coordinatesC[4];
+    Renderer->GetWorldPoint(coordinatesC);
+
+    Renderer->SetDisplayPoint(0,RenderSize[1],d);
+    Renderer->DisplayToWorld();
+    double coordinatesD[4];
+    Renderer->GetWorldPoint(coordinatesD);
+	
+	glPushAttrib(GL_LIGHTING);
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_QUADS);
+		glTexCoord2i(0, 0);
+		glVertex4dv(coordinatesA);
+		glTexCoord2i(1, 0);
+		glVertex4dv(coordinatesB);
+		glTexCoord2i(1, 1);
+		glVertex4dv(coordinatesC);
+		glTexCoord2i(0, 1);
+		glVertex4dv(coordinatesD);
+	glEnd();
+
+	glPopAttrib();
 
 	this->InvokeEvent(vtkCommand::VolumeMapperRenderEndEvent,0);
 }

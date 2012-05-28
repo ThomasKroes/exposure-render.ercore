@@ -45,20 +45,8 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "estimate.cuh"
 #include "toneMap.cuh"
 
-bool Initialized = false;
-
 namespace ExposureRender
 {
-
-EXPOSURE_RENDER_DLL void SetDevice(const int& DeviceID /*= 0*/)
-{
-	if (!Initialized)
-	{
-//		glewInit();
-//		cudaGLSetGLDevice(DeviceID);
-		Initialized = true;
-	}
-}
 
 EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*= true*/)
 {
@@ -130,7 +118,7 @@ EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*=
 		gBitmaps.Unbind(Bitmap);
 }
 
-EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
+EXPOSURE_RENDER_DLL void Render(int TracerID)
 {
 	if (gTracers[TracerID].NoEstimates == 0)
 	{
@@ -149,32 +137,19 @@ EXPOSURE_RENDER_DLL void RenderEstimate(int TracerID)
 
 	gTracers.Synchronize(TracerID);
 
-	/*
-	ColorRGBAuc* Output;
-
-	Cuda::GLMapBufferObject((void**)&Output, gTracers[TracerID].FrameBuffer.OutputPBO);
-	*/
-
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
-//	ToneMap(gTracers[TracerID], Output);
-
-//	Cuda::GLUnmapBufferObject(gTracers[TracerID].FrameBuffer.OutputPBO);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	gTracers[TracerID].FrameBuffer.DisplayEstimate.SetDirty();
-	gTracers[TracerID].FrameBuffer.HostDisplayEstimate = gTracers[TracerID].FrameBuffer.DisplayEstimate;
-
-	glDrawPixels(gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].FrameBuffer.Resolution[1], GL_RGBA, GL_UNSIGNED_BYTE, gTracers[TracerID].FrameBuffer.HostDisplayEstimate.GetData());
-
-//	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, gTracers[TracerID].FrameBuffer.OutputPBO);
-//	glDrawPixels(gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].FrameBuffer.Resolution[1], GL_RGBA, GL_UNSIGNED_BYTE, 0);
-//	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
 
 	gTracers[TracerID].NoEstimates++;
+}
+
+EXPOSURE_RENDER_DLL void GetRunningEstimate(int TracerID, ColorRGBAuc* pData)
+{
+	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
+
+	Cuda::MemCopyDeviceToHost(FB.DisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.DisplayEstimate.GetNoElements());
 }
 
 }

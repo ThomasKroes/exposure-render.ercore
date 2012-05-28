@@ -204,7 +204,7 @@ public:
 
 		switch (this->FilterMode)
 		{
-			case Enums::NearestNeighbour:
+			case Enums::Point:
 			{
 				return (*this)((int)floorf(UVW[0]), (int)floorf(UVW[1]), (int)floorf(UVW[2]));
 			}
