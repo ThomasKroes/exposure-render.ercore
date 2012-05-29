@@ -38,6 +38,13 @@ public:
 	static vtkErObject* New();
 	vtkTypeRevisionMacro(vtkErObject, vtkErShape);
 
+	enum Ports
+	{
+		DiffuseTexturePort = 0,
+		SpecularTexturePort,
+		GlossinessTexturePort
+	};
+
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
 	vtkGetMacro(Enabled, bool);

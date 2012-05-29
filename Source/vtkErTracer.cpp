@@ -151,6 +151,15 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
+	this->Tracer.Glossiness1D.Reset();
+	
+	for (int i = 0; i < this->Glossiness->GetSize(); i++)
+	{
+		double NodeValue[4];
+		this->Glossiness->GetNodeValue(i, NodeValue);
+		this->Tracer.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+	}
+
 	this->Tracer.Emission1D.Reset();
 
 	for (int i = 0; i < this->Emission->GetSize(); i++)
@@ -188,8 +197,8 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Camera.Target			= Vec3f(Camera->GetFocalPoint()[0], Camera->GetFocalPoint()[1], Camera->GetFocalPoint()[2]);
 		this->Tracer.Camera.Up				= Vec3f(Camera->GetViewUp()[0], Camera->GetViewUp()[1], Camera->GetViewUp()[2]);
 		this->Tracer.Camera.ApertureSize	= Camera->GetFocalDisk();
-		this->Tracer.Camera.ClipNear		= Camera->GetClippingRange()[0];
-		this->Tracer.Camera.ClipFar			= Camera->GetClippingRange()[1];
+		this->Tracer.Camera.ClipNear		= 0.0f;//Camera->GetClippingRange()[0];
+		this->Tracer.Camera.ClipFar			= 10000.0f;//Camera->GetClippingRange()[1];
 		this->Tracer.Camera.FOV				= Camera->GetViewAngle();
 	}
 
@@ -197,7 +206,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	if (ErCamera)
 	{
-		this->Tracer.Camera.FocalDistance	= 1.0f;//ErCamera->GetFocalDistance();
+		this->Tracer.Camera.FocalDistance	= ErCamera->GetFocalDistance();
 		this->Tracer.Camera.Exposure		= ErCamera->GetExposure();
 		this->Tracer.Camera.Gamma			= ErCamera->GetGamma();
 	}

@@ -78,8 +78,6 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 			Ld += F * ((Li * Weight) / LightPdf);
 	}
 
-	return Ld;
-
 	F = Shader.SampleF(SE.Wo, Wi, BsdfPdf, LS.BrdfSample);
 
 	if (F.IsBlack() || BsdfPdf <= 0.0f)
@@ -132,7 +130,7 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	switch (SE.Type)
 	{
 		case Enums::Volume:	
-			Shader = ExposureRender::Shader(Enums::PhaseFunction, SE.N, SE.Wo, gpTracer->Diffuse1D.Evaluate(Intensity), gpTracer->Specular1D.Evaluate(Intensity), 15.0f, GlossinessExponent(gpTracer->Glossiness1D.Evaluate(Intensity)));
+			Shader = ExposureRender::Shader(Enums::Brdf, SE.N, SE.Wo, gpTracer->Diffuse1D.Evaluate(Intensity), gpTracer->Specular1D.Evaluate(Intensity), 15.0f, GlossinessExponent(gpTracer->Glossiness1D.Evaluate(Intensity)));
 			break;
 
 		case Enums::Object:

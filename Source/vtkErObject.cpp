@@ -37,21 +37,21 @@ vtkErObject::~vtkErObject(void)
 
 int vtkErObject::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
+	if (Port == DiffuseTexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
 		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 	}
 
-	if (Port == 1)
+	if (Port == SpecularTexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
 		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 	}
 
-	if (Port == 2)
+	if (Port == GlossinessTexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
@@ -109,17 +109,17 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	vtkErShape::RequestData(ObjectDataOut->Bindable.Shape);
 
-	vtkErTextureData* Diffuse = vtkErTextureData::SafeDownCast(this->GetInputDataObject(0, 0));
+	vtkErTextureData* Diffuse = vtkErTextureData::SafeDownCast(this->GetInputDataObject(DiffuseTexturePort, 0));
 
 	if (Diffuse)
 		ObjectDataOut->Bindable.DiffuseTextureID = Diffuse->Bindable.ID;
 
-	vtkErTextureData* Specular = vtkErTextureData::SafeDownCast(this->GetInputDataObject(1, 0));
+	vtkErTextureData* Specular = vtkErTextureData::SafeDownCast(this->GetInputDataObject(SpecularTexturePort, 0));
 
 	if (Specular)
 		ObjectDataOut->Bindable.SpecularTextureID = Specular->Bindable.ID;
 
-	vtkErTextureData* Glossiness = vtkErTextureData::SafeDownCast(this->GetInputDataObject(2, 0));
+	vtkErTextureData* Glossiness = vtkErTextureData::SafeDownCast(this->GetInputDataObject(GlossinessTexturePort, 0));
 
 	if (Glossiness)
 		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;
