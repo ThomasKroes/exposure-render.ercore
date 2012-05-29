@@ -44,6 +44,9 @@ public:
 	HOST CudaTexture3D<T>& operator = (const Buffer3D<T>& Other)
 	{
 		this->Resize(Other.GetResolution());
+		
+		this->FilterMode	= Other.GetFilterMode();
+		this->AddressMode	= Other.GetAddressMode();
 
 		const int NoElementes = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
 

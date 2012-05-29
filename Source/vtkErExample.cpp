@@ -35,7 +35,8 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-char gFileName[] = "C://Volumes//manix.mhd";
+//char gFileName[] = "C://Volumes//manix.mhd";
+char gFileName[] = "c://model_segmentation.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -87,7 +88,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(100);
+	Tracer->SetDensityScale(10);
 	Tracer->SetStepFactorPrimary(3);
 	Tracer->SetStepFactorShadow(3);
 	Tracer->Update();
@@ -123,7 +124,7 @@ void LoadVolume(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(ExposureRender::Enums::Linear);
+	Volume->SetFilterMode(ExposureRender::Enums::NearestNeighbour);
 	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration); // this will still result in Octree value
 	Volume->Update();
 
@@ -161,13 +162,13 @@ void CreateLighting(vtkErTracer* Tracer)
 	const float KeyLightSize = 0.01f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
-	KeyLight->SetShapeType(ExposureRender::Enums::Sphere);
+	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
 	KeyLight->SetOuterRadius(0.01f);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetElevation(-45.0f);
 	KeyLight->SetAzimuth(145.0f);
-	KeyLight->SetOffset(2.3f);
-	KeyLight->SetMultiplier(10.5f);
+	KeyLight->SetOffset(5.0f);
+	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -199,25 +200,28 @@ void SetTransferFunction(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Opacity->AddPoint(33000, 0.0);
-	Opacity->AddPoint(34000, 1.0);
+	Opacity->AddSegment(0, 0.05f, 1, 0.05f);
+	Opacity->AddSegment(1, 1, 1000, 1);
+
+//	Opacity->AddPoint(33000, 0.0);
+//	Opacity->AddPoint(34000, 1.0);
 
 	Tracer->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 
-	/*
+	
 	for (int i = 0; i < 1024; i++)
 	{
 		float H = (float)rand() / RAND_MAX;
 		Diffuse->AddHSVPoint(i, H, 0.75, 0.75);
 		Diffuse->AddHSVPoint(i + 1, H, 0.75, 0.75);
 	}
-	*/
+	/*
 
 	Diffuse->AddRGBPoint(0, 0.5, 0.5, 0.5);
 	Diffuse->AddRGBPoint(1024, 0.5, 0.5, 0.5);
-
+*/
 	Tracer->SetDiffuse(Diffuse);
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
