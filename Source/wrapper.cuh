@@ -42,76 +42,102 @@ static inline void HandleCudaError(const cudaError_t& CudaError, const char* pTi
 
 static inline void ThreadSynchronize()
 {
-	Cuda::HandleCudaError(cudaThreadSynchronize(), "cudaThreadSynchronize");
+	Cuda::HandleCudaError(cudaThreadSynchronize(), __FUNCTION__);
 }
 
 template<class T> static inline void Allocate(T*& pDevicePointer, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMalloc((void**)&pDevicePointer, Num * sizeof(T)), "cudaMalloc");
+	HandleCudaError(cudaMalloc((void**)&pDevicePointer, Num * sizeof(T)), __FUNCTION__);
+	Cuda::ThreadSynchronize();
+}
+
+static inline void Malloc3DArray(struct cudaArray** CudaArray, const cudaChannelFormatDesc& ChannelDescription, const Vec3i& Resolution, unsigned int Flags = 0)
+{
+	Cuda::ThreadSynchronize();
+
+	cudaExtent CudaExtent;
+
+	CudaExtent.width	= Resolution[0];
+	CudaExtent.height	= Resolution[1];
+	CudaExtent.depth	= Resolution[2];
+	
+	HandleCudaError(cudaMalloc3DArray(CudaArray, &ChannelDescription, CudaExtent, Flags), __FUNCTION__);
+
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void AllocatePiched(T*& pDevicePointer, const int Pitch, const int Width, const int Height)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMallocPitch((void**)&pDevicePointer, (size_t*)&Pitch, Width * sizeof(T), Height), "cudaMallocPitch");
+	HandleCudaError(cudaMallocPitch((void**)&pDevicePointer, (size_t*)&Pitch, Width * sizeof(T), Height), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemSet(T*& pDevicePointer, const int Value, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemset((void*)pDevicePointer, Value, (size_t)(Num * sizeof(T))), "cudaMemset");
+	HandleCudaError(cudaMemset((void*)pDevicePointer, Value, (size_t)(Num * sizeof(T))), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
+
+template<class T> static inline void MemcpyArrayToArray(struct cudaArray* Dest, const int& DestWidthOffset, const int& DestHeightOffset, const struct cudaArray* Src, const int& SrcWidthOffset, const int& SrcHeightOffset, const int& Count, const enum cudaMemcpyKind Kind = cudaMemcpyDeviceToDevice)
+{
+	// FIXME: Thomas
+	/*
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaMemcpyArrayToArray((void*)pDevicePointer, Value, (size_t)(Num * sizeof(T))), __FUNCTION__);
+	Cuda::ThreadSynchronize();
+	*/
+}
+
 
 template<class T> static inline void HostToConstantDevice(T* pHost, char* pDeviceSymbol, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T)), "cudaMemcpyToSymbol");
+	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T)), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyHostToDeviceSymbol(T* pHost, const char* pDeviceSymbol, const int& Num = 1, const int& Offset = 0)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T), Offset, cudaMemcpyHostToDevice), "cudaMemcpyToSymbol");
+	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pHost, Num * sizeof(T), Offset, cudaMemcpyHostToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyDeviceToDeviceSymbol(T* pDevice, const char* pDeviceSymbol, const int& Num = 1, const int& Offset = 0)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pDevice, Num * sizeof(T), 0, cudaMemcpyDeviceToDevice), "cudaMemcpyToSymbol");
+	HandleCudaError(cudaMemcpyToSymbol(pDeviceSymbol, pDevice, Num * sizeof(T), 0, cudaMemcpyDeviceToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyHostToDevice(T* pHost, T* pDevice, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpy(pDevice, pHost, Num * sizeof(T), cudaMemcpyHostToDevice), "cudaMemcpy");
+	HandleCudaError(cudaMemcpy(pDevice, pHost, Num * sizeof(T), cudaMemcpyHostToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyDeviceToHost(T* pDevice, T* pHost, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpy(pHost, pDevice, Num * sizeof(T), cudaMemcpyDeviceToHost), "cudaMemcpy");
+	HandleCudaError(cudaMemcpy(pHost, pDevice, Num * sizeof(T), cudaMemcpyDeviceToHost), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 template<class T> static inline void MemCopyDeviceToDevice(T* pDeviceSource, T* pDeviceDestination, int Num = 1)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaMemcpy(pDeviceDestination, pDeviceSource, Num * sizeof(T), cudaMemcpyDeviceToDevice), "cudaMemcpy");
+	HandleCudaError(cudaMemcpy(pDeviceDestination, pDeviceSource, Num * sizeof(T), cudaMemcpyDeviceToDevice), __FUNCTION__);
 	Cuda::ThreadSynchronize();
 }
 
 static inline void FreeArray(cudaArray*& pCudaArray)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaFreeArray(pCudaArray), "cudaFreeArray");
+	HandleCudaError(cudaFreeArray(pCudaArray), __FUNCTION__);
 	pCudaArray = NULL;
 	Cuda::ThreadSynchronize();
 }
@@ -123,7 +149,7 @@ template<class T> static inline void Free(T*& pBuffer)
 
 	Cuda::ThreadSynchronize();
 	
-	HandleCudaError(cudaFree(pBuffer), "cudaFree");
+	HandleCudaError(cudaFree(pBuffer), __FUNCTION__);
 	pBuffer = NULL;
 
 	Cuda::ThreadSynchronize();
@@ -132,8 +158,22 @@ template<class T> static inline void Free(T*& pBuffer)
 static inline void GetSymbolAddress(void** pDevicePointer, char* pSymbol)
 {
 	Cuda::ThreadSynchronize();
-	HandleCudaError(cudaGetSymbolAddress(pDevicePointer, pSymbol), "cudaGetSymbolAddress");
+	HandleCudaError(cudaGetSymbolAddress(pDevicePointer, pSymbol), __FUNCTION__);
 }
+
+static inline void Memcpy3D(const struct cudaMemcpy3DParms* Memcpy3DParams)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaMemcpy3D(Memcpy3DParams), __FUNCTION__);
+}
+
+static inline void BindTextureToArray(const struct textureReference* TextureReference, const struct cudaArray* Array, const struct cudaChannelFormatDesc* ChannelFormatDescription)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaBindTextureToArray(TextureReference, Array, ChannelFormatDescription), __FUNCTION__);
+}
+
+
 
 }
 

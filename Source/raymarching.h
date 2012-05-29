@@ -26,7 +26,7 @@ namespace ExposureRender
 class RayMarcher
 {	
 public:
-	HOST_DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
+	DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 	{
 		float MinT;
 		float MaxT;
@@ -64,7 +64,7 @@ public:
 		SE.SetValid(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, ColorXYZf());
 	}
 
-	HOST_DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG)
+	DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG)
 	{
 		float MinT;
 		float MaxT;

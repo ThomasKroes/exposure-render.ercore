@@ -23,8 +23,9 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer
 {
 public:
-	HOST Buffer(const char* pName = "Untitled", const Enums::MemoryType MemoryType = Enums::Host, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
+	HOST Buffer(const char* pName = "Untitled", const Enums::MemoryType MemoryType = Enums::Host, const Enums::BufferAccess BufferAccess = Enums::Normal, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
 		MemoryType(MemoryType),
+		BufferAccess(BufferAccess),
 		FilterMode(FilterMode),
 		AddressMode(AddressMode),
 		Data(NULL),
@@ -122,8 +123,9 @@ public:
 		}
 	}
 
-	HOST_DEVICE T* GetData() { return this->Data; }
+	HOST_DEVICE T* GetData() const { return this->Data; }
 	HOST Enums::MemoryType GetMemoryType() const { return this->MemoryType; }
+	HOST Enums::BufferAccess GetBufferAccess() const { return this->BufferAccess; }
 	HOST Enums::FilterMode GetFilterMode() const { return this->FilterMode; }
 	HOST void SetFilterMode(const Enums::FilterMode& FilterMode) { this->FilterMode = FilterMode; }
 	HOST Enums::AddressMode GetAddressMode() const { return this->AddressMode; }
@@ -131,6 +133,7 @@ public:
 
 protected:
 	Enums::MemoryType		MemoryType;
+	Enums::BufferAccess		BufferAccess;
 	Enums::FilterMode		FilterMode;
 	Enums::AddressMode		AddressMode;
 	char					Name[MAX_CHAR_SIZE];

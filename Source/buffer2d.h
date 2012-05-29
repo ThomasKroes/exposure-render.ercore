@@ -22,8 +22,8 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer2D : public Buffer<T>
 {
 public:
-	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType MemoryType = Enums::Host, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
-		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
+	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::BufferAccess& BufferAccess = Enums::Normal, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
+		Buffer<T>(pName, MemoryType, BufferAccess, FilterMode, AddressMode),
 		Resolution(0)
 	{
 		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());

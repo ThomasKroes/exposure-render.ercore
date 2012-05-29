@@ -22,7 +22,7 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI bool Intersect(const Ray& R, CRNG& RNG)
+DEVICE_NI bool Intersect(const Ray& R, CRNG& RNG)
 {
 	ScatterEvent SE(Enums::Light);
 
@@ -40,7 +40,7 @@ HOST_DEVICE_NI bool Intersect(const Ray& R, CRNG& RNG)
 	return false;
 }
 
-HOST_DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
+DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 {
 	if (!gpTracer->RenderSettings.Traversal.Shadows)
 		return true;
@@ -52,7 +52,7 @@ HOST_DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 	return !Intersect(R, RNG);
 }
 
-HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, ScatterEvent& SE, CRNG& RNG, Shader& Shader)
+DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, ScatterEvent& SE, CRNG& RNG, Shader& Shader)
 {
 	Vec3f Wi;
 	
@@ -109,7 +109,7 @@ HOST_DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample&
 	return Ld;
 }
 
-HOST_DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingSample& LS)
+DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingSample& LS)
 {
 	ColorXYZf Ld;
 

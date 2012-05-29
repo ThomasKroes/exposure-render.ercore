@@ -16,6 +16,7 @@
 #include "ervolume.h"
 #include "boundingbox.h"
 #include "octree.h"
+#include "cudatexture3d.h"
 
 namespace ExposureRender
 {
@@ -30,7 +31,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point),
+		Voxels(),
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{
@@ -44,7 +45,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point),
+		Voxels(),
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{
@@ -59,7 +60,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
-		Voxels("Device Voxels", Enums::Device, Enums::Point),
+		Voxels(),
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{
@@ -89,13 +90,11 @@ public:
 
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
-		DebugLog(__FUNCTION__);
-
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;
 
 		if (this->AcceleratorType == Enums::Octree)
-			this->Octree.Build(this->Voxels);
+			this->Octree.Build(Other.Voxels);
 
 		float Scale = 0.0f;
 
@@ -118,7 +117,7 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE unsigned short operator()(const Vec3f& XYZ = Vec3f(0.0f)) const
+	DEVICE unsigned short operator()(const Vec3f& XYZ = Vec3f(0.0f)) const
 	{
 		const Vec3f Offset = XYZ - this->BoundingBox.MinP;
 		
@@ -127,7 +126,7 @@ public:
 		return this->Voxels(LocalXYZ);
 	}
 
-	HOST_DEVICE float GetIntensity(const Vec3f& P)
+	DEVICE float GetIntensity(const Vec3f& P)
 	{
 		switch (this->AcceleratorType)
 		{
@@ -148,7 +147,7 @@ public:
 		}
 	}
 
-	HOST_DEVICE Vec3f GradientCD(const Vec3f& P)
+	DEVICE Vec3f GradientCD(const Vec3f& P)
 	{
 		const float Intensity[3][2] = 
 		{
@@ -160,7 +159,7 @@ public:
 		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
 	}
 
-	HOST_DEVICE Vec3f GradientFD(const Vec3f& P)
+	DEVICE Vec3f GradientFD(const Vec3f& P)
 	{
 		const float Intensity[4] = 
 		{
@@ -173,7 +172,7 @@ public:
 		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
 	}
 
-	HOST_DEVICE Vec3f GradientFiltered(const Vec3f& P)
+	DEVICE Vec3f GradientFiltered(const Vec3f& P)
 	{
 		Vec3f Offset(Vec3f(this->Spacing[0], 0.0f, 0.0f)[0], Vec3f(0.0f, this->Spacing[1], 0.0f)[1], Vec3f(0.0f, 0.0f, this->Spacing[2])[2]);
 
@@ -193,7 +192,7 @@ public:
 		return Lerp(G0, Lerp(L0, L1, 0.5), 0.75);
 	}
 
-	HOST_DEVICE Vec3f Gradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
+	DEVICE Vec3f Gradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
 	{
 		switch (GradientMode)
 		{
@@ -205,12 +204,12 @@ public:
 		return GradientFD(P);
 	}
 
-	HOST_DEVICE Vec3f NormalizedGradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
+	DEVICE Vec3f NormalizedGradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
 	{
 		return Normalize(Gradient(P, GradientMode));
 	}
 
-	HOST_DEVICE float GradientMagnitude(const Vec3f& P)
+	DEVICE float GradientMagnitude(const Vec3f& P)
 	{
 		Vec3f Pts[3][2];
 
@@ -233,15 +232,15 @@ public:
 		return sqrtf(Sum);
 	}
 
-	BoundingBox					BoundingBox;
-	Vec3f						Spacing;
-	Vec3f						InvSpacing;
-	Vec3f						Size;
-	Vec3f						InvSize;
-	float						MinStep;
-	Buffer3D<unsigned short>	Voxels;
-	Enums::AcceleratorType		AcceleratorType;
-	Octree						Octree;
+	BoundingBox						BoundingBox;
+	Vec3f							Spacing;
+	Vec3f							InvSpacing;
+	Vec3f							Size;
+	Vec3f							InvSize;
+	float							MinStep;
+	CudaTexture3D<unsigned short>	Voxels;
+	Enums::AcceleratorType			AcceleratorType;
+	Octree							Octree;
 };
 
 }

@@ -35,7 +35,7 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-char gFileName[] = "D://Volumes//engine.mhd";
+char gFileName[] = "C://Volumes//manix.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -87,9 +87,9 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(10);
-	Tracer->SetStepFactorPrimary(5);
-	Tracer->SetStepFactorShadow(5);
+	Tracer->SetDensityScale(100);
+	Tracer->SetStepFactorPrimary(3);
+	Tracer->SetStepFactorShadow(3);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -135,8 +135,8 @@ void CreateCamera(vtkRenderer* Renderer)
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetClippingRange(0, 1000000);
-	Camera->SetExposure(0.25f);
-	Camera->SetFocalDisk(0.01f);
+	Camera->SetExposure(0.1f);
+	Camera->SetFocalDisk(0.0f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
@@ -199,9 +199,8 @@ void SetTransferFunction(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Opacity->AddPoint(0, 0.0);
-	Opacity->AddPoint(100, 0.0);
-	Opacity->AddPoint(101, 1.0);
+	Opacity->AddPoint(33000, 0.0);
+	Opacity->AddPoint(34000, 0.5);
 
 	Tracer->SetOpacity(Opacity);
 

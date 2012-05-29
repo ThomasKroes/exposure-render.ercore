@@ -13,6 +13,8 @@
 
 #define __CUDA_ARCH__ 200
 
+texture<unsigned short, 3, cudaReadModeElementType> VolumeTexture;
+
 #include "tracer.h"
 #include "volume.h"
 #include "light.h"
@@ -136,6 +138,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	}
 
 	gTracers.Synchronize(TracerID);
+
+	gVolumes[gTracers[TracerID].VolumeID].Voxels.Bind(&VolumeTexture);
 
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);

@@ -15,7 +15,6 @@
 
 #include "buffer.h"
 
-
 namespace ExposureRender
 {
 
@@ -23,8 +22,8 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T>
 {
 public:
-	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType MemoryType = Enums::Host, Enums::FilterMode FilterMode = Enums::Linear, Enums::AddressMode AddressMode = Enums::Wrap) :
-		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
+	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::BufferAccess& BufferAccess = Enums::Normal, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
+		Buffer<T>(pName, MemoryType, BufferAccess, FilterMode, AddressMode),
 		Resolution(0)
 	{
 		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
@@ -72,20 +71,40 @@ public:
 
 		if (this->Data)
 		{
-			if (this->MemoryType == Enums::Host)
+			switch (this->MemoryType)
 			{
-				free(this->Data);
-				this->Data = NULL;
-				DebugLog("Freed %s on host", MemoryString);
-			}
+				case Enums::Host:
+				{
+					free(this->Data);
+					this->Data = NULL;
+					DebugLog("Freed %s on host", MemoryString);
+					break;
+				}
 
 #ifdef __CUDA_ARCH__
-			if (this->MemoryType == Enums::Device)
-			{
-				Cuda::Free(this->Data);
-				DebugLog("Freed %s on device", MemoryString);
-			}
+				case Enums::Device:
+				{
+					switch (this->BufferAccess)
+					{
+						case Enums::Normal:
+						case Enums::Pitched:
+						{
+							Cuda::Free(this->Data);
+							break;
+						}
+
+						case Enums::Texture:
+						{
+//							Cuda::FreeArray(this->CudaArray);
+							break;
+						}
+					}
+
+					DebugLog("Freed %s on device", MemoryString);
+					break;
+				}
 #endif
+			}
 		}
 				
 		this->Resolution	= Vec3i(0);
@@ -100,14 +119,41 @@ public:
 		if (this->GetNoElements() <= 0)
 			return;
 		
-		if (this->MemoryType == Enums::Host)
-			memset(this->Data, 0, this->GetNoBytes());
+		switch (this->MemoryType)
+		{
+			case Enums::Host:
+			{
+				memset(this->Data, 0, this->GetNoBytes());
+				break;
+			}
 
 #ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
-			Cuda::MemSet(this->Data, 0, this->GetNoElements());
+			case Enums::Device:
+			{
+				switch (this->BufferAccess)
+				{
+					case Enums::Normal:
+					{
+						Cuda::MemSet(this->Data, 0, this->GetNoElements());
+						break;
+					}
+
+					case Enums::Pitched:
+					{
+						throw(Exception(Enums::Error, "Unimplemented!"));
+					}
+
+					case Enums::Texture:
+					{
+						throw(Exception(Enums::Error, "Unimplemented!"));
+					}
+				}
+				
+				break;
+			}
 #endif
-		
+		}
+
 		this->Dirty = true;
 	}
 
@@ -135,19 +181,43 @@ public:
 		
 		this->GetMemoryString(MemoryString, Enums::MegaByte);
 
-		if (this->MemoryType == Enums::Host)
+		switch (this->MemoryType)
 		{
-			this->Data = (T*)malloc(this->GetNoBytes());
-			DebugLog("Allocated %s on host", MemoryString);
-		}
+			case Enums::Host:
+			{
+				this->Data = (T*)malloc(this->GetNoBytes());
+				DebugLog("Allocated %s on host", MemoryString);
+				break;
+			}
 
 #ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
-		{
-			Cuda::Allocate(this->Data, this->GetNoElements());
-			DebugLog("Allocated %s on device", MemoryString);
-		}
+			case Enums::Device:
+			{
+				switch (this->BufferAccess)
+				{
+					case Enums::Normal:
+					{
+						Cuda::Allocate(this->Data, this->GetNoElements());
+						break;
+					}
+
+					case Enums::Pitched:
+					{
+						throw (Exception(Enums::Error, "Unimplemented!"));
+					}
+
+					case Enums::Texture:
+					{
+						//Cuda::Malloc3DArray(&this->CudaArray, cudaCreateChannelDesc<T>(), this->Resolution);
+						break;
+					}
+				}
+				
+				DebugLog("Allocated %s on device", MemoryString);
+				break;
+			}
 #endif
+		}
 
 		this->Reset();
 	}
@@ -160,28 +230,53 @@ public:
 
 		if (this->NoElements <= 0)
 			return;
-
-		if (this->MemoryType == Enums::Host)
+		
+		switch (this->MemoryType)
 		{
-			if (MemoryType == Enums::Host)
-				memcpy(this->Data, Data, this->GetNoBytes());
-			
+			case Enums::Host:
+			{
+				switch (MemoryType)
+				{
+					case Enums::Host:
+					{
+						memcpy(this->Data, Data, this->GetNoBytes());
+						break;
+					}
+				
 #ifdef __CUDA_ARCH__
-			if (MemoryType == Enums::Device)
-				Cuda::MemCopyDeviceToHost(Data, this->Data, this->GetNoElements());
+					case Enums::Device:
+					{
+						Cuda::MemCopyDeviceToHost(Data, this->Data, this->GetNoElements());
+						break;
+					}
+#endif
+				}
+				
+				break;
+			}
+
+#ifdef __CUDA_ARCH__
+			case Enums::Device:
+			{
+				switch (MemoryType)
+				{
+					case Enums::Host:
+					{
+						Cuda::MemCopyHostToDevice(Data, this->Data, this->GetNoElements());
+						break;
+					}
+
+					case Enums::Device:
+					{
+						Cuda::MemCopyDeviceToDevice(Data, this->Data, this->GetNoElements());
+						break;
+					}
+				}
+
+				break;
+			}
 #endif
 		}
-
-#ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
-		{
-			if (MemoryType == Enums::Host)
-				Cuda::MemCopyHostToDevice(Data, this->Data, this->GetNoElements());
-
-			if (MemoryType == Enums::Device)
-				Cuda::MemCopyDeviceToDevice(Data, this->Data, this->GetNoElements());
-		}
-#endif
 
 		this->Dirty = true;
 	}
@@ -244,6 +339,7 @@ public:
 
 protected:
 	Vec3i	Resolution;
+
 };
 
 }
