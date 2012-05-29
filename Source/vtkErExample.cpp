@@ -125,7 +125,7 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
 	Volume->SetFilterMode(ExposureRender::Enums::NearestNeighbour);
-	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration); // this will still result in Octree value
+	Volume->SetAcceleratorType(ExposureRender::Enums::Octree); // this will still result in Octree value
 	Volume->Update();
 
 	Tracer->SetInputConnection(0, Volume->GetOutputPort());

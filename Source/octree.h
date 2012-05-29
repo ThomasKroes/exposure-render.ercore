@@ -16,6 +16,7 @@
 #include "defines.h"
 #include "enums.h"
 #include "buffer3d.h"
+#include "boundingbox.h"
 #include <vector>
 
 namespace ExposureRender
@@ -27,12 +28,10 @@ protected:
 	class OctreeNode
 	{
 	public:
-		HOST OctreeNode(const Vec3f& Min, const Vec3f& Max) :
-			Min(Min),
-			Max(Max),
-			Children(NULL)
+		HOST OctreeNode(const BoundingBox BoundingBox = ExposureRender::BoundingBox()) :
+			BoundingBox(BoundingBox),
+			FirstChild(-1)
 		{
-
 		}
 
 		HOST OctreeNode(const OctreeNode& Other)
@@ -42,63 +41,49 @@ protected:
 
 		HOST OctreeNode& operator = (const OctreeNode& Other)
 		{
-			this->Min		= Other.Min;
-			this->Max		= Other.Max;
-			this->Children	= Other.Children;
+			this->BoundingBox	= Other.BoundingBox;
+			this->FirstChild	= Other.FirstChild;
 
 			return *this;
 		}
-
-		HOST void SubDivide()
+		
+		HOST static bool ShouldStop(const int& Depth, const int& MaxDepth)
 		{
-			// initialize children
-			std::vector<OctreeNode> Children(8, OctreeNode(this->Min, this->Max));
+			if (Depth >= MaxDepth)
+				return true;
 
-			// get middle point
-			Vec3f Mid = (this->Min + this->Max) / 2;
-
-			// create children
-			Children[0].Min = Vec3f(this->Min[0],	this->Min[1],	this->Min[2]);
-			Children[0].Max = Vec3f(Mid[0],			Mid[1],			Mid[2]);
-
-			Children[1].Min = Vec3f(this->Min[0],	Mid[1],			this->Min[2]);
-			Children[1].Max = Vec3f(Mid[0],			this->Max[1],	Mid[2]);
-
-			Children[2].Min = Vec3f(Mid[0],			this->Min[1],	this->Min[2]);
-			Children[2].Max = Vec3f(this->Max[0],	Mid[1],			Mid[2]);
-
-			Children[3].Min = Vec3f(Mid[0],			Mid[1],			this->Min[2]);
-			Children[3].Max = Vec3f(this->Max[0],	this->Max[2],	Mid[2]);
-
-			Children[4].Min = Vec3f(this->Min[0],	this->Min[1],	Mid[2]);
-			Children[4].Max = Vec3f(Mid[0],			Mid[1],			this->Max[2]);
-
-			Children[5].Min = Vec3f(this->Min[0],	Mid[1],			Mid[2]);
-			Children[5].Max = Vec3f(Mid[0],			this->Max[1],	this->Max[2]);
-
-			Children[6].Min = Vec3f(Mid[0],			this->Min[1],	Mid[2]);
-			Children[6].Max = Vec3f(this->Max[0],	Mid[1],			this->Max[2]);
-
-			Children[7].Min = Vec3f(Mid[0],			Mid[1],			Mid[2]);
-			Children[7].Max = Vec3f(this->Max[0],	this->Max[2],	this->Max[2]);
-
-			// pass on voxels to children
-
-			// clear this node's voxels
-
-			// store children
-			this->Children	= &Children[0];
+			return false;
 		}
 
-		Vec3f Min;
-		Vec3f Max;
-		OctreeNode* Children;
+		HOST void SubDivide(const Buffer3D<unsigned short>& Voxels, std::vector<OctreeNode> Nodes, const int& Depth, const int& MaxDepth)
+		{
+			if (OctreeNode::ShouldStop(Depth, MaxDepth))
+				return;
+
+			this->FirstChild = Nodes.size();
+
+			OctreeNode Children[8];
+			
+			for (int i = 0; i < 8; i++)
+			{
+				Nodes.push_back(Children[i]);
+				Children[i].SubDivide(Voxels, Nodes, Depth + 1, MaxDepth);
+			}
+
+			// 
+			Vec3f P;
+			// unsigned short Intensity = Voxels(P);
+		}
+
+		BoundingBox		BoundingBox;
+		int				FirstChild;
 	};
 
 public:
-	HOST Octree(const int& MaxDepth = 12) :
+	HOST Octree(const int& MaxDepth = 4) :
 		MaxDepth(MaxDepth),
-		RootNode(NULL)
+		RootNode(NULL),
+		Sigma(5.0f)
 	{
 	}
 
@@ -115,19 +100,33 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE unsigned short GetIntensity(const Vec3f& P) const
+	// Device runtime
+	DEVICE unsigned short GetIntensity(const Vec3f& P) const
 	{
-		return 150;
+		return 0;
+
+//		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;
+//		return (float)USHRT_MAX * tex3D(VolumeTexture, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
 
-	HOST void Build(const Buffer3D<unsigned short>& Voxels)
+	HOST void Build(const Buffer3D<unsigned short>& Voxels, const BoundingBox& BoundingBox)
 	{
-		Vec3i res = Voxels.GetResolution(); // this is (0,0,0) ??
-		//unsigned short val = Voxels[0];  runtime exception
+//		Vec3i res = Voxels.GetResolution();
+
+		std::vector<OctreeNode> Nodes;
+
+		int Depth = 0;
+
+		OctreeNode Root(BoundingBox);
+
+		Nodes.push_back(Root);
+
+		Root.SubDivide(Voxels, Nodes, Depth, this->MaxDepth);
 	}
 
 	int				MaxDepth;
 	OctreeNode*		RootNode;
+	float			Sigma;
 };
 
 }

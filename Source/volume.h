@@ -93,26 +93,31 @@ public:
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;
 
-		if (this->AcceleratorType == Enums::Octree)
-			this->Octree.Build(Other.Voxels);
+		const int NoElements = this->Voxels.GetResolution()[0] * this->Voxels.GetResolution()[1] * this->Voxels.GetResolution()[2];
 
-		float Scale = 0.0f;
-
-		if (Other.NormalizeSize)
+		if (NoElements > 0)
 		{
-			const Vec3f PhysicalSize = Vec3f((float)this->Voxels.GetResolution()[0], (float)this->Voxels.GetResolution()[1], (float)this->Voxels.GetResolution()[2]) * Other.Spacing;
-			Scale = 1.0f / max(PhysicalSize[0], max(PhysicalSize[1], PhysicalSize[2]));
+			float Scale = 0.0f;
+
+			if (Other.NormalizeSize)
+			{
+				const Vec3f PhysicalSize = Vec3f((float)this->Voxels.GetResolution()[0], (float)this->Voxels.GetResolution()[1], (float)this->Voxels.GetResolution()[2]) * Other.Spacing;
+				Scale = 1.0f / max(PhysicalSize[0], max(PhysicalSize[1], PhysicalSize[2]));
+			}
+
+			this->Spacing		= Scale * Other.Spacing;
+			this->InvSpacing	= 1.0f / this->Spacing;
+			this->Size			= Vec3f((float)this->Voxels.GetResolution()[0] * this->Spacing[0], (float)this->Voxels.GetResolution()[1] *this->Spacing[1], (float)this->Voxels.GetResolution()[2] * this->Spacing[2]);
+			this->InvSize		= 1.0f / this->Size;
+
+			this->BoundingBox.SetMinP(-0.5 * Size);
+			this->BoundingBox.SetMaxP(0.5f * Size);
+
+			this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
+
+			if (this->AcceleratorType == Enums::Octree)
+				this->Octree.Build(Other.Voxels, this->BoundingBox);
 		}
-
-		this->Spacing		= Scale * Other.Spacing;
-		this->InvSpacing	= 1.0f / this->Spacing;
-		this->Size			= Vec3f((float)this->Voxels.GetResolution()[0] * this->Spacing[0], (float)this->Voxels.GetResolution()[1] *this->Spacing[1], (float)this->Voxels.GetResolution()[2] * this->Spacing[2]);
-		this->InvSize		= 1.0f / this->Size;
-
-		this->BoundingBox.SetMinP(-0.5 * Size);
-		this->BoundingBox.SetMaxP(0.5f * Size);
-
-		this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
 
 		return *this;
 	}

@@ -13,4 +13,4 @@
 
 #define __CUDA_ARCH__ 200
 
-#include "cudatexture3d.h"
+#include "octree.h"
