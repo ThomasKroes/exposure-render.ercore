@@ -48,8 +48,8 @@ public:
 		{
 			this->NoEstimates = 0;
 
-			this->FrameBuffer.RandomSeedsCopy1.SetDirty();
-			this->FrameBuffer.RandomSeedsCopy2.SetDirty();
+			this->FrameBuffer.RandomSeedsCopy1.Modified();
+			this->FrameBuffer.RandomSeedsCopy2.Modified();
 
 			this->FrameBuffer.RandomSeeds1 = this->FrameBuffer.RandomSeedsCopy1;
 			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;

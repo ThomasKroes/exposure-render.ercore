@@ -19,7 +19,7 @@
 namespace ExposureRender
 {
 
-class TimeStamp
+class EXPOSURE_RENDER_DLL TimeStamp
 {
 public:
 	HOST TimeStamp() :
@@ -30,6 +30,13 @@ public:
 	HOST virtual void Modified()
 	{
 		this->ModifiedTime++;
+	}
+
+	HOST TimeStamp& operator = (const TimeStamp& Other)
+	{
+		this->ModifiedTime = Other.ModifiedTime;
+
+		return *this;
 	}
 
 	HOST unsigned long GetModifiedTime()
@@ -45,6 +52,16 @@ public:
 	HOST bool operator < (const TimeStamp& Other)
 	{
 		return this->ModifiedTime < Other.ModifiedTime;
+	};
+
+	HOST bool operator == (const TimeStamp& Other)
+	{
+		return this->ModifiedTime == Other.ModifiedTime;
+	};
+
+	HOST bool operator != (const TimeStamp& Other)
+	{
+		return this->ModifiedTime != Other.ModifiedTime;
 	};
 
 protected:

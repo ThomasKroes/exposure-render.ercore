@@ -22,8 +22,8 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer2D : public Buffer<T>
 {
 public:
-	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::BufferAccess& BufferAccess = Enums::Normal, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
-		Buffer<T>(pName, MemoryType, BufferAccess, FilterMode, AddressMode),
+	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
+		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
 		Resolution(0)
 	{
 		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
@@ -50,10 +50,10 @@ public:
 
 		DebugLog("%s: this = %s, Other = %s", __FUNCTION__, this->GetFullName(), Other.GetFullName());
 		
-		if (Other.Dirty)
+		if (this->TimeStamp != Other.TimeStamp)
 		{
 			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
-			Other.Dirty = false;
+			this->TimeStamp = Other.TimeStamp;
 		}
 		
 		sprintf_s(this->Name, MAX_CHAR_SIZE, "Copy of %s", Other.Name);
@@ -89,16 +89,8 @@ public:
 				
 		this->Resolution	= Vec2i(0);
 		this->NoElements	= 0;
-		this->Dirty			= true;
-	}
-
-	HOST void Destroy(void)
-	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-
-		this->Resize(Vec2i(0));
 		
-		this->Dirty = true;
+		this->TimeStamp.Modified();
 	}
 
 	HOST void Reset(void)
@@ -116,7 +108,7 @@ public:
 			Cuda::MemSet(this->Data, 0, this->GetNoElements());
 #endif
 		
-		this->Dirty = true;
+		this->TimeStamp.Modified();
 	}
 
 	HOST void Resize(const Vec2i& Resolution)
@@ -190,11 +182,7 @@ public:
 				Cuda::MemCopyDeviceToDevice(Data, this->Data, this->GetNoElements());
 		}
 #endif
-
-		this->Dirty = true;
 	}
-
-	
 
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0) const
 	{

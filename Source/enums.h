@@ -24,13 +24,6 @@ namespace Enums
 		Device
 	};
 
-	enum BufferAccess
-	{
-		Normal,
-		Pitched,
-		Texture
-	};
-
 	enum MemoryUnit
 	{
 		KiloByte,
