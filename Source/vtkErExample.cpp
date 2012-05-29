@@ -127,7 +127,7 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
 	Volume->SetFilterMode(ExposureRender::Enums::Linear);
-	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration); // this will still result in Octree value
+	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
 	Volume->Update();
 
 	Tracer->SetInputConnection(vtkErTracer::VolumePort, Volume->GetOutputPort());
@@ -138,7 +138,7 @@ void CreateCamera(vtkRenderer* Renderer)
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetExposure(5.0f);
-	Camera->SetFocalDisk(0.003f);
+	Camera->SetFocalDisk(0.01f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
@@ -166,7 +166,6 @@ void CreateLighting(vtkErTracer* Tracer)
 	Gradient->AddRGBPoint(0.5f, 0.01f, 0.01f, 0.01f);
 	Gradient->AddRGBPoint(0.50001f, 0.9f, 0.8f, 0.5f);
 	Gradient->AddRGBPoint(0.51f, 0.9f, 0.6f, 0.2f);
-//	Gradient->AddRGBPoint(0.6f, 0.4f, 0.1f, 0.8f);
 	Gradient->AddHSVPoint(1.0f, 0.6f, 0.9f, 0.8f);
 
 	RimLightTexture->SetGradient(Gradient);
@@ -224,9 +223,10 @@ void CreateObjects(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErObject> Object = vtkSmartPointer<vtkErObject>::New();
 
 	Object->SetAlignmentType(ExposureRender::Enums::AxisAlign);
-	Object->SetAxis(ExposureRender::Enums::X);
-	Object->SetPosition(0.0f, 0.0f, 0.0f);
+	Object->SetAxis(ExposureRender::Enums::Y);
+	Object->SetPosition(0.0f, -0.5f, 0.0f);
 	Object->SetShapeType(ExposureRender::Enums::Plane);
+	Object->SetSize(10.0f, 10.0f, 10.0f);
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
 	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
