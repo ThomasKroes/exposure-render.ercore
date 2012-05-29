@@ -90,7 +90,7 @@ void ConfigureER(vtkRenderer* Renderer)
 
 	Tracer->SetDensityScale(10);
 	Tracer->SetStepFactorPrimary(3);
-	Tracer->SetStepFactorShadow(3);
+	Tracer->SetStepFactorShadow(9);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -200,7 +200,7 @@ void SetTransferFunction(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Opacity->AddSegment(0, 0.05f, 1, 0.05f);
+	Opacity->AddSegment(0, 0.0f, 1, 0.0f);
 	Opacity->AddSegment(1, 1, 1000, 1);
 
 //	Opacity->AddPoint(33000, 0.0);

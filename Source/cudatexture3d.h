@@ -24,7 +24,7 @@ class EXPOSURE_RENDER_DLL CudaTexture3D
 public:
 	HOST CudaTexture3D() :
 		Resolution(0),
-		Array(0),
+		Array(NULL),
 		Normalized(true),
 		FilterMode(Enums::Linear),
 		AddressMode(Enums::Wrap)
@@ -48,9 +48,9 @@ public:
 		this->FilterMode	= Other.GetFilterMode();
 		this->AddressMode	= Other.GetAddressMode();
 
-		const int NoElementes = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+		const int NoElements = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
 
-		if (NoElementes <= 0)
+		if (NoElements <= 0)
 			return *this;
 
 		cudaExtent CudaExtent;
@@ -61,7 +61,7 @@ public:
 
 		cudaMemcpy3DParms CopyParams = {0};
 		
-		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Other.GetData(), CudaExtent.width * sizeof(unsigned short), CudaExtent.width, CudaExtent.height);
+		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Other.GetData(), CudaExtent.width * sizeof(T), CudaExtent.width, CudaExtent.height);
 		CopyParams.dstArray		= this->Array;
 		CopyParams.extent		= CudaExtent;
 		CopyParams.kind			= cudaMemcpyHostToDevice;
@@ -93,21 +93,16 @@ public:
 		Cuda::Malloc3DArray(&this->Array, cudaCreateChannelDesc<T>(), this->Resolution);
 	}
 
-	HOST void Bind(textureReference* TextureReference)
+	HOST void Bind(textureReference& TextureReference)
 	{
-		TextureReference->normalized		= this->Normalized;
-		TextureReference->filterMode		= (cudaTextureFilterMode)this->FilterMode;
-		TextureReference->addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference->addressMode[1]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference->addressMode[2]	= (cudaTextureAddressMode)this->AddressMode;
+		TextureReference.normalized		= this->Normalized;
+		TextureReference.filterMode		= (cudaTextureFilterMode)this->FilterMode;
+		TextureReference.addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
+		TextureReference.addressMode[1]	= (cudaTextureAddressMode)this->AddressMode;
+		TextureReference.addressMode[2]	= (cudaTextureAddressMode)this->AddressMode;
 
 		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
-		Cuda::BindTextureToArray(TextureReference, this->Array, &ChannelFormatDescription);
-	}
-
-	DEVICE float operator()(const Vec3f& XYZ) const
-	{
-		return tex3D(VolumeTexture, XYZ[0], XYZ[1], XYZ[2]);
+		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
 	}
 
 	HOST_DEVICE Vec3i GetResolution() const

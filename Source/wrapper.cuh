@@ -174,6 +174,11 @@ static inline void BindTextureToArray(const struct textureReference* TextureRefe
 }
 
 
+static inline void GetTextureReference(const struct textureReference** TextureReference, const char* Symbol)
+{
+	Cuda::ThreadSynchronize();
+	HandleCudaError(cudaGetTextureReference(TextureReference, Symbol), __FUNCTION__);
+}
 
 }
 

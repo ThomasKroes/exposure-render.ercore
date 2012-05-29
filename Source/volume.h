@@ -117,9 +117,10 @@ public:
 		return *this;
 	}
 
-	DEVICE unsigned short operator()(const Vec3f& XYZ) const
+	DEVICE unsigned short operator()(const Vec3f& XYZ)
 	{
-		return (float)USHRT_MAX * this->Voxels((XYZ - this->BoundingBox.MinP) * this->InvSize);
+		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;
+		return (float)USHRT_MAX * tex3D(VolumeTexture, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
 
 	DEVICE float GetIntensity(const Vec3f& P)
