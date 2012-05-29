@@ -13,7 +13,7 @@
 
 #define __CUDA_ARCH__ 200
 
-texture<unsigned short, 3, cudaReadModeElementType> VolumeTexture;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> VolumeTexture;
 
 #include "tracer.h"
 #include "volume.h"

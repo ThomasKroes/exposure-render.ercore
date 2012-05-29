@@ -167,7 +167,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(-45.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(2.3f);
-	KeyLight->SetMultiplier(1.5f);
+	KeyLight->SetMultiplier(10.5f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -200,7 +200,7 @@ void SetTransferFunction(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
 	Opacity->AddPoint(33000, 0.0);
-	Opacity->AddPoint(33500, 0.5);
+	Opacity->AddPoint(34000, 1.0);
 
 	Tracer->SetOpacity(Opacity);
 

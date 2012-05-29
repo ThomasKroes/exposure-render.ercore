@@ -25,7 +25,7 @@ public:
 	HOST CudaTexture3D() :
 		Resolution(0),
 		Array(0),
-		Normalized(false),
+		Normalized(true),
 		FilterMode(Enums::Linear),
 		AddressMode(Enums::Wrap)
 	{
@@ -92,20 +92,18 @@ public:
 
 	HOST void Bind(textureReference* TextureReference)
 	{
-		TextureReference->Normalized		= this->Normalized;
-		TextureReference->FilterMode		= this->FilterMode;
-		TextureReference->addressMode[0]	= this->AddressMode;
-		TextureReference->addressMode[1]	= this->AddressMode;
-		TextureReference->addressMode[2]	= this->AddressMode;
+		TextureReference->normalized		= this->Normalized;
+		TextureReference->filterMode		= (cudaTextureFilterMode)this->FilterMode;
+		TextureReference->addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
+		TextureReference->addressMode[1]	= (cudaTextureAddressMode)this->AddressMode;
+		TextureReference->addressMode[2]	= (cudaTextureAddressMode)this->AddressMode;
 
 		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
 		Cuda::BindTextureToArray(TextureReference, this->Array, &ChannelFormatDescription);
 	}
 
-	DEVICE T operator()(const Vec3f& XYZ, const bool Normalized = false) const
+	DEVICE float operator()(const Vec3f& XYZ) const
 	{
-		const Vec3f UVW = Normalized ? XYZ * Vec3f((float)this->Resolution[0], (float)this->Resolution[1], (float)this->Resolution[2]) : XYZ;
-
 		return tex3D(VolumeTexture, XYZ[0], XYZ[1], XYZ[2]);
 	}
 
