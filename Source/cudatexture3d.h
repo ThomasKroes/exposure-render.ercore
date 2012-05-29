@@ -13,82 +13,68 @@
 
 #pragma once
 
-#include "buffer.h"
+#include "buffer3d.h"
 
 namespace ExposureRender
 {
 
 template<class T>
-class EXPOSURE_RENDER_DLL Texture3D : public Buffer<T>
+class EXPOSURE_RENDER_DLL CudaTexture3D
 {
 public:
-	HOST Texture3D(const char* pName = "Texture3D", Enums::FilterMode& FilterMode = Enums::Linear) :
-		Buffer<T>(pName, Enums::Device),
+	HOST CudaTexture3D() :
 		Resolution(0),
-		CudaArray(NULL)
-	{ 
-	}
-
-	HOST Texture3D(const Texture3D& Other) :
-		Buffer<T>(),
-		Resolution(0)
+		Array(0),
+		Normalized(false),
+		FilterMode(Enums::Linear),
+		AddressMode(Enums::Wrap)
 	{
-		*this = Other;
 	}
 
-	HOST virtual ~Buffer3D(void)
+	HOST virtual ~CudaTexture3D(void)
 	{
 		this->Free();
 	}
 
-	HOST Buffer3D& operator = (const Buffer3D& Other)
+	HOST CudaTexture3D& operator = (const CudaTexture3D& Other)
 	{
-		DebugLog("%s: this = %s, Other = %s", __FUNCTION__, this->GetFullName(), Other.GetFullName());
+		throw (Exception(Enums::Error, "Not implemented yet!"));
+	}
+
+	HOST CudaTexture3D<T>& operator = (const Buffer3D<T>& Other)
+	{
+		this->Resize(Other.GetResolution());
+
+		const int NoElementes = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+
+		if (NoElementes <= 0)
+			return *this;
+
+		cudaExtent CudaExtent;
 		
-		if (Other.Dirty)
-		{
-			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
-			Other.Dirty = false;
-		}
+		CudaExtent.width	= this->Resolution[0];
+		CudaExtent.height	= this->Resolution[1];
+		CudaExtent.depth	= this->Resolution[2];
+
+		cudaMemcpy3DParms CopyParams = {0};
 		
-		sprintf_s(this->Name, MAX_CHAR_SIZE, "Copy of %s", Other.Name);
+		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Other.GetData(), CudaExtent.width * sizeof(unsigned short), CudaExtent.width, CudaExtent.height);
+		CopyParams.dstArray		= this->Array;
+		CopyParams.extent		= CudaExtent;
+		CopyParams.kind			= cudaMemcpyHostToDevice;
+		
+		Cuda::Memcpy3D(&CopyParams);
 
 		return *this;
 	}
 
 	HOST void Free(void)
 	{
-#ifdef __CUDA_ARCH__
-		Cuda::FreeArray(this->CudaArray);
-#endif
-				
-		this->Resolution	= Vec3i(0);
-		this->NoElements	= 0;
-		this->Dirty			= true;
-	}
-
-	HOST void Reset(void)
-	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-		
-		if (this->GetNoElements() <= 0)
-			return;
-		
-		if (this->MemoryType == Enums::Host)
-			memset(this->Data, 0, this->GetNoBytes());
-/*
-#ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
-			Cuda::MemSet(this->Data, 0, this->GetNoElements());
-#endif
-*/		
-		this->Dirty = true;
+		Cuda::FreeArray(this->Array);
 	}
 
 	HOST void Resize(const Vec3i& Resolution)
 	{
-		DebugLog("%s", __FUNCTION__);
-		
 		if (this->Resolution == Resolution)
 			return;
 		else
@@ -96,75 +82,45 @@ public:
 		
 		this->Resolution = Resolution;
 		
-		DebugLog("Resolution = [%d x %d x %d]", this->Resolution[0], this->Resolution[1], this->Resolution[2]);
+		const int NoElementes = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
 
-		this->NoElements = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
-		
-		if (this->NoElements <= 0)
-			return;
-		
-		DebugLog("No. Elements = %d", this->NoElements);
+		if (NoElementes <= 0)
+			throw (Exception(Enums::Error, "No. elements is zero!"));
 
-		char MemoryString[MAX_CHAR_SIZE];
-		
-		this->GetMemoryString(MemoryString, Enums::MegaByte);
-
-		if (this->MemoryType == Enums::Host)
-		{
-			this->Data = (T*)malloc(this->GetNoBytes());
-			DebugLog("Allocated %s on host", MemoryString);
-		}
-
-#ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
-		{
-			Cuda::Allocate(this->Data, this->GetNoElements());
-			DebugLog("Allocated %s on device", MemoryString);
-		}
-#endif
-
-		this->Reset();
+		Cuda::Malloc3DArray(&this->Array, cudaCreateChannelDesc<T>(), this->Resolution);
 	}
 
-	HOST void Set(const Enums::MemoryType& MemoryType, const Vec3i& Resolution, T* Data)
+	HOST void Bind(textureReference* TextureReference)
 	{
-		DebugLog("%s: %s, %d x %d x %d", __FUNCTION__, this->GetFullName(), Resolution[0], Resolution[1], Resolution[2]);
+		TextureReference->Normalized		= this->Normalized;
+		TextureReference->FilterMode		= this->FilterMode;
+		TextureReference->addressMode[0]	= this->AddressMode;
+		TextureReference->addressMode[1]	= this->AddressMode;
+		TextureReference->addressMode[2]	= this->AddressMode;
 
-		this->Resize(Resolution);
-
-		if (this->NoElements <= 0)
-			return;
-
-		if (this->MemoryType == Enums::Host)
-		{
-			if (MemoryType == Enums::Host)
-				memcpy(this->Data, Data, this->GetNoBytes());
-			
-#ifdef __CUDA_ARCH__
-			if (MemoryType == Enums::Device)
-				Cuda::MemCopyDeviceToHost(Data, this->Data, this->GetNoElements());
-#endif
-		}
-
-#ifdef __CUDA_ARCH__
-		if (this->MemoryType == Enums::Device)
-		{
-			if (MemoryType == Enums::Host)
-				Cuda::MemCopyHostToDevice(Data, this->Data, this->GetNoElements());
-
-			if (MemoryType == Enums::Device)
-				Cuda::MemCopyDeviceToDevice(Data, this->Data, this->GetNoElements());
-		}
-#endif
-
-		this->Dirty = true;
+		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
+		Cuda::BindTextureToArray(TextureReference, this->Array, &ChannelFormatDescription);
 	}
 
-private:
-	Vec3i	Resolution;
-#ifdef __CUDA_ARCH__
-	cudaArray*	CudaArray
-#endif
+	DEVICE T operator()(const Vec3f& XYZ, const bool Normalized = false) const
+	{
+		const Vec3f UVW = Normalized ? XYZ * Vec3f((float)this->Resolution[0], (float)this->Resolution[1], (float)this->Resolution[2]) : XYZ;
+
+		return tex3D(VolumeTexture, XYZ[0], XYZ[1], XYZ[2]);
+	}
+
+	HOST_DEVICE Vec3i GetResolution() const
+	{
+		return this->Resolution;
+	}
+
+protected:
+	Vec3i					Resolution;
+	cudaArray*				Array;
+	bool					Normalized;
+	Enums::FilterMode		FilterMode;
+	Enums::AddressMode		AddressMode;
+			
 };
 
 }

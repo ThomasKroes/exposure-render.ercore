@@ -125,7 +125,7 @@ namespace Enums
 
 	enum FilterMode
 	{
-		Point = 0,
+		NearestNeighbour = 0,
 		Linear,
 	};
 

@@ -99,7 +99,7 @@ void ConfigureER(vtkRenderer* Renderer)
 
 	Renderer->AddVolume(Volume);
 }
-
+ 
 void LoadVolume(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
@@ -200,7 +200,7 @@ void SetTransferFunction(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
 	Opacity->AddPoint(33000, 0.0);
-	Opacity->AddPoint(34000, 0.5);
+	Opacity->AddPoint(33500, 0.5);
 
 	Tracer->SetOpacity(Opacity);
 
