@@ -18,44 +18,6 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE ColorXYZf EvaluateProcedural(const Procedural& Procedural, const Vec2f& UVW)
-{
-	switch (Procedural.Type)
-	{
-		case Enums::Uniform:
-			return ColorXYZf(Procedural.UniformColor);
-
-		case Enums::Checker:
-		{
-			const int UV[2] =
-			{
-				(int)(UVW[0] * 2.0f),
-				(int)(UVW[1] * 2.0f)
-			};
-
-			if (UV[0] % 2 == 0)
-			{
-				if (UV[1] % 2 == 0)
-					return ColorXYZf(Procedural.CheckerColor1);
-				else
-					return ColorXYZf(Procedural.CheckerColor2);
-			}
-			else
-			{
-				if (UV[1] % 2 == 0)
-					return ColorXYZf(Procedural.CheckerColor2);
-				else
-					return ColorXYZf(Procedural.CheckerColor1);
-			}
-		}
-
-		case Enums::Gradient:
-			return Procedural.Gradient.Evaluate(UVW[1]);
-	}
-
-	return ColorXYZf::Black();
-}
-
 HOST_DEVICE ColorXYZf EvaluateTexture(const int& ID, const Vec2f& UV)
 {
 	if (ID < 0)
@@ -89,7 +51,7 @@ HOST_DEVICE ColorXYZf EvaluateTexture(const int& ID, const Vec2f& UV)
 	{
 		case Enums::Procedural:
 		{
-			L = EvaluateProcedural(T.Procedural, TextureUV);
+			L = T.Procedural.Evaluate(TextureUV);
 			break;
 		}
 

@@ -165,7 +165,7 @@ public:
 	ColorXYZf			Le;
 	Vec2f				UV;
 	float				Intensity;
-	unsigned short		ID;
+	short				ID;
 };
 
 }
