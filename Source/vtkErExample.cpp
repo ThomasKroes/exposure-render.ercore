@@ -148,8 +148,12 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(0.001f);
-	Camera->SetFocalDisk(0.005f);
+	Camera->SetExposure(0.0001f);
+	
+	Camera->SetApertureShape(ExposureRender::Enums::Polygon);
+	Camera->SetApertureSize(0.005f);
+	Camera->SetNoApertureBlades(5);
+	Camera->SetApertureAngle(0.0f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
@@ -204,12 +208,12 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Disk);
-	KeyLight->SetOuterRadius(0.1f);
+	KeyLight->SetOuterRadius(0.01f);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetElevation(145.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(3.0f);
-	KeyLight->SetMultiplier(100.0f);
+	KeyLight->SetMultiplier(10000000.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());

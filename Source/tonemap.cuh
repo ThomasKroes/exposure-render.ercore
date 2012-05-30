@@ -47,9 +47,9 @@ KERNEL void KrnlToneMap()
 
 	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy));
 
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = 255.0f * gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[0];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = 255.0f * gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[1];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = 255.0f * gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[2];
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = 255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[0], gpTracer->Camera.InvGamma);
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = 255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[1], gpTracer->Camera.InvGamma);
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = 255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[2], gpTracer->Camera.InvGamma);
 	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;//gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[3] * 255.0f;
 }
 

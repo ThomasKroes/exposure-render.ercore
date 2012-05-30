@@ -20,6 +20,8 @@
 
 class vtkRenderer;
 
+using namespace ExposureRender;
+
 class VTK_ER_EXPORT vtkErCamera : public vtkOpenGLCamera
 {
 public:
@@ -38,14 +40,30 @@ public:
 	vtkGetMacro(Gamma, float);
 	vtkSetMacro(Gamma, float);
 
+	vtkGetMacro(ApertureShape, Enums::ApertureShape);
+	vtkSetMacro(ApertureShape, Enums::ApertureShape);
+
+	vtkGetMacro(ApertureSize, float);
+	vtkSetMacro(ApertureSize, float);
+	
+	vtkGetMacro(NoApertureBlades, int);
+	vtkSetMacro(NoApertureBlades, int);
+
+	vtkGetMacro(ApertureAngle, float);
+	vtkSetMacro(ApertureAngle, float);
+
 protected:
 	vtkErCamera();
 	virtual ~vtkErCamera();
 
 	//BTX
-	vtkRenderer*	Renderer;
-	float			FocalDistance;
-	float			Exposure;
-	float			Gamma;
+	vtkRenderer*			Renderer;
+	float					FocalDistance;
+	float					Exposure;
+	float					Gamma;
+	Enums::ApertureShape	ApertureShape;
+	float					ApertureSize;
+	int						NoApertureBlades;
+	float					ApertureAngle;
 	//ETX
 };

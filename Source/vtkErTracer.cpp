@@ -196,7 +196,6 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Camera.Pos				= Vec3f(Camera->GetPosition()[0], Camera->GetPosition()[1], Camera->GetPosition()[2]);
 		this->Tracer.Camera.Target			= Vec3f(Camera->GetFocalPoint()[0], Camera->GetFocalPoint()[1], Camera->GetFocalPoint()[2]);
 		this->Tracer.Camera.Up				= Vec3f(Camera->GetViewUp()[0], Camera->GetViewUp()[1], Camera->GetViewUp()[2]);
-		this->Tracer.Camera.ApertureSize	= Camera->GetFocalDisk();
 		this->Tracer.Camera.ClipNear		= 0.0f;//Camera->GetClippingRange()[0];
 		this->Tracer.Camera.ClipFar			= 10000.0f;//Camera->GetClippingRange()[1];
 		this->Tracer.Camera.FOV				= Camera->GetViewAngle();
@@ -206,9 +205,13 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	if (ErCamera)
 	{
-		this->Tracer.Camera.FocalDistance	= ErCamera->GetFocalDistance();
-		this->Tracer.Camera.Exposure		= ErCamera->GetExposure();
-		this->Tracer.Camera.Gamma			= ErCamera->GetGamma();
+		this->Tracer.Camera.FocalDistance		= ErCamera->GetFocalDistance();
+		this->Tracer.Camera.Exposure			= ErCamera->GetExposure();
+		this->Tracer.Camera.Gamma				= ErCamera->GetGamma();
+		this->Tracer.Camera.ApertureShape		= ErCamera->GetApertureShape();
+		this->Tracer.Camera.ApertureSize		= ErCamera->GetApertureSize();
+		this->Tracer.Camera.NoApertureBlades	= ErCamera->GetNoApertureBlades();
+		this->Tracer.Camera.ApertureAngle		= ErCamera->GetApertureAngle();
 	}
 	
 	vtkErVolumeData* VolumeData = dynamic_cast<vtkErVolumeData*>(this->GetInputDataObject(0, 0));
