@@ -47,15 +47,15 @@ KERNEL void KrnlToneMap()
 
 	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy));
 
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = RGB[0];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = RGB[1];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = RGB[2];
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = 255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[0], gpTracer->Camera.InvGamma);
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = 255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[1], gpTracer->Camera.InvGamma);
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = 255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[2], gpTracer->Camera.InvGamma);
 	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;//gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[3] * 255.0f;
 }
 
 void ToneMap(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 8, 8, 1)
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlToneMap<<<GridDim, BlockDim>>>()), "Tone map");
 }
 

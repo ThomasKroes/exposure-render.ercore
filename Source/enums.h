@@ -148,6 +148,12 @@ namespace Enums
 		NoAcceleration = 0,
 		Octree
 	};
+
+	enum ApertureShape
+	{
+		Circular = 0,
+		Polygon
+	};
 }
 
 }

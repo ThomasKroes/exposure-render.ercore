@@ -29,7 +29,10 @@ public:
 		FocusMode(Enums::AutoFocus),
 		FocusUV(0.5f),
 		FocalDistance(0.0f),
+		ApertureShape(Enums::Polygon),
 		ApertureSize(0.0f),
+		NoApertureBlades(4),
+		ApertureAngle(0.0f),
 		ClipNear(0.0f),
 		ClipFar(10000.0f),
 		Exposure(1.0f),
@@ -54,19 +57,22 @@ public:
 	
 	HOST Camera& Camera::operator = (const Camera& Other)
 	{
-		this->FilmSize		= Other.FilmSize;
-		this->Pos			= Other.Pos;
-		this->Target		= Other.Target;
-		this->Up			= Other.Up;
-		this->FocusMode		= Other.FocusMode;
-		this->FocusUV		= Other.FocusUV;
-		this->FocalDistance	= Other.FocalDistance;
-		this->ApertureSize	= Other.ApertureSize;
-		this->ClipNear		= Other.ClipNear;
-		this->ClipFar		= Other.ClipFar;
-		this->Exposure		= Other.Exposure;
-		this->Gamma			= Other.Gamma;
-		this->FOV			= Other.FOV;
+		this->FilmSize			= Other.FilmSize;
+		this->Pos				= Other.Pos;
+		this->Target			= Other.Target;
+		this->Up				= Other.Up;
+		this->FocusMode			= Other.FocusMode;
+		this->FocusUV			= Other.FocusUV;
+		this->FocalDistance		= Other.FocalDistance;
+		this->ApertureShape		= Other.ApertureShape;
+		this->ApertureSize		= Other.ApertureSize;
+		this->NoApertureBlades	= Other.NoApertureBlades;
+		this->ApertureAngle		= Other.ApertureAngle;
+		this->ClipNear			= Other.ClipNear;
+		this->ClipFar			= Other.ClipFar;
+		this->Exposure			= Other.Exposure;
+		this->Gamma				= Other.Gamma;
+		this->FOV				= Other.FOV;
 		
 		this->Update();
 
@@ -110,26 +116,29 @@ public:
 		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->FilmSize[1];
 	}
 
-	Vec2i				FilmSize;
-	Vec3f				Pos;
-	Vec3f				Target;
-	Vec3f				Up;
-	Enums::FocusMode	FocusMode;
-	Vec2f				FocusUV;
-	float				FocalDistance;
-	float				ApertureSize;
-	float				ClipNear;
-	float				ClipFar;
-	float				Exposure;
-	float				Gamma;
-	float				FOV;
-	Vec3f				N;
-	Vec3f				U;
-	Vec3f				V;
-	float				Screen[2][2];
-	float				InvScreen[2];
-	float				InvExposure;
-	float				InvGamma;
+	Vec2i					FilmSize;
+	Vec3f					Pos;
+	Vec3f					Target;
+	Vec3f					Up;
+	Enums::FocusMode		FocusMode;
+	Vec2f					FocusUV;
+	float					FocalDistance;
+	Enums::ApertureShape	ApertureShape;	
+	float					ApertureSize;
+	int						NoApertureBlades;
+	float					ApertureAngle;
+	float					ClipNear;
+	float					ClipFar;
+	float					Exposure;
+	float					Gamma;
+	float					FOV;
+	Vec3f					N;
+	Vec3f					U;
+	Vec3f					V;
+	float					Screen[2][2];
+	float					InvScreen[2];
+	float					InvExposure;
+	float					InvGamma;
 };
 
 }
