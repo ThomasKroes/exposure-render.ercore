@@ -87,13 +87,13 @@ void ConfigureER(vtkRenderer* Renderer)
 	
 	LoadVolume(Tracer);
 	CreateLighting(Tracer);
-	CreateObjects(Tracer);
+//	CreateObjects(Tracer);
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(100);
+	Tracer->SetDensityScale(50);
 
-	const float StepSize = 4.0f;
+	const float StepSize = 5.0f;
 
 	Tracer->SetStepFactorPrimary(StepSize);
 	Tracer->SetStepFactorShadow(2.0f * StepSize);
@@ -132,11 +132,11 @@ void LoadVolume(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(ExposureRender::Enums::NearestNeighbour);
+	Volume->SetFilterMode(ExposureRender::Enums::Linear);
 	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
 
 	Volume->SetAlignmentType(ExposureRender::Enums::AxisAlign);
-	Volume->SetAxis(ExposureRender::Enums::Z);
+//	Volume->SetAxis(ExposureRender::Enums::X);
 	Volume->SetPosition(0, 0, 0);
 
 	Volume->Update();
@@ -148,8 +148,8 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(1.0f);
-	Camera->SetFocalDisk(0.02f);
+	Camera->SetExposure(0.001f);
+	Camera->SetFocalDisk(0.005f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
@@ -180,7 +180,6 @@ void CreateLighting(vtkErTracer* Tracer)
 	Gradient->AddHSVPoint(1.0f, 0.6f, 0.9f, 0.8f);
 
 	RimLightTexture->SetGradient(Gradient);
-
 	
 	vtkSmartPointer<vtkErTexture> ImageTexture = vtkSmartPointer<vtkErTexture>::New();
 
@@ -205,9 +204,9 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Disk);
-	KeyLight->SetOuterRadius(0.5f);
+	KeyLight->SetOuterRadius(0.1f);
 	KeyLight->SetOneSided(false);
-	KeyLight->SetElevation(45.0f);
+	KeyLight->SetElevation(145.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(3.0f);
 	KeyLight->SetMultiplier(100.0f);
@@ -221,19 +220,19 @@ void CreateLighting(vtkErTracer* Tracer)
 	const float RimLightSize = 2.0f;
 
 	RimLight->SetAlignmentType(ExposureRender::Enums::AxisAlign);
-	RimLight->SetAxis(ExposureRender::Enums::Y);
+	RimLight->SetAxis(ExposureRender::Enums::X);
 	RimLight->SetPosition(0.0f, -0.5f, 0.0f);
 	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
 	RimLight->SetOneSided(false);
 	RimLight->SetOuterRadius(5.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
-	RimLight->SetOffset(3.0f);
-	RimLight->SetMultiplier(1000.0f);
+	RimLight->SetOffset(30.0f);
+	RimLight->SetMultiplier(30.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
-	RimLight->SetEnabled(true);
+	RimLight->SetEnabled(false);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
@@ -282,7 +281,7 @@ void SetTransferFunction(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Opacity->AddPoint(32900, 0.1);
+	Opacity->AddPoint(32800, 0.1);
 	Opacity->AddPoint(40000, 1.0);
 
 	Tracer->SetOpacity(Opacity);
@@ -299,7 +298,7 @@ void SetTransferFunction(vtkErTracer* Tracer)
 	*/
 
 	Diffuse->AddRGBPoint(0, 1.0f, 0.2f, 0.2f);
-	Diffuse->AddRGBPoint(32900, 0.8f, 0.3f, 0.2f);
+	Diffuse->AddRGBPoint(32400, 0.8f, 0.3f, 0.2f);
 	Diffuse->AddRGBPoint(40000, 0.9f, 0.8f, 0.5f);
 
 	Tracer->SetDiffuse(Diffuse);
@@ -307,15 +306,14 @@ void SetTransferFunction(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 
 	Specular->AddRGBPoint(0, 1, 1, 1);
-	Specular->AddRGBPoint(100, 0, 0, 0);
-	Specular->AddRGBPoint(200, 1, 1, 1);
+	Specular->AddRGBPoint(40000, 1, 1, 1);
 
 	Tracer->SetSpecular(Specular);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Glossiness->AddPoint(32900, 0.2);
-	Glossiness->AddPoint(40000, 0.3);
+	Glossiness->AddPoint(0, 1.0f);
+	Glossiness->AddPoint(40000, 1.0f);
 
 	Tracer->SetGlossiness(Glossiness);
 

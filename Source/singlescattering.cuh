@@ -23,6 +23,8 @@ KERNEL void KrnlSingleScattering()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
+	
+
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = SingleScattering(gpTracer, Vec2i(IDx, IDy));
 }
 

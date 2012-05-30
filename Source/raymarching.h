@@ -28,7 +28,7 @@ class RayMarcher
 public:
 	DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 	{
-		R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
+//		R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
 
 		float MinT;
 		float MaxT;
@@ -71,7 +71,7 @@ public:
 
 	DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG)
 	{
-		R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
+//		R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
 		
 		float MinT;
 		float MaxT;
