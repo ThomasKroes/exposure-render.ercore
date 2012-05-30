@@ -94,7 +94,14 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 	if (SE.Valid && SE.Type == Enums::Object)
 		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 	
-	return ColorXYZAf(Lv[0], Lv[1], Lv[2], SE.Valid ? 1.0f : 0.0f);
+
+	ColorRGBf RGBf = ColorRGBf::FromXYZf(Lv);
+
+	RGBf[0] = 1.0f - expf(-(RGBf[0] / gpTracer->Camera.Exposure));
+	RGBf[1] = 1.0f - expf(-(RGBf[1] / gpTracer->Camera.Exposure));
+	RGBf[2] = 1.0f - expf(-(RGBf[2] / gpTracer->Camera.Exposure));
+
+	return ColorXYZAf(RGBf[0], RGBf[1], RGBf[2], SE.Valid ? 1.0f : 0.0f);
 }
 
 }
