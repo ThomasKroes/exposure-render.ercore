@@ -15,9 +15,7 @@
 
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
-
-#include "vtkAlgorithm.h"
-#include "vtkDataObject.h"
+#include "vtkErAlignment.h"
 
 class vtkErVolumeData : public vtkDataObject, public vtkErBindableVolume
 {
@@ -34,7 +32,7 @@ private:
     void operator = (const vtkErVolumeData& Other);		// Not implemented.
 };
 
-class VTK_ER_EXPORT vtkErVolume : public vtkAlgorithm
+class VTK_ER_EXPORT vtkErVolume : public vtkErAlignment
 {
 public:
 	vtkTypeMacro(vtkErVolume, vtkAlgorithm);

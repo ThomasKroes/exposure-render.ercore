@@ -56,7 +56,6 @@ SET(General
 	geometry.h
 	transport.h
 	raymarching.h
-	shader.h
 	sample.h
 	rng.h
 	montecarlo.h
@@ -129,6 +128,19 @@ SET(Shapes
 
 SOURCE_GROUP("Shapes" FILES ${Shapes})
 
+SET(Shading
+	shader.h
+	phasefunction.h
+	brdf.h
+	fresnel.h
+	lambert.h
+	microfacet.h
+	phasefunction.h
+	blinn.h
+)
+
+SOURCE_GROUP("Shading" FILES ${Shading})
+
 SET(Bindable
 	erbindable.h
 	ertracer.h
@@ -159,7 +171,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shapes} ${Bindable} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Cuda} SHARED)
 
 # Use vtk
 IF(NOT VTK_BINARY_DIR)

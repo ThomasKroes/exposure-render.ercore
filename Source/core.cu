@@ -124,8 +124,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 {
 	if (gTracers[TracerID].NoEstimates == 0)
 	{
-		//gTracers[TracerID].FrameBuffer.AccumulationXyza.Reset();
-
 		if (gTracers[TracerID].Camera.FocusMode == Enums::AutoFocus)
 		{
 			float AutoFocusDistance = -1.0f;

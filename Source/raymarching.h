@@ -28,6 +28,8 @@ class RayMarcher
 public:
 	DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE)
 	{
+		R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
+
 		float MinT;
 		float MaxT;
 		
@@ -50,6 +52,8 @@ public:
 
 		MinT += RNG.Get1() * StepSize;
 
+		float Intensity = 0.0f;
+
 		while (Sum < S)
 		{
 			Ps = R.O + MinT * R.D;
@@ -57,17 +61,21 @@ public:
 			if (MinT >= MaxT)
 				return;
 			
-			Sum		+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(gpVolumes[gpTracer->VolumeID].GetIntensity(Ps)) * StepSize;
-			MinT	+= StepSize;
+			Intensity	= gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
+			Sum			+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity) * StepSize;
+			MinT		+= StepSize;
 		}
 
-		SE.SetValid(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, ColorXYZf());
+		SE.SetVolumeScattering(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, Intensity);
 	}
 
 	DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG)
 	{
+		R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
+		
 		float MinT;
 		float MaxT;
+
 		Vec3f Ps;
 
 		Intersection Int;

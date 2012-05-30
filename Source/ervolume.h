@@ -16,6 +16,7 @@
 #include "erbindable.h"
 #include "vector.h"
 #include "buffer3d.h"
+#include "alignment.h"
 
 namespace ExposureRender
 {
@@ -24,6 +25,7 @@ class EXPOSURE_RENDER_DLL ErVolume : public ErBindable
 {
 public:
 	HOST ErVolume() :
+		Alignment(),
 		ErBindable(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
@@ -38,6 +40,7 @@ public:
 
 	HOST ErVolume(const ErVolume& Other) :
 		ErBindable(),
+		Alignment(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
 		Spacing(1.0f),
@@ -50,6 +53,7 @@ public:
 	{
 		ErBindable::operator=(Other);
 
+		this->Alignment			= Other.Alignment;
 		this->Voxels			= Other.Voxels;
 		this->NormalizeSize		= Other.NormalizeSize;
 		this->Spacing			= Other.Spacing;
@@ -66,6 +70,7 @@ public:
 		this->Spacing		= Spacing;
 	}
 
+	Alignment					Alignment;
 	Buffer3D<unsigned short>	Voxels;
 	bool						NormalizeSize;
 	Vec3f						Spacing;

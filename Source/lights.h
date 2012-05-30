@@ -92,7 +92,7 @@ HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool Respect
 		
 		ScatterEvent LocalRS(Enums::Light);
 
-		LocalRS.LightID = i;
+		LocalRS.ID = i;
 
 		if (RespectVisibility && !Light.Visible)
 			continue;

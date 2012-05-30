@@ -28,6 +28,11 @@ vtkErLight::vtkErLight(void)
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
 
+	this->SetAlignmentType(Enums::Spherical);
+	this->SetElevation(45.0f);
+	this->SetAzimuth(180.0f);
+	this->SetOffset(1.0f);
+
 	this->SetEnabled(true);
 	this->SetVisible(true);
 	this->SetMultiplier(100000.0f);

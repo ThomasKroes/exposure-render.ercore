@@ -124,6 +124,8 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (Glossiness)
 		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;
 	
+	ObjectDataOut->Bindable.Enabled = this->GetEnabled();
+
 	ObjectDataOut->Bind();
 
 	return 1;

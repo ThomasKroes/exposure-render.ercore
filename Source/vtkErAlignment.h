@@ -17,6 +17,7 @@
 #include "vtkErBindable.h"
 
 #include <vtkAlgorithm.h>
+#include <vtkMatrix4x4.h>
 
 using namespace ExposureRender;
 
@@ -55,6 +56,8 @@ public:
 	vtkGetMacro(Offset, float);
 	vtkSetMacro(Offset, float);
 
+	void SetManualTM(vtkMatrix4x4* ManualTM) { this->ManualTM = ManualTM; };
+
 protected:
 	vtkErAlignment();
 	virtual ~vtkErAlignment() {};
@@ -63,13 +66,14 @@ private:
 	vtkErAlignment(const vtkErAlignment& Other);	// Not implemented
     void operator = (const vtkErAlignment& Other);	// Not implemented
 
-	Enums::AlignmentType	AlignmentType;
-	Enums::Axis				Axis;
-	bool					AutoFlip;
-	float					Position[3];
-	float					Target[3];
-	float					Up[3];
-	float					Elevation;
-	float					Azimuth;
-	float					Offset;
+	Enums::AlignmentType			AlignmentType;
+	Enums::Axis						Axis;
+	bool							AutoFlip;
+	float							Position[3];
+	float							Target[3];
+	float							Up[3];
+	float							Elevation;
+	float							Azimuth;
+	float							Offset;
+	vtkSmartPointer<vtkMatrix4x4>	ManualTM;
 };
