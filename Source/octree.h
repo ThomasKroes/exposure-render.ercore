@@ -55,24 +55,28 @@ protected:
 			return false;
 		}
 
-		HOST void SubDivide(const Buffer3D<unsigned short>& Voxels, std::vector<OctreeNode> Nodes, const int& Depth, const int& MaxDepth)
+		HOST void SubDivide(const Buffer3D<unsigned short>& Voxels, std::vector<OctreeNode>& Nodes, const int& Index, const int& Depth, const int& MaxDepth)
 		{
+			// test if we should stop subdividing
 			if (OctreeNode::ShouldStop(Depth, MaxDepth))
 				return;
 
-			this->FirstChild = Nodes.size();
+			// get the index of the first child
+			Nodes[Index].FirstChild = Nodes.size();
 
+			// new depth
+			int NewDepth = Depth + 1;
+
+			// initialize children and append to vector
 			OctreeNode Children[8];
-			
+			Nodes.insert(Nodes.end(), &Children[0], &Children[8]);
+
+			// subdivide children
 			for (int i = 0; i < 8; i++)
 			{
-				Nodes.push_back(Children[i]);
-				Children[i].SubDivide(Voxels, Nodes, Depth + 1, MaxDepth);
+				int ChildIndex = Nodes[Index].FirstChild + i;
+				Nodes[ChildIndex].SubDivide(Voxels, Nodes, ChildIndex, NewDepth, MaxDepth);
 			}
-
-			// 
-			Vec3f P;
-			// unsigned short Intensity = Voxels(P);
 		}
 
 		BoundingBox		BoundingBox;
@@ -116,10 +120,9 @@ public:
 		int Depth = 0;
 
 		OctreeNode Root(BoundingBox);
-
 		Nodes.push_back(Root);
 
-		Root.SubDivide(Voxels, Nodes, Depth, this->MaxDepth);
+		Nodes[0].SubDivide(Voxels, Nodes, 0, Depth, this->MaxDepth);
 	}
 
 	int				MaxDepth;
