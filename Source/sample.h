@@ -20,7 +20,7 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE void Mutate1(float& X, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
+HOST_DEVICE inline void Mutate1(float& X, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
 {
 	float dx = S2 * exp(-log(S2 / S1) * RNG.Get1());
 
@@ -36,13 +36,13 @@ HOST_DEVICE void Mutate1(float& X, CRNG& RNG, const float& S1 = 0.0009765625f, c
 	}
 }
 
-HOST_DEVICE void Mutate2(Vec2f& V, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
+HOST_DEVICE inline void Mutate2(Vec2f& V, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
 {
 	Mutate1(V[0], RNG, S1, S2);
 	Mutate1(V[1], RNG, S1, S2);
 }
 
-HOST_DEVICE void Mutate3(Vec3f& V, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
+HOST_DEVICE inline void Mutate3(Vec3f& V, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
 {
 	Mutate1(V[0], RNG, S1, S2);
 	Mutate1(V[1], RNG, S1, S2);

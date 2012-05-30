@@ -35,8 +35,9 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-char gFileName[] = "C://Volumes//artifix.mhd";
-//char gFileName[] = "c://manix.mhd";
+// char gFileName[] = "C://model_segmentation.mhd";
+// char gFileName[] = "C://Volumes//manix.mhd";
+char gFileName[] = "c://manix.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -90,9 +91,14 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(250);
-	Tracer->SetStepFactorPrimary(4);
-	Tracer->SetStepFactorShadow(4);
+	Tracer->SetDensityScale(100);
+
+	const float StepSize = 4.0f;
+
+	Tracer->SetStepFactorPrimary(StepSize);
+	Tracer->SetStepFactorShadow(2.0f * StepSize);
+	Tracer->SetShadingMode(ExposureRender::Enums::BrdfOnly);
+
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -126,8 +132,13 @@ void LoadVolume(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(ExposureRender::Enums::Linear);
+	Volume->SetFilterMode(ExposureRender::Enums::NearestNeighbour);
 	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
+
+	Volume->SetAlignmentType(ExposureRender::Enums::AxisAlign);
+	Volume->SetAxis(ExposureRender::Enums::Z);
+	Volume->SetPosition(0, 0, 0);
+
 	Volume->Update();
 
 	Tracer->SetInputConnection(vtkErTracer::VolumePort, Volume->GetOutputPort());
@@ -137,8 +148,8 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(5.0f);
-	Camera->SetFocalDisk(0.01f);
+	Camera->SetExposure(50.0f);
+	Camera->SetFocalDisk(0.0f);
 
 	Renderer->SetActiveCamera(Camera);
 	Renderer->ResetCamera();
@@ -172,40 +183,54 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErTexture> ImageTexture = vtkSmartPointer<vtkErTexture>::New();
 
+	ImageTexture->SetTextureType(ExposureRender::Enums::Bitmap);
+
+	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
+
+	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\panorama.jpg");
+	JpegReader->Update();
+
+	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
+	
+	Bitmap->SetFilterMode(ExposureRender::Enums::Linear);
+	Bitmap->SetInputConnection(0, JpegReader->GetOutputPort());
+
+	ImageTexture->SetInputConnection(0, Bitmap->GetOutputPort());
+
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 10.0f;
+	const float KeyLightSize = 100.0f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Disk);
-	KeyLight->SetOuterRadius(0.05f);
+	KeyLight->SetOuterRadius(0.5f);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetElevation(45.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(3.0f);
-	KeyLight->SetMultiplier(100000.0f);
+	KeyLight->SetMultiplier(100.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
-	KeyLight->SetEnabled(true);
+	KeyLight->SetEnabled(false);
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
 	const float RimLightSize = 2.0f;
 
 	RimLight->SetAlignmentType(ExposureRender::Enums::AxisAlign);
-	RimLight->SetAxis(ExposureRender::Enums::X);
-	RimLight->SetPosition(0.0f, 0.0f, 0.0f);
+	RimLight->SetAxis(ExposureRender::Enums::Y);
+	RimLight->SetPosition(0.0f, -0.5f, 0.0f);
 	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
 	RimLight->SetOneSided(false);
-	RimLight->SetOuterRadius(10.0f);
+	RimLight->SetOuterRadius(5.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(3.0f);
-	RimLight->SetMultiplier(10000.0f);
+	RimLight->SetMultiplier(100.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
-	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
-	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
+	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
+	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
 	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
@@ -214,11 +239,26 @@ void CreateLighting(vtkErTracer* Tracer)
 
 void CreateObjects(vtkErTracer* Tracer)
 {
+	return;
+
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
 
-	DiffuseTexture->SetTextureType(ExposureRender::Enums::Procedural);
+	DiffuseTexture->SetTextureType(ExposureRender::Enums::Bitmap);
 	DiffuseTexture->SetProceduralType(ExposureRender::Enums::Uniform);
-	DiffuseTexture->SetUniformColor(0.9, 0.6, 0.2);
+	DiffuseTexture->SetUniformColor(1, 1, 1);
+	DiffuseTexture->SetOutputLevel(1.0f);
+
+	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
+
+	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\graph.jpg");
+	JpegReader->Update();
+
+	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
+	
+	Bitmap->SetFilterMode(ExposureRender::Enums::NearestNeighbour);
+	Bitmap->SetInputConnection(0, JpegReader->GetOutputPort());
+
+	DiffuseTexture->SetInputConnection(0, Bitmap->GetOutputPort());
 
 	vtkSmartPointer<vtkErObject> Object = vtkSmartPointer<vtkErObject>::New();
 
@@ -227,10 +267,11 @@ void CreateObjects(vtkErTracer* Tracer)
 	Object->SetPosition(0.0f, -0.5f, 0.0f);
 	Object->SetShapeType(ExposureRender::Enums::Plane);
 	Object->SetSize(10.0f, 10.0f, 10.0f);
+	Object->SetEnabled(false);
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
-	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
-	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
+//	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
+//	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
 }

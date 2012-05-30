@@ -87,7 +87,7 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 
 	IntersectLights(Ray(SE.P, Wi), SE2);
 	
-	if (!SE2.Valid || SE2.LightID != Light.ID)
+	if (!SE2.Valid || SE2.ID != Light.ID)
 		return Ld;
 
 	Li = SE2.Le;
@@ -111,9 +111,7 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 {
 	ColorXYZf Ld;
 
-	const float Intensity = gpVolumes[gpTracer->VolumeID].GetIntensity(SE.P);
-
-	Ld += gpTracer->Emission1D.Evaluate(Intensity);
+	Ld += SE.Le;
 
 	if (gpTracer->LightIDs.Count <= 0)
 		return Ld;
@@ -126,26 +124,13 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	const Light& Light = gpLights[LightID];
 	
 	Shader Shader;
-	
-	switch (SE.Type)
-	{
-		case Enums::Volume:	
-			Shader = ExposureRender::Shader(Enums::Brdf, SE.N, SE.Wo, gpTracer->Diffuse1D.Evaluate(Intensity), gpTracer->Specular1D.Evaluate(Intensity), 15.0f, GlossinessExponent(gpTracer->Glossiness1D.Evaluate(Intensity)));
-			break;
 
-		case Enums::Object:
-		{
-			const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[SE.ObjectID].DiffuseTextureID, SE.UV);
-			const ColorXYZf Specular	= EvaluateTexture(gpObjects[SE.ObjectID].SpecularTextureID, SE.UV);
-			const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[SE.ObjectID].GlossinessTextureID, SE.UV);
+	SE.GetShader(Shader);
 
-			Shader = ExposureRender::Shader(Enums::Brdf, SE.N, SE.Wo, Diffuse, Specular, 15.0f, GlossinessExponent(Glossiness.Y()));
-			break;
-		}
-	}
-	/**/
-
-	Ld += gpTracer->Opacity1D.Evaluate(Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
+	if (SE.Type == Enums::Volume)
+		Ld += gpTracer->Opacity1D.Evaluate(SE.Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
+	else
+		Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
 
 	return (float)gpTracer->LightIDs.Count * Ld;
 }

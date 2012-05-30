@@ -13,40 +13,53 @@
 
 #pragma once
 
-#include "vtkErStable.h"
-#include "vtkErAlignment.h"
+#include "montecarlo.h"
 
-vtkStandardNewMacro(vtkErAlignment);
-vtkCxxRevisionMacro(vtkErAlignment, "$Revision: 1.0 $");
-
-vtkErAlignment::vtkErAlignment()
+namespace ExposureRender
 {
-	this->ManualTM = vtkSmartPointer<vtkMatrix4x4>::New();
 
-	this->SetAlignmentType(Enums::AxisAlign);
-	this->SetAxis(Enums::Y);
-	this->SetAutoFlip(true);
-	this->SetPosition(0.0f, 0.0f, 0.0f);
-	this->SetTarget(0.0f, 0.0f, 0.0f);
-	this->SetUp(0.0f, 1.0f, 0.0f);
-	this->SetElevation(45.0f);
-	this->SetAzimuth(180.0f);
-	this->SetOffset(1.0f);
-}
-
-void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
+class Lambert
 {
-	Alignment.Type		= this->GetAlignmentType();
-	Alignment.Axis		= this->GetAxis();
-	Alignment.AutoFlip	= this->GetAutoFlip();
-	Alignment.Position	= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
-	Alignment.Target	= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
-	Alignment.Up		= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
-	Alignment.Elevation	= this->GetElevation();
-	Alignment.Azimuth	= this->GetAzimuth();
-	Alignment.Offset	= this->GetOffset();
+public:
+	HOST_DEVICE Lambert(void)
+	{
+	}
 
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			Alignment.ManualTM.NN[i][j] = this->ManualTM->GetElement(i, j);
+	HOST_DEVICE Lambert(const ColorXYZf& Kd)
+	{
+		this->Kd = Kd;
+	}
+
+	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
+	{
+		return Kd * INV_PI_F;
+	}
+
+	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
+	{
+		Wi = CosineWeightedHemisphere(U);
+
+		if (Wo[2] < 0.0f)
+			Wi[2] *= -1.0f;
+
+		Pdf = this->Pdf(Wo, Wi);
+
+		return this->F(Wo, Wi);
+	}
+
+	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
+	{
+		return SameHemisphere(Wo, Wi) ? AbsCosTheta(Wi) * INV_PI_F : 0.0f;
+	}
+
+	HOST_DEVICE Lambert& operator = (const Lambert& Other)
+	{
+		this->Kd = Other.Kd;
+
+		return *this;
+	}
+
+	ColorXYZf	Kd;
+};
+
 }

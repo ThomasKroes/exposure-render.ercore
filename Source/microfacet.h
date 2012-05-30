@@ -13,81 +13,89 @@
 
 #pragma once
 
-#include "brdf.h"
-#include "phasefunction.h"
-#include "utilities.h"
+#include "blinn.h"
+#include "fresnel.h"
 
 namespace ExposureRender
 {
 
-class Shader
+class Microfacet
 {
 public:
-	HOST_DEVICE Shader(void)
+	HOST_DEVICE Microfacet(void)
 	{
 	}
 
-	HOST_DEVICE Shader(const Enums::ScatterFunction& Type, const Vec3f& N, const Vec3f& Wo, const ColorXYZf& Kd, const ColorXYZf& Ks, const float& Ior, const float& Exponent) :
-		Type(Type),
-		Brdf(N, Wo, Kd, Ks, Ior, Exponent),
-		IsotropicPhase(Kd)
+	HOST_DEVICE Microfacet(const ColorXYZf& Reflectance, const float& Ior, const float& Exponent) :
+		R(Reflectance),
+		Fresnel(1.0f, Ior),
+		Blinn(Exponent)
 	{
 	}
 
-	HOST_DEVICE ColorXYZf F(Vec3f Wo, Vec3f Wi)
+	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
 	{
-		switch (this->Type)
-		{
-			case Enums::Brdf:
-				return this->Brdf.F(Wo, Wi);
+		const float cosThetaO = AbsCosTheta(Wo);
+		const float cosThetaI = AbsCosTheta(Wi);
 
-			case Enums::PhaseFunction:
-				return this->IsotropicPhase.F(Wo, Wi);
-		}
+		if (cosThetaI == 0.0f || cosThetaO == 0.0f)
+			return ColorXYZf(0.0f);
 
-		return 1.0f;
+		Vec3f Wh = Wi + Wo;
+
+		if (Wh[0] == 0.0f && Wh[1] == 0.0f && Wh[2] == 0.0f)
+			return ColorXYZf(0.0f);
+
+		Wh = Normalize(Wh);
+		
+		float cosThetaH = Dot(Wi, Wh);
+
+		ColorXYZf F = this->Fresnel.Evaluate(cosThetaH);
+
+		return this->R * this->Blinn.D(Wh) * G(Wo, Wi, Wh) * F / (4.0f * cosThetaI * cosThetaO);
 	}
 
-	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const BrdfSample& S)
+	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
 	{
-		switch (this->Type)
-		{
-			case Enums::Brdf:
-				return this->Brdf.SampleF(Wo, Wi, Pdf, S);
+		this->Blinn.SampleF(Wo, Wi, Pdf, U);
 
-			case Enums::PhaseFunction:
-				return this->IsotropicPhase.SampleF(Wo, Wi, Pdf, S.Dir);
-		}
+		if (!SameHemisphere(Wo, Wi))
+			return ColorXYZf::Black();
 
-		return ColorXYZf(0.0f);
+		return this->F(Wo, Wi);
 	}
 
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
-		switch (this->Type)
-		{
-			case Enums::Brdf:
-				return this->Brdf.Pdf(Wo, Wi);
+		if (!SameHemisphere(Wo, Wi))
+			return 0.0f;
 
-			case Enums::PhaseFunction:
-				return this->IsotropicPhase.Pdf(Wo, Wi);
-		}
-
-		return 1.0f;
+		return Blinn.Pdf(Wo, Wi);
 	}
 
-	HOST_DEVICE Shader& operator = (const Shader& Other)
+	HOST_DEVICE float G(const Vec3f& Wo, const Vec3f& Wi, const Vec3f& Wh)
 	{
-		this->Type 				= Other.Type;
-		this->Brdf 				= Other.Brdf;
-		this->IsotropicPhase	= Other.IsotropicPhase;
+		const float NdotWh 	= AbsCosTheta(Wh);
+		const float NdotWo 	= AbsCosTheta(Wo);
+		const float NdotWi 	= AbsCosTheta(Wi);
+		const float WOdotWh = AbsDot(Wo, Wh);
+
+		return min(1.0f, min((2.0f * NdotWh * NdotWo / WOdotWh), (2.0f * NdotWh * NdotWi / WOdotWh)));
+	}
+
+	HOST_DEVICE Microfacet& operator = (const Microfacet& Other)
+	{
+		this->R			= Other.R;
+		this->Fresnel	= Other.Fresnel;
+		this->Blinn		= Other.Blinn;
 
 		return *this;
 	}
 
-	Enums::ScatterFunction		Type;
-	Brdf						Brdf;
-	IsotropicPhase				IsotropicPhase;
+	ColorXYZf	R;
+	Fresnel		Fresnel;
+	Blinn		Blinn;
+
 };
 
 }

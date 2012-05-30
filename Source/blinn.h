@@ -13,40 +13,73 @@
 
 #pragma once
 
-#include "vtkErStable.h"
-#include "vtkErAlignment.h"
+#include "montecarlo.h"
 
-vtkStandardNewMacro(vtkErAlignment);
-vtkCxxRevisionMacro(vtkErAlignment, "$Revision: 1.0 $");
-
-vtkErAlignment::vtkErAlignment()
+namespace ExposureRender
 {
-	this->ManualTM = vtkSmartPointer<vtkMatrix4x4>::New();
 
-	this->SetAlignmentType(Enums::AxisAlign);
-	this->SetAxis(Enums::Y);
-	this->SetAutoFlip(true);
-	this->SetPosition(0.0f, 0.0f, 0.0f);
-	this->SetTarget(0.0f, 0.0f, 0.0f);
-	this->SetUp(0.0f, 1.0f, 0.0f);
-	this->SetElevation(45.0f);
-	this->SetAzimuth(180.0f);
-	this->SetOffset(1.0f);
-}
-
-void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
+class Blinn
 {
-	Alignment.Type		= this->GetAlignmentType();
-	Alignment.Axis		= this->GetAxis();
-	Alignment.AutoFlip	= this->GetAutoFlip();
-	Alignment.Position	= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
-	Alignment.Target	= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
-	Alignment.Up		= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
-	Alignment.Elevation	= this->GetElevation();
-	Alignment.Azimuth	= this->GetAzimuth();
-	Alignment.Offset	= this->GetOffset();
+public:
+	HOST_DEVICE Blinn(void)
+	{
+	}
 
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			Alignment.ManualTM.NN[i][j] = this->ManualTM->GetElement(i, j);
+	HOST_DEVICE Blinn(const float& Exponent) :
+		Exponent(Exponent)
+	{
+	}
+
+	HOST_DEVICE void SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
+	{
+		const float CosTheta	= powf(U[0], 1.0f / (this->Exponent + 1));
+		const float SinTheta	= sqrtf(max(0.0f, 1.0f - CosTheta * CosTheta));
+		const float Phi			= U[1] * 2.0f * PI_F;
+
+		Vec3f Wh = SphericalDirection(SinTheta, CosTheta, Phi);
+
+		if (!SameHemisphere(Wo, Wh))
+			Wh = -Wh;
+
+		Wi = -Wo + 2.0f * Dot(Wo, Wh) * Wh;
+
+		float BlinnPdf = ((Exponent + 1.0f) * powf(CosTheta, this->Exponent)) / (2.0f * PI_F * 4.0f * Dot(Wo, Wh));
+
+		if (Dot(Wo, Wh) <= 0.0f)
+			BlinnPdf = 0.0f;
+
+		Pdf = BlinnPdf;
+	}
+
+	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
+	{
+		const Vec3f Wh = Normalize(Wo + Wi);
+
+		const float CosTheta = AbsCosTheta(Wh);
+
+		float Pdf = ((this->Exponent + 1.0f) * powf(CosTheta, this->Exponent)) / (2.0f * PI_F * 4.0f * Dot(Wo, Wh));
+
+		if (Dot(Wo, Wh) <= 0.0f)
+			Pdf = 0.0f;
+
+		return Pdf;
+	}
+
+	HOST_DEVICE float D(const Vec3f& Wh)
+	{
+		float CosThetaH = AbsCosTheta(Wh);
+		return (this->Exponent + 2) * INV_TWO_PI_F * powf(CosThetaH, this->Exponent);
+	}
+
+	HOST_DEVICE Blinn& operator = (const Blinn& Other)
+	{
+		this->Exponent = Other.Exponent;
+
+		return *this;
+	}
+
+	float	Exponent;
+};
+
+
 }

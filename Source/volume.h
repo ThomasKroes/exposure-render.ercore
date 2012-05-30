@@ -17,6 +17,7 @@
 #include "boundingbox.h"
 #include "octree.h"
 #include "cudatexture3d.h"
+#include "transform.h"
 
 namespace ExposureRender
 {
@@ -25,6 +26,7 @@ class EXPOSURE_RENDER_DLL Volume
 {
 public:
 	HOST Volume() :
+		Transform(),
 		BoundingBox(),
 		Spacing(1.0f),
 		InvSpacing(1.0f),
@@ -39,6 +41,7 @@ public:
 	}
 
 	HOST Volume(const Volume& Other) :
+	Transform(),
 		BoundingBox(),
 		Spacing(1.0f),
 		InvSpacing(1.0f),
@@ -54,6 +57,7 @@ public:
 	}
 
 	HOST Volume(const ErVolume& Other) :
+		Transform(),
 		BoundingBox(),
 		Spacing(1.0f),
 		InvSpacing(1.0f),
@@ -77,6 +81,7 @@ public:
 	{
 		DebugLog(__FUNCTION__);
 
+		this->Transform			= Other.Transform;
 		this->BoundingBox		= Other.BoundingBox;
 		this->Spacing			= Other.Spacing;
 		this->InvSpacing		= Other.InvSpacing;
@@ -90,6 +95,7 @@ public:
 
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
+		this->Transform			= Other.Alignment.GetTransform();
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;
 
@@ -234,6 +240,7 @@ public:
 		return sqrtf(Sum);
 	}
 
+	Transform						Transform;
 	BoundingBox						BoundingBox;
 	Vec3f							Spacing;
 	Vec3f							InvSpacing;
