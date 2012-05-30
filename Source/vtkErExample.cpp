@@ -91,13 +91,13 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(50);
+	Tracer->SetDensityScale(500);
 
-	const float StepSize = 5.0f;
+	const float StepSize = 2.5f;
 
 	Tracer->SetStepFactorPrimary(StepSize);
 	Tracer->SetStepFactorShadow(2.0f * StepSize);
-	Tracer->SetShadingMode(ExposureRender::Enums::BrdfOnly);
+	Tracer->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
 
 	Tracer->Update();
 
@@ -148,7 +148,7 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(0.0001f);
+	Camera->SetExposure(0.001f);
 	
 	Camera->SetApertureShape(ExposureRender::Enums::Polygon);
 	Camera->SetApertureSize(0.005f);
@@ -217,7 +217,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
-	KeyLight->SetEnabled(true);
+	KeyLight->SetEnabled(false);
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
@@ -225,18 +225,18 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	RimLight->SetAlignmentType(ExposureRender::Enums::AxisAlign);
 	RimLight->SetAxis(ExposureRender::Enums::X);
-	RimLight->SetPosition(0.0f, -0.5f, 0.0f);
+	RimLight->SetPosition(0.0f, 0.0f, 0.0f);
 	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
 	RimLight->SetOneSided(false);
-	RimLight->SetOuterRadius(5.0f);
+	RimLight->SetOuterRadius(20.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(30.0f);
-	RimLight->SetMultiplier(30.0f);
+	RimLight->SetMultiplier(0.1f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
-	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
+	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
-	RimLight->SetEnabled(false);
+	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
