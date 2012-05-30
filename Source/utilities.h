@@ -31,14 +31,10 @@ HOST_DEVICE inline float G(Vec3f P1, Vec3f N1, Vec3f P2, Vec3f N2)
 	return (ClampedDot(W, N1) * ClampedDot(-1.0f * W, N2)) / DistanceSquared(P1, P2);
 }
 
-HOST_DEVICE inline ColorXYZAf CumulativeMovingAverage(const ColorXYZAf& A, const ColorXYZAf& Ax, const int& N)
+template<class T>
+HOST_DEVICE inline T CumulativeMovingAverage(const T& A, const T& Ax, const int& N)
 {
 	return A + (Ax - A) / max((float)N, 1.0f);
-}
-
-HOST_DEVICE inline ColorXYZf CumulativeMovingAverage(const ColorXYZf& A, const ColorXYZf& Ax, const int& N)
-{
-	 return A + ((Ax - A) / max((float)N, 1.0f));
 }
 
 HOST_DEVICE inline float GetNearestGreaterPowerOfTwo(const float& x)
