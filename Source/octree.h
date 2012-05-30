@@ -111,8 +111,6 @@ public:
 
 	HOST void Build(const Buffer3D<unsigned short>& Voxels, const BoundingBox& BoundingBox)
 	{
-//		Vec3i res = Voxels.GetResolution();
-
 		std::vector<OctreeNode> Nodes;
 
 		int Depth = 0;

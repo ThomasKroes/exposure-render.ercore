@@ -17,6 +17,7 @@
 #include "boundingbox.h"
 #include "octree.h"
 #include "cudatexture3d.h"
+#include "utilities.h"
 
 namespace ExposureRender
 {
@@ -116,7 +117,18 @@ public:
 			this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
 
 			if (this->AcceleratorType == Enums::Octree)
+			{
+				for(int i = 0; i < 3; i++)
+				{
+					if(!IsPowerOfTwo(this->Voxels.GetResolution()[i]))
+					{
+						int nearestGreaterPowerOfTwo = GetNearestGreaterPowerOfTwo(this->Voxels.GetResolution()[i]);
+						// todo: resize dataset
+					}
+				}
+
 				this->Octree.Build(Other.Voxels, this->BoundingBox);
+			}
 		}
 
 		return *this;

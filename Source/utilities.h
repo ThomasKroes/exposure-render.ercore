@@ -61,4 +61,17 @@ HOST_DEVICE ColorXYZf CumulativeMovingAverage(const ColorXYZf& A, const ColorXYZ
 	 return A + ((Ax - A) / max((float)N, 1.0f));
 }
 
+HOST_DEVICE float GetNearestGreaterPowerOfTwo(const float& x)
+{
+	return float( pow( 2, ceil( log(x) / log(2.0) ) ) );
+}
+
+HOST_DEVICE bool IsPowerOfTwo(const float f) {
+	// source: http://cottonvibes.blogspot.com/2010/08/checking-if-float-is-power-of-2.html
+	unsigned __int32& i = (unsigned __int32&)f;
+	unsigned __int32  e = (i>>23) & 0xff;
+	unsigned __int32  m =  i & 0x7fffff;
+	return !m && e >= 127;
+}
+
 }
