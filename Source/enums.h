@@ -95,6 +95,7 @@ namespace Enums
 
 	enum ScatterType
 	{
+		NoScattering = 0,
 		Volume,
 		Light,
 		Object,

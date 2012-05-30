@@ -48,7 +48,7 @@ HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
 
 		ScatterEvent LocalRS(Enums::Object);
 
-		LocalRS.ObjectID = i;
+		LocalRS.ID = i;
 
 		IntersectObject(Object, R, LocalRS);
 

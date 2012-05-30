@@ -119,6 +119,8 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	VolumeDataOut->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)ImageDataIn->GetScalarPointer(), true);
 	VolumeDataOut->Bindable.Voxels.SetFilterMode(this->GetFilterMode());
 	VolumeDataOut->Bindable.AcceleratorType = this->GetAcceleratorType();
+	
+	vtkErAlignment::RequestData(VolumeDataOut->Bindable.Alignment);
 
 	VolumeDataOut->Bind();
 

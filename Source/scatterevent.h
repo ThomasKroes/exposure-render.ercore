@@ -15,10 +15,8 @@
 
 #include "color.h"
 #include "ray.h"
-#include "matrix.h"
 #include "shader.h"
-
-using namespace std;
+#include "textures.h"
 
 namespace ExposureRender
 {
@@ -26,36 +24,42 @@ namespace ExposureRender
 class ScatterEvent
 {
 public:
-	HOST_DEVICE ScatterEvent()
+	HOST_DEVICE ScatterEvent() :
+		Type(Enums::NoScattering),
+		Valid(false),
+		T(),
+		P(),
+		N(),
+		Wo(),
+		Le(),
+		UV(),
+		Intensity(0.0f),
+		ID(-1)
 	{
 	}
 
-	HOST_DEVICE ScatterEvent(const Enums::ScatterType& Type)
+	HOST_DEVICE ScatterEvent(const Enums::ScatterType& Type) :
+		Type(Type),
+		Valid(false),
+		T(),
+		P(),
+		N(),
+		Wo(),
+		Le(),
+		UV(),
+		Intensity(0.0f),
+		ID(-1)
 	{
-		this->Type = Type;
-		this->SetInvalid();
 	}
 
-	HOST_DEVICE void SetValid(float T, Vec3f P, Vec3f N, Vec3f Wo, ColorXYZf Le, Vec2f UV = Vec2f(0.0f))
+	HOST_DEVICE void SetVolumeScattering(const float& T, const Vec3f& P, const Vec3f& N, const Vec3f& Wo, const float& Intensity)
 	{
 		this->Valid		= true;
 		this->T			= T;
 		this->P			= P;
 		this->N			= N;
 		this->Wo		= Wo;
-		this->Le		= Le;
-		this->UV		= UV;
-	}
-
-	HOST_DEVICE void SetInvalid()
-	{
-		this->Valid		= false;
-		this->T			= 0.0f;
-		this->P			= Vec3f();
-		this->N			= Vec3f();
-		this->Wo		= Vec3f();
-		this->Le		= ColorXYZf(0.0f);
-		this->UV		= Vec2f(0.0f);
+		this->Intensity	= Intensity;
 	}
 
 	HOST_DEVICE ScatterEvent& ScatterEvent::operator = (const ScatterEvent& Other)
@@ -68,8 +72,8 @@ public:
 		this->Wo			= Other.Wo;
 		this->Le			= Other.Le;
 		this->UV			= Other.UV;
-		this->ObjectID		= Other.ObjectID;
-		this->LightID		= Other.LightID;
+		this->Intensity		= Other.Intensity;
+		this->ID			= Other.ID;
 
 		return *this;
 	}
@@ -80,15 +84,27 @@ public:
 		{
 			case Enums::Volume:
 			{
+				this->Le = gpTracer->Emission1D.Evaluate(this->Intensity);
+
+				const ColorXYZf Diffuse		= gpTracer->Diffuse1D.Evaluate(this->Intensity);
+				const ColorXYZf Specular	= gpTracer->Specular1D.Evaluate(this->Intensity);
+				const float Glossiness		= gpTracer->Glossiness1D.Evaluate(this->Intensity);
+
 				switch (gpTracer->RenderSettings.Shading.Type)
 				{
 					case Enums::BrdfOnly:
 					{
+						Shader.Type	= Enums::Brdf;			
+						Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, 15, GlossinessExponent(Glossiness));
+
 						break;
 					}
 
 					case Enums::PhaseFunctionOnly:
 					{
+						Shader.Type				= Enums::PhaseFunction;
+						Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
+
 						break;
 					}
 
@@ -123,6 +139,13 @@ public:
 
 			case Enums::Object:
 			{
+				const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[this->ID].DiffuseTextureID, this->UV);
+				const ColorXYZf Specular	= EvaluateTexture(gpObjects[this->ID].SpecularTextureID, this->UV);
+				const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[this->ID].GlossinessTextureID, this->UV);
+
+				Shader.Type	= Enums::Brdf;			
+				Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, 15, GlossinessExponent(Glossiness.Y()));
+
 				break;
 			}
 
@@ -141,8 +164,8 @@ public:
 	Vec3f				Wo;
 	ColorXYZf			Le;
 	Vec2f				UV;
-	unsigned short		ObjectID;
-	unsigned short		LightID;
+	float				Intensity;
+	unsigned short		ID;
 };
 
 }
