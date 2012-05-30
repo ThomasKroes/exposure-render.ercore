@@ -35,7 +35,33 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 
 	if (Camera.ApertureSize != 0.0f)
 	{
-		const Vec2f LensUV = Camera.ApertureSize * ConcentricSampleDisk(CS.LensUV);
+		Vec2f LensUV;
+
+		switch (Camera.ApertureShape)
+		{
+			case Enums::Circular:
+			{
+				LensUV = Camera.ApertureSize * ConcentricSampleDisk(CS.LensUV);
+				break;
+			}
+
+			case Enums::Polygon:
+			{
+				float LensY = CS.LensUV[0] * Camera.NoApertureBlades;
+				float Side = (int)LensY;
+				float Offset = (float) LensY - Side;
+				float Distance = (float) sqrtf(CS.LensUV[1]);
+				float A0 = (float) (Side * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
+				float A1 = (float) ((Side + 1.0f) * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
+				const float EyeX = (float) ((cos(A0) * (1.0f - Offset) + cos(A1) * Offset) * Distance);
+				const float EyeY = (float) ((sin(A0) * (1.0f - Offset) + sin(A1) * Offset) * Distance);
+				
+				LensUV[0] = EyeX * gpTracer->Camera.ApertureSize;
+				LensUV[1] = EyeY * gpTracer->Camera.ApertureSize;
+				break;
+			}
+		}
+		
 
 		const Vec3f LI = Camera.U * LensUV[0] + Camera.V * LensUV[1];
 
@@ -94,7 +120,14 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 	if (SE.Valid && SE.Type == Enums::Object)
 		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 	
-	return ColorXYZAf(Lv[0], Lv[1], Lv[2], SE.Valid ? 1.0f : 0.0f);
+
+	ColorRGBf RGBf = ColorRGBf::FromXYZf(Lv);
+
+	RGBf[0] = 1.0f - expf(-(RGBf[0] / gpTracer->Camera.Exposure));
+	RGBf[1] = 1.0f - expf(-(RGBf[1] / gpTracer->Camera.Exposure));
+	RGBf[2] = 1.0f - expf(-(RGBf[2] / gpTracer->Camera.Exposure));
+
+	return ColorXYZAf(RGBf[0], RGBf[1], RGBf[2], SE.Valid ? 1.0f : 0.0f);
 }
 
 }
