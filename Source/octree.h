@@ -62,10 +62,13 @@ protected:
 				return;
 
 			// get the index of the first child
-			Nodes[Index].FirstChild = Nodes.size();
+			this->FirstChild = Nodes.size();
 
 			// new depth
 			int NewDepth = Depth + 1;
+
+			// calculate halfsize of bounding box
+			Vec3f HalfSize = this->BoundingBox.Size / 2;
 
 			// initialize children and append to vector
 			OctreeNode Children[8];
@@ -74,8 +77,27 @@ protected:
 			// subdivide children
 			for (int i = 0; i < 8; i++)
 			{
-				int ChildIndex = Nodes[Index].FirstChild + i;
-				Nodes[ChildIndex].SubDivide(Voxels, Nodes, ChildIndex, NewDepth, MaxDepth);
+				// IMPORTANT: Nodes has been resized so "this" became unusable
+				OctreeNode* ThisNode = &Nodes[Index];
+
+				// get child index
+				int ChildIndex = ThisNode->FirstChild + i;
+				OctreeNode* ChildNode = &Nodes[ChildIndex];
+
+				// calculate child boundingbox
+				int a = i & 1;
+				int b = (i >> 1) & 1;
+				int c = (i >> 2) & 1;
+				ChildNode->BoundingBox.SetMinP(Vec3f(
+					ThisNode->BoundingBox.MinP[0] + a * HalfSize[0],
+					ThisNode->BoundingBox.MinP[1] + b * HalfSize[1],
+					ThisNode->BoundingBox.MinP[2] + c * HalfSize[2]
+				));
+				ChildNode->BoundingBox.SetMaxP(ChildNode->BoundingBox.MinP + HalfSize);
+				ChildNode->BoundingBox.Update();
+
+				// recurse
+				ChildNode->SubDivide(Voxels, Nodes, ChildIndex, NewDepth, MaxDepth);
 			}
 		}
 
