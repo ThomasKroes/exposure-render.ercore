@@ -35,6 +35,7 @@ public:
 		this->D		= Other.D;
 		this->MinT	= Other.MinT;
 		this->MaxT	= Other.MaxT;
+		this->UV	= Other.UV;
 
 		return *this;
 	}
@@ -47,7 +48,8 @@ public:
 	Vec3f 	O;
 	Vec3f 	D;
 	float	MinT;
-	float	MaxT;		
+	float	MaxT;
+	Vec2f	UV;
 };
 
 }

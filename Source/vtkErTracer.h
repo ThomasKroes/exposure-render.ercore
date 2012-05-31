@@ -53,20 +53,20 @@ public:
 		ClippingObjectsPort
 	};
 
-	vtkPiecewiseFunction* GetOpacity(void) { return this->Opacity.GetPointer(); };
-	void SetOpacity(vtkPiecewiseFunction* Opacity) { this->Opacity = Opacity; };
+	vtkPiecewiseFunction* GetOpacity(const int& ID)							{	return this->Opacity[ID].GetPointer();		};
+	void SetOpacity(vtkPiecewiseFunction* Opacity, const int& ID)			{	this->Opacity[ID] = Opacity;				};
 	
-	vtkColorTransferFunction* GetDiffuse() { return this->Diffuse.GetPointer(); };
-	void SetDiffuse(vtkColorTransferFunction* Diffuse) { this->Diffuse = Diffuse; };
+	vtkColorTransferFunction* GetDiffuse(const int& ID)						{	return this->Diffuse[ID].GetPointer();		};
+	void SetDiffuse(vtkColorTransferFunction* Diffuse, const int& ID)		{	this->Diffuse[ID] = Diffuse;				};
 
-	vtkColorTransferFunction* GetSpecular() { return this->Specular.GetPointer(); };
-	void SetSpecular(vtkColorTransferFunction* Specular) { this->Specular = Specular; };
+	vtkColorTransferFunction* GetSpecular(const int& ID)					{ 	return this->Specular[ID].GetPointer();		};
+	void SetSpecular(vtkColorTransferFunction* Specular, const int& ID)		{ 	this->Specular[ID] = Specular;				};
 
-	vtkPiecewiseFunction* GetGlossiness(void) { return this->Glossiness.GetPointer(); };
-	void SetGlossiness(vtkPiecewiseFunction* Glossiness) { this->Glossiness = Glossiness; };
+	vtkPiecewiseFunction* GetGlossiness(const int& ID)						{ 	return this->Glossiness[ID].GetPointer();	};
+	void SetGlossiness(vtkPiecewiseFunction* Glossiness, const int& ID)		{ 	this->Glossiness[ID] = Glossiness;			};
 	
-	vtkColorTransferFunction* GetEmission() { return this->Emission.GetPointer(); };
-	void SetEmission(vtkColorTransferFunction* Emission) { this->Emission = Emission; };
+	vtkColorTransferFunction* GetEmission(const int& ID)					{ 	return this->Emission[ID].GetPointer();		};
+	void SetEmission(vtkColorTransferFunction* Emission, const int& ID)		{ 	this->Emission[ID] = Emission;				};
 
 	vtkGetMacro(StepFactorPrimary, float);
 	vtkSetMacro(StepFactorPrimary, float);
@@ -109,11 +109,11 @@ private:
 	unsigned int								TextureID;
 	ExposureRender::ColorRGBAuc*				ImageBuffer;
 	int											RenderSize[2];
-	vtkSmartPointer<vtkPiecewiseFunction>		Opacity;
-	vtkSmartPointer<vtkColorTransferFunction>	Diffuse;
-	vtkSmartPointer<vtkColorTransferFunction>	Specular;
-	vtkSmartPointer<vtkPiecewiseFunction>		Glossiness;
-	vtkSmartPointer<vtkColorTransferFunction>	Emission;
+	vtkSmartPointer<vtkPiecewiseFunction>		Opacity[MAX_NO_VOLUMES];
+	vtkSmartPointer<vtkColorTransferFunction>	Diffuse[MAX_NO_VOLUMES];
+	vtkSmartPointer<vtkColorTransferFunction>	Specular[MAX_NO_VOLUMES];
+	vtkSmartPointer<vtkPiecewiseFunction>		Glossiness[MAX_NO_VOLUMES];
+	vtkSmartPointer<vtkColorTransferFunction>	Emission[MAX_NO_VOLUMES];
 	float										StepFactorPrimary;
 	float										StepFactorShadow;
 	bool										Shadows;

@@ -25,14 +25,17 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 {
 	Vec2f ScreenPoint;
 
-	ScreenPoint[0] = Camera.Screen[0][0] + (Camera.InvScreen[0] * (float)(U + CS.FilmUV[0] * 1.0f / Camera.FilmSize[0]));
-	ScreenPoint[1] = Camera.Screen[1][0] + (Camera.InvScreen[1] * (float)(V + CS.FilmUV[1] * 1.0f / Camera.FilmSize[1]));
+	R.UV[0] = U + CS.FilmUV[0];
+	R.UV[1] = V + CS.FilmUV[1];
+
+	ScreenPoint[0] = Camera.Screen[0][0] + (Camera.InvScreen[0] * R.UV[0]);
+	ScreenPoint[1] = Camera.Screen[1][0] + (Camera.InvScreen[1] * R.UV[1]);
 
 	R.O		= Camera.Pos;
 	R.D		= Normalize(Camera.N + (ScreenPoint[0] * Camera.U) - (ScreenPoint[1] * Camera.V));
 	R.MinT	= Camera.ClipNear;
 	R.MaxT	= Camera.ClipFar;
-
+	
 	if (Camera.ApertureSize != 0.0f)
 	{
 		Vec2f LensUV;
@@ -47,14 +50,14 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 
 			case Enums::Polygon:
 			{
-				float LensY = CS.LensUV[0] * Camera.NoApertureBlades;
-				float Side = (int)LensY;
-				float Offset = (float) LensY - Side;
-				float Distance = (float) sqrtf(CS.LensUV[1]);
-				float A0 = (float) (Side * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
-				float A1 = (float) ((Side + 1.0f) * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
-				const float EyeX = (float) ((cos(A0) * (1.0f - Offset) + cos(A1) * Offset) * Distance);
-				const float EyeY = (float) ((sin(A0) * (1.0f - Offset) + sin(A1) * Offset) * Distance);
+				const float LensY		= CS.LensUV[0] * Camera.NoApertureBlades;
+				const float Side		= (int)LensY;
+				const float Offset		= (float) LensY - Side;
+				const float Distance	= (float) sqrtf(CS.LensUV[1]);
+				const float A0 			= (float) (Side * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
+				const float A1 			= (float) ((Side + 1.0f) * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
+				const float EyeX 		= (float) ((cos(A0) * (1.0f - Offset) + cos(A1) * Offset) * Distance);
+				const float EyeY 		= (float) ((sin(A0) * (1.0f - Offset) + sin(A1) * Offset) * Distance);
 				
 				LensUV[0] = EyeX * gpTracer->Camera.ApertureSize;
 				LensUV[1] = EyeY * gpTracer->Camera.ApertureSize;
@@ -62,7 +65,6 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 			}
 		}
 		
-
 		const Vec3f LI = Camera.U * LensUV[0] + Camera.V * LensUV[1];
 
 		R.O += LI;
@@ -74,9 +76,7 @@ DEVICE ScatterEvent SampleRay(Ray R, CRNG& RNG)
 {
 	ScatterEvent SE[3] = { ScatterEvent(Enums::Volume), ScatterEvent(Enums::Light), ScatterEvent(Enums::Object) };
 
-	RayMarcher RM;
-
-	RM.SampleVolume(R, RNG, SE[0]);
+	SampleVolume(R, RNG, SE[0]);
 
 	IntersectLights(R, SE[1], true);
 	IntersectObjects(R, SE[2]);
@@ -109,9 +109,52 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 
 	SampleCamera(gpTracer->Camera, R, PixelCoord[0], PixelCoord[1], Sample.CameraSample);
 
-	ScatterEvent SE = SampleRay(R, RNG);
-
 	ColorRGBf RGB;
+
+	ScatterEvent SE;
+
+#ifdef UAH
+	const Vec2f Center(0.5f * (float)gpTracer->FrameBuffer.Resolution[0], 0.5f * (float)gpTracer->FrameBuffer.Resolution[1]);
+	const Vec2f Pc = R.UV - Center;
+	const float Length = Pc.Length();
+
+	const float MaxRadius = 100.0f;
+
+	if (Length < MaxRadius)
+	{
+		SampleVolume(R, RNG, SE, 1);
+
+		if (SE.Valid)
+			Lv += gpTracer->Emission1D[1].Evaluate(SE.Intensity);
+	}
+	
+	SE = SampleRay(R, RNG);
+
+	if (SE.Valid)
+	{	
+		switch (SE.Type)
+		{
+			case Enums::Volume:
+			{
+				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				break;
+			}
+
+			case Enums::Light:
+			{
+				Lv += SE.Le;
+				break;
+			}
+
+			case Enums::Object:
+			{
+				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				break;
+			}
+		}
+	}
+#else
+	SE = SampleRay(R, RNG);
 
 	if (SE.Valid)
 	{
@@ -135,19 +178,10 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 				break;
 			}
 		}
-
-		ColorXYZf XYZ;
-
-		XYZ[0] = Clamp(1.0f - expf(-gpTracer->Camera.InvExposure * Lv[0]), 0.0f, 1.0f);
-		XYZ[1] = Clamp(1.0f - expf(-gpTracer->Camera.InvExposure * Lv[1]), 0.0f, 1.0f);
-		XYZ[2] = Clamp(1.0f - expf(-gpTracer->Camera.InvExposure * Lv[2]), 0.0f, 1.0f);
-
-		RGB = ColorRGBf::FromXYZf(XYZ);
-
-		RGB.Clamp(0.0f, 1.0f);
 	}
+#endif
 
-	return ColorXYZAf(RGB[0], RGB[1], RGB[2], SE.Valid ? 1.0f : 0.0f);
+	return ColorXYZAf(Lv[0], Lv[1], Lv[2], 1.0f);
 }
 
 }

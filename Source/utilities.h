@@ -25,6 +25,11 @@ HOST_DEVICE inline float GlossinessExponent(const float& Glossiness)
 	return 1000000.0f * powf(Glossiness, 7);
 }
 
+HOST_DEVICE_NI inline float Gauss2D(const float& Sigma, const float& X, const float& Y)
+{
+	return expf(-((X * X + Y * Y) / (2 * Sigma * Sigma)));
+}
+
 HOST_DEVICE inline float G(Vec3f P1, Vec3f N1, Vec3f P2, Vec3f N2)
 {
 	const Vec3f W = Normalize(P2 - P1);

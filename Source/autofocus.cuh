@@ -30,8 +30,6 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, int FilmU, i
 
 	float Sum = 0.0f, SumWeight = 0.0f;
 
-	RayMarcher RM;
-
 	for (int i = 0; i < 100; i++)
 	{
 		Vec2f ScreenPoint;
@@ -46,7 +44,7 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, int FilmU, i
 		Rc.MinT	= gpTracer->Camera.ClipNear;
 		Rc.MaxT	= gpTracer->Camera.ClipFar;
 
-		RM.SampleVolume(Rc, RNG, SE);
+		SampleVolume(Rc, RNG, SE);
 
 		if (SE.Valid)
 		{
