@@ -28,6 +28,7 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 //	R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
 
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+	VolumeProperty& VolumeProperty = gpTracer->VolumeProperties[VolumeID];
 
 	float MinT;
 	float MaxT;
@@ -47,7 +48,8 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 
 	Vec3f Ps;
 
-	const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorPrimary * Volume.MinStep;
+	const float	DensityScale	= gpTracer->RenderSettings.Shading.DensityScale;
+	const float StepSize		= gpTracer->RenderSettings.Traversal.StepFactorPrimary * Volume.MinStep;
 
 	MinT += RNG.Get1() * StepSize;
 
@@ -61,7 +63,7 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 			return;
 		
 		Intensity	= Volume(Ps, VolumeID);
-		Sum			+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D[VolumeID].Evaluate(Intensity) * StepSize;
+		Sum			+= DensityScale * VolumeProperty.Opacity1D.Evaluate(Intensity) * StepSize;
 		MinT		+= StepSize;
 	}
 
@@ -73,6 +75,7 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 //	R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
 	
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+	VolumeProperty& VolumeProperty = gpTracer->VolumeProperties[VolumeID];
 
 	float MinT;
 	float MaxT;
@@ -89,8 +92,9 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 	MinT = max(Int.NearT, R.MinT);
 	MaxT = min(Int.FarT, R.MaxT);
 
-	const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
-	float Sum		= 0.0f;
+	const float	DensityScale	= gpTracer->RenderSettings.Shading.DensityScale;
+	const float S				= -log(RNG.Get1());
+	float Sum					= 0.0f;
 
 	const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * Volume.MinStep;
 
@@ -103,7 +107,7 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 		if (MinT > MaxT)
 			return false;
 		
-		Sum		+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D[VolumeID].Evaluate(Volume(Ps, VolumeID)) * StepSize;
+		Sum		+= DensityScale * VolumeProperty.Opacity1D.Evaluate(Volume(Ps, VolumeID)) * StepSize;
 		MinT	+= StepSize;
 	}
 

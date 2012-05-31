@@ -14,8 +14,8 @@
 #pragma once
 
 #include "erbindable.h"
-#include "transferfunction.h"
 #include "camera.h"
+#include "volumeproperty.h"
 #include "rendersettings.h"
 
 #include <map>
@@ -30,11 +30,6 @@ class EXPOSURE_RENDER_DLL ErTracer : public ErBindable
 public:
 	HOST ErTracer() :
 		ErBindable(),
-		Opacity1D(),
-		Diffuse1D(),
-		Specular1D(),
-		Glossiness1D(),
-		Emission1D(),
 		Camera(),
 		RenderSettings(),
 		VolumeIDs(),
@@ -58,58 +53,25 @@ public:
 		ErBindable::operator = (Other);
 
 		for (int i = 0; i < MAX_NO_VOLUMES; i++)
-		{
-			this->Opacity1D[i]		= Other.Opacity1D[i];
-			this->Diffuse1D[i]		= Other.Diffuse1D[i];
-			this->Specular1D[i]		= Other.Specular1D[i];
-			this->Glossiness1D[i]	= Other.Glossiness1D[i];
-			this->Emission1D[i]		= Other.Emission1D[i];
-		}
+			this->VolumeProperties[i] = Other.VolumeProperties[i];
 
-		this->Camera				= Other.Camera;
-		this->RenderSettings		= Other.RenderSettings;
-		this->VolumeIDs				= Other.VolumeIDs;
-		this->LightIDs				= Other.LightIDs;
-		this->ObjectIDs				= Other.ObjectIDs;
-		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
+		this->Camera			= Other.Camera;
+		this->RenderSettings	= Other.RenderSettings;
+		this->VolumeIDs			= Other.VolumeIDs;
+		this->LightIDs			= Other.LightIDs;
+		this->ObjectIDs			= Other.ObjectIDs;
+		this->ClippingObjectIDs	= Other.ClippingObjectIDs;
 
 		return *this;
 	}
 	
-	HOST void BindIDs(Indices SourceIDs, Indices& TargetIDs, map<int, int> HashMap)
-	{
-		for (int i = 0; i < SourceIDs.Count; i++)
-			TargetIDs[i] = HashMap[SourceIDs[i]];
-
-		TargetIDs.Count = SourceIDs.Count;
-	}
-
-	HOST void BindLightIDs(Indices LightIDs, map<int, int> HashMap)
-	{
-		BindIDs(LightIDs, this->LightIDs, HashMap);
-	}
-
-	HOST void BindObjectIDs(Indices ObjectIDs, map<int, int> HashMap)
-	{
-		BindIDs(ObjectIDs, this->ObjectIDs, HashMap);
-	}
-
-	HOST void BindClippingObjectIDs(Indices ClippingObjectIDs, map<int, int> HashMap)
-	{
-		BindIDs(ClippingObjectIDs, this->ClippingObjectIDs, HashMap);
-	}
-
-	ScalarTransferFunction1D	Opacity1D[MAX_NO_VOLUMES];
-	ColorTransferFunction1D		Diffuse1D[MAX_NO_VOLUMES];
-	ColorTransferFunction1D		Specular1D[MAX_NO_VOLUMES];
-	ScalarTransferFunction1D	Glossiness1D[MAX_NO_VOLUMES];
-	ColorTransferFunction1D		Emission1D[MAX_NO_VOLUMES];
-	Camera						Camera;
-	RenderSettings				RenderSettings;
-	Indices						VolumeIDs;
-	Indices						LightIDs;
-	Indices						ObjectIDs;
-	Indices						ClippingObjectIDs;
+	VolumeProperty		VolumeProperties[MAX_NO_VOLUMES];
+	Camera				Camera;
+	RenderSettings		RenderSettings;
+	Indices				VolumeIDs;
+	Indices				LightIDs;
+	Indices				ObjectIDs;
+	Indices				ClippingObjectIDs;
 };
 
 }

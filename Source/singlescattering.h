@@ -113,70 +113,6 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 
 	ScatterEvent SE;
 
-#ifdef UAH
-	const Vec2f Center(0.5f * (float)gpTracer->FrameBuffer.Resolution[0], 0.5f * (float)gpTracer->FrameBuffer.Resolution[1]);
-	const Vec2f Pc = R.UV - Center;
-	const float Length = Pc.Length();
-
-	const float MaxRadius = 200.0f;
-
-//	if (Length < MaxRadius)
-//	{
-		float MinT;
-		float MaxT;
-		
-		Intersection Int;
-
-		Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
-
-		IntersectBox(R, Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP, Int);
-
-		if (Int.Valid)
-		{
-			MinT = max(Int.NearT, R.MinT);
-			MaxT = min(Int.FarT, R.MaxT);
-
-			const Vec3f Ps = R(MinT + RNG.Get1() * (MaxT - MinT));
-			
-			float Intensity = 0.0f;
-
-			Intensity = gpVolumes[gpTracer->VolumeIDs[1]](Ps, 1);
-			Lv += gpTracer->Opacity1D[1].Evaluate(Intensity) * gpTracer->Emission1D[1].Evaluate(Intensity);
-
-			Intensity = gpVolumes[gpTracer->VolumeIDs[2]](Ps, 2);
-			Lv += gpTracer->Opacity1D[2].Evaluate(Intensity) * gpTracer->Emission1D[2].Evaluate(Intensity);
-
-			Intensity = gpVolumes[gpTracer->VolumeIDs[3]](Ps, 3);
-			Lv += gpTracer->Opacity1D[3].Evaluate(Intensity) * gpTracer->Emission1D[3].Evaluate(Intensity);
-		}
-//	}
-	
-	SE = SampleRay(R, RNG);
-
-	if (SE.Valid)
-	{	
-		switch (SE.Type)
-		{
-			case Enums::Volume:
-			{
-				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
-				break;
-			}
-
-			case Enums::Light:
-			{
-				Lv += SE.Le;
-				break;
-			}
-
-			case Enums::Object:
-			{
-				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
-				break;
-			}
-		}
-	}
-#else
 	SE = SampleRay(R, RNG);
 
 	if (SE.Valid)
@@ -202,7 +138,6 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 			}
 		}
 	}
-#endif
 
 	return ColorXYZAf(Lv[0], Lv[1], Lv[2], 1.0f);
 }

@@ -121,20 +121,6 @@ public:
 			this->BoundingBox.SetMaxP(0.5f * Size);
 
 			this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
-
-			if (this->AcceleratorType == Enums::Octree)
-			{
-				for(int i = 0; i < 3; i++)
-				{
-					if(!IsPowerOfTwo(this->Voxels.GetResolution()[i]))
-					{
-						int nearestGreaterPowerOfTwo = GetNearestGreaterPowerOfTwo(this->Voxels.GetResolution()[i]);
-						// todo: resize dataset
-					}
-				}
-
-				this->Octree.Build(Other.Voxels, this->BoundingBox);
-			}
 		}
 
 		return *this;
@@ -158,6 +144,8 @@ public:
 			case 3:
 				return (float)USHRT_MAX * tex3D(TexVolume3, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 		}
+
+		return 0; 
 	}
 
 	DEVICE float GetIntensity(const Vec3f& P)

@@ -102,6 +102,7 @@ SET(General
 	alignment.h
 	transform.h
 	octree.h
+	volumeproperty.h
 )
 
 SOURCE_GROUP("General" FILES ${General})
@@ -216,6 +217,8 @@ SET(General
 	vtkErShape.cpp
 	vtkErTimerCallback.h
 	vtkErTimerCallback.cpp
+	vtkErVolumeProperty.h
+	vtkErVolumeProperty.cpp
 	vtkErStable.h
 	vtkErStable.cpp
 	vtkErConfigure.h
