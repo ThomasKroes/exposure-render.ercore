@@ -35,7 +35,7 @@ public:
 		
 		Intersection Int;
 
-		IntersectBox(R, gpVolumes[gpTracer->VolumeID].BoundingBox.MinP, gpVolumes[gpTracer->VolumeID].BoundingBox.MaxP, Int);
+		IntersectBox(R, gpVolumes[gpTracer->VolumeIDs[0]].BoundingBox.MinP, gpVolumes[gpTracer->VolumeIDs[0]].BoundingBox.MaxP, Int);
 
 		if (!Int.Valid)
 			return;
@@ -48,7 +48,7 @@ public:
 
 		Vec3f Ps;
 
-		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeID].MinStep;
+		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorPrimary * gpVolumes[gpTracer->VolumeIDs[0]].MinStep;
 
 		MinT += RNG.Get1() * StepSize;
 
@@ -61,12 +61,12 @@ public:
 			if (MinT >= MaxT)
 				return;
 			
-			Intensity	= gpVolumes[gpTracer->VolumeID].GetIntensity(Ps);
+			Intensity	= gpVolumes[gpTracer->VolumeIDs[0]].GetIntensity(Ps);
 			Sum			+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(Intensity) * StepSize;
 			MinT		+= StepSize;
 		}
 
-		SE.SetVolumeScattering(MinT, Ps, gpVolumes[gpTracer->VolumeID].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, Intensity);
+		SE.SetVolumeScattering(MinT, Ps, gpVolumes[gpTracer->VolumeIDs[0]].NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, Intensity);
 	}
 
 	DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG)
@@ -80,7 +80,7 @@ public:
 
 		Intersection Int;
 			
-		IntersectBox(R, gpVolumes[gpTracer->VolumeID].BoundingBox.MinP, gpVolumes[gpTracer->VolumeID].BoundingBox.MaxP, Int);
+		IntersectBox(R, gpVolumes[gpTracer->VolumeIDs[0]].BoundingBox.MinP, gpVolumes[gpTracer->VolumeIDs[0]].BoundingBox.MaxP, Int);
 		
 		if (!Int.Valid)
 			return false;
@@ -91,7 +91,7 @@ public:
 		const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
 		float Sum		= 0.0f;
 
-		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeID].MinStep;
+		const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * gpVolumes[gpTracer->VolumeIDs[0]].MinStep;
 
 		MinT += RNG.Get1() * StepSize;
 
@@ -102,7 +102,7 @@ public:
 			if (MinT > MaxT)
 				return false;
 			
-			Sum		+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(gpVolumes[gpTracer->VolumeID].GetIntensity(Ps)) * StepSize;
+			Sum		+= gpTracer->RenderSettings.Shading.DensityScale * gpTracer->Opacity1D.Evaluate(gpVolumes[gpTracer->VolumeIDs[0]].GetIntensity(Ps)) * StepSize;
 			MinT	+= StepSize;
 		}
 
