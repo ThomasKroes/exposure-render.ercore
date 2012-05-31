@@ -17,6 +17,8 @@
 #include "vtkErBindable.h"
 #include "vtkErAlignment.h"
 
+#include <vtkDataObject.h>
+
 class vtkErVolumeData : public vtkDataObject, public vtkErBindableVolume
 {
 public:
