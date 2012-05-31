@@ -128,7 +128,7 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	SE.GetShader(Shader);
 
 	if (SE.Type == Enums::Volume)
-		Ld += gpTracer->Opacity1D.Evaluate(SE.Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
+		Ld += /*gpTracer->Opacity1D.Evaluate(SE.Intensity) * */EstimateDirectLight(Light, LS, SE, RNG, Shader);
 	else
 		Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
 

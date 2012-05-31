@@ -32,8 +32,8 @@ vtkErTexture::vtkErTexture(void)
 	this->SetOutputLevel(1.0f);
 	this->SetProceduralType(Enums::Uniform);
 	this->SetUniformColor(1.0f, 1.0f, 1.0f);
-	this->SetCheckerColor1(1.0f, 1.0f, 1.0f);
-	this->SetCheckerColor2(0.0f, 0.0f, 0.0f);
+	this->SetCheckerColor1(0.8f, 0.8f, 0.8f);
+	this->SetCheckerColor2(0.3f, 0.3f, 0.3f);
 	this->Gradient = vtkColorTransferFunction::New();
 	this->Gradient->AddRGBPoint(0, 0, 0, 0);
 	this->Gradient->AddRGBPoint(1, 1, 1, 1);

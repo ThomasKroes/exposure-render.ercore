@@ -47,6 +47,48 @@ public:
 		return *this;
 	}
 
+	HOST_DEVICE ColorXYZf Evaluate(const Vec2f& UVW) const
+	{
+		switch (this->Type)
+		{
+			case Enums::Uniform:
+			{
+				return this->UniformColor;
+			}
+
+			case Enums::Checker:
+			{
+				const int UV[2] =
+				{
+					(int)(UVW[0] * 2.0f),
+					(int)(UVW[1] * 2.0f)
+				};
+
+				if (UV[0] % 2 == 0)
+				{
+					if (UV[1] % 2 == 0)
+						return this->CheckerColor1;
+					else
+						return this->CheckerColor2;
+				}
+				else
+				{
+					if (UV[1] % 2 == 0)
+						return this->CheckerColor2;
+					else
+						return this->CheckerColor1;
+				}
+			}
+
+			case Enums::Gradient:
+			{
+				return this->Gradient.Evaluate(UVW[1]);
+			}
+		}
+
+		return ColorXYZf::Black();
+	}
+
 	Enums::ProceduralType		Type;
 	ColorXYZf					UniformColor;
 	ColorXYZf					CheckerColor1;

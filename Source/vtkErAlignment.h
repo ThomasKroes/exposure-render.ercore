@@ -17,6 +17,7 @@
 #include "vtkErBindable.h"
 
 #include <vtkAlgorithm.h>
+#include <vtkSmartPointer.h>
 #include <vtkMatrix4x4.h>
 
 using namespace ExposureRender;

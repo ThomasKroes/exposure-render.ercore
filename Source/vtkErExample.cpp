@@ -36,8 +36,8 @@
 #include "vtkErTimerCallback.h"
 
 // char gFileName[] = "C://model_segmentation.mhd";
-// char gFileName[] = "C://Volumes//manix.mhd";
-char gFileName[] = "c://manix.mhd";
+char gFileName[] = "C://Volumes//manix.mhd";
+//char gFileName[] = "c://manix.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -87,17 +87,17 @@ void ConfigureER(vtkRenderer* Renderer)
 	
 	LoadVolume(Tracer);
 	CreateLighting(Tracer);
-//	CreateObjects(Tracer);
+	CreateObjects(Tracer);
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(500);
+	Tracer->SetDensityScale(100);
 
-	const float StepSize = 2.5f;
+	const float StepSize = 5.5f;
 
 	Tracer->SetStepFactorPrimary(StepSize);
 	Tracer->SetStepFactorShadow(2.0f * StepSize);
-	Tracer->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
+	Tracer->SetShadingMode(ExposureRender::Enums::BrdfOnly);
 
 	Tracer->Update();
 
@@ -148,10 +148,10 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(0.001f);
+	Camera->SetExposure(0.01);
 	
 	Camera->SetApertureShape(ExposureRender::Enums::Polygon);
-	Camera->SetApertureSize(0.005f);
+	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(5);
 	Camera->SetApertureAngle(0.0f);
 
@@ -167,7 +167,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
 	KeyLightTexture->SetProceduralType(ExposureRender::Enums::Uniform);
-	KeyLightTexture->SetUniformColor(0.9, 0.6, 0.2);
+	KeyLightTexture->SetUniformColor(0.9, 0.0, 0);
 
 	vtkSmartPointer<vtkErTexture> RimLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
@@ -191,7 +191,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
-	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\panorama.jpg");
+	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\pura-dalem-ubud-2.jpg");
 	JpegReader->Update();
 
 	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -204,18 +204,18 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 100.0f;
+	const float KeyLightSize = 1.0f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
-	KeyLight->SetShapeType(ExposureRender::Enums::Disk);
+	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
 	KeyLight->SetOuterRadius(0.01f);
-	KeyLight->SetOneSided(false);
+	KeyLight->SetOneSided(true);
 	KeyLight->SetElevation(145.0f);
 	KeyLight->SetAzimuth(145.0f);
-	KeyLight->SetOffset(3.0f);
-	KeyLight->SetMultiplier(10000000.0f);
+	KeyLight->SetOffset(1.5f);
+	KeyLight->SetMultiplier(1000000.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
-	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
+	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
 	KeyLight->SetEnabled(false);
 
@@ -224,7 +224,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	const float RimLightSize = 2.0f;
 
 	RimLight->SetAlignmentType(ExposureRender::Enums::AxisAlign);
-	RimLight->SetAxis(ExposureRender::Enums::X);
+	RimLight->SetAxis(ExposureRender::Enums::Y);
 	RimLight->SetPosition(0.0f, 0.0f, 0.0f);
 	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
 	RimLight->SetOneSided(false);
@@ -232,9 +232,9 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(30.0f);
-	RimLight->SetMultiplier(0.1f);
+	RimLight->SetMultiplier(1000000.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
-	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
+	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
 	RimLight->SetEnabled(true);
 
@@ -247,7 +247,8 @@ void CreateObjects(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	DiffuseTexture->SetTextureType(ExposureRender::Enums::Procedural);
-	DiffuseTexture->SetProceduralType(ExposureRender::Enums::Uniform);
+	DiffuseTexture->SetProceduralType(ExposureRender::Enums::Checker);
+	DiffuseTexture->SetRepeat(4, 4);
 	DiffuseTexture->SetUniformColor(1, 1, 1);
 	DiffuseTexture->SetOutputLevel(0.1f);
 
@@ -285,8 +286,8 @@ void SetTransferFunction(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Opacity->AddPoint(32800, 0.1);
-	Opacity->AddPoint(40000, 1.0);
+	Opacity->AddPoint(0, 0.);
+	Opacity->AddPoint(100, 1.0);
 
 	Tracer->SetOpacity(Opacity);
 
@@ -301,9 +302,9 @@ void SetTransferFunction(vtkErTracer* Tracer)
 	}
 	*/
 
-	Diffuse->AddRGBPoint(0, 1.0f, 0.2f, 0.2f);
-	Diffuse->AddRGBPoint(32400, 0.8f, 0.3f, 0.2f);
-	Diffuse->AddRGBPoint(40000, 0.9f, 0.8f, 0.5f);
+	Diffuse->AddRGBPoint(0, 1.0f, 1.0f, 1.0f);
+	Diffuse->AddRGBPoint(32400, 1.0f, 1.0f, 1.0f);
+	Diffuse->AddRGBPoint(40000, 1.0f, 1.0f, 1.0f);
 
 	Tracer->SetDiffuse(Diffuse);
 
