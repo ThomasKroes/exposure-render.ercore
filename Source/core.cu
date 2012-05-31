@@ -147,6 +147,12 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	if (gTracers[TracerID].VolumeIDs[1] >= 0)
 		gVolumes[gTracers[TracerID].VolumeIDs[1]].Voxels.Bind(TexVolume1);
 
+	if (gTracers[TracerID].VolumeIDs[2] >= 0)
+		gVolumes[gTracers[TracerID].VolumeIDs[2]].Voxels.Bind(TexVolume2);
+
+	if (gTracers[TracerID].VolumeIDs[3] >= 0)
+		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
+
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);

@@ -151,6 +151,12 @@ public:
 
 			case 1:
 				return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
+
+			case 2:
+				return (float)USHRT_MAX * tex3D(TexVolume2, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
+
+			case 3:
+				return (float)USHRT_MAX * tex3D(TexVolume3, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 		}
 	}
 
