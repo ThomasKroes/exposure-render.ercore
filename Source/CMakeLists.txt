@@ -17,6 +17,7 @@ PROJECT(ExposureRender)
 FIND_PACKAGE(CUDA)
 
 # Supported streaming architectures, uncomment the lines that pertain to the hardware your compiling for
+# More on CUDA gpu's: http://developer.nvidia.com/cuda-gpus
 
 # Tesla architecture: sm 1.0 and above
 # SET(CUDA_NVCC_FLAGS "-gencode=arch=compute_10,code=sm_10;${CUDA_NVCC_FLAGS}")
