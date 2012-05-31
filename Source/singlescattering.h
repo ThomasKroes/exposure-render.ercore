@@ -118,14 +118,37 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 	const Vec2f Pc = R.UV - Center;
 	const float Length = Pc.Length();
 
-	const float MaxRadius = 100.0f;
+	const float MaxRadius = 200.0f;
 
 	if (Length < MaxRadius)
 	{
-		SampleVolume(R, RNG, SE, 1);
+		float MinT;
+		float MaxT;
+		
+		Intersection Int;
 
-		if (SE.Valid)
-			Lv += gpTracer->Emission1D[1].Evaluate(SE.Intensity);
+		Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
+
+		IntersectBox(R, Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP, Int);
+
+		if (Int.Valid)
+		{
+			MinT = max(Int.NearT, R.MinT);
+			MaxT = min(Int.FarT, R.MaxT);
+
+			const Vec3f Ps = R(MinT + RNG.Get1() * (MaxT - MinT));
+			
+			float Intensity = 0.0f;
+
+			Intensity = gpVolumes[gpTracer->VolumeIDs[1]](Ps, 1);
+			Lv += Gauss2D(100.0f, Pc[0], Pc[1]) * gpTracer->Opacity1D[1].Evaluate(Intensity) * gpTracer->Emission1D[1].Evaluate(Intensity);
+
+			Intensity = gpVolumes[gpTracer->VolumeIDs[2]](Ps, 2);
+			Lv += Gauss2D(100.0f, Pc[0], Pc[1]) * gpTracer->Opacity1D[2].Evaluate(Intensity) * gpTracer->Emission1D[2].Evaluate(Intensity);
+
+			Intensity = gpVolumes[gpTracer->VolumeIDs[3]](Ps, 3);
+			Lv += Gauss2D(100.0f, Pc[0], Pc[1]) * gpTracer->Opacity1D[3].Evaluate(Intensity) * gpTracer->Emission1D[3].Evaluate(Intensity);
+		}
 	}
 	
 	SE = SampleRay(R, RNG);
