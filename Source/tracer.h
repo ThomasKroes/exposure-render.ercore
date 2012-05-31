@@ -23,25 +23,58 @@ using namespace std;
 namespace ExposureRender
 {
 
-class Tracer : public ErTracer
+class Tracer
 {
 public:
 	HOST Tracer() :
-		ErTracer(),
+		Opacity1D(),
+		Diffuse1D(),
+		Specular1D(),
+		Glossiness1D(),
+		Emission1D(),
+		Camera(),
+		RenderSettings(),
+		VolumeIDs(),
+		LightIDs(),
+		ObjectIDs(),
+		ClippingObjectIDs(),
 		FrameBuffer(),
 		NoEstimates(0)
 	{
 	}
 
-	HOST Tracer(const ErTracer& Other)
+	HOST Tracer(const ErTracer& Other) :
+		Opacity1D(),
+		Diffuse1D(),
+		Specular1D(),
+		Glossiness1D(),
+		Emission1D(),
+		Camera(),
+		RenderSettings(),
+		VolumeIDs(),
+		LightIDs(),
+		ObjectIDs(),
+		ClippingObjectIDs(),
+		FrameBuffer(),
+		NoEstimates(0)
 	{
 		*this = Other;
 	}
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		ErTracer::operator = (Other);
-		
+		this->Opacity1D				= Other.Opacity1D;
+		this->Diffuse1D				= Other.Diffuse1D;
+		this->Specular1D			= Other.Specular1D;
+		this->Glossiness1D			= Other.Glossiness1D;
+		this->Emission1D			= Other.Emission1D;
+		this->Camera				= Other.Camera;
+		this->RenderSettings		= Other.RenderSettings;
+		this->VolumeIDs				= Other.VolumeIDs;
+		this->LightIDs				= Other.LightIDs;
+		this->ObjectIDs				= Other.ObjectIDs;
+		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
+
 		this->FrameBuffer.Resize(Other.Camera.FilmSize);
 
 		if (Other.GetDirty())
@@ -58,8 +91,19 @@ public:
 		return *this;
 	}
 
-	FrameBuffer		FrameBuffer;
-	int				NoEstimates;
+	ScalarTransferFunction1D	Opacity1D;
+	ColorTransferFunction1D		Diffuse1D;
+	ColorTransferFunction1D		Specular1D;
+	ScalarTransferFunction1D	Glossiness1D;
+	ColorTransferFunction1D		Emission1D;
+	Camera						Camera;
+	RenderSettings				RenderSettings;
+	Indices						VolumeIDs;
+	Indices						LightIDs;
+	Indices						ObjectIDs;
+	Indices						ClippingObjectIDs;
+	FrameBuffer					FrameBuffer;
+	int							NoEstimates;
 };
 
 }

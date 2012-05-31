@@ -37,7 +37,7 @@ public:
 		Emission1D(),
 		Camera(),
 		RenderSettings(),
-		VolumeID(0),
+		VolumeIDs(),
 		LightIDs(),
 		ObjectIDs(),
 		ClippingObjectIDs()
@@ -64,7 +64,7 @@ public:
 		this->Emission1D			= Other.Emission1D;
 		this->Camera				= Other.Camera;
 		this->RenderSettings		= Other.RenderSettings;
-		this->VolumeID				= Other.VolumeID;
+		this->VolumeIDs				= Other.VolumeIDs;
 		this->LightIDs				= Other.LightIDs;
 		this->ObjectIDs				= Other.ObjectIDs;
 		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
@@ -102,7 +102,7 @@ public:
 	ColorTransferFunction1D		Emission1D;
 	Camera						Camera;
 	RenderSettings				RenderSettings;
-	int							VolumeID;
+	Indices						VolumeIDs;
 	Indices						LightIDs;
 	Indices						ObjectIDs;
 	Indices						ClippingObjectIDs;

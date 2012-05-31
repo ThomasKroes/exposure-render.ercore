@@ -137,7 +137,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 
 	gTracers.Synchronize(TracerID);
 
-	gVolumes[gTracers[TracerID].VolumeID].Voxels.Bind(VolumeTexture);
+	gVolumes[gTracers[TracerID].VolumeIDs[0]].Voxels.Bind(VolumeTexture);
 
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);

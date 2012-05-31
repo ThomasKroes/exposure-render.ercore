@@ -35,9 +35,14 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-// char gFileName[] = "C://model_segmentation.mhd";
-char gFileName[] = "C://Volumes//manix.mhd";
-//char gFileName[] = "c://manix.mhd";
+// #define UAH
+
+#ifdef UAH
+	char gIntensityVolumeFileName[]		= "C://uah_segmentation.mhd";
+	char gDistanceFieldFileName[]		= "C://uah_risk_nerves.mhd";
+#else
+	char gIntensityVolumeFileName[]		= "C://Volumes//manix.mhd";
+#endif
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -87,7 +92,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	
 	LoadVolume(Tracer);
 	CreateLighting(Tracer);
-	CreateObjects(Tracer);
+//	CreateObjects(Tracer);
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
@@ -111,13 +116,16 @@ void ConfigureER(vtkRenderer* Renderer)
  
 void LoadVolume(vtkErTracer* Tracer)
 {
+#ifdef UAH
+	
+#else
 	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
 	
-	Reader->SetFileName(gFileName);
+	Reader->SetFileName(gIntensityVolumeFileName);
 	
-	if (Reader->CanReadFile(gFileName) == 0)
+	if (Reader->CanReadFile(gIntensityVolumeFileName) == 0)
 	{
-		printf("can't read file!");
+		printf("Can't read intensity volume!");
 		exit(EXIT_FAILURE);
 	}
 
@@ -141,14 +149,15 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	Volume->Update();
 
-	Tracer->SetInputConnection(vtkErTracer::VolumePort, Volume->GetOutputPort());
+	Tracer->SetInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
+#endif
 }
 
 void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(0.01);
+	Camera->SetExposure(0.1);
 	
 	Camera->SetApertureShape(ExposureRender::Enums::Polygon);
 	Camera->SetApertureSize(0.0f);
@@ -191,7 +200,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
-	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\pura-dalem-ubud-2.jpg");
+	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\panorama.jpg");
 	JpegReader->Update();
 
 	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -217,7 +226,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
-	KeyLight->SetEnabled(false);
+	KeyLight->SetEnabled(true);
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
@@ -236,7 +245,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
-	RimLight->SetEnabled(true);
+	RimLight->SetEnabled(false);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
@@ -286,8 +295,8 @@ void SetTransferFunction(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 
-	Opacity->AddPoint(0, 0.);
-	Opacity->AddPoint(100, 1.0);
+	Opacity->AddPoint(33000, 0);
+	Opacity->AddPoint(40000, 1);
 
 	Tracer->SetOpacity(Opacity);
 
@@ -302,9 +311,8 @@ void SetTransferFunction(vtkErTracer* Tracer)
 	}
 	*/
 
-	Diffuse->AddRGBPoint(0, 1.0f, 1.0f, 1.0f);
-	Diffuse->AddRGBPoint(32400, 1.0f, 1.0f, 1.0f);
-	Diffuse->AddRGBPoint(40000, 1.0f, 1.0f, 1.0f);
+	Diffuse->AddRGBPoint(0, 1.0f, 0.0f, 0.0f);
+	Diffuse->AddRGBPoint(100, 0.0f, 1.0f, 0.0f);
 
 	Tracer->SetDiffuse(Diffuse);
 

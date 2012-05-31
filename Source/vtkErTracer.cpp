@@ -81,10 +81,10 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 {
 	switch (Port)
 	{
-		case VolumePort:
+		case VolumesPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErVolumeData");
-			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
 			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 			return 1;
 		}
@@ -214,9 +214,20 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.Camera.ApertureAngle		= ErCamera->GetApertureAngle();
 	}
 	
-	vtkErVolumeData* VolumeData = dynamic_cast<vtkErVolumeData*>(this->GetInputDataObject(0, 0));
+	const int NoVolumes = this->GetNumberOfInputConnections(VolumesPort);
 
-	this->Tracer.VolumeID = VolumeData->Bindable.ID;
+	this->Tracer.VolumeIDs.Count = 0;
+
+	for (int i = 0; i < NoVolumes; i++)
+	{
+		vtkErVolumeData* VolumeData = vtkErVolumeData::SafeDownCast(this->GetInputDataObject(VolumesPort, i));
+
+		if (VolumeData)
+		{
+			this->Tracer.VolumeIDs[this->Tracer.VolumeIDs.Count] = VolumeData->Bindable.ID;
+			this->Tracer.VolumeIDs.Count++;
+		}
+	}
 
 	const int NoLights = this->GetNumberOfInputConnections(LightsPort);
 
