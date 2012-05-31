@@ -19,7 +19,7 @@ namespace ExposureRender
 {
 
 template<int Size = 64>
-class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : PiecewiseFunction<Size>
+class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<Size>
 {
 public:
 	HOST PiecewiseLinearFunction() :

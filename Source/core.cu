@@ -13,7 +13,11 @@
 
 #define __CUDA_ARCH__ 200
 
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> VolumeTexture;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume2;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume3;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
 
 #include "tracer.h"
 #include "volume.h"
@@ -137,7 +141,11 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 
 	gTracers.Synchronize(TracerID);
 
-	gVolumes[gTracers[TracerID].VolumeIDs[0]].Voxels.Bind(VolumeTexture);
+	if (gTracers[TracerID].VolumeIDs[0] >= 0)
+		gVolumes[gTracers[TracerID].VolumeIDs[0]].Voxels.Bind(TexVolume0);
+
+	if (gTracers[TracerID].VolumeIDs[1] >= 0)
+		gVolumes[gTracers[TracerID].VolumeIDs[1]].Voxels.Bind(TexVolume1);
 
 	SingleScattering(gTracers[TracerID]);
 	FilterFrameEstimate(gTracers[TracerID]);

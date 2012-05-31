@@ -55,13 +55,17 @@ public:
 
 	HOST ErTracer& ErTracer::operator = (const ErTracer& Other)
 	{
-		ErBindable::operator=(Other);
+		ErBindable::operator = (Other);
 
-		this->Opacity1D				= Other.Opacity1D;
-		this->Diffuse1D				= Other.Diffuse1D;
-		this->Specular1D			= Other.Specular1D;
-		this->Glossiness1D			= Other.Glossiness1D;
-		this->Emission1D			= Other.Emission1D;
+		for (int i = 0; i < MAX_NO_VOLUMES; i++)
+		{
+			this->Opacity1D[i]		= Other.Opacity1D[i];
+			this->Diffuse1D[i]		= Other.Diffuse1D[i];
+			this->Specular1D[i]		= Other.Specular1D[i];
+			this->Glossiness1D[i]	= Other.Glossiness1D[i];
+			this->Emission1D[i]		= Other.Emission1D[i];
+		}
+
 		this->Camera				= Other.Camera;
 		this->RenderSettings		= Other.RenderSettings;
 		this->VolumeIDs				= Other.VolumeIDs;
@@ -95,11 +99,11 @@ public:
 		BindIDs(ClippingObjectIDs, this->ClippingObjectIDs, HashMap);
 	}
 
-	ScalarTransferFunction1D	Opacity1D;
-	ColorTransferFunction1D		Diffuse1D;
-	ColorTransferFunction1D		Specular1D;
-	ScalarTransferFunction1D	Glossiness1D;
-	ColorTransferFunction1D		Emission1D;
+	ScalarTransferFunction1D	Opacity1D[MAX_NO_VOLUMES];
+	ColorTransferFunction1D		Diffuse1D[MAX_NO_VOLUMES];
+	ColorTransferFunction1D		Specular1D[MAX_NO_VOLUMES];
+	ScalarTransferFunction1D	Glossiness1D[MAX_NO_VOLUMES];
+	ColorTransferFunction1D		Emission1D[MAX_NO_VOLUMES];
 	Camera						Camera;
 	RenderSettings				RenderSettings;
 	Indices						VolumeIDs;

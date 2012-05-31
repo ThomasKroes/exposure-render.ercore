@@ -78,17 +78,17 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void GetShader(Shader& Shader)
+	HOST_DEVICE void GetShader(Shader& Shader, const int& VolumeID = 0)
 	{
 		switch (this->Type)
 		{
 			case Enums::Volume:
 			{
-				this->Le = gpTracer->Emission1D.Evaluate(this->Intensity);
+				this->Le = gpTracer->Emission1D[VolumeID].Evaluate(this->Intensity);
 
-				const ColorXYZf Diffuse		= gpTracer->Diffuse1D.Evaluate(this->Intensity);
-				const ColorXYZf Specular	= gpTracer->Specular1D.Evaluate(this->Intensity);
-				const float Glossiness		= gpTracer->Glossiness1D.Evaluate(this->Intensity);
+				const ColorXYZf Diffuse		= gpTracer->Diffuse1D[VolumeID].Evaluate(this->Intensity);
+				const ColorXYZf Specular	= gpTracer->Specular1D[VolumeID].Evaluate(this->Intensity);
+				const float Glossiness		= gpTracer->Glossiness1D[VolumeID].Evaluate(this->Intensity);
 
 				switch (gpTracer->RenderSettings.Shading.Type)
 				{

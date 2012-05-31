@@ -20,11 +20,6 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI float Gauss2D(const float& Sigma, const int& X, const int& Y)
-{
-	return expf(-((X * X + Y * Y) / (2 * Sigma * Sigma)));
-}
-
 KERNEL void KrnlFilterFrameEstimate(int KernelRadius, float Sigma)
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])

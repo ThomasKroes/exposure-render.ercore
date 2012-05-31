@@ -70,11 +70,13 @@ namespace ExposureRender
 #define	MAX_CHAR_SIZE				256
 #define MAX_NO_TF_NODES				128
 #define NO_COLOR_COMPONENTS			4
+#define MAX_NO_VOLUMES				8
+#define UAH							1
 
 #ifdef _MSC_VER
-#define DEBUG_BREAK __debugbreak();
+	#define DEBUG_BREAK __debugbreak();
 #else
-#define DEBUG_BREAK
+	#define DEBUG_BREAK
 #endif
 
 }

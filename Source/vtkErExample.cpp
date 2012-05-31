@@ -35,11 +35,11 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 
-// #define UAH
-
 #ifdef UAH
-	char gIntensityVolumeFileName[]		= "C://uah_segmentation.mhd";
-	char gDistanceFieldFileName[]		= "C://uah_risk_nerves.mhd";
+	char gSegmentation[]	= "C://uah_segmentation.mhd";
+	char gRiskNerves[]		= "C://uah_risk_nerves.mhd";
+	char gRiskVeins[]		= "C://uah_risk_veins.mhd";
+	char gRiskArteries[]	= "C://uah_risk_arteries.mhd";
 #else
 	char gIntensityVolumeFileName[]		= "C://Volumes//manix.mhd";
 #endif
@@ -96,13 +96,13 @@ void ConfigureER(vtkRenderer* Renderer)
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(100);
+	Tracer->SetDensityScale(10);
 
-	const float StepSize = 5.5f;
+	const float StepSize = 2.0f;
 
 	Tracer->SetStepFactorPrimary(StepSize);
 	Tracer->SetStepFactorShadow(2.0f * StepSize);
-	Tracer->SetShadingMode(ExposureRender::Enums::BrdfOnly);
+	Tracer->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
 
 	Tracer->Update();
 
@@ -113,11 +113,97 @@ void ConfigureER(vtkRenderer* Renderer)
 
 	Renderer->AddVolume(Volume);
 }
- 
+
+void LoadDistanceField(vtkErTracer* Tracer, const char* pFileName, const float& Hue, const int& VolumeID)
+{
+	vtkSmartPointer<vtkMetaImageReader> Reader = vtkSmartPointer<vtkMetaImageReader>::New();
+
+	if (Reader->CanReadFile(pFileName) == 0)
+	{
+		printf("Can't read distance field (%s)!\n", pFileName);
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		Reader->SetFileName(pFileName);
+	}
+	
+	Reader->Update();
+	
+	vtkSmartPointer<vtkImageCast> ImageCast = vtkSmartPointer<vtkImageCast>::New();
+
+	ImageCast->SetOutputScalarTypeToUnsignedShort();
+	ImageCast->SetClampOverflow(1);
+	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
+	ImageCast->Update();
+
+	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
+
+	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
+	Volume->SetFilterMode(ExposureRender::Enums::Linear);
+	Volume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
+	Volume->Update();
+
+	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
+
+	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
+	
+	const float MaxDistance = 10.0f;
+
+	Opacity->AddPoint(0, 1);
+	Opacity->AddPoint(MaxDistance, 0);
+	
+	Tracer->SetOpacity(Opacity, VolumeID);
+	
+	vtkSmartPointer<vtkColorTransferFunction> Emission = vtkSmartPointer<vtkColorTransferFunction>::New();
+	
+	const float EmissionStrength = 2.0f;
+
+	Emission->AddRGBPoint(0, EmissionStrength, 0, 0);
+	Emission->AddRGBPoint(MaxDistance, 0, EmissionStrength, 0);
+	Emission->AddRGBPoint(MaxDistance + 0.01f, 0, 0, 0);
+
+	Tracer->SetEmission(Emission, VolumeID);
+}
+
 void LoadVolume(vtkErTracer* Tracer)
 {
 #ifdef UAH
+	vtkSmartPointer<vtkImageCast> SegmentationVolumeImageCast = vtkSmartPointer<vtkImageCast>::New();
+	SegmentationVolumeImageCast->SetOutputScalarTypeToUnsignedShort();
+	SegmentationVolumeImageCast->SetClampOverflow(1);
+
+	vtkSmartPointer<vtkMetaImageReader> SegmentationVolumeReader = vtkSmartPointer<vtkMetaImageReader>::New();
 	
+	if (SegmentationVolumeReader->CanReadFile(gSegmentation) == 0)
+	{
+		printf("Can't read segmentation volume!");
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		SegmentationVolumeReader->SetFileName(gSegmentation);
+	}
+	
+	SegmentationVolumeReader->Update();
+
+	SegmentationVolumeImageCast->SetInputConnection(0, SegmentationVolumeReader->GetOutputPort());
+	SegmentationVolumeImageCast->Update();
+
+	vtkSmartPointer<vtkErVolume> SegmentationVolume = vtkSmartPointer<vtkErVolume>::New();
+
+	SegmentationVolume->SetInputConnection(0, SegmentationVolumeImageCast->GetOutputPort());
+	SegmentationVolume->SetFilterMode(ExposureRender::Enums::NearestNeighbour);
+	SegmentationVolume->SetAcceleratorType(ExposureRender::Enums::NoAcceleration);
+	SegmentationVolume->Update();
+
+	Tracer->AddInputConnection(vtkErTracer::VolumesPort, SegmentationVolume->GetOutputPort());
+	
+//	LoadDistanceField(Tracer, gRiskNerves, 10, 1);
+//	LoadDistanceField(Tracer, gRiskVeins, 10, 1);
+	LoadDistanceField(Tracer, gRiskArteries, 10, 1);
+
+
 #else
 	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
 	
@@ -131,13 +217,9 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	Reader->Update();
 
-	vtkSmartPointer<vtkImageCast> ImageCast	= vtkSmartPointer<vtkImageCast>::New();
+	
 
-	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
-	ImageCast->SetOutputScalarTypeToUnsignedShort();
-	ImageCast->Update();
-
-	vtkSmartPointer<vtkErVolume> Volume = vtkSmartPointer<vtkErVolume>::New();
+	
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
 	Volume->SetFilterMode(ExposureRender::Enums::Linear);
@@ -147,7 +229,7 @@ void LoadVolume(vtkErTracer* Tracer)
 //	Volume->SetAxis(ExposureRender::Enums::X);
 	Volume->SetPosition(0, 0, 0);
 
-	Volume->Update();
+	
 
 	Tracer->SetInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
 #endif
@@ -157,7 +239,7 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(0.1);
+	Camera->SetExposure(1);
 	
 	Camera->SetApertureShape(ExposureRender::Enums::Polygon);
 	Camera->SetApertureSize(0.0f);
@@ -176,12 +258,12 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
 	KeyLightTexture->SetProceduralType(ExposureRender::Enums::Uniform);
-	KeyLightTexture->SetUniformColor(0.9, 0.0, 0);
+	KeyLightTexture->SetUniformColor(1, 1, 1);
 
 	vtkSmartPointer<vtkErTexture> RimLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	RimLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
-	RimLightTexture->SetProceduralType(ExposureRender::Enums::Gradient);
+	RimLightTexture->SetProceduralType(ExposureRender::Enums::Uniform);
 	RimLightTexture->SetOutputLevel(1.0f);
 
 	vtkSmartPointer<vtkColorTransferFunction> Gradient = vtkSmartPointer<vtkColorTransferFunction>::New();
@@ -194,6 +276,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	RimLightTexture->SetGradient(Gradient);
 	
+	/*
 	vtkSmartPointer<vtkErTexture> ImageTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	ImageTexture->SetTextureType(ExposureRender::Enums::Bitmap);
@@ -209,11 +292,11 @@ void CreateLighting(vtkErTracer* Tracer)
 	Bitmap->SetInputConnection(0, JpegReader->GetOutputPort());
 
 	ImageTexture->SetInputConnection(0, Bitmap->GetOutputPort());
-	/**/
+	*/
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 1.0f;
+	const float KeyLightSize = 0.1f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
@@ -222,7 +305,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(145.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(1000000.0f);
+	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -241,10 +324,10 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(30.0f);
-	RimLight->SetMultiplier(1000000.0f);
+	RimLight->SetMultiplier(1000.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
-	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
+	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
 	RimLight->SetEnabled(false);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
@@ -293,47 +376,29 @@ void CreateObjects(vtkErTracer* Tracer)
 
 void SetTransferFunction(vtkErTracer* Tracer)
 {
-	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
+#ifdef UAH
+	vtkSmartPointer<vtkPiecewiseFunction> SegmentationOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
+	
+	SegmentationOpacity->AddSegment(0, 0, 2, 0);
+	SegmentationOpacity->AddSegment(2, 1, 35, 1);
+	
+	Tracer->SetOpacity(SegmentationOpacity, 0);
 
-	Opacity->AddPoint(33000, 0);
-	Opacity->AddPoint(40000, 1);
+	vtkSmartPointer<vtkColorTransferFunction> SegmentationDiffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
+	
+	SegmentationDiffuse->AddRGBSegment(0, 0, 0, 0, 2, 0, 0, 0);
 
-	Tracer->SetOpacity(Opacity);
-
-	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
-
-	/*
-	for (int i = 0; i < 1024; i++)
+	for (int i = 2; i < 36; i++)
 	{
 		float H = (float)rand() / RAND_MAX;
-		Diffuse->AddHSVPoint(i, H, 0.75, 0.75);
-		Diffuse->AddHSVPoint(i + 1, H, 0.75, 0.75);
+//		SegmentationDiffuse->AddHSVPoint(i, H, 0.75, 0.75);
+//		SegmentationDiffuse->AddHSVPoint(i + 1, H, 0.75, 0.75);
+		SegmentationDiffuse->AddHSVPoint(i + 1, 0, 0, 0.5);
 	}
-	*/
 
-	Diffuse->AddRGBPoint(0, 1.0f, 0.0f, 0.0f);
-	Diffuse->AddRGBPoint(100, 0.0f, 1.0f, 0.0f);
+	Tracer->SetDiffuse(SegmentationDiffuse, 0);
 
-	Tracer->SetDiffuse(Diffuse);
-
-	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
-
-	Specular->AddRGBPoint(0, 1, 1, 1);
-	Specular->AddRGBPoint(40000, 1, 1, 1);
-
-	Tracer->SetSpecular(Specular);
-
-	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
-
-	Glossiness->AddPoint(0, 1.0f);
-	Glossiness->AddPoint(40000, 1.0f);
-
-	Tracer->SetGlossiness(Glossiness);
-
-	vtkSmartPointer<vtkColorTransferFunction> Emission = vtkSmartPointer<vtkColorTransferFunction>::New();
-
-	Emission->AddRGBPoint(60, 0, 0, 0);
-	Emission->AddRGBPoint(200, 0, 0, 0);
-
-	Tracer->SetEmission(Emission);
+	
+#else
+#endif
 }
