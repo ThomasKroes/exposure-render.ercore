@@ -92,11 +92,11 @@ void ConfigureER(vtkRenderer* Renderer)
 	
 	LoadVolume(Tracer);
 	CreateLighting(Tracer);
-//	CreateObjects(Tracer);
+	CreateObjects(Tracer);
 	SetTransferFunction(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetDensityScale(25);
+	Tracer->SetDensityScale(500);
 
 	const float StepSize = 4.0f;
 
@@ -156,7 +156,7 @@ void LoadDistanceField(vtkErTracer* Tracer, const char* pFileName, const float& 
 	
 	vtkSmartPointer<vtkColorTransferFunction> Emission = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float EmissionStrength = 5.0f;
+	const float EmissionStrength = 10.0f;
 	
 	
 	Emission->AddRGBPoint(0, EmissionStrength * Color[0], EmissionStrength * Color[1], EmissionStrength * Color[2]);
@@ -206,8 +206,8 @@ void LoadVolume(vtkErTracer* Tracer)
 	Tracer->AddInputConnection(vtkErTracer::VolumesPort, SegmentationVolume->GetOutputPort());
 	
 	LoadDistanceField(Tracer, gRiskNerves, 0.0, 1, 15, Vec3f(0.9, 0.6, 0.2));
-	LoadDistanceField(Tracer, gRiskVeins, 0.5, 2, 15, Vec3f(0.0, 0.0, 1.0));
-	LoadDistanceField(Tracer, gRiskArteries, 1.5, 3, 15, Vec3f(1.0, 0.0, 0.0));
+	LoadDistanceField(Tracer, gRiskVeins, 0.5, 2, 7, Vec3f(0.0, 0.0, 1.0));
+	LoadDistanceField(Tracer, gRiskArteries, 1.5, 3, 7, Vec3f(1.0, 0.0, 0.0));
 
 #else
 	vtkSmartPointer<vtkMetaImageReader> Reader	= vtkSmartPointer<vtkMetaImageReader>::New();
@@ -301,16 +301,16 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 0.8f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
 	KeyLight->SetOuterRadius(0.01f);
 	KeyLight->SetOneSided(true);
-	KeyLight->SetElevation(145.0f);
-	KeyLight->SetAzimuth(145.0f);
+	KeyLight->SetElevation(90.0f);
+	KeyLight->SetAzimuth(0.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(10.0f);
+	KeyLight->SetMultiplier(20.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -329,9 +329,9 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(30.0f);
-	RimLight->SetMultiplier(1000.0f);
+	RimLight->SetMultiplier(1.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
-	RimLight->SetEmissionUnit(ExposureRender::Enums::Power);
+	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
 	RimLight->SetEnabled(false);
 
@@ -344,10 +344,10 @@ void CreateObjects(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	DiffuseTexture->SetTextureType(ExposureRender::Enums::Procedural);
-	DiffuseTexture->SetProceduralType(ExposureRender::Enums::Checker);
+	DiffuseTexture->SetProceduralType(ExposureRender::Enums::Uniform);
 	DiffuseTexture->SetRepeat(4, 4);
 	DiffuseTexture->SetUniformColor(1, 1, 1);
-	DiffuseTexture->SetOutputLevel(0.1f);
+	DiffuseTexture->SetOutputLevel(0.01f);
 
 	/*
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
@@ -369,7 +369,7 @@ void CreateObjects(vtkErTracer* Tracer)
 	Object->SetAxis(ExposureRender::Enums::Y);
 	Object->SetPosition(0.0f, -0.5f, 0.0f);
 	Object->SetShapeType(ExposureRender::Enums::Plane);
-	Object->SetSize(10.0f, 10.0f, 10.0f);
+	Object->SetSize(100.0f, 100.0f, 100.0f);
 	Object->SetEnabled(true);
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
@@ -384,7 +384,7 @@ void SetTransferFunction(vtkErTracer* Tracer)
 #ifdef UAH
 	vtkSmartPointer<vtkPiecewiseFunction> SegmentationOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	SegmentationOpacity->AddSegment(0, 0, 2, 0);
+	SegmentationOpacity->AddSegment(0, 0, 1, 0);
 	SegmentationOpacity->AddSegment(2, 1, 35, 1);
 	
 	Tracer->SetOpacity(SegmentationOpacity, 0);

@@ -120,8 +120,8 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 
 	const float MaxRadius = 200.0f;
 
-	if (Length < MaxRadius)
-	{
+//	if (Length < MaxRadius)
+//	{
 		float MinT;
 		float MaxT;
 		
@@ -141,15 +141,15 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 			float Intensity = 0.0f;
 
 			Intensity = gpVolumes[gpTracer->VolumeIDs[1]](Ps, 1);
-			Lv += Gauss2D(100.0f, Pc[0], Pc[1]) * gpTracer->Opacity1D[1].Evaluate(Intensity) * gpTracer->Emission1D[1].Evaluate(Intensity);
+			Lv += gpTracer->Opacity1D[1].Evaluate(Intensity) * gpTracer->Emission1D[1].Evaluate(Intensity);
 
 			Intensity = gpVolumes[gpTracer->VolumeIDs[2]](Ps, 2);
-			Lv += Gauss2D(100.0f, Pc[0], Pc[1]) * gpTracer->Opacity1D[2].Evaluate(Intensity) * gpTracer->Emission1D[2].Evaluate(Intensity);
+			Lv += gpTracer->Opacity1D[2].Evaluate(Intensity) * gpTracer->Emission1D[2].Evaluate(Intensity);
 
 			Intensity = gpVolumes[gpTracer->VolumeIDs[3]](Ps, 3);
-			Lv += Gauss2D(100.0f, Pc[0], Pc[1]) * gpTracer->Opacity1D[3].Evaluate(Intensity) * gpTracer->Emission1D[3].Evaluate(Intensity);
+			Lv += gpTracer->Opacity1D[3].Evaluate(Intensity) * gpTracer->Emission1D[3].Evaluate(Intensity);
 		}
-	}
+//	}
 	
 	SE = SampleRay(R, RNG);
 
