@@ -73,6 +73,6 @@ private:
 	int										RenderSize[2];
 	unsigned long							CameraTimeStamp;
 	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperties[MAX_NO_VOLUMES];
-	vtkTimeStamp							VolumePropertiesTimeStamp[MAX_NO_VOLUMES];
+	unsigned long							VolumePropertiesTimeStamp[MAX_NO_VOLUMES];
 	ExposureRender::ErTracer				Tracer;
 };

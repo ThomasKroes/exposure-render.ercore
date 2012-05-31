@@ -21,7 +21,23 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL VolumeProperty
 {
 public:
-	HOST VolumeProperty()
+	HOST VolumeProperty() :
+		Opacity1D(),
+		Diffuse1D(),
+		Specular1D(),
+		Glossiness1D(),
+		IndexOfReflection1D(),
+		Emission1D(),
+		G(),
+		StepFactorPrimary(2),
+		StepFactorShadow(2),
+		Shadows(true),
+		ShadingType(Enums::BrdfOnly),
+		DensityScale(100),
+		OpacityModulated(true),
+		GradientMode(Enums::CentralDifferences),
+		GradientThreshold(0.5f),
+		GradientFactor(0.5f)
 	{
 	}
 
@@ -39,7 +55,16 @@ public:
 		this->IndexOfReflection1D	= Other.IndexOfReflection1D;
 		this->Emission1D			= Other.Emission1D;
 		this->G						= Other.G;
-
+		this->StepFactorPrimary		= Other.StepFactorPrimary;
+		this->StepFactorShadow		= Other.StepFactorShadow;
+		this->Shadows				= Other.Shadows;
+		this->ShadingType			= Other.ShadingType;
+		this->DensityScale			= Other.DensityScale;
+		this->OpacityModulated		= Other.OpacityModulated;
+		this->GradientMode			= Other.GradientMode;
+		this->GradientThreshold		= Other.GradientThreshold;
+		this->GradientFactor		= Other.GradientFactor;
+		
 		return *this;
 	}
 
@@ -50,6 +75,15 @@ public:
 	ScalarTransferFunction1D	IndexOfReflection1D;
 	ColorTransferFunction1D		Emission1D;
 	ScalarTransferFunction1D	G;
+	float						StepFactorPrimary;
+	float						StepFactorShadow;
+	bool						Shadows;
+	Enums::ShadingMode			ShadingType;
+	float						DensityScale;
+	bool						OpacityModulated;
+	Enums::GradientMode			GradientMode;
+	float						GradientThreshold;
+	float						GradientFactor;
 };
 
 }

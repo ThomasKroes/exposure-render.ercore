@@ -41,8 +41,11 @@ vtkErTracer::vtkErTracer(void)
 	this->CameraTimeStamp	= 0;
 
 	for (int i = 0; i < MAX_NO_VOLUMES; i++)
-		this->VolumeProperties[i] = vtkSmartPointer<vtkErVolumeProperty>::New();
-	
+	{
+		this->VolumeProperties[i]			= vtkSmartPointer<vtkErVolumeProperty>::New();
+		this->VolumePropertiesTimeStamp[i]	= this->VolumeProperties[i]->GetMTime();
+	}
+
 	this->Tracer.SetDirty();
 }
 
@@ -161,15 +164,17 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 			ErVolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 		}
 
-		this->Tracer.RenderSettings.Traversal.StepFactorPrimary 	= VolumeProperty->GetStepFactorPrimary();
-		this->Tracer.RenderSettings.Traversal.StepFactorShadow		= VolumeProperty->GetStepFactorShadow();
-		this->Tracer.RenderSettings.Traversal.Shadows				= VolumeProperty->GetShadows();
-		this->Tracer.RenderSettings.Shading.Type					= VolumeProperty->GetShadingMode();
-		this->Tracer.RenderSettings.Shading.DensityScale			= VolumeProperty->GetDensityScale();
-		this->Tracer.RenderSettings.Shading.OpacityModulated		= VolumeProperty->GetOpacityModulated();
-		this->Tracer.RenderSettings.Shading.GradientMode			= VolumeProperty->GetGradientMode();
-		this->Tracer.RenderSettings.Shading.GradientThreshold		= VolumeProperty->GetGradientThreshold();
-		this->Tracer.RenderSettings.Shading.GradientFactor			= VolumeProperty->GetGradientFactor();
+		ErVolumeProperty.StepFactorPrimary 	= VolumeProperty->GetStepFactorPrimary();
+		ErVolumeProperty.StepFactorShadow	= VolumeProperty->GetStepFactorShadow();
+		ErVolumeProperty.Shadows			= VolumeProperty->GetShadows();
+		ErVolumeProperty.ShadingType		= VolumeProperty->GetShadingMode();
+		ErVolumeProperty.DensityScale		= VolumeProperty->GetDensityScale();
+		ErVolumeProperty.OpacityModulated	= VolumeProperty->GetOpacityModulated();
+		ErVolumeProperty.GradientMode		= VolumeProperty->GetGradientMode();
+		ErVolumeProperty.GradientThreshold	= VolumeProperty->GetGradientThreshold();
+		ErVolumeProperty.GradientFactor		= VolumeProperty->GetGradientFactor();
+
+		this->VolumePropertiesTimeStamp[i] = this->VolumeProperties[i]->GetMTime();
 	}
 	
 	vtkCamera* Camera = Renderer->GetActiveCamera();

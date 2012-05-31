@@ -40,7 +40,7 @@ DEVICE_NI bool Intersect(const Ray& R, CRNG& RNG)
 
 DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 {
-	if (!gpTracer->RenderSettings.Traversal.Shadows)
+	if (!gpTracer->VolumeProperties[0].Shadows)
 		return true;
 
 	Vec3f W = Normalize(P2 - P1);

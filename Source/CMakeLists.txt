@@ -75,7 +75,6 @@ SET(General
 	vector.h
 	boundingbox.h
 	transferfunction.h
-	rendersettings.h
 	timing.h
 	exception.h
 	timestamp.h
