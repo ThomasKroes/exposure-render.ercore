@@ -111,23 +111,43 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 
 	ScatterEvent SE = SampleRay(R, RNG);
 
-	if (SE.Valid && SE.Type == Enums::Volume)
-		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+	ColorRGBf RGB;
 
-	if (SE.Valid && SE.Type == Enums::Light)
-		Lv += SE.Le;
-	
-	if (SE.Valid && SE.Type == Enums::Object)
-		Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
-	
+	if (SE.Valid)
+	{
+		switch (SE.Type)
+		{
+			case Enums::Volume:
+			{
+				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				break;
+			}
 
-	ColorRGBf RGBf = ColorRGBf::FromXYZf(Lv);
+			case Enums::Light:
+			{
+				Lv += SE.Le;
+				break;
+			}
 
-	RGBf[0] = 1.0f - expf(-(RGBf[0] / gpTracer->Camera.Exposure));
-	RGBf[1] = 1.0f - expf(-(RGBf[1] / gpTracer->Camera.Exposure));
-	RGBf[2] = 1.0f - expf(-(RGBf[2] / gpTracer->Camera.Exposure));
+			case Enums::Object:
+			{
+				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				break;
+			}
+		}
 
-	return ColorXYZAf(RGBf[0], RGBf[1], RGBf[2], SE.Valid ? 1.0f : 0.0f);
+		ColorXYZf XYZ;
+
+		XYZ[0] = Clamp(1.0f - expf(-gpTracer->Camera.InvExposure * Lv[0]), 0.0f, 1.0f);
+		XYZ[1] = Clamp(1.0f - expf(-gpTracer->Camera.InvExposure * Lv[1]), 0.0f, 1.0f);
+		XYZ[2] = Clamp(1.0f - expf(-gpTracer->Camera.InvExposure * Lv[2]), 0.0f, 1.0f);
+
+		RGB = ColorRGBf::FromXYZf(XYZ);
+
+		RGB.Clamp(0.0f, 1.0f);
+	}
+
+	return ColorXYZAf(RGB[0], RGB[1], RGB[2], SE.Valid ? 1.0f : 0.0f);
 }
 
 }
