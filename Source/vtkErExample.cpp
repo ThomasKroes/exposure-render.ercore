@@ -104,26 +104,40 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 8.0f;
+	const float StepSize = 3.0f;
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(50);
+	VolumeProperty->SetShadingMode(ExposureRender::Enums::BrdfOnly);
+	VolumeProperty->SetDensityScale(100);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddSegment(0, 0, 1, 0);
-	Opacity->AddSegment(2, 1, 35, 1);
+	Opacity->AddPoint(50, 0);
+	Opacity->AddPoint(2048, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	Diffuse->AddRGBPoint(0, 1, 1, 1);
-	Diffuse->AddRGBPoint(2048, 1, 1, 1);
+	Diffuse->AddRGBPoint(0, 1.0, 0.3, 0.2);
+	Diffuse->AddRGBPoint(2048, 0.9, 0.5, 0.3);
 
 	VolumeProperty->SetDiffuse(Diffuse);
+
+	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
+	
+	Specular->AddRGBPoint(0, 1, 1, 1);
+	Specular->AddRGBPoint(2048, 1, 1, 1);
+
+	VolumeProperty->SetSpecular(Specular);
+
+	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
+	
+	Glossiness->AddPoint(0, 1);
+	Glossiness->AddPoint(2048, 1);
+	
+	VolumeProperty->SetGlossiness(Glossiness);
 
 	Tracer->SetVolumeProperty(VolumeProperty);
 }
@@ -198,14 +212,14 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	RimLightTexture->SetGradient(Gradient);
 	
-	/*
+	
 	vtkSmartPointer<vtkErTexture> ImageTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	ImageTexture->SetTextureType(ExposureRender::Enums::Bitmap);
 
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
-	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\panorama.jpg");
+	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\bus_20120309_108w-Panorama_equiw.jpg");
 	JpegReader->Update();
 
 	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -214,20 +228,20 @@ void CreateLighting(vtkErTracer* Tracer)
 	Bitmap->SetInputConnection(0, JpegReader->GetOutputPort());
 
 	ImageTexture->SetInputConnection(0, Bitmap->GetOutputPort());
-	*/
+	/**/
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 1.0f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
 	KeyLight->SetOuterRadius(0.01f);
 	KeyLight->SetOneSided(true);
-	KeyLight->SetElevation(90.0f);
-	KeyLight->SetAzimuth(0.0f);
+	KeyLight->SetElevation(30.0f);
+	KeyLight->SetAzimuth(-150.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(20.0f);
+	KeyLight->SetMultiplier(1.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -249,8 +263,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetMultiplier(1.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
-	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
-	RimLight->SetEnabled(false);
+	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
+	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());

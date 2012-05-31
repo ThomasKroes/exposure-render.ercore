@@ -93,7 +93,7 @@ public:
 				const float Glossiness			= VolumeProperty.Glossiness1D.Evaluate(this->Intensity);
 				const float IndexOfReflection	= VolumeProperty.IndexOfReflection1D.Evaluate(this->Intensity);
 
-				switch (gpTracer->RenderSettings.Shading.Type)
+				switch (VolumeProperty.ShadingType)
 				{
 					case Enums::BrdfOnly:
 					{

@@ -43,13 +43,12 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 	MinT = max(Int.NearT, R.MinT);
 	MaxT = min(Int.FarT, R.MaxT);
 
-	const float S	= -log(RNG.Get1()) / gpTracer->RenderSettings.Shading.DensityScale;
+	const float S	= -log(RNG.Get1()) / VolumeProperty.DensityScale;
 	float Sum		= 0.0f;
 
 	Vec3f Ps;
 
-	const float	DensityScale	= gpTracer->RenderSettings.Shading.DensityScale;
-	const float StepSize		= gpTracer->RenderSettings.Traversal.StepFactorPrimary * Volume.MinStep;
+	const float StepSize = VolumeProperty.StepFactorPrimary * Volume.MinStep;
 
 	MinT += RNG.Get1() * StepSize;
 
@@ -63,11 +62,11 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 			return;
 		
 		Intensity	= Volume(Ps, VolumeID);
-		Sum			+= DensityScale * VolumeProperty.Opacity1D.Evaluate(Intensity) * StepSize;
+		Sum			+= VolumeProperty.DensityScale * VolumeProperty.Opacity1D.Evaluate(Intensity) * StepSize;
 		MinT		+= StepSize;
 	}
 
-	SE.SetVolumeScattering(MinT, Ps, Volume.NormalizedGradient(Ps, gpTracer->RenderSettings.Shading.GradientMode), -R.D, Intensity);
+	SE.SetVolumeScattering(MinT, Ps, Volume.NormalizedGradient(Ps, VolumeProperty.GradientMode), -R.D, Intensity);
 }
 
 DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
@@ -92,11 +91,11 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 	MinT = max(Int.NearT, R.MinT);
 	MaxT = min(Int.FarT, R.MaxT);
 
-	const float	DensityScale	= gpTracer->RenderSettings.Shading.DensityScale;
+	const float	DensityScale	= VolumeProperty.DensityScale;
 	const float S				= -log(RNG.Get1());
 	float Sum					= 0.0f;
 
-	const float StepSize = gpTracer->RenderSettings.Traversal.StepFactorShadow * Volume.MinStep;
+	const float StepSize = VolumeProperty.StepFactorShadow * Volume.MinStep;
 
 	MinT += RNG.Get1() * StepSize;
 

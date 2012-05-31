@@ -28,7 +28,6 @@ class Tracer
 public:
 	HOST Tracer() :
 		Camera(),
-		RenderSettings(),
 		VolumeIDs(),
 		LightIDs(),
 		ObjectIDs(),
@@ -40,7 +39,6 @@ public:
 
 	HOST Tracer(const ErTracer& Other) :
 		Camera(),
-		RenderSettings(),
 		VolumeIDs(),
 		LightIDs(),
 		ObjectIDs(),
@@ -57,7 +55,6 @@ public:
 			this->VolumeProperties[i] = Other.VolumeProperties[i];
 
 		this->Camera				= Other.Camera;
-		this->RenderSettings		= Other.RenderSettings;
 		this->VolumeIDs				= Other.VolumeIDs;
 		this->LightIDs				= Other.LightIDs;
 		this->ObjectIDs				= Other.ObjectIDs;
@@ -81,7 +78,6 @@ public:
 
 	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
 	Camera			Camera;
-	RenderSettings	RenderSettings;
 	Indices			VolumeIDs;
 	Indices			LightIDs;
 	Indices			ObjectIDs;
