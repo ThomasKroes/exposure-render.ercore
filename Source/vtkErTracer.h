@@ -15,6 +15,7 @@
 
 #include "vtkErDll.h"
 #include "vtkErBindable.h"
+#include "vtkErVolumeProperty.h"
 
 #include <vtkDataObject.h>
 #include <vtkVolumeMapper.h>
@@ -53,47 +54,8 @@ public:
 		ClippingObjectsPort
 	};
 
-	vtkPiecewiseFunction* GetOpacity(const int& ID)							{	return this->Opacity[ID].GetPointer();		};
-	void SetOpacity(vtkPiecewiseFunction* Opacity, const int& ID)			{	this->Opacity[ID] = Opacity;				};
-	
-	vtkColorTransferFunction* GetDiffuse(const int& ID)						{	return this->Diffuse[ID].GetPointer();		};
-	void SetDiffuse(vtkColorTransferFunction* Diffuse, const int& ID)		{	this->Diffuse[ID] = Diffuse;				};
-
-	vtkColorTransferFunction* GetSpecular(const int& ID)					{ 	return this->Specular[ID].GetPointer();		};
-	void SetSpecular(vtkColorTransferFunction* Specular, const int& ID)		{ 	this->Specular[ID] = Specular;				};
-
-	vtkPiecewiseFunction* GetGlossiness(const int& ID)						{ 	return this->Glossiness[ID].GetPointer();	};
-	void SetGlossiness(vtkPiecewiseFunction* Glossiness, const int& ID)		{ 	this->Glossiness[ID] = Glossiness;			};
-	
-	vtkColorTransferFunction* GetEmission(const int& ID)					{ 	return this->Emission[ID].GetPointer();		};
-	void SetEmission(vtkColorTransferFunction* Emission, const int& ID)		{ 	this->Emission[ID] = Emission;				};
-
-	vtkGetMacro(StepFactorPrimary, float);
-	vtkSetMacro(StepFactorPrimary, float);
-	
-	vtkGetMacro(StepFactorShadow, float);
-	vtkSetMacro(StepFactorShadow, float);
-
-	vtkGetMacro(Shadows, bool);
-	vtkSetMacro(Shadows, bool);
-	
-	vtkGetMacro(ShadingMode, Enums::ShadingMode);
-	vtkSetMacro(ShadingMode, Enums::ShadingMode);
-
-	vtkGetMacro(DensityScale, float);
-	vtkSetMacro(DensityScale, float);
-
-	vtkGetMacro(OpacityModulated, bool);
-	vtkSetMacro(OpacityModulated, bool);
-
-	vtkGetMacro(GradientMode, Enums::GradientMode);
-	vtkSetMacro(GradientMode, Enums::GradientMode);
-
-	vtkGetMacro(GradientThreshold, float);
-	vtkSetMacro(GradientThreshold, float);
-
-	vtkGetMacro(GradientFactor, float);
-	vtkSetMacro(GradientFactor, float);
+	vtkErVolumeProperty* GetVolumeProperty(const int& ID = 0)							{	return this->VolumeProperties[ID].GetPointer();						};
+	void SetVolumeProperty(vtkErVolumeProperty* VolumeProperty, const int& ID = 0)		{	this->VolumeProperties[ID] = VolumeProperty; this->Modified();		};
 
 protected:
 	vtkErTracer();
@@ -106,23 +68,11 @@ protected:
 	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
 
 private:
-	unsigned int								TextureID;
-	ExposureRender::ColorRGBAuc*				ImageBuffer;
-	int											RenderSize[2];
-	vtkSmartPointer<vtkPiecewiseFunction>		Opacity[MAX_NO_VOLUMES];
-	vtkSmartPointer<vtkColorTransferFunction>	Diffuse[MAX_NO_VOLUMES];
-	vtkSmartPointer<vtkColorTransferFunction>	Specular[MAX_NO_VOLUMES];
-	vtkSmartPointer<vtkPiecewiseFunction>		Glossiness[MAX_NO_VOLUMES];
-	vtkSmartPointer<vtkColorTransferFunction>	Emission[MAX_NO_VOLUMES];
-	float										StepFactorPrimary;
-	float										StepFactorShadow;
-	bool										Shadows;
-	Enums::ShadingMode							ShadingMode;
-	float										DensityScale;
-	bool										OpacityModulated;
-	Enums::GradientMode							GradientMode;
-	float										GradientThreshold;
-	float										GradientFactor;
-	ExposureRender::ErTracer					Tracer;
-	unsigned long								LastCameraMTime;
+	unsigned int							TextureID;
+	ExposureRender::ColorRGBAuc*			ImageBuffer;
+	int										RenderSize[2];
+	unsigned long							CameraTimeStamp;
+	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperties[MAX_NO_VOLUMES];
+	vtkTimeStamp							VolumePropertiesTimeStamp[MAX_NO_VOLUMES];
+	ExposureRender::ErTracer				Tracer;
 };

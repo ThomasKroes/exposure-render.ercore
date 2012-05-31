@@ -27,11 +27,6 @@ class Tracer
 {
 public:
 	HOST Tracer() :
-		Opacity1D(),
-		Diffuse1D(),
-		Specular1D(),
-		Glossiness1D(),
-		Emission1D(),
 		Camera(),
 		RenderSettings(),
 		VolumeIDs(),
@@ -44,11 +39,6 @@ public:
 	}
 
 	HOST Tracer(const ErTracer& Other) :
-		Opacity1D(),
-		Diffuse1D(),
-		Specular1D(),
-		Glossiness1D(),
-		Emission1D(),
 		Camera(),
 		RenderSettings(),
 		VolumeIDs(),
@@ -64,13 +54,7 @@ public:
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
 		for (int i = 0; i < MAX_NO_VOLUMES; i++)
-		{
-			this->Opacity1D[i]		= Other.Opacity1D[i];
-			this->Diffuse1D[i]		= Other.Diffuse1D[i];
-			this->Specular1D[i]		= Other.Specular1D[i];
-			this->Glossiness1D[i]	= Other.Glossiness1D[i];
-			this->Emission1D[i]		= Other.Emission1D[i];
-		}
+			this->VolumeProperties[i] = Other.VolumeProperties[i];
 
 		this->Camera				= Other.Camera;
 		this->RenderSettings		= Other.RenderSettings;
@@ -95,19 +79,15 @@ public:
 		return *this;
 	}
 
-	ScalarTransferFunction1D	Opacity1D[MAX_NO_VOLUMES];
-	ColorTransferFunction1D		Diffuse1D[MAX_NO_VOLUMES];
-	ColorTransferFunction1D		Specular1D[MAX_NO_VOLUMES];
-	ScalarTransferFunction1D	Glossiness1D[MAX_NO_VOLUMES];
-	ColorTransferFunction1D		Emission1D[MAX_NO_VOLUMES];
-	Camera						Camera;
-	RenderSettings				RenderSettings;
-	Indices						VolumeIDs;
-	Indices						LightIDs;
-	Indices						ObjectIDs;
-	Indices						ClippingObjectIDs;
-	FrameBuffer					FrameBuffer;
-	int							NoEstimates;
+	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
+	Camera			Camera;
+	RenderSettings	RenderSettings;
+	Indices			VolumeIDs;
+	Indices			LightIDs;
+	Indices			ObjectIDs;
+	Indices			ClippingObjectIDs;
+	FrameBuffer		FrameBuffer;
+	int				NoEstimates;
 };
 
 }

@@ -84,18 +84,21 @@ public:
 		{
 			case Enums::Volume:
 			{
-				this->Le = gpTracer->Emission1D[VolumeID].Evaluate(this->Intensity);
+				VolumeProperty& VolumeProperty = gpTracer->VolumeProperties[VolumeID];
 
-				const ColorXYZf Diffuse		= gpTracer->Diffuse1D[VolumeID].Evaluate(this->Intensity);
-				const ColorXYZf Specular	= gpTracer->Specular1D[VolumeID].Evaluate(this->Intensity);
-				const float Glossiness		= gpTracer->Glossiness1D[VolumeID].Evaluate(this->Intensity);
+				this->Le = VolumeProperty.Emission1D.Evaluate(this->Intensity);
+
+				const ColorXYZf Diffuse			= VolumeProperty.Diffuse1D.Evaluate(this->Intensity);
+				const ColorXYZf Specular		= VolumeProperty.Specular1D.Evaluate(this->Intensity);
+				const float Glossiness			= VolumeProperty.Glossiness1D.Evaluate(this->Intensity);
+				const float IndexOfReflection	= VolumeProperty.IndexOfReflection1D.Evaluate(this->Intensity);
 
 				switch (gpTracer->RenderSettings.Shading.Type)
 				{
 					case Enums::BrdfOnly:
 					{
 						Shader.Type	= Enums::Brdf;			
-						Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, 15, GlossinessExponent(Glossiness));
+						Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
 
 						break;
 					}
