@@ -117,6 +117,11 @@ public:
 	{
 		*this = Other;
 	}
+	
+	HOST ~Octree()
+	{
+		this->Free();
+	}
 
 	HOST Octree& operator = (const Octree& Other)
 	{
@@ -129,6 +134,7 @@ public:
 	// Device runtime
 	DEVICE unsigned short GetIntensity(const Vec3f& P) const
 	{
+//		RootNode[RootNode[0]]
 		return 0;
 
 //		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;
@@ -145,6 +151,16 @@ public:
 		Nodes.push_back(Root);
 
 		Nodes[0].SubDivide(Voxels, Nodes, 0, Depth, this->MaxDepth);
+
+		this->Free();
+
+		Cuda::Allocate(this->RootNode, Nodes.size());
+		Cuda::MemCopyHostToDevice(&Nodes[0], this->RootNode, Nodes.size()); 
+	}
+
+	HOST void Free()
+	{
+		Cuda::Free(this->RootNode);
 	}
 
 	int				MaxDepth;
