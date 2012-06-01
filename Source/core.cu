@@ -128,6 +128,9 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 {
 	if (gTracers[TracerID].NoEstimates == 0)
 	{
+		gTracers[TracerID].FrameBuffer.Accumulation.Reset();
+		gTracers[TracerID].FrameBuffer.Weight.Reset();
+
 		if (gTracers[TracerID].Camera.FocusMode == Enums::AutoFocus)
 		{
 			float AutoFocusDistance = -1.0f;
@@ -154,7 +157,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
-	FilterFrameEstimate(gTracers[TracerID]);
+//	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 

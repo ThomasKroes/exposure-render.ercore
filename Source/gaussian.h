@@ -13,22 +13,36 @@
 
 #pragma once
 
-#include "vector.h"
+#include "filter.h"
 
 namespace ExposureRender
 {
 
-class Filter
+class GaussianFilter : public Filter
 {
 public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
+	HOST_DEVICE GaussianFilter(const Vec2f& Size = Vec2f(1.0f), const float& Alpha = 1.0f) :
+		Filter(Size),
+		Alpha(Alpha),
+		ExpX(expf(-Alpha * Size[0] * Size[0])),
+		ExpY(expf(-Alpha * Size[1] * Size[1]))
 	{
 	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+	HOST_DEVICE float Evaluate(const float& X, const float& Y) const
+	{
+		return this->Gaussian(X * this->InvSize[0], this->ExpX) * this->Gaussian(Y * this->InvSize[1], this->ExpY);
+	}
+	
+private:
+	float Alpha;
+	float ExpX;
+	float ExpY;
+	
+	HOST_DEVICE float Gaussian(const float& D, const float& ExpV) const
+	{
+		return max(0.0f, expf(-this->Alpha * D * D) - ExpV);
+	}
 };
 
 }

@@ -13,22 +13,23 @@
 
 #pragma once
 
-#include "vector.h"
+#include "filter.h"
 
 namespace ExposureRender
 {
 
-class Filter
+class TriangleFilter : public Filter
 {
 public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
+	HOST_DEVICE TriangleFilter(const Vec2f& Size = Vec2f(2.0f)) :
+		Filter(Size)
 	{
 	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+	HOST_DEVICE float Evaluate(const float& X, const float& Y) const
+	{
+		return max(0.0f, this->Size[0] - fabsf(X)) * max(0.0f, this->Size[1] - fabsf(Y));
+	}
 };
 
 }

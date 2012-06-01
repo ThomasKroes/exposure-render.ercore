@@ -65,7 +65,6 @@ SET(General
 	objects.h
 	clippingobjects.h
 	textures.h
-	filter.h
 	log.h
 	defines.h
 	camera.h
@@ -155,6 +154,16 @@ SET(Bindable
 
 SOURCE_GROUP("Bindable" FILES ${Bindable})
 
+SET(Filter
+	filter.h
+	mitchell.h
+	gaussian.h
+	sinc.h
+	triangle.h
+)
+
+SOURCE_GROUP("Filter" FILES ${Filter})
+
 SET(Cuda
 	singlescattering.cuh
 	estimate.cuh
@@ -172,7 +181,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Cuda} SHARED)
 
 # Use vtk
 IF(NOT VTK_BINARY_DIR)

@@ -13,22 +13,43 @@
 
 #pragma once
 
-#include "vector.h"
-
 namespace ExposureRender
 {
 
-class Filter
+class LanczosSincFilter : public Filter
 {
 public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
+	HOST_DEVICE LanczosSincFilter(const Vec2f& Size = Vec2f(4.0f), const float& Tau = 3.0f) :
+		Filter(Size),
+		Tau(Tau)
 	{
 	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+	HOST_DEVICE float Evaluate(const float& X, const float& Y) const
+	{
+		return Sinc1D(X * this->InvSize[0]) * Sinc1D(Y * this->InvSize[1]);
+	}
+
+
+private:
+	float Tau;
+	
+	HOST_DEVICE float Sinc1D(const float& X) const
+	{
+		float x = fabsf(X);
+
+		if (x < 1e-5)
+			return 1.0f;
+		if (x > 1.0)
+			return 0.0f;
+
+		x *= PI_F;
+
+		const float Sinc		= sinf(x * this->Tau) / (x * this->Tau);
+		const float Lanczos		= sinf(x) / x;
+
+		return Sinc * Lanczos;
+	}
 };
 
 }
