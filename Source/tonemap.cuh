@@ -45,12 +45,42 @@ KERNEL void KrnlToneMap()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy));
+	GaussianFilter Filter;
+//	MitchellFilter Filter;
 
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = RGB[0];//255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[0], gpTracer->Camera.InvGamma);
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = RGB[1];//255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[1], gpTracer->Camera.InvGamma);
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = RGB[2];//255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[2], gpTracer->Camera.InvGamma);
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;//gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[3] * 255.0f;
+	int Range[2][2];
+
+	Range[0][0] = max((int)ceilf(IDx - Filter.Size[0]), 0);
+	Range[0][1] = min((int)floorf(IDx + Filter.Size[0]), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - Filter.Size[1]), 0);
+	Range[1][1] = min((int)floorf(IDy + Filter.Size[1]), gpTracer->FrameBuffer.Resolution[1] - 1);
+
+	ColorRGBf Sum, float SumWeight = 0.0f;
+
+	for (int y = Range[1][0]; y <= Range[1][1]; y++)
+	{
+		for (int x = Range[0][0]; x <= Range[0][1]; x++)
+		{
+			ColorRGBAuc& C = gpTracer->FrameBuffer.DisplayEstimateTemp(x, y);
+			
+			const float Weight = Filter.Evaluate(x - (IDx + 0.5f), y - (IDy + 0.5f));
+
+			Sum[0]		+= Weight * (float)C[0];
+			Sum[1]		+= Weight * (float)C[1];
+			Sum[2]		+= Weight * (float)C[2];
+			SumWeight	+= Weight;
+		}
+	}
+	
+	if (SumWeight > 0.0f)
+	{
+		gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
+		gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
+		gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
+	}
+
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;
+	
 }
 
 void ToneMap(Tracer& Tracer)

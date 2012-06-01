@@ -16,51 +16,55 @@
 #include "color.h"
 #include "filter.h"
 #include "tracer.h"
+#include "mitchell.h"
+#include "gaussian.h"
+#include "sinc.h"
+#include "triangle.h"
 
 namespace ExposureRender
 {
 
-KERNEL void KrnlFilterFrameEstimate(int KernelRadius, float Sigma)
+KERNEL void KrnlFilterFrameEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
+	GaussianFilter Filter;
+//	MitchellFilter Filter;
+
 	int Range[2][2];
 
-	Range[0][0] = max((int)ceilf(IDx - KernelRadius), 0);
-	Range[0][1] = min((int)floorf(IDx + KernelRadius), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - KernelRadius), 0);
-	Range[1][1] = min((int)floorf(IDy + KernelRadius), gpTracer->FrameBuffer.Resolution[1] - 1);
+	Range[0][0] = max((int)ceilf(IDx - Filter.Size[0]), 0);
+	Range[0][1] = min((int)floorf(IDx + Filter.Size[0]), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - Filter.Size[1]), 0);
+	Range[1][1] = min((int)floorf(IDy + Filter.Size[1]), gpTracer->FrameBuffer.Resolution[1] - 1);
 
-	ColorXYZAf Sum		= ColorXYZAf::Black();
-	float Weight		= 0.0f;
-	float TotalWeight	= 0.0f;
+	ColorXYZf Sum, float SumWeight = 0.0f;
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y++)
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			Weight		= Gauss2D(Sigma, x - IDx, y - IDy);
-			Sum			+= gpTracer->FrameBuffer.FrameEstimate(x, y) * Weight;
-			TotalWeight	+= Weight;
+			Contribution& C = gpTracer->FrameBuffer.FrameEstimate(x, y);
+			
+			const float Weight = Filter.Evaluate(x - (IDx + 0.5f), y - (IDy + 0.5f));
+
+			Sum			+= Weight * C.L;
+			SumWeight	+= Weight;
 		}
 	}
-
-	Sum[3] = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3];
-
-	if (TotalWeight > 0.0f)
-		gpTracer->FrameBuffer.FrameEstimateTemp(IDx, IDy) = Sum / TotalWeight;
-	else
-		gpTracer->FrameBuffer.FrameEstimateTemp(IDx, IDy) = ColorXYZAf::Black();
+	
+	if (SumWeight > 0.0f)
+	{
+		gpTracer->FrameBuffer.Accumulation(IDx, IDy) += ColorXYZAf(Sum[0] / SumWeight, Sum[1] / SumWeight, Sum[2] / SumWeight, 1.0f);
+	}
+	
+	gpTracer->FrameBuffer.Weight(IDx, IDy) += 1.0f;
 }
 
 void FilterFrameEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterFrameEstimate<<<GridDim, BlockDim>>>(1, 0.9f)), "FilterFrameEstimate");
-
-	Tracer.FrameBuffer.FrameEstimateTemp.Modified();
-
-	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.FrameEstimateTemp;
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterFrameEstimate<<<GridDim, BlockDim>>>()), "FilterFrameEstimate");
 }
 
 }

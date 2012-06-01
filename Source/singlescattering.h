@@ -18,6 +18,11 @@
 #include "transport.h"
 #include "camera.h"
 
+#include "mitchell.h"
+#include "gaussian.h"
+#include "sinc.h"
+#include "triangle.h"
+
 namespace ExposureRender
 {
 
@@ -25,11 +30,11 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 {
 	Vec2f ScreenPoint;
 
-	R.UV[0] = U + CS.FilmUV[0];
-	R.UV[1] = V + CS.FilmUV[1];
+	R.ImageUV[0] = U + CS.FilmUV[0];
+	R.ImageUV[1] = V + CS.FilmUV[1];
 
-	ScreenPoint[0] = Camera.Screen[0][0] + (Camera.InvScreen[0] * R.UV[0]);
-	ScreenPoint[1] = Camera.Screen[1][0] + (Camera.InvScreen[1] * R.UV[1]);
+	ScreenPoint[0] = Camera.Screen[0][0] + (Camera.InvScreen[0] * R.ImageUV[0]);
+	ScreenPoint[1] = Camera.Screen[1][0] + (Camera.InvScreen[1] * R.ImageUV[1]);
 
 	R.O		= Camera.Pos;
 	R.D		= Normalize(Camera.N + (ScreenPoint[0] * Camera.U) - (ScreenPoint[1] * Camera.V));
@@ -97,17 +102,19 @@ DEVICE ScatterEvent SampleRay(Ray R, CRNG& RNG)
 	return NearestRS;
 }
 
-DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
+DEVICE Contribution SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 {
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
 
-	ColorXYZf Lv = ColorXYZf::Black();
+	Contribution C;
 
 	MetroSample Sample(RNG);
 
 	Ray R;
 
 	SampleCamera(gpTracer->Camera, R, PixelCoord[0], PixelCoord[1], Sample.CameraSample);
+
+	C.ImageUV = R.ImageUV;
 
 	ColorRGBf RGB;
 
@@ -121,25 +128,27 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		{
 			case Enums::Volume:
 			{
-				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				C.L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 				break;
 			}
 
 			case Enums::Light:
 			{
-				Lv += SE.Le;
+				C.L += SE.Le;
 				break;
 			}
 
 			case Enums::Object:
 			{
-				Lv += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				C.L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 				break;
 			}
 		}
 	}
 
-	return ColorXYZAf(Lv[0], Lv[1], Lv[2], 1.0f);
+	C.Alpha = SE.Valid ? 1.0f : 0.0f;
+	
+	return C;
 }
 
 }

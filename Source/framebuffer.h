@@ -19,22 +19,55 @@
 namespace ExposureRender
 {
 
+class Contribution
+{
+public:
+	HOST_DEVICE Contribution() :
+		L(0.0f),
+		Alpha(0.0f),
+		ImageUV(0.0f, 0.0f)
+	{
+	}
+
+	HOST_DEVICE Contribution(const ColorXYZf& L, const float& Alpha, const Vec2f& ImageUV) :
+		L(L),
+		Alpha(Alpha),
+		ImageUV(ImageUV)
+	{
+	}
+
+	HOST_DEVICE Contribution& operator = (const Contribution& Other)
+	{
+		this->L			= Other.L;
+		this->Alpha		= Other.Alpha;
+		this->ImageUV	= Other.ImageUV;
+
+		return *this;
+	}
+
+	ColorXYZf	L;
+	float		Alpha;
+	Vec2f		ImageUV;
+};
+
 class FrameBuffer
 {
 public:
 	HOST FrameBuffer(void) :
 		Resolution(),
-		FrameEstimate("Frame Estimate XYZA", Enums::Device),
-		FrameEstimateTemp("Temp Frame Estimate XYZA", Enums::Device),
-		RunningEstimateXyza("Running Estimate Xyza", Enums::Device),
-		DisplayEstimate("Display Estimate RGBA", Enums::Device),
-		DisplayEstimateTemp("Temp Display Estimate RGBA", Enums::Device),
-		DisplayEstimateFiltered("Filtered Display Estimate RGBA", Enums::Device),
+		FrameEstimate("Frame Estimate", Enums::Device),
+		FilteredFrameEstimate("Filtered Frame Estimate", Enums::Device),
+		Accumulation("Accumulation", Enums::Device),
+		Weight("Weight", Enums::Device),
+		RunningEstimate("Running Estimate", Enums::Device),
+		DisplayEstimate("Display Estimate", Enums::Device),
+		DisplayEstimateTemp("Temp Display Estimate", Enums::Device),
+		DisplayEstimateFiltered("Filtered Display Estimate", Enums::Device),
 		RandomSeeds1("Random Seeds 1", Enums::Device),
 		RandomSeeds2("Random Seeds 2", Enums::Device),
 		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
 		RandomSeedsCopy2("Random Seeds 2 Copy", Enums::Device),
-		HostDisplayEstimate("Display Estimate RGBA", Enums::Host)
+		HostDisplayEstimate("Display Estimate", Enums::Host)
 	{
 	}
 
@@ -46,8 +79,10 @@ public:
 		this->Resolution = Resolution;
 
 		this->FrameEstimate.Resize(this->Resolution);
-		this->FrameEstimateTemp.Resize(this->Resolution);
-		this->RunningEstimateXyza.Resize(this->Resolution);
+		this->FilteredFrameEstimate.Resize(this->Resolution);
+		this->Accumulation.Resize(this->Resolution);
+		this->Weight.Resize(this->Resolution);
+		this->RunningEstimate.Resize(this->Resolution);
 		this->DisplayEstimate.Resize(this->Resolution);
 		this->DisplayEstimateTemp.Resize(this->Resolution);
 		this->DisplayEstimateFiltered.Resize(this->Resolution);
@@ -60,9 +95,11 @@ public:
 	}
 
 	Vec2i					Resolution;
-	Buffer2D<ColorXYZAf>	FrameEstimate;
-	Buffer2D<ColorXYZAf>	FrameEstimateTemp;
-	Buffer2D<ColorXYZAf>	RunningEstimateXyza;
+	Buffer2D<Contribution>	FrameEstimate;
+	Buffer2D<ColorXYZAf>	FilteredFrameEstimate;
+	Buffer2D<ColorXYZAf>	Accumulation;
+	Buffer2D<float>			Weight;
+	Buffer2D<ColorXYZAf>	RunningEstimate;
 	Buffer2D<ColorRGBAuc>	DisplayEstimate;
 	Buffer2D<ColorRGBAuc>	DisplayEstimateTemp;
 	Buffer2D<ColorRGBAuc>	DisplayEstimateFiltered;

@@ -31,11 +31,11 @@ public:
 
 	HOST_DEVICE Ray& operator = (const Ray& Other)
 	{
-		this->O		= Other.O;
-		this->D		= Other.D;
-		this->MinT	= Other.MinT;
-		this->MaxT	= Other.MaxT;
-		this->UV	= Other.UV;
+		this->O			= Other.O;
+		this->D			= Other.D;
+		this->MinT		= Other.MinT;
+		this->MaxT		= Other.MaxT;
+		this->ImageUV	= Other.ImageUV;
 
 		return *this;
 	}
@@ -49,7 +49,7 @@ public:
 	Vec3f 	D;
 	float	MinT;
 	float	MaxT;
-	Vec2f	UV;
+	Vec2f	ImageUV;
 };
 
 }

@@ -13,22 +13,47 @@
 
 #pragma once
 
-#include "vector.h"
+#include "filter.h"
 
 namespace ExposureRender
 {
 
-class Filter
+class MitchellFilter : public Filter
 {
 public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
+	HOST_DEVICE MitchellFilter(const float& B = 1.0f / 3.0f, const float& C = 1.0f / 3.0f, const Vec2f& Size = Vec2f(1.0f)) :
+		Filter(Size),
+		B(B),
+		C(C)
 	{
 	}
+
+	HOST_DEVICE float MitchellFilter::Evaluate(const float& X, const float& Y) const
+	{
+		return Mitchell1D(X * this->InvSize[0]) * Mitchell1D(Y * this->InvSize[1]);
+	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+private:
+	HOST_DEVICE float Mitchell1D(const float& v) const
+	{
+		float av = ::fabsf(v);
+        if (av > 1.0f)
+        {
+            return ((-this->B - this->C * 6.0f) * av * av * av +
+                    (this->B * 6.0f + this->C * 30.0f) * av * av +
+                    (this->B * -12.0f - this->C * 48.0f) * av +
+                    this->B * 8.0f + this->C * 24.0f) / 6.0f;
+        }
+        else
+        {
+            return ((12.0f - this->B * 9.0f - this->C * 6.0f) * av * av * av +
+                    (this->B * 12.0f + this->C * 6.0f - 18.0f) * av * av +
+                    6.0f - this->B * 2.0f) / 6.0f;
+        }
+	}
+	
+	const float B;
+	const float C;
 };
 
 }
