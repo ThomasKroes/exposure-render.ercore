@@ -28,22 +28,6 @@ HOST_DEVICE bool IsBlack()					\
 	return true;							\
 }
 
-#define LUMINANCE							\
-HOST_DEVICE float Y() const					\
-{											\
-	float Weight[3] =						\
-	{										\
-		0.212671f, 0.715160f, 0.072169f		\
-	};										\
-											\
-	float L = 0.0f;							\
-											\
-	for (int i = 0; i < 3; i++)				\
-		L += Weight[i] * this->D[i];		\
-											\
-	return L;								\
-}
-
 class ColorRGBf;
 class ColorXYZf;
 class ColorRGBuc;
@@ -79,12 +63,26 @@ public:
 	MIN_MAX(ColorXYZf, float, 3)
 	CLAMP(ColorXYZf, float, 3)
 	IS_BLACK(3)
-	LUMINANCE
 
 	static inline HOST_DEVICE ColorXYZf FromRGBf(const ColorRGBf& RGB);
 	static inline HOST_DEVICE ColorXYZf FromRGBuc(const ColorRGBuc& RGB);
 	static inline HOST_DEVICE ColorXYZf FromRGBAuc(const ColorRGBAuc& RGB);
 	static inline HOST_DEVICE ColorXYZf Black() { return ColorXYZf(); }
+
+	HOST_DEVICE float Y() const
+	{
+		float Weight[3] =
+		{
+			0.212671f, 0.715160f, 0.072169f
+		};
+		
+		float L = 0.0f;
+		
+		for (int i = 0; i < 3; i++)
+			L += Weight[i] * this->D[i];
+		
+		return L;
+	}
 
 	DATA(float, 3)
 };
@@ -101,6 +99,11 @@ public:
 
 	static inline HOST_DEVICE ColorRGBuc FromXYZf(const ColorXYZf& XYZ);
 	static inline HOST_DEVICE ColorRGBuc Black() { return ColorRGBuc(); }
+	
+	HOST_DEVICE float Luminance() const
+	{
+		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
+	}
 
 	DATA(unsigned char, 3)
 };
@@ -117,6 +120,11 @@ public:
 
 	static inline HOST_DEVICE ColorRGBAuc FromXYZf(const ColorXYZf& XYZ);
 	static inline HOST_DEVICE ColorRGBAuc Black() { return ColorRGBAuc(); }
+
+	HOST_DEVICE float Luminance() const
+	{
+		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
+	}
 
 	DATA(unsigned char, 4)
 };
@@ -217,6 +225,8 @@ HOST_DEVICE ColorRGBAuc ColorRGBAuc::FromXYZf(const ColorXYZf& XYZ)
 
 static inline HOST_DEVICE ColorRGBf operator * (ColorRGBf& RGB, const float& F)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
 static inline HOST_DEVICE ColorRGBf operator * (const float& F, ColorRGBf& RGB)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
+
+// static inline HOST_DEVICE ColorRGBf operator * (ColorRGBf& RGB, const float& F)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
 
 static inline HOST_DEVICE ColorRGBf Lerp(const float& LerpC, const ColorRGBf& A, const ColorRGBf& B)			{ return LerpC * (B - A);						};
 

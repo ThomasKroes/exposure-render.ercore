@@ -39,7 +39,7 @@ namespace ExposureRender
 	#define DEVICE_NI					DEVICE __noinline__
 	#define HOST_DEVICE					HOST DEVICE 
 	#define HOST_DEVICE_NI				HOST_DEVICE __noinline__
-	#define CD							__device__ __constant__
+	#define CONSTANT_DEVICE				__constant__ __device__
 #else
 	#define KERNEL
 	#define HOST

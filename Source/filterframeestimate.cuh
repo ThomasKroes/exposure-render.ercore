@@ -28,7 +28,7 @@ KERNEL void KrnlFilterFrameEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	GaussianFilter Filter(Vec2f(1.0f), 0.5f);
+	GaussianFilter Filter;
 
 	int Range[2][2];
 
@@ -37,7 +37,8 @@ KERNEL void KrnlFilterFrameEstimate()
 	Range[1][0] = max((int)ceilf(IDy - Filter.Size[1]), 0);
 	Range[1][1] = min((int)floorf(IDy + Filter.Size[1]), gpTracer->FrameBuffer.Resolution[1] - 1);
 
-	ColorXYZf Sum, float SumWeight = 0.0f;
+	ColorXYZf Sum;
+	float SumWeight = 0.0f;
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y++)
 	{

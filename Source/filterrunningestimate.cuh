@@ -20,11 +20,10 @@
 namespace ExposureRender
 {
 
-KERNEL void KrnlFilterRunningEstimate()
+KERNEL void KrnlGaussianFilterRunningEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
-	
-		/*
+		
 	GaussianFilter Filter;
 
 	int Range[2][2];
@@ -34,7 +33,8 @@ KERNEL void KrnlFilterRunningEstimate()
 	Range[1][0] = max((int)ceilf(IDy - Filter.Size[1]), 0);
 	Range[1][1] = min((int)floorf(IDy + Filter.Size[1]), gpTracer->FrameBuffer.Resolution[1] - 1);
 
-	ColorRGBf Sum, float SumWeight = 0.0f;
+	ColorRGBAuc Sum;
+	float SumWeight = 0.0f;
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y++)
 	{
@@ -53,25 +53,12 @@ KERNEL void KrnlFilterRunningEstimate()
 	
 	if (SumWeight > 0.0f)
 	{
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy) = Sum / SumWeight;
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[3] = 255;
 	}
-	*/
 }
 
-DEVICE inline ColorRGBf ToColorRGBf(ColorRGBAuc Color)
-{
-	return ColorRGBf(Color[0], Color[1], Color[2]);
-}
-
-DEVICE inline float LuminanceFromRGB(ColorRGBf& RGB)
-{
-	return 0.3f * RGB[0] + 0.59f * RGB[1]+ 0.11f * RGB[2];
-}
-
-KERNEL void KrnlBilateralRunningEstimate()
+KERNEL void KrnlBilateralFilterRunningEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
@@ -82,32 +69,29 @@ KERNEL void KrnlBilateralRunningEstimate()
 	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
 	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
 	
-	ColorRGBf Sum, float SumWeight = 0.0f;
+	ColorRGBAuc Sum, float SumWeight = 0.0f;
 
-	ColorRGBf CenterColor = ToColorRGBf(gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy));
+	const ColorRGBAuc CenterColor = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy);
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y++)
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			ColorRGBf KernelPosColor = ToColorRGBf(gpTracer->FrameBuffer.TempDisplayEstimate(x, y));
+			const ColorRGBAuc KernelPosColor = gpTracer->FrameBuffer.DisplayEstimate(x, y);
 
 			const float SpatialWeight		= Gauss2D(Radius, x - IDx, y - IDy);
-			const float GaussianSimilarity	= Gauss2D(0.05f, (LuminanceFromRGB(KernelPosColor) - LuminanceFromRGB(CenterColor)) / 255.0f, 0.0f);
+			const float GaussianSimilarity	= Gauss2D(0.05f, (float)(KernelPosColor.Luminance() - CenterColor.Luminance()) / 255.0f, 0.0f);
 			
 			const float Weight = SpatialWeight * GaussianSimilarity;
 
-			SumWeight += Weight;
-			
-			Sum += KernelPosColor * Weight;
+			Sum[0]		+= Weight * (float)KernelPosColor[0];
+			SumWeight	+= Weight;
 		}
 	}
 	
 	if (SumWeight > 0.0f)
 	{
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy) = Sum / SumWeight;
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[3] = 255;
 	}
 }
@@ -115,8 +99,16 @@ KERNEL void KrnlBilateralRunningEstimate()
 void FilterRunningEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Filter running estimate");
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlBilateralRunningEstimate<<<GridDim, BlockDim>>>()), "Bilateral filter running estimate");
+	
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Filter running estimate");
+	
+	Tracer.FrameBuffer.TempDisplayEstimate.Modified();
+	Tracer.FrameBuffer.DisplayEstimate = Tracer.FrameBuffer.TempDisplayEstimate;
+
+//	LAUNCH_CUDA_KERNEL_TIMED((KrnlBilateralFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Bilateral filter running estimate");
+	
+//	Tracer.FrameBuffer.TempDisplayEstimate.Modified();
+//	Tracer.FrameBuffer.DisplayEstimate = Tracer.FrameBuffer.TempDisplayEstimate;
 }
 
 }
