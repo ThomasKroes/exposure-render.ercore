@@ -13,23 +13,46 @@
 
 #pragma once
 
-#include "macros.cuh"
-#include "singlescattering.h"
+#include "vtkErStable.h"
+#include "vtkErVolumeProperty.h"
 
-namespace ExposureRender
+vtkStandardNewMacro(vtkErVolumeProperty);
+vtkCxxRevisionMacro(vtkErVolumeProperty, "$Revision: 1.0 $");
+
+vtkErVolumeProperty::vtkErVolumeProperty()
 {
+	this->Opacity				= vtkPiecewiseFunction::New();
+	this->Diffuse				= vtkColorTransferFunction::New();
+	this->Specular				= vtkColorTransferFunction::New();
+	this->Glossiness			= vtkPiecewiseFunction::New();
+	this->IndexOfReflection		= vtkPiecewiseFunction::New();
+	this->Emission				= vtkColorTransferFunction::New();
+	this->G						= vtkPiecewiseFunction::New();
 
-KERNEL void KrnlSingleScattering()
-{
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+	double Min = 0, Max = 2048;
 
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = SingleScattering(gpTracer, Vec2i(IDx, IDy));
-}
+	Opacity->AddPoint(Min, 0);
+	Opacity->AddPoint(Max, 1);
+	Diffuse->AddRGBPoint(Min, 1, 1, 1);
+	Diffuse->AddRGBPoint(Max, 1, 1, 1);
+	Specular->AddRGBPoint(Min, 0, 0, 0);
+	Specular->AddRGBPoint(Max, 0, 0, 0);
+	Glossiness->AddPoint(Min, 1);
+	Glossiness->AddPoint(Max, 1);
+	IndexOfReflection->AddPoint(Min, 15);
+	IndexOfReflection->AddPoint(Max, 15);
+	Emission->AddRGBPoint(Min, 0, 0, 0);
+	Emission->AddRGBPoint(Max, 0, 0, 0);
+	G->AddPoint(Min, 0, 0, 0);
+	G->AddPoint(Max, 0, 0, 0);
 
-void SingleScattering(Tracer& Tracer)
-{
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlSingleScattering<<<GridDim, BlockDim>>>()), "Single scattering"); 
-}
-
+	this->SetStepFactorPrimary(3.0f);
+	this->SetStepFactorShadow(3.0f);
+	this->SetShadows(true);
+	this->SetShadingMode(Enums::PhaseFunctionOnly);
+	this->SetDensityScale(10.0f);
+	this->SetOpacityModulated(true);
+	this->SetGradientMode(Enums::CentralDifferences);
+	this->SetGradientThreshold(0.5f);
+	this->SetGradientFactor(1.0f);
 }

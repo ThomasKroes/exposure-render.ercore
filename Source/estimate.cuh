@@ -23,15 +23,14 @@ KERNEL void KrnlComputeEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0], gpTracer->NoEstimates);
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1], gpTracer->NoEstimates);
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2], gpTracer->NoEstimates);
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[3] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[3], gpTracer->FrameBuffer.Alpha(IDx, IDy), gpTracer->NoEstimates);
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0], gpTracer->NoEstimates + 1);
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1], gpTracer->NoEstimates + 1);
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2], gpTracer->NoEstimates + 1);
 }
 
 void ComputeEstimate(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 8, 8, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlComputeEstimate<<<GridDim, BlockDim>>>()), "Compute estimate");
 }
 
