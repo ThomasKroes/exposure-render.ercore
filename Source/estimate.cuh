@@ -19,46 +19,20 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE ColorRGBuc ToneMap2(const ColorXYZAf& XYZA)
-{
-	ColorRGBf RGBf = ColorRGBf::FromXYZAf(XYZA);
-
-	RGBf[0] = 1.0f - expf(-(RGBf[0] / gpTracer->Camera.Exposure));
-	RGBf[1] = 1.0f - expf(-(RGBf[1] / gpTracer->Camera.Exposure));
-	RGBf[2] = 1.0f - expf(-(RGBf[2] / gpTracer->Camera.Exposure));
-
-	RGBf.Clamp(0.0f, 1.0f);
-
-	ColorRGBuc RGBuc;
-
-	RGBuc[0] = (unsigned char)(255.0f * powf(RGBf[0], gpTracer->Camera.InvGamma));
-	RGBuc[1] = (unsigned char)(255.0f * powf(RGBf[1], gpTracer->Camera.InvGamma));
-	RGBuc[2] = (unsigned char)(255.0f * powf(RGBf[2], gpTracer->Camera.InvGamma));
-
-	return RGBuc;
-}
-
-
 KERNEL void KrnlComputeEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy) = gpTracer->FrameBuffer.Accumulation(IDx, IDy) / gpTracer->FrameBuffer.Weight(IDx, IDy);
-
-	const ColorRGBuc RGB = ToneMap2(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy));
-
-	gpTracer->FrameBuffer.DisplayEstimateTemp(IDx, IDy)[0] = RGB[0];//255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[0], gpTracer->Camera.InvGamma);
-	gpTracer->FrameBuffer.DisplayEstimateTemp(IDx, IDy)[1] = RGB[1];//255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[1], gpTracer->Camera.InvGamma);
-	gpTracer->FrameBuffer.DisplayEstimateTemp(IDx, IDy)[2] = RGB[2];//255.0f * powf(gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[2], gpTracer->Camera.InvGamma);
-	gpTracer->FrameBuffer.DisplayEstimateTemp(IDx, IDy)[3] = 255;//gpTracer->FrameBuffer.RunningEstimateXyza(IDx, IDy)[3] * 255.0f;
-
-	
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0], gpTracer->NoEstimates);
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1], gpTracer->NoEstimates);
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2], gpTracer->NoEstimates);
+	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[3] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[3], gpTracer->FrameBuffer.Alpha(IDx, IDy), gpTracer->NoEstimates);
 }
 
 void ComputeEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlComputeEstimate<<<GridDim, BlockDim>>>()), "Compute running estimate");
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlComputeEstimate<<<GridDim, BlockDim>>>()), "Compute estimate");
 }
 
 }

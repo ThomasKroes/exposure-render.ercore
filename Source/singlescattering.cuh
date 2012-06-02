@@ -23,13 +23,7 @@ KERNEL void KrnlSingleScattering()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-//	SingleScattering(gpTracer, Vec2i(IDx, IDy));
-//	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = SingleScattering(gpTracer, Vec2i(IDx, IDy));
-
-	ColorXYZf L = SingleScattering(gpTracer, Vec2i(IDx, IDy)).L;
-
-	gpTracer->FrameBuffer.Accumulation(IDx, IDy) += ColorXYZAf(L[0], L[1], L[2], 1.0f);
-	gpTracer->FrameBuffer.Weight(IDx, IDy) += 1.0f;
+	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = SingleScattering(gpTracer, Vec2i(IDx, IDy));
 }
 
 void SingleScattering(Tracer& Tracer)

@@ -28,8 +28,7 @@ KERNEL void KrnlFilterFrameEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	GaussianFilter Filter;
-//	MitchellFilter Filter;
+	GaussianFilter Filter(Vec2f(1.0f), 0.5f);
 
 	int Range[2][2];
 
@@ -44,27 +43,24 @@ KERNEL void KrnlFilterFrameEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			Contribution& C = gpTracer->FrameBuffer.FrameEstimate(x, y);
-			
 			const float Weight = Filter.Evaluate(x - (IDx + 0.5f), y - (IDy + 0.5f));
 
-			Sum			+= Weight * C.L;
+			Sum			+= Weight * gpTracer->FrameBuffer.FrameEstimate(x, y);
 			SumWeight	+= Weight;
 		}
 	}
 	
 	if (SumWeight > 0.0f)
-	{
-		gpTracer->FrameBuffer.Accumulation(IDx, IDy) += ColorXYZAf(Sum[0] / SumWeight, Sum[1] / SumWeight, Sum[2] / SumWeight, 1.0f);
-	}
-	
-	gpTracer->FrameBuffer.Weight(IDx, IDy) += 1.0f;
+		gpTracer->FrameBuffer.TempFrameEstimate(IDx, IDy) = Sum / SumWeight;
 }
 
 void FilterFrameEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterFrameEstimate<<<GridDim, BlockDim>>>()), "FilterFrameEstimate");
+
+	Tracer.FrameBuffer.TempFrameEstimate.Modified();
+	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.TempFrameEstimate;
 }
 
 }
