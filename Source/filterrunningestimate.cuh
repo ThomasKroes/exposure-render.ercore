@@ -23,7 +23,8 @@ namespace ExposureRender
 KERNEL void KrnlFilterRunningEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
-
+	
+		/*
 	GaussianFilter Filter;
 
 	int Range[2][2];
@@ -57,6 +58,7 @@ KERNEL void KrnlFilterRunningEstimate()
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[3] = 255;
 	}
+	*/
 }
 
 DEVICE inline ColorRGBf ToColorRGBf(ColorRGBAuc Color)
@@ -103,10 +105,10 @@ KERNEL void KrnlBilateralRunningEstimate()
 	
 	if (SumWeight > 0.0f)
 	{
-		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
-		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
-		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
-		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[3] = 255;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[3] = 255;
 	}
 }
 

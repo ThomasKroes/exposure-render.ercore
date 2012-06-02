@@ -13,27 +13,28 @@
 
 #pragma once
 
-#include "tonemap.h"
+#include "geometry.h"
 
 namespace ExposureRender
 {
 
-KERNEL void KrnlToneMap()
+HOST_DEVICE ColorRGBuc ToneMap(const ColorXYZf& XYZ)
 {
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+	ColorRGBf RGBf = ColorRGBf::FromXYZf(XYZ);
 
-	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy));
- 
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = RGB[0];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = RGB[1];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = RGB[2];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;
-}
+	RGBf[0] = 1.0f - expf(-(RGBf[0] / gpTracer->Camera.Exposure));
+	RGBf[1] = 1.0f - expf(-(RGBf[1] / gpTracer->Camera.Exposure));
+	RGBf[2] = 1.0f - expf(-(RGBf[2] / gpTracer->Camera.Exposure));
 
-void ToneMap(Tracer& Tracer)
-{
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlToneMap<<<GridDim, BlockDim>>>()), "Tone map");
+	RGBf.Clamp(0.0f, 1.0f);
+
+	ColorRGBuc RGBuc;
+
+	RGBuc[0] = (unsigned char)(255.0f * powf(RGBf[0], gpTracer->Camera.InvGamma));
+	RGBuc[1] = (unsigned char)(255.0f * powf(RGBf[1], gpTracer->Camera.InvGamma));
+	RGBuc[2] = (unsigned char)(255.0f * powf(RGBf[2], gpTracer->Camera.InvGamma));
+
+	return RGBuc;
 }
 
 }

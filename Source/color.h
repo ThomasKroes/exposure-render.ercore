@@ -18,7 +18,6 @@
 namespace ExposureRender
 {
 
-
 #define IS_BLACK(size)						\
 HOST_DEVICE bool IsBlack()					\
 {											\
@@ -47,7 +46,6 @@ HOST_DEVICE float Y() const					\
 
 class ColorRGBf;
 class ColorXYZf;
-class ColorXYZAf;
 class ColorRGBuc;
 class ColorRGBAuc;
 
@@ -62,23 +60,14 @@ public:
 	IS_BLACK(3)
 
 	static inline HOST_DEVICE ColorRGBf FromXYZf(const ColorXYZf& XYZ);
-	static inline HOST_DEVICE ColorRGBf FromXYZAf(const ColorXYZAf& XYZA);
 	static inline HOST_DEVICE ColorRGBf Black() { return ColorRGBf(); }
 
+	HOST_DEVICE float Luminance() const
+	{
+		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
+	}
+
 	DATA(float, 3)
-};
-
-class EXPOSURE_RENDER_DLL ColorRGBAf
-{
-public:
-	CONSTRUCTORS(ColorRGBAf, float, 4)
-	VEC3_CONSTRUCTOR(ColorRGBAf, float)
-	ALL_OPERATORS(ColorRGBAf, float, 4)
-	MIN_MAX(ColorRGBAf, float, 4)
-	CLAMP(ColorRGBAf, float, 4)
-	IS_BLACK(3)
-
-	DATA(float, 4)
 };
 
 class EXPOSURE_RENDER_DLL ColorXYZf
@@ -98,23 +87,6 @@ public:
 	static inline HOST_DEVICE ColorXYZf Black() { return ColorXYZf(); }
 
 	DATA(float, 3)
-};
-
-class EXPOSURE_RENDER_DLL ColorXYZAf
-{
-public:
-	CONSTRUCTORS(ColorXYZAf, float, 4)
-	VEC4_CONSTRUCTOR(ColorXYZAf, float)
-	ALL_OPERATORS(ColorXYZAf, float, 4)
-	MIN_MAX(ColorXYZAf, float, 4)
-	CLAMP(ColorXYZAf, float, 4)
-	IS_BLACK(4)
-	LUMINANCE
-	
-	static inline HOST_DEVICE ColorXYZAf FromRGBf(const ColorRGBf& RGB);
-	static inline HOST_DEVICE ColorXYZAf Black() { return ColorXYZAf(); }
-
-	DATA(float, 4)
 };
 
 class EXPOSURE_RENDER_DLL ColorRGBuc
@@ -156,17 +128,6 @@ HOST_DEVICE ColorRGBf ColorRGBf::FromXYZf(const ColorXYZf& XYZ)
 	Result[0] =  3.240479f * XYZ[0] - 1.537150f * XYZ[1] - 0.498535f * XYZ[2];
 	Result[1] = -0.969256f * XYZ[0] + 1.875991f * XYZ[1] + 0.041556f * XYZ[2];
 	Result[2] =  0.055648f * XYZ[0] - 0.204043f * XYZ[1] + 1.057311f * XYZ[2];
-
-	return Result;
-};
-
-HOST_DEVICE ColorRGBf ColorRGBf::FromXYZAf(const ColorXYZAf& XYZA)
-{
-	ColorRGBf Result;
-
-	Result[0] =  3.240479f * XYZA[0] - 1.537150f * XYZA[1] - 0.498535f * XYZA[2];
-	Result[1] = -0.969256f * XYZA[0] + 1.875991f * XYZA[1] + 0.041556f * XYZA[2];
-	Result[2] =  0.055648f * XYZA[0] - 0.204043f * XYZA[1] + 1.057311f * XYZA[2];
 
 	return Result;
 };
@@ -218,17 +179,6 @@ HOST_DEVICE ColorXYZf ColorXYZf::FromRGBAuc(const ColorRGBAuc& RGBA)
 	return Result;
 };
 
-HOST_DEVICE ColorXYZAf ColorXYZAf::FromRGBf(const ColorRGBf& RGB)
-{
-	ColorXYZAf Result;
-
-	Result[0] = 0.412453f * RGB[0] + 0.357580f * RGB[1] + 0.180423f * RGB[2];
-	Result[1] = 0.212671f * RGB[0] + 0.715160f * RGB[1] + 0.072169f * RGB[2];
-	Result[2] = 0.019334f * RGB[0] + 0.119193f * RGB[1] + 0.950227f * RGB[2];
-
-	return Result;
-};
-
 HOST_DEVICE ColorRGBuc ColorRGBuc::FromXYZf(const ColorXYZf& XYZ)
 {
 	ColorRGBuc Result;
@@ -274,18 +224,6 @@ static inline HOST_DEVICE ColorXYZf operator * (ColorXYZf& XYZ, const float& F)	
 static inline HOST_DEVICE ColorXYZf operator * (const float& F, ColorXYZf& XYZ)									{ return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F); };
 
 static inline HOST_DEVICE ColorXYZf Lerp(const float& LerpC, const ColorXYZf& A, const ColorXYZf& B)			{ return LerpC * (B - A);						};
-
-static inline HOST_DEVICE ColorXYZAf operator * (ColorXYZAf& XYZA, const float& F)
-{
-	return ColorXYZAf(XYZA[0] * F, XYZA[1] * F, XYZA[2] * F, XYZA[3] * F);
-};
-
-static inline HOST_DEVICE ColorXYZAf operator * (const float& F, ColorXYZAf& XYZA)
-{
-	return ColorXYZAf(XYZA[0] * F, XYZA[1] * F, XYZA[2] * F, XYZA[3] * F);
-};
-
-static inline HOST_DEVICE ColorXYZAf Lerp(const float& LerpC, const ColorXYZAf& A, const ColorXYZAf& B)			{ return LerpC * (B - A);						};
 
 static inline HOST_DEVICE ColorRGBuc operator * (ColorRGBuc& RGB, const unsigned char& UC)						{ return RGB *= UC;								};
 static inline HOST_DEVICE ColorRGBuc operator * (const unsigned char& UC, ColorRGBuc& RGB)						{ return RGB *= UC;								};

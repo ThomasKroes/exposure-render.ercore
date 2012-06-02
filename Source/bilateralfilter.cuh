@@ -13,27 +13,54 @@
 
 #pragma once
 
-#include "tonemap.h"
+#include "color.h"
+#include "filter.h"
+#include "tracer.h"
+#include "mitchell.h"
+#include "gaussian.h"
+#include "sinc.h"
+#include "triangle.h"
 
 namespace ExposureRender
 {
 
-KERNEL void KrnlToneMap()
+KERNEL void KrnlFilterFrameEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy));
- 
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = RGB[0];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = RGB[1];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = RGB[2];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;
+	GaussianFilter Filter(Vec2f(1.0f), 0.5f);
+
+	int Range[2][2];
+
+	Range[0][0] = max((int)ceilf(IDx - Filter.Size[0]), 0);
+	Range[0][1] = min((int)floorf(IDx + Filter.Size[0]), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - Filter.Size[1]), 0);
+	Range[1][1] = min((int)floorf(IDy + Filter.Size[1]), gpTracer->FrameBuffer.Resolution[1] - 1);
+
+	ColorXYZf Sum, float SumWeight = 0.0f;
+
+	for (int y = Range[1][0]; y <= Range[1][1]; y++)
+	{
+		for (int x = Range[0][0]; x <= Range[0][1]; x++)
+		{
+			const float Weight = Filter.Evaluate(x - (IDx + 0.5f), y - (IDy + 0.5f));
+
+			Sum			+= Weight * gpTracer->FrameBuffer.FrameEstimate(x, y);
+			SumWeight	+= Weight;
+		}
+	}
+	
+	if (SumWeight > 0.0f)
+		gpTracer->FrameBuffer.TempFrameEstimate(IDx, IDy) = Sum / SumWeight;
 }
 
-void ToneMap(Tracer& Tracer)
+void FilterFrameEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlToneMap<<<GridDim, BlockDim>>>()), "Tone map");
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterFrameEstimate<<<GridDim, BlockDim>>>()), "FilterFrameEstimate");
+
+	Tracer.FrameBuffer.TempFrameEstimate.Modified();
+	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.TempFrameEstimate;
 }
 
 }

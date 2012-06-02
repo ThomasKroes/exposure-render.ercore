@@ -48,6 +48,7 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
 #include "filterframeestimate.cuh"
+#include "gaussianfilter.cuh"
 #include "estimate.cuh"
 #include "toneMap.cuh"
 #include "filterrunningestimate.cuh"
@@ -155,7 +156,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
-	FilterFrameEstimate(gTracers[TracerID]);
+//	FilterFrameEstimate(gTracers[TracerID]);
+	GaussianFilter(gTracers[TracerID], gTracers[TracerID].FrameBuffer.FrameEstimate, gTracers[TracerID].FrameBuffer.TempFrameEstimate, 1, 0.6f);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 	FilterRunningEstimate(gTracers[TracerID]);
@@ -167,7 +169,7 @@ EXPOSURE_RENDER_DLL void GetRunningEstimate(int TracerID, ColorRGBAuc* pData)
 {
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 
-	Cuda::MemCopyDeviceToHost(FB.FilteredDisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.FilteredDisplayEstimate.GetNoElements());
+	Cuda::MemCopyDeviceToHost(FB.DisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.DisplayEstimate.GetNoElements());
 }
 
 }
