@@ -21,7 +21,7 @@ namespace ExposureRender
 class GaussianFilter : public Filter
 {
 public:
-	HOST_DEVICE GaussianFilter(const Vec2f& Size = Vec2f(1.0f), const float& Alpha = 1.0f) :
+	HOST_DEVICE GaussianFilter(const Vec2f& Size = Vec2f(2.0f), const float& Alpha = 2.0f) :
 		Filter(Size),
 		Alpha(Alpha),
 		ExpX(expf(-Alpha * Size[0] * Size[0])),

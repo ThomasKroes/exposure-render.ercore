@@ -171,8 +171,6 @@ SET(Cuda
 	gradientmagnitude.cuh
 	filterrunningestimate.cuh
 	filterframeestimate.cuh
-	gaussianfilter.cuh
-	bilateralfilter.cuh
 	tonemap.cuh
 	autofocus.cuh
 	list.cuh
