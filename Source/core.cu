@@ -47,10 +47,9 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
-#include "filterframeestimate.cuh"
+#include "filtering.cuh"
 #include "estimate.cuh"
 #include "toneMap.cuh"
-#include "filterrunningestimate.cuh"
 
 namespace ExposureRender
 {
@@ -155,10 +154,11 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
-	FilterFrameEstimate(gTracers[TracerID]);
+	GaussianFilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
-	FilterRunningEstimate(gTracers[TracerID]);
+	GaussianFilterRunningEstimate(gTracers[TracerID]);
+//	BilateralFilterRunningEstimate(gTracers[TracerID]);
 
 	gTracers[TracerID].NoEstimates++;
 }
