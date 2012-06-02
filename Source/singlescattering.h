@@ -102,19 +102,17 @@ DEVICE ScatterEvent SampleRay(Ray R, CRNG& RNG)
 	return NearestRS;
 }
 
-DEVICE Contribution SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
+DEVICE ColorXYZf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 {
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
 
-	Contribution C;
+	ColorXYZf L = ColorXYZf::Black();
 
 	MetroSample Sample(RNG);
 
 	Ray R;
 
 	SampleCamera(gpTracer->Camera, R, PixelCoord[0], PixelCoord[1], Sample.CameraSample);
-
-	C.ImageUV = R.ImageUV;
 
 	ColorRGBf RGB;
 
@@ -128,27 +126,25 @@ DEVICE Contribution SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		{
 			case Enums::Volume:
 			{
-				C.L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 				break;
 			}
 
 			case Enums::Light:
 			{
-				C.L += SE.Le;
+				L += SE.Le;
 				break;
 			}
 
 			case Enums::Object:
 			{
-				C.L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
+				L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 				break;
 			}
 		}
 	}
 
-	C.Alpha = SE.Valid ? 1.0f : 0.0f;
-	
-	return C;
+	return L;
 }
 
 }

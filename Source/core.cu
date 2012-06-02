@@ -50,6 +50,7 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "filterframeestimate.cuh"
 #include "estimate.cuh"
 #include "toneMap.cuh"
+#include "filterrunningestimate.cuh"
 
 namespace ExposureRender
 {
@@ -128,9 +129,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 {
 	if (gTracers[TracerID].NoEstimates == 0)
 	{
-		gTracers[TracerID].FrameBuffer.Accumulation.Reset();
-		gTracers[TracerID].FrameBuffer.Weight.Reset();
-
 		if (gTracers[TracerID].Camera.FocusMode == Enums::AutoFocus)
 		{
 			float AutoFocusDistance = -1.0f;
@@ -157,9 +155,10 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
-//	FilterFrameEstimate(gTracers[TracerID]);
+	FilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
+	FilterRunningEstimate(gTracers[TracerID]);
 
 	gTracers[TracerID].NoEstimates++;
 }
@@ -168,7 +167,7 @@ EXPOSURE_RENDER_DLL void GetRunningEstimate(int TracerID, ColorRGBAuc* pData)
 {
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 
-	Cuda::MemCopyDeviceToHost(FB.DisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.DisplayEstimate.GetNoElements());
+	Cuda::MemCopyDeviceToHost(FB.TempDisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.TempDisplayEstimate.GetNoElements());
 }
 
 }

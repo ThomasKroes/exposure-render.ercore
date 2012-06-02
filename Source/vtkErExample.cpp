@@ -36,7 +36,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[]		= "C://Volumes//engine.mhd";
+char gVolumeFile[]		= "C://Volumes//manix.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -108,7 +108,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
+	VolumeProperty->SetShadingMode(ExposureRender::Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(100);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -193,9 +193,9 @@ void CreateLighting(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErTexture> KeyLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	KeyLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
-	KeyLightTexture->SetProceduralType(ExposureRender::Enums::Uniform);
+	KeyLightTexture->SetProceduralType(ExposureRender::Enums::Checker);
 	KeyLightTexture->SetUniformColor(1, 1, 1);
-	KeyLightTexture->SetCheckerColor1(0,0,0);
+	KeyLightTexture->SetRepeat(3, 3);
 
 	vtkSmartPointer<vtkErTexture> RimLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
@@ -232,7 +232,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 2.1f;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
@@ -241,7 +241,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(60.0f);
 	KeyLight->SetAzimuth(250.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(10000.0f);
+	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());

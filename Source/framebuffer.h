@@ -19,50 +19,19 @@
 namespace ExposureRender
 {
 
-class Contribution
-{
-public:
-	HOST_DEVICE Contribution() :
-		L(0.0f),
-		Alpha(0.0f),
-		ImageUV(0.0f, 0.0f)
-	{
-	}
-
-	HOST_DEVICE Contribution(const ColorXYZf& L, const float& Alpha, const Vec2f& ImageUV) :
-		L(L),
-		Alpha(Alpha),
-		ImageUV(ImageUV)
-	{
-	}
-
-	HOST_DEVICE Contribution& operator = (const Contribution& Other)
-	{
-		this->L			= Other.L;
-		this->Alpha		= Other.Alpha;
-		this->ImageUV	= Other.ImageUV;
-
-		return *this;
-	}
-
-	ColorXYZf	L;
-	float		Alpha;
-	Vec2f		ImageUV;
-};
-
 class FrameBuffer
 {
 public:
 	HOST FrameBuffer(void) :
 		Resolution(),
 		FrameEstimate("Frame Estimate", Enums::Device),
+		TempFrameEstimate("Temp Frame Estimate", Enums::Device),
 		FilteredFrameEstimate("Filtered Frame Estimate", Enums::Device),
-		Accumulation("Accumulation", Enums::Device),
-		Weight("Weight", Enums::Device),
+		Alpha("Alpha", Enums::Device),
 		RunningEstimate("Running Estimate", Enums::Device),
 		DisplayEstimate("Display Estimate", Enums::Device),
-		DisplayEstimateTemp("Temp Display Estimate", Enums::Device),
-		DisplayEstimateFiltered("Filtered Display Estimate", Enums::Device),
+		TempDisplayEstimate("Temp Display Estimate", Enums::Device),
+		FilteredDisplayEstimate("Filtered Display Estimate", Enums::Device),
 		RandomSeeds1("Random Seeds 1", Enums::Device),
 		RandomSeeds2("Random Seeds 2", Enums::Device),
 		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
@@ -79,13 +48,14 @@ public:
 		this->Resolution = Resolution;
 
 		this->FrameEstimate.Resize(this->Resolution);
+		this->TempFrameEstimate.Resize(this->Resolution);
 		this->FilteredFrameEstimate.Resize(this->Resolution);
-		this->Accumulation.Resize(this->Resolution);
-		this->Weight.Resize(this->Resolution);
 		this->RunningEstimate.Resize(this->Resolution);
 		this->DisplayEstimate.Resize(this->Resolution);
-		this->DisplayEstimateTemp.Resize(this->Resolution);
-		this->DisplayEstimateFiltered.Resize(this->Resolution);
+		this->TempDisplayEstimate.Resize(this->Resolution);
+		this->TempDisplayEstimate.Resize(this->Resolution);
+		this->FilteredDisplayEstimate.Resize(this->Resolution);
+		this->Alpha.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
 		this->HostDisplayEstimate.Resize(this->Resolution);
@@ -94,20 +64,20 @@ public:
 		this->RandomSeedsCopy2 = this->RandomSeeds2;
 	}
 
-	Vec2i					Resolution;
-	Buffer2D<Contribution>	FrameEstimate;
-	Buffer2D<ColorXYZAf>	FilteredFrameEstimate;
-	Buffer2D<ColorXYZAf>	Accumulation;
-	Buffer2D<float>			Weight;
-	Buffer2D<ColorXYZAf>	RunningEstimate;
-	Buffer2D<ColorRGBAuc>	DisplayEstimate;
-	Buffer2D<ColorRGBAuc>	DisplayEstimateTemp;
-	Buffer2D<ColorRGBAuc>	DisplayEstimateFiltered;
-	RandomSeedBuffer2D		RandomSeeds1;
-	RandomSeedBuffer2D		RandomSeeds2;
-	RandomSeedBuffer2D		RandomSeedsCopy1;
-	RandomSeedBuffer2D		RandomSeedsCopy2;
-	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
+	Vec2i						Resolution;
+	Buffer2D<ColorXYZf>			FrameEstimate;
+	Buffer2D<ColorXYZf>			TempFrameEstimate;
+	Buffer2D<ColorXYZf>			FilteredFrameEstimate;
+	Buffer2D<float>				Alpha;
+	Buffer2D<ColorXYZAf>		RunningEstimate;
+	Buffer2D<ColorRGBAuc>		DisplayEstimate;
+	Buffer2D<ColorRGBAuc>		TempDisplayEstimate;
+	Buffer2D<ColorRGBAuc>		FilteredDisplayEstimate;
+	RandomSeedBuffer2D			RandomSeeds1;
+	RandomSeedBuffer2D			RandomSeeds2;
+	RandomSeedBuffer2D			RandomSeedsCopy1;
+	RandomSeedBuffer2D			RandomSeedsCopy2;
+	Buffer2D<ColorRGBAuc>		HostDisplayEstimate;
 };
 
 }
