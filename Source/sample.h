@@ -245,7 +245,6 @@ public:
 	{
 		this->LightingSample 	= Other.LightingSample;
 		this->CameraSample		= Other.CameraSample;
-		this->OldL				= Other.OldL;
 
 		return *this;
 	}
@@ -268,7 +267,6 @@ public:
 
 	LightingSample	LightingSample;
 	CameraSample	CameraSample;
-	ColorXYZAf		OldL;
 };
 
 }

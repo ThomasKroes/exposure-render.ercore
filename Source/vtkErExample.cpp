@@ -87,7 +87,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	LoadVolume(Tracer);
 	CreateVolumeProperty(Tracer);
 	CreateLighting(Tracer);
-//	CreateObjects(Tracer);
+	CreateObjects(Tracer);
 	CreateCamera(Renderer);
 
 	Tracer->Update();
@@ -104,7 +104,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 8.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
@@ -113,14 +113,16 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
+	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(100, 0);
+	Opacity->AddPoint(101, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float DiffuseLevel = 0.6f;
+	const float DiffuseLevel = 0.8f;
 
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
@@ -138,8 +140,10 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Glossiness->AddPoint(0, 0.8);
-	Glossiness->AddPoint(2048, 0.8);
+	const float GlossinessLevel = 0.8f;
+
+	Glossiness->AddPoint(0, GlossinessLevel);
+	Glossiness->AddPoint(2048, GlossinessLevel);
 	
 	VolumeProperty->SetGlossiness(Glossiness);
 
@@ -236,7 +240,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 2.1f;
+	const float KeyLightSize = 0.5;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
@@ -245,7 +249,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(60.0f);
 	KeyLight->SetAzimuth(250.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(100.0f);
+	KeyLight->SetMultiplier(1000.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -268,7 +272,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
-	RimLight->SetEnabled(true);
+	RimLight->SetEnabled(false);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());

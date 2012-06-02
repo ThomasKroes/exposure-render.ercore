@@ -101,6 +101,7 @@ SET(General
 	transform.h
 	octree.h
 	volumeproperty.h
+	tonemap.h
 )
 
 SOURCE_GROUP("General" FILES ${General})
@@ -170,6 +171,8 @@ SET(Cuda
 	gradientmagnitude.cuh
 	filterrunningestimate.cuh
 	filterframeestimate.cuh
+	gaussianfilter.cuh
+	bilateralfilter.cuh
 	tonemap.cuh
 	autofocus.cuh
 	list.cuh
