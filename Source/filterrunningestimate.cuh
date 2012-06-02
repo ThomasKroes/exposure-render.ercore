@@ -59,10 +59,62 @@ KERNEL void KrnlFilterRunningEstimate()
 	}
 }
 
+DEVICE inline ColorRGBf ToColorRGBf(ColorRGBAuc Color)
+{
+	return ColorRGBf(Color[0], Color[1], Color[2]);
+}
+
+DEVICE inline float LuminanceFromRGB(ColorRGBf& RGB)
+{
+	return 0.3f * RGB[0] + 0.59f * RGB[1]+ 0.11f * RGB[2];
+}
+
+KERNEL void KrnlBilateralRunningEstimate()
+{
+	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+
+	int Range[2][2], Radius = 2;
+
+	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
+	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
+	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
+	
+	ColorRGBf Sum, float SumWeight = 0.0f;
+
+	ColorRGBf CenterColor = ToColorRGBf(gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy));
+
+	for (int y = Range[1][0]; y <= Range[1][1]; y++)
+	{
+		for (int x = Range[0][0]; x <= Range[0][1]; x++)
+		{
+			ColorRGBf KernelPosColor = ToColorRGBf(gpTracer->FrameBuffer.TempDisplayEstimate(x, y));
+
+			const float SpatialWeight		= Gauss2D(Radius, x - IDx, y - IDy);
+			const float GaussianSimilarity	= Gauss2D(0.05f, (LuminanceFromRGB(KernelPosColor) - LuminanceFromRGB(CenterColor)) / 255.0f, 0.0f);
+			
+			const float Weight = SpatialWeight * GaussianSimilarity;
+
+			SumWeight += Weight;
+			
+			Sum += KernelPosColor * Weight;
+		}
+	}
+	
+	if (SumWeight > 0.0f)
+	{
+		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
+		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
+		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
+		gpTracer->FrameBuffer.FilteredDisplayEstimate(IDx, IDy)[3] = 255;
+	}
+}
+
 void FilterRunningEstimate(Tracer& Tracer)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Filter running estimate");
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlBilateralRunningEstimate<<<GridDim, BlockDim>>>()), "Bilateral filter running estimate");
 }
 
 }
