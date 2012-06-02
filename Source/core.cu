@@ -167,7 +167,7 @@ EXPOSURE_RENDER_DLL void GetRunningEstimate(int TracerID, ColorRGBAuc* pData)
 {
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 
-	Cuda::MemCopyDeviceToHost(FB.TempDisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.TempDisplayEstimate.GetNoElements());
+	Cuda::MemCopyDeviceToHost(FB.FilteredDisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.FilteredDisplayEstimate.GetNoElements());
 }
 
 }

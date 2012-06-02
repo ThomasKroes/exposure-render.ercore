@@ -104,31 +104,35 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 2.0f;
+	const float StepSize = 8.0f;
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
 	VolumeProperty->SetShadingMode(ExposureRender::Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetDensityScale(1000);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(100, 1);
+	Opacity->AddPoint(100, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	Diffuse->AddRGBPoint(0, 1, 1, 1);
-	Diffuse->AddRGBPoint(2048, 1, 1, 1);
+	const float DiffuseLevel = 0.6f;
+
+	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
+	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	Specular->AddRGBPoint(0, 1, 1, 1);
-	Specular->AddRGBPoint(2048, 1, 1, 1);
+	const float SpecularLevel = 0.6f;
+
+	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
+	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
 
 	VolumeProperty->SetSpecular(Specular);
 
@@ -219,7 +223,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
-	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\radissonpano1.jpg");
+	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\cubemap-forest-env.jpg");
 	JpegReader->Update();
 
 	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -241,11 +245,11 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(60.0f);
 	KeyLight->SetAzimuth(250.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(10.0f);
+	KeyLight->SetMultiplier(100.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
-	KeyLight->SetEnabled(false);
+	KeyLight->SetEnabled(true);
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
@@ -263,7 +267,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetMultiplier(20.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
-	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
+	RimLight->SetInputConnection(ImageTexture->GetOutputPort());
 	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
