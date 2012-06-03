@@ -14,15 +14,16 @@
 #pragma once
 
 #include "erlight.h"
+#include "reference.h"
 
 namespace ExposureRender
 {
 
-class Light
+class Light : public Reference
 {
 public:
 	HOST Light() :
-		ID(0),
+		Reference(),
 		Visible(),
 		TextureID(-1),
 		Multiplier(0.0f),
@@ -49,7 +50,6 @@ public:
 		return *this;
 	}
 
-	int						ID;
 	bool					Visible;
 	Shape					Shape;
 	int						TextureID;

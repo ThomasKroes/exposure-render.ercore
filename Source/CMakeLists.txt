@@ -52,7 +52,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 SOURCE_GROUP("Core" FILES ${vtkErCoreSources})
 
 SET(General
-	device.h
 	utilities.h
 	geometry.h
 	transport.h

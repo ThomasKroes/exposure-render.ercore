@@ -15,52 +15,31 @@
 
 #include "erbitmap.h"
 #include "buffer.h"
+#include "reference.h"
 
 namespace ExposureRender
 {
 
-class Bitmap
+class Bitmap : public Reference
 {
 public:
 	HOST Bitmap() :
+		Reference(),
 		Pixels("Device Pixels", Enums::Device)
 	{
-		DebugLog(__FUNCTION__);
 	}
-
-	HOST Bitmap(const Bitmap& Other) :
-		Pixels("Device Pixels", Enums::Device)
-	{
-		DebugLog(__FUNCTION__);
-		*this = Other;
-	}
-		
+	
 	HOST Bitmap(const ErBitmap& Other) :
+		Reference(),
 		Pixels("Device Pixels", Enums::Device)
 	{
-		DebugLog(__FUNCTION__);
 		*this = Other;
-	}
-
-	HOST virtual ~Bitmap(void)
-	{
-		DebugLog(__FUNCTION__);
-	}
-
-	HOST Bitmap& operator = (const Bitmap& Other)
-	{
-		DebugLog(__FUNCTION__);
-
-		this->Pixels = Other.Pixels;
-
-		return *this;
 	}
 
 	HOST Bitmap& operator = (const ErBitmap& Other)
 	{
-		DebugLog(__FUNCTION__);
-
-		this->Pixels = Other.Pixels;
+		this->ID		= Other.ID;
+		this->Pixels	= Other.Pixels;
 
 		return *this;
 	}
