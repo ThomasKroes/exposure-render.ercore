@@ -18,11 +18,15 @@
 namespace ExposureRender
 {
 
-class Light : public ErLight
+class Light
 {
 public:
 	HOST Light() :
-		ErLight()
+		ID(0),
+		Visible(),
+		TextureID(-1),
+		Multiplier(0.0f),
+		EmissionUnit(Enums::Power)
 	{
 	}
 
@@ -33,11 +37,24 @@ public:
 
 	HOST Light& operator = (const ErLight& Other)
 	{
-		ErLight::operator=(Other);
+		this->ID			= Other.ID;
+		this->Visible		= Other.Visible;
+		this->Shape			= Other.Shape;
+		this->TextureID		= Other.TextureID;
+		this->Multiplier	= Other.Multiplier;
+		this->EmissionUnit	= Other.EmissionUnit;
+
 		this->Shape.Update();
 
 		return *this;
 	}
+
+	int						ID;
+	bool					Visible;
+	Shape					Shape;
+	int						TextureID;
+	float					Multiplier;
+	Enums::EmissionUnit		EmissionUnit;
 };
 
 }

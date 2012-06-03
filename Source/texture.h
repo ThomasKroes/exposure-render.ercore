@@ -18,11 +18,17 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Texture : public ErTexture
+class EXPOSURE_RENDER_DLL Texture
 {
 public:
 	HOST Texture() :
-		ErTexture()
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
 	{
 	}
 
@@ -33,10 +39,24 @@ public:
 
 	HOST Texture& operator = (const ErTexture& Other)
 	{
-		ErTexture::operator=(Other);
+		this->Type			= Other.Type;
+		this->OutputLevel	= Other.OutputLevel;
+		this->BitmapID		= Other.BitmapID;
+		this->Procedural	= Other.Procedural;
+		this->Offset		= Other.Offset;
+		this->Repeat		= Other.Repeat;
+		this->Flip			= Other.Flip;
 		
 		return *this;
 	}
+
+	Enums::TextureType	Type;
+	float				OutputLevel;
+	int					BitmapID;
+	Procedural			Procedural;
+	Vec2f				Offset;
+	Vec2f				Repeat;
+	Vec2i				Flip;
 };
 
 }

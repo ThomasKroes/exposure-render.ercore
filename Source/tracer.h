@@ -76,6 +76,34 @@ public:
 		return *this;
 	}
 
+	HOST void UpdateIDs(Indices SourceIDs, Indices& TargetIDs, map<int, int> HashMap)
+	{
+		for (int i = 0; i < SourceIDs.Count; i++)
+			TargetIDs[i] = HashMap[SourceIDs[i]];
+
+		TargetIDs.Count = SourceIDs.Count;
+	}
+
+	HOST void UpdateVolumeIDs(map<int, int> HashMap)
+	{
+		this->UpdateIDs(this->VolumeIDs, this->VolumeIDs, HashMap);
+	}
+
+	HOST void UpdateLightIDs(map<int, int> HashMap)
+	{
+		this->UpdateIDs(this->LightIDs, this->LightIDs, HashMap);
+	}
+
+	HOST void UpdateObjectIDs(map<int, int> HashMap)
+	{
+		this->UpdateIDs(this->ObjectIDs, this->ObjectIDs, HashMap);
+	}
+
+	HOST void UpdateClippingObjectIDs(map<int, int> HashMap)
+	{
+		this->UpdateIDs(this->ClippingObjectIDs, this->ClippingObjectIDs, HashMap);
+	}
+
 	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
 	Camera			Camera;
 	Indices			VolumeIDs;

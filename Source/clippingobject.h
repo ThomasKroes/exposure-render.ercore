@@ -18,11 +18,12 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ClippingObject : public ErClippingObject
+class EXPOSURE_RENDER_DLL ClippingObject
 {
 public:
 	HOST ClippingObject() :
-		ErClippingObject()
+		Shape(),
+		Invert(false)
 	{
 	}
 	
@@ -33,9 +34,14 @@ public:
 
 	HOST ClippingObject& operator = (const ErClippingObject& Other)
 	{
-		ErClippingObject::operator=(Other);
+		this->Shape		= Other.Shape;
+		this->Invert	= Other.Invert;
+
 		return *this;
 	}
+
+	Shape	Shape;
+	bool	Invert;
 };
 
 }

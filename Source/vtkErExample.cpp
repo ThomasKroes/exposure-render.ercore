@@ -114,15 +114,15 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(100, 0);
-	Opacity->AddPoint(101, 1);
+	Opacity->AddPoint(10, 0);
+	Opacity->AddPoint(11, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float DiffuseLevel = 0.5f;
+	const float DiffuseLevel = 0.0f;
 
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
@@ -131,7 +131,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float SpecularLevel = 0.6f;
+	const float SpecularLevel = 1.0f;
 
 	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
 	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
@@ -184,9 +184,9 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(10);
+	Camera->SetExposure(1);
 	Camera->SetApertureShape(ExposureRender::Enums::Polygon);
-	Camera->SetApertureSize(0.0f);
+	Camera->SetApertureSize(0.01f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 
@@ -201,8 +201,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErTexture> KeyLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	KeyLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
-	KeyLightTexture->SetProceduralType(ExposureRender::Enums::Uniform);
-	KeyLightTexture->SetUniformColor(0.9, 0.6, 0.2);
+	KeyLightTexture->SetProceduralType(ExposureRender::Enums::Checker);
 	KeyLightTexture->SetRepeat(3, 3);
 
 	vtkSmartPointer<vtkErTexture> RimLightTexture = vtkSmartPointer<vtkErTexture>::New();
@@ -240,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 0.05;
+	const float KeyLightSize = 5.0;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
@@ -249,7 +248,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(60.0f);
 	KeyLight->SetAzimuth(250.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(100.0f);
+	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());

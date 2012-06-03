@@ -40,7 +40,7 @@ KERNEL void KrnlGaussianFilterFrameEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(0.6f, x - IDx, y - IDy);
+			const float Weight = Gauss2D(0.2f, x - IDx, y - IDy);
 
 			Sum			+= Weight * gpTracer->FrameBuffer.FrameEstimate(x, y);
 			SumWeight	+= Weight;

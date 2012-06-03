@@ -18,11 +18,15 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Object : public ErObject
+class EXPOSURE_RENDER_DLL Object
 {
 public:
 	HOST Object() :
-		ErObject()
+		Shape(),
+		DiffuseTextureID(-1),
+		SpecularTextureID(-1),
+		GlossinessTextureID(-1),
+		Ior(5.0f)
 	{
 	}
 
@@ -33,10 +37,20 @@ public:
 
 	HOST Object& operator = (const ErObject& Other)
 	{
-		ErObject::operator=(Other);
+		this->Shape					= Other.Shape;
+		this->DiffuseTextureID		= Other.DiffuseTextureID;
+		this->SpecularTextureID		= Other.SpecularTextureID;
+		this->GlossinessTextureID	= Other.GlossinessTextureID;
+		this->Ior					= Other.Ior;
 
 		return *this;
 	}
+
+	Shape		Shape;
+	int			DiffuseTextureID;
+	int			SpecularTextureID;
+	int			GlossinessTextureID;
+	float		Ior;
 };
 
 }
