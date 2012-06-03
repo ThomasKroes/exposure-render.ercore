@@ -31,15 +31,9 @@ public:
 		DeviceList(NULL),
 		Counter(0)
 	{
-		DebugLog(__FUNCTION__);
 		sprintf_s(DeviceSymbol, MAX_CHAR_SIZE, "%s", pDeviceSymbol);
 	}
 
-	HOST ~List()
-	{
-		DebugLog(__FUNCTION__);
-	}
-	
 	HOST bool Exists(const int& ID)
 	{
 		if (ID < 0)

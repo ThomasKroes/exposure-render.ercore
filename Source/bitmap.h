@@ -15,7 +15,6 @@
 
 #include "erbitmap.h"
 #include "buffer.h"
-#include "reference.h"
 
 namespace ExposureRender
 {

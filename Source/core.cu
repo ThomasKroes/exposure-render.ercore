@@ -151,15 +151,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		}
 	}
 
-	gTracers[TracerID].UpdateVolumeIDs(gVolumes.HashMap);
-	gTracers[TracerID].UpdateLightIDs(gLights.HashMap);
-	gTracers[TracerID].UpdateObjectIDs(gObjects.HashMap);
-	gTracers[TracerID].UpdateClippingObjectIDs(gClippingObjects.HashMap);
-
 	gTracers.Synchronize(TracerID);
-
-	
-
 
 	if (gTracers[TracerID].VolumeIDs[0] >= 0)
 		gVolumes[gTracers[TracerID].VolumeIDs[0]].Voxels.Bind(TexVolume0);

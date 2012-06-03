@@ -15,6 +15,7 @@
 
 #include "erlight.h"
 #include "reference.h"
+#include "exception.h"
 
 namespace ExposureRender
 {
@@ -41,7 +42,15 @@ public:
 		this->ID			= Other.ID;
 		this->Visible		= Other.Visible;
 		this->Shape			= Other.Shape;
-		this->TextureID		= Other.TextureID;
+		
+		if (Other.TextureID >= 0)
+		{
+			if (gTexturesHashMap.find(Other.TextureID) != gTexturesHashMap.end())
+				this->TextureID = gTexturesHashMap[Other.TextureID];
+			else
+				throw(Exception(Enums::Fatal, "Texture not found!"));
+		}
+
 		this->Multiplier	= Other.Multiplier;
 		this->EmissionUnit	= Other.EmissionUnit;
 

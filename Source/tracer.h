@@ -51,11 +51,47 @@ public:
 		for (int i = 0; i < MAX_NO_VOLUMES; i++)
 			this->VolumeProperties[i] = Other.VolumeProperties[i];
 
-		this->Camera				= Other.Camera;
-		this->VolumeIDs				= Other.VolumeIDs;
-		this->LightIDs				= Other.LightIDs;
-		this->ObjectIDs				= Other.ObjectIDs;
-		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
+		this->Camera = Other.Camera;
+
+		this->VolumeIDs.Count = 0;
+
+		for (int i = 0; i < Other.VolumeIDs.Count; i++)
+		{
+			if (gVolumesHashMap.find(Other.VolumeIDs[i]) != gVolumesHashMap.end())
+				this->VolumeIDs[this->VolumeIDs.Count++] = gVolumesHashMap[Other.VolumeIDs[i]];
+			else
+				throw(Exception(Enums::Fatal, "Volume not found!"));
+		}
+		
+		this->LightIDs.Count = 0;
+
+		for (int i = 0; i < Other.LightIDs.Count; i++)
+		{
+			if (gLightsHashMap.find(Other.LightIDs[i]) != gLightsHashMap.end())
+				this->LightIDs[this->LightIDs.Count++] = gLightsHashMap[Other.LightIDs[i]];
+			else
+				throw(Exception(Enums::Fatal, "Light not found!"));
+		}
+		
+		this->ObjectIDs.Count = 0;
+
+		for (int i = 0; i < Other.ObjectIDs.Count; i++)
+		{
+			if (gObjectsHashMap.find(Other.ObjectIDs[i]) != gObjectsHashMap.end())
+				this->ObjectIDs[this->ObjectIDs.Count++] = gObjectsHashMap[Other.ObjectIDs[i]];
+			else
+				throw(Exception(Enums::Fatal, "Object not found!"));
+		}
+
+		this->ClippingObjectIDs.Count = 0;
+
+		for (int i = 0; i < Other.ClippingObjectIDs.Count; i++)
+		{
+			if (gClippingObjectsHashMap.find(Other.ClippingObjectIDs[i]) != gClippingObjectsHashMap.end())
+				this->ClippingObjectIDs[this->ClippingObjectIDs.Count++] = gClippingObjectsHashMap[Other.ClippingObjectIDs[i]];
+			else
+				throw(Exception(Enums::Fatal, "Clipping object not found!"));
+		}
 
 		this->FrameBuffer.Resize(Other.Camera.FilmSize);
 
@@ -71,34 +107,6 @@ public:
 		}
 
 		return *this;
-	}
-
-	HOST void UpdateIDs(Indices SourceIDs, Indices& TargetIDs, map<int, int> HashMap)
-	{
-		for (int i = 0; i < SourceIDs.Count; i++)
-			TargetIDs[i] = HashMap[SourceIDs[i]];
-
-		TargetIDs.Count = SourceIDs.Count;
-	}
-
-	HOST void UpdateVolumeIDs(map<int, int> HashMap)
-	{
-		this->UpdateIDs(this->VolumeIDs, this->VolumeIDs, HashMap);
-	}
-
-	HOST void UpdateLightIDs(map<int, int> HashMap)
-	{
-		this->UpdateIDs(this->LightIDs, this->LightIDs, HashMap);
-	}
-
-	HOST void UpdateObjectIDs(map<int, int> HashMap)
-	{
-		this->UpdateIDs(this->ObjectIDs, this->ObjectIDs, HashMap);
-	}
-
-	HOST void UpdateClippingObjectIDs(map<int, int> HashMap)
-	{
-		this->UpdateIDs(this->ClippingObjectIDs, this->ClippingObjectIDs, HashMap);
 	}
 
 	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
