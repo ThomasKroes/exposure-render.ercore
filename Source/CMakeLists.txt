@@ -101,7 +101,6 @@ SET(General
 	octree.h
 	volumeproperty.h
 	tonemap.h
-	reference.h
 )
 
 SOURCE_GROUP("General" FILES ${General})

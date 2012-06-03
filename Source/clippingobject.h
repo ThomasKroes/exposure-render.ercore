@@ -14,16 +14,14 @@
 #pragma once
 
 #include "erclippingobject.h"
-#include "reference.h"
 
 namespace ExposureRender
 {
 
-class ClippingObject : public Reference
+class ClippingObject
 {
 public:
 	HOST ClippingObject() :
-		Reference(),
 		Shape(),
 		Invert(false)
 	{
@@ -36,7 +34,6 @@ public:
 
 	HOST ClippingObject& operator = (const ErClippingObject& Other)
 	{
-		this->ID		= Other.ID;
 		this->Shape		= Other.Shape;
 		this->Invert	= Other.Invert;
 

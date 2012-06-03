@@ -19,12 +19,11 @@
 #include "cudatexture3d.h"
 #include "utilities.h"
 #include "transform.h"
-#include "reference.h"
 
 namespace ExposureRender
 {
 
-class Volume : public Reference
+class Volume
 {
 public:
 	HOST Volume() :
@@ -48,7 +47,6 @@ public:
 
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
-		this->ID				= Other.ID;
 		this->Transform			= Other.Alignment.GetTransform();
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;
