@@ -22,7 +22,7 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T>
 {
 public:
-	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
+	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Border) :
 		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
 		Resolution(0)
 	{
@@ -81,7 +81,7 @@ public:
 					break;
 				}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 				case Enums::Device:
 				{
 					Cuda::Free(this->Data);
@@ -113,7 +113,7 @@ public:
 				break;
 			}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 			case Enums::Device:
 			{
 				Cuda::MemSet(this->Data, 0, this->GetNoElements());
@@ -158,7 +158,7 @@ public:
 				break;
 			}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 			case Enums::Device:
 			{
 				Cuda::Allocate(this->Data, this->GetNoElements());
@@ -192,7 +192,7 @@ public:
 						break;
 					}
 				
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 					case Enums::Device:
 					{
 						Cuda::MemCopyDeviceToHost(Data, this->Data, this->GetNoElements());
@@ -204,7 +204,7 @@ public:
 				break;
 			}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 			case Enums::Device:
 			{
 				switch (MemoryType)

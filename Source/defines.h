@@ -13,7 +13,7 @@
 
 #pragma once
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 	#include <host_defines.h>
 #endif
 
@@ -32,7 +32,7 @@ using namespace std;
 namespace ExposureRender
 {
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 	#define KERNEL						__global__
 	#define HOST						__host__
 	#define DEVICE						__device__

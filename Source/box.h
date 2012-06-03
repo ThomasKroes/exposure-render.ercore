@@ -116,7 +116,7 @@ HOST_DEVICE bool InsideBox(Vec3f P, Vec3f Size)
 
 HOST_DEVICE void SampleUnitBox(SurfaceSample& SS, Vec3f UVW)
 {
-	int Side = floorf(UVW[0] * 6.0f);
+	int Side = (int)floorf(UVW[0] * 6.0f);
 
 	switch (Side)
 	{
