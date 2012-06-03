@@ -75,6 +75,8 @@ int main(int, char *[])
 
 	ConfigureER(Renderer);
 
+	Renderer->ResetCamera();
+
 	RenderWindowInteractor->Start();
 
 	return EXIT_SUCCESS;
@@ -189,11 +191,9 @@ void CreateCamera(vtkRenderer* Renderer)
 	Camera->SetApertureSize(0.01f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
-
-	Renderer->SetActiveCamera(Camera);
-	Renderer->ResetCamera();
-
 	Camera->SetClippingRange(0, 1000000);
+	
+	Renderer->SetActiveCamera(Camera);
 }
 
 void CreateLighting(vtkErTracer* Tracer)
