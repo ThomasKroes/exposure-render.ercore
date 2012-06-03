@@ -78,7 +78,7 @@ public:
 				DebugLog("Freed %s on host", MemoryString);
 			}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 			if (this->MemoryType == Enums::Device)
 			{
 				Cuda::Free(this->Data);
@@ -103,7 +103,7 @@ public:
 		if (this->MemoryType == Enums::Host)
 			memset(this->Data, 0, this->GetNoBytes());
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 		if (this->MemoryType == Enums::Device)
 			Cuda::MemSet(this->Data, 0, this->GetNoElements());
 #endif
@@ -141,7 +141,7 @@ public:
 			DebugLog("Allocated %s on host", MemoryString);
 		}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 		if (this->MemoryType == Enums::Device)
 		{
 			Cuda::Allocate(this->Data, this->GetNoElements());
@@ -166,13 +166,13 @@ public:
 			if (MemoryType == Enums::Host)
 				memcpy(this->Data, Data, this->GetNoBytes());
 			
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 			if (MemoryType == Enums::Device)
 				Cuda::MemCopyDeviceToHost(Data, this->Data, this->GetNoElements());
 #endif
 		}
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 		if (this->MemoryType == Enums::Device)
 		{
 			if (MemoryType == Enums::Host)

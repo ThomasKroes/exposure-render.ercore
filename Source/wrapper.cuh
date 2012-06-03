@@ -16,7 +16,7 @@
 #include "exception.h"
 #include "log.h"
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
