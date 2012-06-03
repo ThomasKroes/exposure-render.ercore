@@ -19,11 +19,12 @@
 #include "cudatexture3d.h"
 #include "utilities.h"
 #include "transform.h"
+#include "reference.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Volume
+class Volume : public Reference
 {
 public:
 	HOST Volume() :
@@ -38,64 +39,16 @@ public:
 		Octree(),
 		AcceleratorType(Enums::Octree)
 	{
-		DebugLog(__FUNCTION__);
 	}
 
-	HOST Volume(const Volume& Other) :
-		Transform(),
-		BoundingBox(),
-		Spacing(1.0f),
-		InvSpacing(1.0f),
-		Size(1.0f),
-		InvSize(1.0f),
-		MinStep(1.0f),
-		Voxels(),
-		Octree(),
-		AcceleratorType(Enums::Octree)
+	HOST Volume(const ErVolume& Other)
 	{
-		DebugLog(__FUNCTION__);
 		*this = Other;
-	}
-
-	HOST Volume(const ErVolume& Other) :
-		Transform(),
-		BoundingBox(),
-		Spacing(1.0f),
-		InvSpacing(1.0f),
-		Size(1.0f),
-		InvSize(1.0f),
-		MinStep(1.0f),
-		Voxels(),
-		Octree(),
-		AcceleratorType(Enums::Octree)
-	{
-		DebugLog(__FUNCTION__);
-		*this = Other;
-	}
-
-	HOST virtual ~Volume(void)
-	{
-		DebugLog(__FUNCTION__);
-	}
-	
-	HOST Volume& Volume::operator = (const Volume& Other)
-	{
-		DebugLog(__FUNCTION__);
-
-		this->Transform			= Other.Transform;
-		this->BoundingBox		= Other.BoundingBox;
-		this->Spacing			= Other.Spacing;
-		this->InvSpacing		= Other.InvSpacing;
-		this->Size				= Other.Size;
-		this->InvSize			= Other.InvSize;
-		this->MinStep			= Other.MinStep;
-		this->Voxels			= Other.Voxels;
-
-		return *this;
 	}
 
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
+		this->ID				= Other.ID;
 		this->Transform			= Other.Alignment.GetTransform();
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;

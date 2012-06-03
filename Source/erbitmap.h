@@ -42,6 +42,8 @@ public:
 
 	HOST ErBitmap& operator = (const ErBitmap& Other)
 	{
+		ErBindable::operator = (Other);
+
 		this->Pixels = Other.Pixels;
 		
 		return *this;

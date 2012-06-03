@@ -20,21 +20,23 @@
 namespace ExposureRender
 {
 
-class DeviceObject
+class Reference
 {
 public:
-	HOST DeviceObject()
+	HOST Reference()
 	{
 	}
 
-	HOST ~DeviceObject()
-	{
-	}
-
-	HOST DeviceObject(const DeviceObject& Other)
+	HOST Reference(const Reference& Other)
 	{
 		*this = Other;
 	}
+
+	HOST void Update()
+	{
+	}
+
+	int		ID;
 };
 
 }

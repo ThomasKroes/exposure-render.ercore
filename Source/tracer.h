@@ -15,6 +15,7 @@
 
 #include "ertracer.h"
 #include "framebuffer.h"
+#include "reference.h"
 
 #include <map>
 
@@ -23,10 +24,11 @@ using namespace std;
 namespace ExposureRender
 {
 
-class Tracer
+class Tracer : public Reference
 {
 public:
 	HOST Tracer() :
+		Reference(),
 		Camera(),
 		VolumeIDs(),
 		LightIDs(),
@@ -37,20 +39,15 @@ public:
 	{
 	}
 
-	HOST Tracer(const ErTracer& Other) :
-		Camera(),
-		VolumeIDs(),
-		LightIDs(),
-		ObjectIDs(),
-		ClippingObjectIDs(),
-		FrameBuffer(),
-		NoEstimates(0)
+	HOST Tracer(const ErTracer& Other)
 	{
 		*this = Other;
 	}
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
+		this->ID = Other.ID;
+
 		for (int i = 0; i < MAX_NO_VOLUMES; i++)
 			this->VolumeProperties[i] = Other.VolumeProperties[i];
 

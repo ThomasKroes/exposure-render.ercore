@@ -14,14 +14,16 @@
 #pragma once
 
 #include "ertexture.h"
+#include "reference.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Texture
+class Texture : public Reference
 {
 public:
 	HOST Texture() :
+		Reference(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
 		BitmapID(-1),
@@ -39,6 +41,7 @@ public:
 
 	HOST Texture& operator = (const ErTexture& Other)
 	{
+		this->ID			= Other.ID;
 		this->Type			= Other.Type;
 		this->OutputLevel	= Other.OutputLevel;
 		this->BitmapID		= Other.BitmapID;

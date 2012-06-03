@@ -14,14 +14,16 @@
 #pragma once
 
 #include "erobject.h"
+#include "reference.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Object
+class Object : public Reference
 {
 public:
 	HOST Object() :
+		Reference(),
 		Shape(),
 		DiffuseTextureID(-1),
 		SpecularTextureID(-1),
@@ -37,6 +39,7 @@ public:
 
 	HOST Object& operator = (const ErObject& Other)
 	{
+		this->ID					= Other.ID;
 		this->Shape					= Other.Shape;
 		this->DiffuseTextureID		= Other.DiffuseTextureID;
 		this->SpecularTextureID		= Other.SpecularTextureID;
