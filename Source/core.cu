@@ -13,11 +13,23 @@
 
 #define __CUDA_ARCH__ 200
 
+#include <map>
+
+using namespace std;
+
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume2;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume3;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
+
+map<int, int> gTracersHashMap;
+map<int, int> gVolumesHashMap;
+map<int, int> gLightsHashMap;
+map<int, int> gObjectsHashMap;
+map<int, int> gClippingObjectsHashMap;
+map<int, int> gTexturesHashMap;
+map<int, int> gBitmapsHashMap;
 
 #include "tracer.h"
 #include "volume.h"
@@ -27,13 +39,13 @@ texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
 #include "texture.h"
 #include "bitmap.h"
 
-DEVICE ExposureRender::Tracer*				gpTracer				= NULL;
-DEVICE ExposureRender::Volume* 				gpVolumes				= NULL;
-DEVICE ExposureRender::Light*				gpLights				= NULL;
-DEVICE ExposureRender::Object*				gpObjects				= NULL;
-DEVICE ExposureRender::ClippingObject*		gpClippingObjects		= NULL;
-DEVICE ExposureRender::Texture*				gpTextures				= NULL;
-DEVICE ExposureRender::Bitmap*				gpBitmaps				= NULL;
+DEVICE ExposureRender::Tracer*			gpTracer			= NULL;
+DEVICE ExposureRender::Volume* 			gpVolumes			= NULL;
+DEVICE ExposureRender::Light*			gpLights			= NULL;
+DEVICE ExposureRender::Object*			gpObjects			= NULL;
+DEVICE ExposureRender::ClippingObject*	gpClippingObjects	= NULL;
+DEVICE ExposureRender::Texture*			gpTextures			= NULL;
+DEVICE ExposureRender::Bitmap*			gpBitmaps			= NULL;
 
 #include "list.cuh"
 
@@ -56,72 +68,72 @@ namespace ExposureRender
 
 EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-	
 	if (Bind)
 		gTracers.Bind(Tracer);
 	else
 		gTracers.Unbind(Tracer);
+
+	gTracersHashMap = gTracers.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-
 	if (Bind)
 		gVolumes.Bind(Volume);
 	else
 		gVolumes.Unbind(Volume);
+
+	gVolumesHashMap = gVolumes.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-	
 	if (Bind)
 		gLights.Bind(Light);
 	else
 		gLights.Unbind(Light);
+
+	gLightsHashMap = gLights.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-	
 	if (Bind)
 		gObjects.Bind(Object);
 	else
 		gObjects.Unbind(Object);
+
+	gObjectsHashMap = gObjects.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindClippingObject(const ErClippingObject& ClippingObject, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-	
 	if (Bind)
 		gClippingObjects.Bind(ClippingObject);
 	else
 		gClippingObjects.Unbind(ClippingObject);
+
+	gClippingObjectsHashMap = gClippingObjects.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-	
 	if (Bind)
 		gTextures.Bind(Texture);
 	else
 		gTextures.Unbind(Texture);
+
+	gTexturesHashMap = gTextures.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*= true*/)
 {
-	DebugLog("%s, Bind = %s", __FUNCTION__, Bind ? "true" : "false");
-	
 	if (Bind)
 		gBitmaps.Bind(Bitmap);
 	else
 		gBitmaps.Unbind(Bitmap);
+
+	gBitmapsHashMap = gBitmaps.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void Render(int TracerID)
@@ -139,7 +151,15 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		}
 	}
 
+	gTracers[TracerID].UpdateVolumeIDs(gVolumes.HashMap);
+	gTracers[TracerID].UpdateLightIDs(gLights.HashMap);
+	gTracers[TracerID].UpdateObjectIDs(gObjects.HashMap);
+	gTracers[TracerID].UpdateClippingObjectIDs(gClippingObjects.HashMap);
+
 	gTracers.Synchronize(TracerID);
+
+	
+
 
 	if (gTracers[TracerID].VolumeIDs[0] >= 0)
 		gVolumes[gTracers[TracerID].VolumeIDs[0]].Voxels.Bind(TexVolume0);
@@ -154,7 +174,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
-	GaussianFilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 	GaussianFilterRunningEstimate(gTracers[TracerID]);

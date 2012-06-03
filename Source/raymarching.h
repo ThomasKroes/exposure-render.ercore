@@ -25,8 +25,6 @@ namespace ExposureRender
 
 DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
 {
-//	R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
-
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 	VolumeProperty& VolumeProperty = gpTracer->VolumeProperties[VolumeID];
 
@@ -71,8 +69,6 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 
 DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 {
-//	R = TransformRay(gpVolumes[gpTracer->VolumeID].Transform.InvTM, R);
-	
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 	VolumeProperty& VolumeProperty = gpTracer->VolumeProperties[VolumeID];
 

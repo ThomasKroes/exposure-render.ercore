@@ -27,7 +27,7 @@ public:
 		Array(NULL),
 		Normalized(true),
 		FilterMode(Enums::Linear),
-		AddressMode(Enums::Wrap)
+		AddressMode(Enums::Border)
 	{
 	}
 

@@ -51,12 +51,6 @@ public:
 	HOST void BindHost();
 	HOST void UnbindHost();
 
-	/*
-	GET_SET(ID, int)
-	GET_SET(Enabled, bool)
-	GET_SET(Dirty, bool)
-	*/
-
 	HOST bool GetDirty() const { return this->Dirty; }
 	HOST void SetDirty(const bool& Dirty = true) { this->Dirty = Dirty; }
 

@@ -52,8 +52,6 @@ public:
 
 	HOST void Bind(const H& Item)
 	{
-		DebugLog(__FUNCTION__);
-
 		if (this->Map.size() + 1 >= MaxSize)
 		{
 			DebugLog("%s failed, max. no. items reached", __FUNCTION__);
@@ -78,8 +76,6 @@ public:
 
 	HOST void Unbind(const H& Item)
 	{
-		DebugLog(__FUNCTION__);
-
 		if (!this->Exists(Item.ID))
 		{
 			DebugLog("%s failed, resource item with ID:%d does not exist", __FUNCTION__, Item.ID);
@@ -101,8 +97,6 @@ public:
 
 	HOST void Synchronize(const int& ID = 0)
 	{
-//		DebugLog(__FUNCTION__);
-
 		if (this->Map.size() <= 0)
 			return; // DebugLog("%s failed, map is empty", __FUNCTION__);
 
@@ -143,8 +137,6 @@ public:
 
 	HOST D& operator[](const int& i)
 	{
-//		DebugLog(__FUNCTION__);
-
 		if (!this->Exists(i))
 		{
 			char Message[MAX_CHAR_SIZE];

@@ -62,13 +62,13 @@ public:
 
 		return *this;
 	}
-	
-	VolumeProperty		VolumeProperties[MAX_NO_VOLUMES];
-	Camera				Camera;
-	Indices				VolumeIDs;
-	Indices				LightIDs;
-	Indices				ObjectIDs;
-	Indices				ClippingObjectIDs;
+
+	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
+	Camera			Camera;
+	Indices			VolumeIDs;
+	Indices			LightIDs;
+	Indices			ObjectIDs;
+	Indices			ClippingObjectIDs;
 };
 
 }
