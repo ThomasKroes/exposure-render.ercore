@@ -98,7 +98,7 @@ public:
 	HOST void Synchronize(const int& ID = 0)
 	{
 		if (this->Map.size() <= 0)
-			return; // DebugLog("%s failed, map is empty", __FUNCTION__);
+			return;
 
 		if (ID == 0)
 		{
