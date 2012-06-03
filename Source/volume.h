@@ -79,6 +79,10 @@ public:
 		return *this;
 	}
 
+	HOST void ResolveReferences()
+	{
+	}
+
 	DEVICE unsigned short operator()(const Vec3f& XYZ, const int& TextureID = 0)
 	{
 		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;

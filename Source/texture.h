@@ -44,7 +44,15 @@ public:
 		this->ID			= Other.ID;
 		this->Type			= Other.Type;
 		this->OutputLevel	= Other.OutputLevel;
-		this->BitmapID		= Other.BitmapID;
+
+		if (Other.BitmapID >= 0)
+		{
+			if (gBitmapsHashMap.find(Other.BitmapID) != gBitmapsHashMap.end())
+				this->BitmapID = gBitmapsHashMap[Other.BitmapID];
+			else
+				throw(Exception(Enums::Fatal, "Bitmap not found!"));
+		}
+
 		this->Procedural	= Other.Procedural;
 		this->Offset		= Other.Offset;
 		this->Repeat		= Other.Repeat;

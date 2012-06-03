@@ -39,21 +39,43 @@ public:
 
 	HOST Object& operator = (const ErObject& Other)
 	{
-		this->ID					= Other.ID;
-		this->Shape					= Other.Shape;
-		this->DiffuseTextureID		= Other.DiffuseTextureID;
-		this->SpecularTextureID		= Other.SpecularTextureID;
-		this->GlossinessTextureID	= Other.GlossinessTextureID;
-		this->Ior					= Other.Ior;
+		this->ID	= Other.ID;
+		this->Shape	= Other.Shape;
+
+		if (Other.DiffuseTextureID >= 0)
+		{
+			if (gTexturesHashMap.find(Other.DiffuseTextureID) != gTexturesHashMap.end())
+				this->DiffuseTextureID = gTexturesHashMap[Other.DiffuseTextureID];
+			else
+				throw(Exception(Enums::Fatal, "Texture not found!"));
+		}
+
+		if (Other.SpecularTextureID >= 0)
+		{
+			if (gTexturesHashMap.find(Other.SpecularTextureID) != gTexturesHashMap.end())
+				this->SpecularTextureID = gTexturesHashMap[Other.SpecularTextureID];
+			else
+				throw(Exception(Enums::Fatal, "Texture not found!"));
+		}
+
+		if (Other.GlossinessTextureID >= 0)
+		{
+			if (gTexturesHashMap.find(Other.GlossinessTextureID) != gTexturesHashMap.end())
+				this->GlossinessTextureID = gTexturesHashMap[Other.GlossinessTextureID];
+			else
+				throw(Exception(Enums::Fatal, "Texture not found!"));
+		}
+
+		this->Ior = Other.Ior;
 
 		return *this;
 	}
 
-	Shape		Shape;
-	int			DiffuseTextureID;
-	int			SpecularTextureID;
-	int			GlossinessTextureID;
-	float		Ior;
+	Shape	Shape;
+	int		DiffuseTextureID;
+	int		SpecularTextureID;
+	int		GlossinessTextureID;
+	float	Ior;
 };
 
 }
