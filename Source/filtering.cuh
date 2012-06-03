@@ -64,7 +64,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 		
-	GaussianFilter Filter(Vec2f(1.0f), 1.0f);
+	GaussianFilter Filter(Vec2f(2.0f), 1.0f);
 
 	int Range[2][2];
 
@@ -80,7 +80,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(0.7f, x - IDx, y - IDy);
+			const float Weight = Gauss2D(1.1f, x - IDx, y - IDy);
 
 			Sum[0]		+= Weight * (float)gpTracer->FrameBuffer.DisplayEstimate(x, y)[0];
 			Sum[1]		+= Weight * (float)gpTracer->FrameBuffer.DisplayEstimate(x, y)[1];
