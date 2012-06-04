@@ -41,6 +41,12 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 	if (!Int.Valid)
 		return;
 
+	ClippingSegments CS;
+
+	GetClippingSegments(R, CS);
+
+//	CS.Add(Segment(0.0f, 5.0f));
+
 	MinT = max(Int.HitT[0], R.MinT);
 	MaxT = min(Int.HitT[1], R.MaxT);
 
@@ -58,6 +64,14 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 	while (Sum < S)
 	{
 		Ps = R.O + MinT * R.D;
+
+		float t;
+
+		if (CS.Inside(MinT, t))
+		{
+			MinT += StepSize;
+			continue;
+		}
 
 		if (MinT >= MaxT)
 			return;

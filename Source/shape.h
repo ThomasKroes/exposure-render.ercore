@@ -32,7 +32,7 @@ public:
 		Box(),
 		Alignment(),
 		Transform(),
-		Area(1.0f)
+		Area(0.0f)
 	{
 	}
 
@@ -88,22 +88,25 @@ public:
 		return false;
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Intersection& Intersection) const
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
 	{
 		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
 
 		switch (this->Type)
 		{
-			case Enums::Plane:		Plane.Intersect(LocalShapeR, Intersection);		break;
-			case Enums::Disk:		Disk.Intersect(LocalShapeR, Intersection);		break;
-			case Enums::Ring:		Ring.Intersect(LocalShapeR, Intersection);		break;
-			case Enums::Box:		Box.Intersect(LocalShapeR, Intersection);		break;
-			case Enums::Sphere:		Sphere.Intersect(LocalShapeR, Intersection);	break;
-//			case Enums::Cylinder:	Plane.IntersectP(LocalShapeR, Intersection);	break;
+			case Enums::Plane:		Plane.Intersect(LocalShapeR, Int);		break;
+			case Enums::Disk:		Disk.Intersect(LocalShapeR, Int);		break;
+			case Enums::Ring:		Ring.Intersect(LocalShapeR, Int);		break;
+			case Enums::Box:		Box.Intersect(LocalShapeR, Int);		break;
+			case Enums::Sphere:		Sphere.Intersect(LocalShapeR, Int);		break;
+//			case Enums::Cylinder:	Plane.IntersectP(LocalShapeR, Int);		break;
 		}
 
-		Intersection.P	= TransformPoint(this->Transform.TM, Intersection.P);
-		Intersection.N	= TransformVector(this->Transform.TM, Intersection.N);
+		Int.P	= TransformPoint(this->Transform.TM, Int.P);
+		Int.N	= TransformVector(this->Transform.TM, Int.N);
+
+		for (int i = 0; i < 4; i++)
+			Int.HitT[i] = (Int.P - R.O).Length();
 	}
 
 	HOST_DEVICE void Intersect(const Ray& R, ClippingSegments& CS) const
@@ -114,17 +117,22 @@ public:
 
 		if (Int.Valid)
 		{
-			switch (CS.NoSegments)
+			CS.Segments[0].Set(0.0f, Int.HitT[0]);
+
+			switch (Int.NoIntersections)
 			{
 				case 0:
 					return;
 
 				case 1:
 				{
+					/*
 					if (Dot(R.D, Int.N) > 0.0f)
 						CS.Add(Segment(Int.HitT[0], R.MaxT));
 					else
-						CS.Add(Segment(R.MinT, Int.HitT[0]));
+					*/
+					
+					// CS.Add(Segment(0.0f, Int.HitT[0]));
 
 					break;
 				}

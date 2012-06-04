@@ -14,67 +14,57 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErLight.h"
+#include "vtkErClippingObject.h"
 #include "vtkErTexture.h"
 
-vtkStandardNewMacro(vtkErLightData);
-vtkCxxRevisionMacro(vtkErLightData, "$Revision: 1.0 $");
+vtkStandardNewMacro(vtkErClippingObjectData);
+vtkCxxRevisionMacro(vtkErClippingObjectData, "$Revision: 1.0 $");
 
-vtkStandardNewMacro(vtkErLight);
-vtkCxxRevisionMacro(vtkErLight, "$Revision: 1.0 $");
+vtkStandardNewMacro(vtkErClippingObject);
+vtkCxxRevisionMacro(vtkErClippingObject, "$Revision: 1.0 $");
 
-vtkErLight::vtkErLight(void)
+vtkErClippingObject::vtkErClippingObject(void)
 {
-	this->SetNumberOfInputPorts(1);
+	this->SetNumberOfInputPorts(0);
 	this->SetNumberOfOutputPorts(1);
 
-	this->SetShapeType(Enums::Plane);
-	this->SetAlignmentType(Enums::Spherical);
-	this->SetElevation(45.0f);
-	this->SetAzimuth(180.0f);
-	this->SetOffset(1.0f);
-
 	this->SetEnabled(true);
-	this->SetVisible(true);
-	this->SetMultiplier(100000.0f);
-	this->SetEmissionUnit(Enums::Lux);
-	this->TextureID = -1;
+
+	this->SetAlignmentType(Enums::AxisAlign);
+	this->SetPosition(0.0f, 0.0f, 0.0f);
+	this->SetSize(100, 100, 100);
+	this->SetOneSided(false);
+	this->SetShapeType(Enums::Plane);
+	this->SetRadius(0.5f);
 }
 
-vtkErLight::~vtkErLight(void)
+vtkErClippingObject::~vtkErClippingObject(void)
 {
 }
 
-int vtkErLight::FillInputPortInformation(int Port, vtkInformation* Info)
+int vtkErClippingObject::FillInputPortInformation(int Port, vtkInformation* Info)
+{
+	return 1;
+}
+
+int vtkErClippingObject::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == 0)
 	{
-		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
-		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
-		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErClippingObjectData");
 	}
 
 	return 1;
 }
 
-int vtkErLight::FillOutputPortInformation(int Port, vtkInformation* Info)
-{
-	if (Port == 0)
-	{
-		Info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkErLightData");
-	}
-
-	return 1;
-}
-
-int vtkErLight::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+int vtkErClippingObject::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
 {
 	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
-	vtkErLightData* Output = vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErClippingObjectData* Output = vtkErClippingObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
 
 	if (!Output)
 	{
-		Output = vtkErLightData::New();
+		Output = vtkErClippingObjectData::New();
 		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
 		Output->FastDelete();
 		Output->SetPipelineInformation(OutInfo);
@@ -85,51 +75,38 @@ int vtkErLight::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInform
 	return 1;
 }
 
-int vtkErLight::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErClippingObject::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	return 1;
 }
 
-int vtkErLight::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErClippingObject::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 
-	if (!InInfo || !OutInfo)
+	if (!OutInfo)
 		return 0;
 	
-	vtkErTextureData* TextureDataIn	= vtkErTextureData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()));
-
-	if (!TextureDataIn)
+	vtkErClippingObjectData* ObjectDataOut = vtkErClippingObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	
+	if (!ObjectDataOut)
 		return 0;
 
-	vtkErLightData* LightDataOut = vtkErLightData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkErShape::RequestData(ObjectDataOut->Bindable.Shape);
 
-	if (!LightDataOut)
-		return 0;
+	ObjectDataOut->Bindable.Enabled = this->GetEnabled();
 
-	ExposureRender::ErLight& ErLight = LightDataOut->Bindable;
-
-	ErLight.Enabled			= this->GetEnabled();
-	ErLight.Visible			= this->GetVisible();
-
-	vtkErShape::RequestData(ErLight.Shape);
-
-	ErLight.Multiplier		= this->GetMultiplier();
-	ErLight.EmissionUnit	= this->GetEmissionUnit();
-	ErLight.TextureID		= TextureDataIn->Bindable.ID;
-
-	LightDataOut->Bind();
+	ObjectDataOut->Bind();
 
 	return 1;
 }
 
-int vtkErLight::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+int vtkErClippingObject::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
 {
 	return 1;
 }
 
-int vtkErLight::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErClippingObject::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
 		return this->RequestDataObject(Request, InputVector, OutputVector);
