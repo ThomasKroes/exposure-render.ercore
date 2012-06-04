@@ -36,7 +36,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[]		= "C://Volumes//manix.mhd";
+char gVolumeFile[]		= "C://Volumes//engine.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -89,7 +89,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	LoadVolume(Tracer);
 	CreateVolumeProperty(Tracer);
 	CreateLighting(Tracer);
-	CreateObjects(Tracer);
+//	CreateObjects(Tracer);
 	CreateCamera(Renderer);
 
 	Tracer->Update();
@@ -226,7 +226,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
-	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\cubemap-forest-env.jpg");
+	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\lkSJ0.jpg");
 	JpegReader->Update();
 
 	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 1.0;
+	const float KeyLightSize = 5.0;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
