@@ -14,21 +14,19 @@
 #pragma once
 
 #include "clippingobject.h"
+#include "clippingsegments.h"
 
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI bool GetClippingSegments(const Ray& R)
+HOST_DEVICE_NI void GetClippingSegments(const Ray& R, ClippingSegments& CS)
 {
 	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 	{
 		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
 
-		if (Light.Shape.Intersects(R))
-			return true;
+		ClippingObject.Shape.Intersect(R, CS);
 	}
-
-	return false;
 }
 
 }

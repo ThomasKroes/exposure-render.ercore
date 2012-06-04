@@ -15,7 +15,7 @@
 
 #include "shapes.h"
 #include "alignment.h"
-#include "segment.h"
+#include "clippingsegments.h"
 
 namespace ExposureRender
 {
@@ -106,7 +106,7 @@ public:
 		Intersection.N	= TransformVector(this->Transform.TM, Intersection.N);
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Segment& Segment) const
+	HOST_DEVICE void Intersect(const Ray& R, ClippingSegments& CS) const
 	{
 		Intersection Int;
 
@@ -114,7 +114,27 @@ public:
 
 		if (Int.Valid)
 		{
-//			Segment.Set(max, min(Int.FarT, R.MaxT));
+			switch (CS.NoSegments)
+			{
+				case 0:
+					return;
+
+				case 1:
+				{
+					if (Dot(R.D, Int.N) > 0.0f)
+						CS.Add(Segment(Int.HitT[0], R.MaxT));
+					else
+						CS.Add(Segment(R.MinT, Int.HitT[0]));
+
+					break;
+				}
+
+				case 2:
+				{
+					CS.Add(Segment(Int.HitT[0], Int.HitT[1]));
+					break;
+				}
+			}
 		}
 	}
 

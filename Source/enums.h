@@ -154,6 +154,14 @@ namespace Enums
 		Circular = 0,
 		Polygon
 	};
+
+	enum OverlapType
+	{
+		Complete = 0,
+		Left,
+		Right,
+		Exact
+	};
 }
 
 }

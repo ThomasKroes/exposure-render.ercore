@@ -53,8 +53,69 @@ public:
 		return Inside;
 	}
 
+	HOST_DEVICE void Add(const Segment& Segment)
+	{
+		if (this->NoSegments >= MAX_NO_CLIPPING_SEGMENTS)
+			return;
+
+		this->Segments[this->NoSegments++] = Segment;
+
+		this->Values[this->NoValues][0]	= Segment.Min;
+		this->Values[this->NoValues][1]	= 1.0f;
+
+		this->NoValues++;
+
+		this->Values[this->NoValues][0]	= Segment.Max;
+		this->Values[this->NoValues][1]	= 0.0f;
+
+		this->NoValues++;
+	}
+
+	HOST_DEVICE void Build()
+	{
+		Vec2f Values[2 * MAX_NO_CLIPPING_SEGMENTS];
+		
+		for (int i = 0; i < this->NoValues; i++)
+			Values[i] = this->Values[i];
+
+		for (int i = 0; i < this->NoValues; i++)
+		{
+			float Current = FLT_MAX;
+			int ID = 0;
+
+			for (int j = 0; j < this->NoValues; j++)
+			{
+				if (this->Values[j][0] < Current && this->Values[j][1] != -1)
+					ID = j;
+			}
+
+			Values[i] = this->Values[ID];
+			this->Values[ID][1] = -1;
+		}
+
+		int NoValues;
+
+		for (int i = 0; i < this->NoValues; i++)
+		{
+			
+		}
+	}
+
+	HOST_DEVICE bool ShouldClip(const float& T)
+	{
+		/*
+		for (int i = 0; i < this->NoSegments; i++)
+			if (Segments[i].Inside(T))
+				return true;
+		*/
+
+		return false;
+	}
+
 	Segment		Segments[MAX_NO_CLIPPING_SEGMENTS];
 	int			NoSegments;
+	Vec2f		Values[2 * MAX_NO_CLIPPING_SEGMENTS];
+	int			NoValues;
 };
 
 }
