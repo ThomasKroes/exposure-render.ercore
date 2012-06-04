@@ -126,8 +126,15 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	const float DiffuseLevel = 1.0f;
 
+	for (int i = 0; i < 5; i++)
+	{
+		Diffuse->AddHSVPoint(i * 400.0f, rand() / (float)RAND_MAX, 1.0f, 1.0f);
+	}
+
+	/*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
+	*/
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -271,7 +278,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
-	RimLight->SetEnabled(false);
+	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
