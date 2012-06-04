@@ -27,6 +27,11 @@ public:
 	{
 	}
 
+	HOST_DEVICE Segment(const Segment& Other)
+	{
+		*this = Other;
+	}
+
 	HOST_DEVICE Segment& operator = (const Segment& Other)
 	{
 		this->Min	= Other.Min;
@@ -51,47 +56,6 @@ public:
 
 		return false;
 	}
-
-	/*
-	HOST_DEVICE bool operator < (const float& Other)
-	{
-		return Other < this->Min;
-	};
-
-	HOST_DEVICE bool operator > (const float& Other)
-	{
-		return Other > this->Max;
-	};
-
-	HOST_DEVICE bool Overlaps(const Segment& Segment, OverlapType& OverlapType)
-	{
-		if (Segment.Min < this->Min && Segment.Max > this->Max)
-		{
-			OverlapType = Complete;
-			return true;
-		}
-
-		if (Segment.Min > this->Min && Segment.Min < this->Max)
-		{
-			OverlapType = Right;
-			return true;
-		}
-
-		if (Segment.Max > this->Min && Segment.Max < this->Max)
-		{
-			OverlapType = Left;
-			return true;
-		}
-
-		if (Segment.Min == this->Min && Segment.Max == this->Max)
-		{
-			OverlapType = Exact;
-			return true;
-		}
-
-		return false;
-	}
-	*/
 
 	float 	Min;
 	float 	Max;

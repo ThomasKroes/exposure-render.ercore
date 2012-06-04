@@ -208,6 +208,8 @@ SET(General
 	vtkErLight.cpp
 	vtkErObject.h
 	vtkErObject.cpp
+	vtkErClippingObject.h
+	vtkErClippingObject.cpp
 	vtkErVolume.h
 	vtkErVolume.cpp
 	vtkErTracer.h

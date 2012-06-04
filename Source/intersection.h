@@ -53,10 +53,11 @@ public:
 
 	HOST_DEVICE void Add(const float& T)
 	{
-		if (NoIntersections >= MAX_NO_INT)
+		if (this->NoIntersections >= MAX_NO_INT)
 			return;
 
-		this->HitT[NoIntersections++] = T;
+		this->HitT[this->NoIntersections] = T;
+		this->NoIntersections++;
 	}
 
 	bool		Valid;

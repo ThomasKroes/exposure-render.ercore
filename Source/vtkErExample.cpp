@@ -32,11 +32,12 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErObject.h"
+#include "vtkErClippingObject.h"
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[]		= "C://Volumes//engine.mhd";
+char gVolumeFile[] = "C://Volumes//backpack.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -44,6 +45,7 @@ void CreateCamera(vtkRenderer* Renderer);
 void CreateVolumeProperty(vtkErTracer* Tracer);
 void CreateLighting(vtkErTracer* Tracer);
 void CreateObjects(vtkErTracer* Tracer);
+void CreateClippingObjects(vtkErTracer* Tracer);
 
 int main(int, char *[])
 {
@@ -90,6 +92,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateVolumeProperty(Tracer);
 	CreateLighting(Tracer);
 //	CreateObjects(Tracer);
+	CreateClippingObjects(Tracer);
 	CreateCamera(Renderer);
 
 	Tracer->Update();
@@ -110,8 +113,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(ExposureRender::Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
+	VolumeProperty->SetDensityScale(5);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -149,7 +152,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.3f;
+	const float GlossinessLevel = 0.25f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -246,7 +249,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 1.0;
+	const float KeyLightSize = 0.1;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
@@ -263,7 +266,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float RimLightSize = 1.0f;
+	const float RimLightSize = 0.1f;
 
 	RimLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	RimLight->SetAxis(ExposureRender::Enums::Y);
@@ -274,7 +277,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(3.0f);
-	RimLight->SetMultiplier(50.0f);
+	RimLight->SetMultiplier(5000.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
@@ -322,4 +325,11 @@ void CreateObjects(vtkErTracer* Tracer)
 //	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
+}
+
+void CreateClippingObjects(vtkErTracer* Tracer)
+{
+	vtkSmartPointer<vtkErClippingObject> ClippingObject = vtkSmartPointer<vtkErClippingObject>::New();
+	
+	Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject->GetOutputPort());
 }
