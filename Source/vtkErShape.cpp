@@ -32,9 +32,38 @@ void vtkErShape::RequestData(ExposureRender::Shape& Shape)
 {
 	vtkErAlignment::RequestData(Shape.Alignment);
 
-	Shape.OneSided		= this->GetOneSided();
-	Shape.Type			= this->GetShapeType();
-	Shape.Size			= this->GetSize();
-	Shape.InnerRadius	= this->GetInnerRadius();
-	Shape.OuterRadius	= this->GetOuterRadius();
+	Shape.Type = this->GetShapeType();
+
+	switch (this->GetShapeType())
+	{
+		case Enums::Plane:
+		{
+			Shape.Plane = Plane(Vec2f(Size[0], Size[1]), this->GetOneSided());
+			break;
+		}
+
+		case Enums::Disk:
+		{
+			Shape.Disk = Disk(this->GetRadius());
+			break;
+		}
+
+		case Enums::Ring:
+		{
+			Shape.Ring = Ring(this->GetInnerRadius(), this->GetOuterRadius());
+			break;
+		}
+
+		case Enums::Sphere:
+		{
+			Shape.Sphere = Sphere(this->GetRadius());
+			break;
+		}
+
+		case Enums::Box:
+		{
+			Shape.Box = Box(this->GetSize());
+			break;
+		}
+	}
 }

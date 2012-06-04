@@ -13,102 +13,138 @@
 
 #pragma once
 
+#include "shapes.h"
 #include "alignment.h"
 
 namespace ExposureRender
 {
 
-EXPOSURE_RENDER_DLL inline float PlaneArea(const Vec2f& Size)
-{
-	return Size[0] * Size[1];
-}
-
-EXPOSURE_RENDER_DLL inline float DiskArea(const float& Radius)
-{
-	return PI_F * (Radius * Radius);
-}
-
-EXPOSURE_RENDER_DLL inline float RingArea(const float& OuterRadius, const float& InnerRadius)
-{
-	return DiskArea(OuterRadius) - DiskArea(InnerRadius);
-}
-
-EXPOSURE_RENDER_DLL inline float BoxArea(const Vec3f& Size)
-{
-	return (2.0f * Size[0] * Size[1]) + (2.0f * Size[0] * Size[2]) + (2.0f * Size[1] * Size[2]);
-}
-
-EXPOSURE_RENDER_DLL inline float SphereArea(const float& Radius)
-{
-	return 4.0f * PI_F * (Radius * Radius);
-}
-
-EXPOSURE_RENDER_DLL inline float CylinderArea(const float& Radius, const float& Height)
-{
-	return (2.0f * PI_F * (Radius * Radius)) + (2.0f * PI_F * Radius * Height);
-}
-
 class EXPOSURE_RENDER_DLL Shape
 {
 public:
-	HOST Shape() :
+	HOST_DEVICE Shape() :
+		Type(Enums::Plane),
+		Plane(),
+		Disk(),
+		Ring(),
+		Sphere(),
+		Box(),
 		Alignment(),
 		Transform(),
-		OneSided(false),
-		Type(Enums::Plane),
-		Size(1.0f),
-		Area(1.0f),
-		InnerRadius(0.0f),
-		OuterRadius(1.0f)
+		Area(1.0f)
 	{
 	}
 
-	HOST ~Shape()
-	{
-	}
-
-	HOST Shape(const Shape& Other)
+	HOST_DEVICE Shape(const Shape& Other)
 	{
 		*this = Other;
 	}
 	
-	HOST Shape& operator = (const Shape& Other)
+	HOST_DEVICE Shape& operator = (const Shape& Other)
 	{
+		this->Type			= Other.Type;
+		this->Plane			= Other.Plane;
+		this->Disk			= Other.Disk;
+		this->Ring			= Other.Ring;
+		this->Sphere		= Other.Sphere;
+		this->Box			= Other.Box;
 		this->Alignment		= Other.Alignment;
 		this->Transform		= Other.Transform;
-		this->OneSided		= Other.OneSided;
-		this->Type			= Other.Type;
-		this->Size			= Other.Size;
 		this->Area			= Other.Area;
-		this->InnerRadius	= Other.InnerRadius;
-		this->OuterRadius	= Other.OuterRadius;
 
 		return *this;
 	}
 
-	HOST void Update()
+	HOST_DEVICE void Update()
 	{
 		switch (this->Type)
 		{
-			case Enums::Plane:		this->Area = PlaneArea(Vec2f(this->Size[0], this->Size[1]));				break;
-			case Enums::Disk:		this->Area = DiskArea(this->OuterRadius);									break;
-			case Enums::Ring:		this->Area = RingArea(this->OuterRadius, this->InnerRadius);				break;
-			case Enums::Box:		this->Area = BoxArea(this->Size);											break;
-			case Enums::Sphere:		this->Area = SphereArea(this->OuterRadius);									break;
-			case Enums::Cylinder:	this->Area = CylinderArea(this->OuterRadius, this->Size[2]);				break;
+			case Enums::Plane:		this->Area = Plane.GetArea();		break;
+			case Enums::Disk:		this->Area = Disk.GetArea();		break;
+			case Enums::Ring:		this->Area = Ring.GetArea();		break;
+			case Enums::Box:		this->Area = Box.GetArea();			break;
+			case Enums::Sphere:		this->Area = Sphere.GetArea();		break;
+//			case Enums::Cylinder:	this->Area = Cylinder.GetArea();	break;
 		}
 
 		this->Transform = this->Alignment.GetTransform();
 	}
 
+	HOST_DEVICE bool Intersects(const Ray& R) const
+	{
+		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
+
+		switch (this->Type)
+		{
+			case Enums::Plane:		return Plane.Intersects(LocalShapeR);
+			case Enums::Disk:		return Disk.Intersects(LocalShapeR);
+			case Enums::Ring:		return Ring.Intersects(LocalShapeR);
+			case Enums::Box:		return Box.Intersects(LocalShapeR);
+			case Enums::Sphere:		return Sphere.Intersects(LocalShapeR);
+//			case Enums::Cylinder:	return Plane.Intersects(LocalShapeR);
+		}
+
+		return false;
+	}
+
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Intersection) const
+	{
+		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
+
+		switch (this->Type)
+		{
+			case Enums::Plane:		Plane.Intersect(LocalShapeR, Intersection);		break;
+			case Enums::Disk:		Disk.Intersect(LocalShapeR, Intersection);		break;
+			case Enums::Ring:		Ring.Intersect(LocalShapeR, Intersection);		break;
+			case Enums::Box:		Box.Intersect(LocalShapeR, Intersection);		break;
+			case Enums::Sphere:		Sphere.Intersect(LocalShapeR, Intersection);	break;
+//			case Enums::Cylinder:	Plane.IntersectP(LocalShapeR, Intersection);	break;
+		}
+
+		Intersection.P	= TransformPoint(this->Transform.TM, Intersection.P);
+		Intersection.N	= TransformVector(this->Transform.TM, Intersection.N);
+	}
+
+	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		switch (this->Type)
+		{
+			case Enums::Plane:		Plane.Sample(SS, UVW);		break;
+			case Enums::Disk:		Disk.Sample(SS, UVW);		break;
+			case Enums::Ring:		Ring.Sample(SS, UVW);		break;
+			case Enums::Box:		Box.Sample(SS, UVW);		break;
+			case Enums::Sphere:		Sphere.Sample(SS, UVW);		break;
+//			case Enums::Cylinder:	Cylinder.Sample(SS, UVW);	break;
+		}
+
+		SS.P = TransformPoint(this->Transform.TM, SS.P);
+		SS.N = TransformVector(this->Transform.TM, SS.N);
+	}
+
+	HOST_DEVICE bool GetOneSided() const
+	{
+		switch (this->Type)
+		{
+			case Enums::Plane:		return this->Plane.GetOneSided();
+			case Enums::Disk:		return this->Disk.GetOneSided();
+			case Enums::Ring:		return this->Ring.GetOneSided();
+			case Enums::Box:		return this->Box.GetOneSided();
+			case Enums::Sphere:		return this->Sphere.GetOneSided();
+//			case Enums::Cylinder:	return this->Cylinder.GetOneSided();
+		}
+
+		return false;
+	}
+
+	Enums::ShapeType	Type;
+	Plane				Plane;
+	Disk				Disk;
+	Ring				Ring;
+	Sphere				Sphere;
+	Box					Box;
 	Alignment			Alignment;
 	Transform			Transform;
-	bool				OneSided;
-	Enums::ShapeType	Type;
-	Vec3f				Size;
 	float				Area;
-	float				InnerRadius;
-	float				OuterRadius;
 };
 
 }

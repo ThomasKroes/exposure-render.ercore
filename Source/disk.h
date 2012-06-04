@@ -13,59 +13,91 @@
 
 #pragma once
 
-#include "geometry.h"
 #include "plane.h"
 
 namespace ExposureRender
 {
 
-HOST_DEVICE bool IntersectDiskP(const Ray& R, const bool& OneSided, const float& Radius, Intersection& Int)
-{
-	IntersectPlaneP(R, OneSided, Int);
+class EXPOSURE_RENDER_DLL Disk : public Plane
+{	
+public:
+	HOST_DEVICE Disk() :
+		Plane(),
+		Radius(1.0f)
+	{
+	}
 
-	if (Int.Valid && Int.UV.Length() > Radius)
-		return false;
+	HOST_DEVICE Disk(const float& Radius) :
+		Radius(Radius)
+	{
+	}
 
-	return Int.Valid;
-}
+	HOST_DEVICE Disk& operator = (const Disk& Other)
+	{
+		this->Radius	= Other.Radius;
 
-HOST_DEVICE void IntersectDisk(const Ray& R, const bool& OneSided, const float& Radius, Intersection& Int)
-{
-	IntersectPlane(R, OneSided, Int);
+		return *this;
+	}
 
-	if (Int.Valid && Int.UV.Length() > Radius)
-		Int.Valid = false;
+	HOST_DEVICE bool Intersects(const Ray& R) const
+	{
+		Intersection Int;
 
-	const float Diameter = 2.0f * Radius;
+		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
+			return false;
 
-	Int.UV /= Diameter;
-	Int.UV += Vec2f(0.5f);
-	Int.UV[0] = 1.0f - Int.UV[0];
-}
+		Int.NearT = (0.0f - R.O[2]) / R.D[2];
+		
+		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+			return false;
 
-HOST_DEVICE void IntersectDisk(const Ray& R, const bool& OneSided, const float& Radius, const float& Offset, Intersection& Int)
-{
-	IntersectPlane(R, OneSided, Offset, Int);
+		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
+		Int.Valid	= true;
 
-	if (Int.Valid && Int.UV.Length() > Radius)
-		Int.Valid = false;
-}
+		if (Int.Valid && Int.UV.Length() > this->Radius)
+			Int.Valid = false;
+		
+		return Int.Valid;
+	}
 
-HOST_DEVICE void SampleUnitDisk(SurfaceSample& SS, const Vec3f& UVW)
-{
-	float r = sqrtf(UVW[0]);
-	float theta = 2.0f * PI_F * UVW[1];
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	{
+		Plane::Intersect(R, Int);
 
-	SS.P 	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
-	SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
-	SS.UV	= Vec2f(UVW[0], UVW[1]);
-}
+		if (Int.Valid && Int.UV.Length() > this->Radius)
+			Int.Valid = false;
 
-HOST_DEVICE void SampleDisk(SurfaceSample& SS, const Vec3f& UVW, const float& Radius)
-{
-	SampleUnitDisk(SS, UVW);
-	
-	SS.P *= Radius;
-}
+		const float Diameter = 2.0f * this->Radius;
+
+		Int.UV /= Diameter;
+		Int.UV += Vec2f(0.5f);
+		Int.UV[0] = 1.0f - Int.UV[0];
+	}
+
+	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		float r = sqrtf(UVW[0]);
+		float theta = 2.0f * PI_F * UVW[1];
+
+		SS.P 	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
+		SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
+		SS.UV	= Vec2f(UVW[0], UVW[1]);
+		
+		SS.P *= this->Radius;
+	}
+
+	HOST_DEVICE float GetArea() const
+	{
+		return PI_F * (this->Radius * this->Radius);
+	}
+
+	HOST_DEVICE bool GetOneSided() const
+	{
+		return Plane::GetOneSided();
+	}
+
+protected:
+	float	Radius;
+};
 
 }

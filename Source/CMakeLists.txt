@@ -68,7 +68,6 @@ SET(General
 	defines.h
 	camera.h
 	procedural.h
-	shape.h
 	matrix.h
 	vector.h
 	boundingbox.h
@@ -79,7 +78,7 @@ SET(General
 	kelvin.h
 	enums.h
 	segment.h
-	segments.h
+	clippingsegments.h
 	color.h
 	exposurerender.h
 	exposurerender.cpp
@@ -119,6 +118,7 @@ SET(Buffer
 SOURCE_GROUP("Buffer" FILES ${Buffer})
 
 SET(Shapes
+	shape.h
 	shapes.h
 	plane.h
 	box.h

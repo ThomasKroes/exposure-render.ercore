@@ -36,7 +36,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[]		= "C://Volumes//engine.mhd";
+char gVolumeFile[]		= "C://Volumes//backpack.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -116,8 +116,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(10, 0);
-	Opacity->AddPoint(11, 1);
+	Opacity->AddPoint(40, 0);
+	Opacity->AddPoint(41, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 5.0;
+	const float KeyLightSize = 1.0;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);

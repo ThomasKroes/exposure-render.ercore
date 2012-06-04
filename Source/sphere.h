@@ -13,155 +13,197 @@
 
 #pragma once
 
-#include "geometry.h"
+#include "intersection.h"
+#include "sample.h"
 
 namespace ExposureRender
 {
 
 // http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection#Example_Code
 
-HOST_DEVICE bool IntersectSphereP(const Ray& R, const float& Radius)
-{
-	// Compute A, B and C coefficients
-    float a = Dot(R.D, R.D);
-	float b = 2 * Dot(R.D, R.O);
-    float c = Dot(R.O, R.O) - (Radius * Radius);
-
-    //Find discriminant
-    const float disc = b * b - 4 * a * c;
-    
-    // if discriminant is negative there are no real roots, so return false, as ray misses sphere
-    if (disc < 0)
-        return false;
-
-    // compute q as described above
-    float distSqrt = sqrtf(disc);
-    float q;
-
-    if (b < 0)
-        q = (-b - distSqrt) / 2.0f;
-    else
-        q = (-b + distSqrt) / 2.0f;
-
-    // compute t0 and t1
-    float t0 = q / a;
-    float t1 = c / q;
-
-    // make sure t0 is smaller than t1
-    if (t0 > t1)
-    {
-        // if t0 is bigger than t1 swap them around
-        float temp = t0;
-        t0 = t1;
-        t1 = temp;
-    }
-
-	float NearT;
-
-	if (t0 >= R.MinT && t0 < R.MaxT)
+class EXPOSURE_RENDER_DLL Sphere
+{	
+public:
+	HOST_DEVICE Sphere() :
+		Radius(1.0f)
 	{
-		NearT = t0;
 	}
-	else
+
+	HOST_DEVICE Sphere(const float& Radius) :
+		Radius(Radius)
 	{
-		if (t1 >= R.MinT && t1 < R.MaxT)
-			NearT = t1;
-		else
+	}
+
+	HOST_DEVICE Sphere& operator = (const Sphere& Other)
+	{
+		this->Radius	= Other.Radius;
+
+		return *this;
+	}
+
+	HOST_DEVICE bool Intersects(const Ray& R) const
+	{
+		// Compute A, B and C coefficients
+		float a = Dot(R.D, R.D);
+		float b = 2 * Dot(R.D, R.O);
+		float c = Dot(R.O, R.O) - (this->Radius * this->Radius);
+
+		//Find discriminant
+		const float disc = b * b - 4 * a * c;
+	    
+		// if discriminant is negative there are no real roots, so return false, as ray misses sphere
+		if (disc < 0)
 			return false;
-	}
 
-	if (NearT < R.MinT || NearT > R.MaxT)
-		return false;
+		// compute q as described above
+		float distSqrt = sqrtf(disc);
+		float q;
 
-	return true;
-}
-
-HOST_DEVICE void IntersectSphere(const Ray& R, const float& Radius, Intersection& Int)
-{
-	// Compute A, B and C coefficients
-    float a = Dot(R.D, R.D);
-	float b = 2 * Dot(R.D, R.O);
-    float c = Dot(R.O, R.O) - (Radius * Radius);
-
-    //Find discriminant
-    const float disc = b * b - 4 * a * c;
-    
-    // if discriminant is negative there are no real roots, so return false, as ray misses sphere
-    if (disc < 0)
-        return;
-
-    // compute q as described above
-    float distSqrt = sqrtf(disc);
-    float q;
-
-    if (b < 0)
-        q = (-b - distSqrt) / 2.0f;
-    else
-        q = (-b + distSqrt) / 2.0f;
-
-    // compute t0 and t1
-    float t0 = q / a;
-    float t1 = c / q;
-
-    // make sure t0 is smaller than t1
-    if (t0 > t1)
-    {
-        // if t0 is bigger than t1 swap them around
-        float temp = t0;
-        t0 = t1;
-        t1 = temp;
-    }
-
-
-	if (t0 >= R.MinT && t0 < R.MaxT)
-	{
-		Int.NearT = t0;
-	}
-	else
-	{
-		if (t1 >= R.MinT && t1 < R.MaxT)
-			Int.NearT = t1;
+		if (b < 0)
+			q = (-b - distSqrt) / 2.0f;
 		else
-			return;
+			q = (-b + distSqrt) / 2.0f;
+
+		// compute t0 and t1
+		float t0 = q / a;
+		float t1 = c / q;
+
+		// make sure t0 is smaller than t1
+		if (t0 > t1)
+		{
+			// if t0 is bigger than t1 swap them around
+			float temp = t0;
+			t0 = t1;
+			t1 = temp;
+		}
+
+		float NearT;
+
+		if (t0 >= R.MinT && t0 < R.MaxT)
+		{
+			NearT = t0;
+		}
+		else
+		{
+			if (t1 >= R.MinT && t1 < R.MaxT)
+				NearT = t1;
+			else
+				return false;
+		}
+
+		if (NearT < R.MinT || NearT > R.MaxT)
+			return false;
+
+		return true;
 	}
 
-	if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
-		return;
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	{
+		// Compute A, B and C coefficients
+		float a = Dot(R.D, R.D);
+		float b = 2 * Dot(R.D, R.O);
+		float c = Dot(R.O, R.O) - (this->Radius * this->Radius);
 
-	Int.Valid	= true;
-	Int.P		= R(Int.NearT);
-	Int.N		= Normalize(Int.P);
-	Int.UV		= SphericalToUV(Int.P);
-}
+		//Find discriminant
+		const float disc = b * b - 4 * a * c;
+	    
+		// if discriminant is negative there are no real roots, so return false, as ray misses sphere
+		if (disc < 0)
+			return;
+
+		// compute q as described above
+		float distSqrt = sqrtf(disc);
+		float q;
+
+		if (b < 0)
+			q = (-b - distSqrt) / 2.0f;
+		else
+			q = (-b + distSqrt) / 2.0f;
+
+		// compute t0 and t1
+		float t0 = q / a;
+		float t1 = c / q;
+
+		// make sure t0 is smaller than t1
+		if (t0 > t1)
+		{
+			// if t0 is bigger than t1 swap them around
+			float temp = t0;
+			t0 = t1;
+			t1 = temp;
+		}
+
+
+		if (t0 >= R.MinT && t0 < R.MaxT)
+		{
+			Int.NearT = t0;
+		}
+		else
+		{
+			if (t1 >= R.MinT && t1 < R.MaxT)
+				Int.NearT = t1;
+			else
+				return;
+		}
+
+		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+			return;
+
+		Int.Valid	= true;
+		Int.P		= R(Int.NearT);
+		Int.N		= Normalize(Int.P);
+		Int.UV		= SphericalToUV(Int.P);
+	}
+
+	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		float z		= 1.0f - 2.0f * UVW[0];
+		float r		= sqrtf(max(0.0f, 1.0f - z * z));
+		float phi	= 2.0f * PI_F * UVW[1];
+		float x		= r * cosf(phi);
+		float y		= r * sinf(phi);
+
+		SS.P	= Vec3f(x, y, z);
+		SS.N	= SS.P;
+		SS.UV	= Vec2f(SphericalTheta(SS.P), SphericalPhi(SS.P));
+	}
+
+	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		SampleUnit(SS, UVW);
+
+		SS.P *= this->Radius;
+	}
+
+	HOST_DEVICE float GetArea() const
+	{
+		return 4.0f * PI_F * (this->Radius * this->Radius);
+	}
+
+	HOST_DEVICE bool GetOneSided() const
+	{
+		return false;
+	}
+
+protected:
+	float	Radius;
+};
+
+
+/*
+
 
 HOST_DEVICE void IntersectUnitSphere(const Ray& R, Intersection& Int)
 {
 	IntersectSphere(R, 1.0f, Int);
 }
 
+
 HOST_DEVICE bool InsideSphere(const Vec3f& P, const float& Radius)
 {
 	return Length(P) < Radius;
 }
+*/
 
-HOST_DEVICE void SampleUnitSphere(SurfaceSample& SS, const Vec3f& UVW)
-{
-	float z		= 1.0f - 2.0f * UVW[0];
-	float r		= sqrtf(max(0.0f, 1.0f - z * z));
-	float phi	= 2.0f * PI_F * UVW[1];
-	float x		= r * cosf(phi);
-	float y		= r * sinf(phi);
-
-	SS.P	= Vec3f(x, y, z);
-	SS.N	= SS.P;
-	SS.UV	= Vec2f(SphericalTheta(SS.P), SphericalPhi(SS.P));
-}
-
-HOST_DEVICE void SampleSphere(SurfaceSample& SS, const Vec3f& UVW, const float& Radius)
-{
-	SampleUnitSphere(SS, UVW);
-
-	SS.P *= Radius;
-}
 
 }

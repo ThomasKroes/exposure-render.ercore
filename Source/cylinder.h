@@ -21,10 +21,10 @@
 
 namespace ExposureRender
 {
-
+/*
 HOST_DEVICE void IntersectCylinder(const Ray& R, const float& Radius, const float& Height, Intersection& Int)
 {
-	/*
+	
 	const float HalfHeight = 0.5f * Height;
 
 	const float A = (R.D[0] * R.D[0]) + (R.D[1] * R.D[1]);
@@ -85,7 +85,6 @@ HOST_DEVICE void IntersectCylinder(const Ray& R, const float& Radius, const floa
 		Int.UV		= Vec2f(0.0f, 0.0f);
 		Int.Valid	= true;
 	}
-	*/
 }
 
 HOST_DEVICE bool InsideCylinder(Vec3f P, float Radius, float Height)
@@ -95,7 +94,6 @@ HOST_DEVICE bool InsideCylinder(Vec3f P, float Radius, float Height)
 
 HOST_DEVICE void SampleCylinder(SurfaceSample& SS, Vec3f UVW, float Radius, float Height)
 {
-	/*
 	int Side = floorf(UVW[2] * 3.0f);
 
 	if (Side == 0 || Side == 1)
@@ -119,8 +117,13 @@ HOST_DEVICE void SampleCylinder(SurfaceSample& SS, Vec3f UVW, float Radius, floa
 	}
 	
 	SS.UV = Vec2f(0.0f);
-	*/
+	
 
 }
 
+EXPOSURE_RENDER_DLL inline float CylinderArea(const float& Radius, const float& Height)
+{
+	return (2.0f * PI_F * (Radius * Radius)) + (2.0f * PI_F * Radius * Height);
+}
+*/
 }

@@ -20,31 +20,15 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void SampleLightSurface(const Light& Light, LightSample& LS, SurfaceSample& SS)
-{
-	switch (Light.Shape.Type)
-	{
-		case 0:	SamplePlane(SS, LS.SurfaceUVW, Vec2f(Light.Shape.Size[0], Light.Shape.Size[1]));	break;
-		case 1:	SampleDisk(SS, LS.SurfaceUVW, Light.Shape.OuterRadius);								break;
-		case 2:	SampleRing(SS, LS.SurfaceUVW, Light.Shape.InnerRadius, Light.Shape.OuterRadius);	break;
-		case 3:	SampleBox(SS, LS.SurfaceUVW, Light.Shape.Size);										break;
-		case 4:	SampleSphere(SS, LS.SurfaceUVW, Light.Shape.OuterRadius);							break;
-//		case 5:	SampleCylinder(SS, LS.SurfaceUVW, Light.Shape.OuterRadius, Light.Shape.Size[2]);	break;
-	}
-
-	SS.P = TransformPoint(Light.Shape.Transform.TM, SS.P);
-	SS.N = TransformVector(Light.Shape.Transform.TM, SS.N);
-}
-
 HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSample& SS, ScatterEvent& SE, Vec3f& Wi, ColorXYZf& Le)
 {
-	SampleLightSurface(Light, LS, SS);
+	Light.Shape.Sample(SS, LS.SurfaceUVW);
 
 	Wi = Normalize(SS.P - SE.P);
 
 	Le = Light.Multiplier * EvaluateTexture(Light.TextureID, SS.UV);
 	
-	if (Light.Shape.OneSided && Dot(SE.P - SS.P, SS.N) < 0.0f)
+	if (Light.Shape.GetOneSided() && Dot(SE.P - SS.P, SS.N) < 0.0f)
 		Le = ColorXYZf::Black();
 
 	if (Light.EmissionUnit == Enums::Power)
@@ -53,26 +37,16 @@ HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSamp
 
 HOST_DEVICE_NI void IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
 {
-	Ray Rt = TransformRay(Light.Shape.Transform.InvTM, R);
-
 	Intersection Int;
 
-	switch (Light.Shape.Type)
-	{
-		case 0:	IntersectPlane(Rt, Light.Shape.OneSided, Vec2f(Light.Shape.Size[0], Light.Shape.Size[1]), Int);		break;
-		case 1:	IntersectDisk(Rt, Light.Shape.OneSided, Light.Shape.OuterRadius, Int);								break;
-		case 2:	IntersectRing(Rt, Light.Shape.OneSided, Light.Shape.InnerRadius, Light.Shape.OuterRadius, Int);		break;
-		case 3:	IntersectBox(Rt, Light.Shape.Size, Int);															break;
-		case 4:	IntersectSphere(Rt, Light.Shape.OuterRadius, Int);													break;
-//		case 5:	IntersectCylinder(Rt, Light.Shape.OuterRadius, Light.Shape.Size[1], Int);							break;
-	}
+	Light.Shape.Intersect(R, Int);
 
 	if (Int.Valid)
 	{
 		SE.Valid	= true;
-		SE.P 		= TransformPoint(Light.Shape.Transform.TM, Int.P);
-		SE.N 		= TransformVector(Light.Shape.Transform.TM, Int.N);
-		SE.T 		= Length(SE.P - R.O);
+		SE.T 		= Length(Int.P - R.O);
+		SE.P		= Int.P;
+		SE.N		= Int.N;
 		SE.Wo		= -R.D;
 		SE.UV		= Int.UV;
 		SE.Le		= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
@@ -107,18 +81,13 @@ HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool Respect
 	}
 }
 
-HOST_DEVICE_NI bool IntersectsLight(const Light& Light, const Ray& R)
-{
-	return IntersectsShape(Light.Shape, TransformRay(Light.Shape.Transform.InvTM, R));
-}
-
 HOST_DEVICE_NI bool IntersectsLight(const Ray& R)
 {
 	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
 	{
 		const Light& Light = gpLights[gpTracer->LightIDs[i]];
 
-		if (IntersectsLight(Light, R))
+		if (Light.Shape.Intersects(R))
 			return true;
 	}
 
