@@ -40,8 +40,8 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 	if (!Int.Valid)
 		return;
 
-	MinT = max(Int.NearT, R.MinT);
-	MaxT = min(Int.FarT, R.MaxT);
+	MinT = max(Int.HitT[0], R.MinT);
+	MaxT = min(Int.HitT[1], R.MaxT);
 
 	const float S	= -log(RNG.Get1()) / VolumeProperty.DensityScale;
 	float Sum		= 0.0f;
@@ -88,8 +88,8 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 	if (!Int.Valid)
 		return false;
 
-	MinT = max(Int.NearT, R.MinT);
-	MaxT = min(Int.FarT, R.MaxT);
+	MinT = max(Int.HitT[0], R.MinT);
+	MaxT = min(Int.HitT[1], R.MaxT);
 
 	const float	DensityScale	= VolumeProperty.DensityScale;
 	const float S				= -log(RNG.Get1());

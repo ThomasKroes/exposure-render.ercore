@@ -18,4 +18,17 @@
 namespace ExposureRender
 {
 
+HOST_DEVICE_NI bool GetClippingSegments(const Ray& R)
+{
+	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
+	{
+		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
+
+		if (Light.Shape.Intersects(R))
+			return true;
+	}
+
+	return false;
+}
+
 }

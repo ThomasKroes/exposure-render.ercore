@@ -49,9 +49,9 @@ public:
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.NearT = (0.0f - R.O[2]) / R.D[2];
+		Int.Add((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
 			return false;
 
 		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
@@ -68,12 +68,12 @@ public:
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return;
 
-		Int.NearT = (0.0f - R.O[2]) / R.D[2];
+		Int.Add((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
 			return;
 
-		Int.P 	= R(Int.NearT);
+		Int.P 	= R(Int.HitT[0]);
 		Int.UV	= Vec2f(Int.P[0], Int.P[1]);
 		Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
 
