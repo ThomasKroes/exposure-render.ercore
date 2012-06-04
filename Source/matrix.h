@@ -23,21 +23,17 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL Matrix44
 {
 public:
-	HOST Matrix44()
+	HOST_DEVICE Matrix44()
 	{
 		this->Identity();
 	}
 
-	HOST ~Matrix44()
-	{
-	}
-
-	HOST Matrix44(const Matrix44& Other)
+	HOST_DEVICE Matrix44(const Matrix44& Other)
 	{
 		*this = Other;
 	}
 
-	HOST Matrix44& operator = (const Matrix44& Other)
+	HOST_DEVICE Matrix44& operator = (const Matrix44& Other)
 	{
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
@@ -46,14 +42,14 @@ public:
 		return *this;
 	}
 
-	HOST void Identity()
+	HOST_DEVICE void Identity()
 	{
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
 				this->NN[i][j] = i == j ? 1.0f : 0.0f;
 	}
 
-	HOST Matrix44 operator * (const Matrix44& Other) const	
+	HOST_DEVICE Matrix44 operator * (const Matrix44& Other) const	
 	{
 		Matrix44 Result;
 
@@ -83,7 +79,7 @@ public:
 	}
 	*/
 
-	HOST bool Invert(Matrix44& Result) const
+	HOST_DEVICE bool Invert(Matrix44& Result) const
 	{
 		using std::abs; // use overloaded abs
 		float t;
@@ -146,7 +142,7 @@ public:
 		return true;
 	}
 
-	HOST static Matrix44 Inverse(const Matrix44& M)
+	HOST_DEVICE static Matrix44 Inverse(const Matrix44& M)
 	{
 		Matrix44 Result;
 
@@ -155,7 +151,7 @@ public:
 		return Result;
 	}
 
-	HOST static Matrix44 CreateTranslation(const Vec3f& Translation)
+	HOST_DEVICE static Matrix44 CreateTranslation(const Vec3f& Translation)
 	{
 		Matrix44 Result;
 
@@ -166,7 +162,7 @@ public:
 		return Result;
 	}
 
-	HOST static Matrix44 CreateLookAt(const Vec3f& Position, const Vec3f& Target, const Vec3f& Up)
+	HOST_DEVICE static Matrix44 CreateLookAt(const Vec3f& Position, const Vec3f& Target, const Vec3f& Up)
 	{
 		const Vec3f W = Normalize(Target - Position);
 		const Vec3f U = Normalize(Cross(W, Up));

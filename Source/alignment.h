@@ -21,7 +21,7 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL Alignment
 {
 public:
-	HOST Alignment() :
+	HOST_DEVICE Alignment() :
 		Type(Enums::Spherical),
 		Axis(Enums::X),
 		AutoFlip(true),
@@ -35,16 +35,12 @@ public:
 	{
 	}
 
-	HOST ~Alignment()
-	{
-	}
-
-	HOST Alignment(const Alignment& Other)
+	HOST_DEVICE Alignment(const Alignment& Other)
 	{
 		*this = Other;
 	}
 	
-	HOST Alignment& operator = (const Alignment& Other)
+	HOST_DEVICE Alignment& operator = (const Alignment& Other)
 	{
 		this->Type			= Other.Type;
 		this->Axis			= Other.Axis;
@@ -60,7 +56,7 @@ public:
 		return *this;
 	}
 
-	HOST Transform GetTransform() const
+	HOST_DEVICE Transform GetTransform() const
 	{
 		Transform Result;
 

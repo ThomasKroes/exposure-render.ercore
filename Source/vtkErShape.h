@@ -34,6 +34,9 @@ public:
 	vtkGetVector3Macro(Size, float);
 	vtkSetVector3Macro(Size, float);
 	
+	vtkGetMacro(Radius, float);
+	vtkSetMacro(Radius, float);
+
 	vtkGetMacro(InnerRadius, float);
 	vtkSetMacro(InnerRadius, float);
 
@@ -51,6 +54,7 @@ private:
 	bool				OneSided;
 	Enums::ShapeType	ShapeType;
 	float				Size[3];
+	float				Radius;
 	float				InnerRadius;
 	float				OuterRadius;
 };

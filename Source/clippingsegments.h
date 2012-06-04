@@ -13,33 +13,48 @@
 
 #pragma once
 
-#include "vector.h"
+#include "segment.h"
 
 namespace ExposureRender
 {
 
-class Segments
+class ClippingSegments
 {	
 public:
-	HOST_DEVICE Segments()
+	HOST_DEVICE ClippingSegments()
 	{
 	}
 
-	HOST_DEVICE Segments& operator = (const Segments& Other)
+	HOST_DEVICE ClippingSegments& operator = (const ClippingSegments& Other)
 	{
-		this->Start	= Other.Start;
-		this->End	= Other.End;
+		for (int i = 0; i < MAX_NO_CLIPPING_SEGMENTS; i++)
+			this->Segments[i] = Other.Segments[i];
+
+		this->NoSegments = Other.NoSegments;
 
 		return *this;
 	}
 
-	HOST_DEVICE bool Inside(const float& T) const
+	HOST_DEVICE bool Inside(const float& T, float& MaxT) const
 	{
-		return T >= this->Start && T < this->End;
+		bool Inside = false;
+
+		float TempMaxT = 0.0f;
+
+		for (int i = 0; i < MAX_NO_CLIPPING_SEGMENTS; i++)
+		{
+			if (this->Segments[i].Inside(T, TempMaxT) && TempMaxT > MaxT)
+			{
+				Inside = true;
+				MaxT = TempMaxT;
+			}
+		}
+
+		return Inside;
 	}
 
-	Segment	Segments[];
-	int		NoSegments;
+	Segment		Segments[MAX_NO_CLIPPING_SEGMENTS];
+	int			NoSegments;
 };
 
 }

@@ -23,47 +23,4 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE void SampleShape(const Shape& Shape, const Vec3f& SampleUVW, SurfaceSample& SurfaceSample)
-{
-	switch (Shape.Type)
-	{
-		case Enums::Plane:		SamplePlane(SurfaceSample, SampleUVW, Vec2f(Shape.Size[0], Shape.Size[1]));					break;
-		case Enums::Disk:		SampleDisk(SurfaceSample, SampleUVW, Shape.OuterRadius);									break;
-		case Enums::Ring:		SampleRing(SurfaceSample, SampleUVW, Shape.InnerRadius, Shape.OuterRadius);					break;
-		case Enums::Box:		SampleBox(SurfaceSample, SampleUVW, Vec3f(Shape.Size[0], Shape.Size[1], Shape.Size[2]));	break;
-		case Enums::Sphere:		SampleSphere(SurfaceSample, SampleUVW, Shape.OuterRadius);									break;
-//		case Enums::Cylinder:	SampleCylinder(SurfaceSample, SampleUVW, Shape.OuterRadius, Shape.Size[2]);					break;
-	}
-}
-
-HOST_DEVICE void IntersectShape(const Shape& Shape, const Ray& R, Intersection& Intersection)
-{
-	switch (Shape.Type)
-	{
-		case Enums::Plane:		IntersectPlane(R, Shape.OneSided, Vec2f(Shape.Size[0], Shape.Size[1]), Intersection);		break;
-		case Enums::Disk:		IntersectDisk(R, Shape.OneSided, Shape.OuterRadius, Intersection);							break;
-		case Enums::Ring:		IntersectRing(R, Shape.OneSided, Shape.InnerRadius, Shape.OuterRadius, Intersection);		break;
-		case Enums::Box:		IntersectBox(R, Vec3f(Shape.Size[0], Shape.Size[1], Shape.Size[2]), Intersection);			break;
-		case Enums::Sphere:		IntersectSphere(R, Shape.OuterRadius, Intersection);										break;
-//		case Enums::Cylinder:	IntersectCylinder(R, Shape.OuterRadius, Shape.Size[1], Intersection);						break;
-	}
-}
-
-HOST_DEVICE bool IntersectsShape(const Shape& Shape, const Ray& R)
-{
-	Intersection Intersection;
-
-	switch (Shape.Type)
-	{
-		case Enums::Plane:		 IntersectPlane(R, Shape.OneSided, Vec2f(Shape.Size[0], Shape.Size[1]), Intersection);		break;
-		case Enums::Disk:		 IntersectDisk(R, Shape.OneSided, Shape.OuterRadius, Intersection);							break;
-		case Enums::Ring:		 IntersectRing(R, Shape.OneSided, Shape.InnerRadius, Shape.OuterRadius, Intersection);		break;
-		case Enums::Box:		 IntersectBox(R, Vec3f(Shape.Size[0], Shape.Size[1], Shape.Size[2]), Intersection);			break;
-		case Enums::Sphere:		 IntersectSphere(R, Shape.OuterRadius, Intersection);										break;
-//		case Enums::Cylinder:	 IntersectCylinderP(R, Shape.OuterRadius, Shape.Size[1], Intersection);						break;
-	}
-
-	return Intersection.Valid;
-}
-
 }

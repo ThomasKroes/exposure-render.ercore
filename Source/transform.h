@@ -21,19 +21,19 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL Transform
 {
 public:
-	HOST Transform() :
+	HOST_DEVICE Transform() :
 		TM(),
 		InvTM()
 	{
 	}
 
-	HOST Transform(const Matrix44& M) :
+	HOST_DEVICE Transform(const Matrix44& M) :
 		TM(M),
 		InvTM(Matrix44::Inverse(M))
 	{
 	}
 
-	HOST Transform& operator = (const Transform& Other)
+	HOST_DEVICE Transform& operator = (const Transform& Other)
 	{
 		this->TM	= Other.TM;
 		this->InvTM	= Other.InvTM;
@@ -41,7 +41,7 @@ public:
 		return *this;
 	}
 
-	HOST void Set(const Matrix44& M)
+	HOST_DEVICE void Set(const Matrix44& M)
 	{
 		this->TM	= M;
 		this->InvTM	= Matrix44::Inverse(this->TM);

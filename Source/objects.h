@@ -18,23 +18,21 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void IntersectObject(const Object& Object, const Ray& R, ScatterEvent& RS)
+HOST_DEVICE_NI void IntersectObject(const Object& Object, const Ray& R, ScatterEvent& SE)
 {
-	Ray Rt = TransformRay(Object.Shape.Transform.InvTM, R);
-
 	Intersection Int;
 
-	IntersectShape(Object.Shape, Rt, Int);
+	Object.Shape.Intersect(R, Int);
 
 	if (Int.Valid)
 	{
-		RS.Valid	= true;
-		RS.N 		= TransformVector(Object.Shape.Transform.TM, Int.N);
-		RS.P 		= TransformPoint(Object.Shape.Transform.TM, Int.P);
-		RS.T 		= Length(RS.P - R.O);
-		RS.Wo		= -R.D;
-		RS.Le		= ColorXYZf(0.0f);
-		RS.UV		= Int.UV;
+		SE.Valid	= true;
+		SE.N 		= Int.N;
+		SE.P 		= Int.P;
+		SE.T 		= Length(SE.P - R.O);
+		SE.Wo		= -R.D;
+		SE.Le		= ColorXYZf(0.0f);
+		SE.UV		= Int.UV;
 	}
 }
 
@@ -44,7 +42,7 @@ HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
 
 	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
 	{
-		const Object& Object = gpObjects[i];
+		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
 
 		ScatterEvent LocalRS(Enums::Object);
 
@@ -60,16 +58,13 @@ HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
 	}
 }
 
-HOST_DEVICE_NI bool IntersectsObject(const Object& Object, const Ray& R)
-{
-	return IntersectsShape(Object.Shape, TransformRay(Object.Shape.Transform.InvTM, R));
-}
-
 HOST_DEVICE_NI bool IntersectsObject(const Ray& R)
 {
 	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
 	{
-		if (IntersectsObject(gpObjects[i], R))
+		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
+
+		if (Object.Shape.Intersects(R))
 			return true;
 	}
 	

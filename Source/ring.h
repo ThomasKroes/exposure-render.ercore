@@ -13,60 +13,101 @@
 
 #pragma once
 
-#include "geometry.h"
-#include "disk.h"
+#include "plane.h"
 
 namespace ExposureRender
 {
 
-HOST_DEVICE void IntersectUnitRing(const Ray& R, const bool& OneSided, const float& InnerRadius, Intersection& Int)
-{
-	IntersectPlane(R, OneSided, Int);
+class EXPOSURE_RENDER_DLL Ring : public Plane
+{	
+public:
+	HOST_DEVICE Ring() :
+		Plane(),
+		InnerRadius(0.5f),
+		OuterRadius(1.0f)
+	{
+	}
 
-	if (Int.Valid && (Int.UV.Length() < InnerRadius || Int.UV.Length() >= 1.0f))
-		Int.Valid = false;
-}
+	HOST_DEVICE Ring(const float& InnerRadius, const float& OuterRadius) :
+		InnerRadius(InnerRadius),
+		OuterRadius(OuterRadius)
+	{
+	}
 
-HOST_DEVICE bool IntersectRingP(const Ray& R, const bool& OneSided, const float& InnerRadius, const float& OuterRadius, Intersection& Int)
-{
-	IntersectPlaneP(R, OneSided, Int);
+	HOST_DEVICE Ring& operator = (const Ring& Other)
+	{
+		this->InnerRadius	= Other.InnerRadius;
+		this->OuterRadius	= Other.OuterRadius;
 
-	if (Int.Valid && (Int.UV.Length() < InnerRadius || Int.UV.Length() > OuterRadius))
-		return false;
+		return *this;
+	}
 
-	return Int.Valid;
-}
+	HOST_DEVICE bool Intersects(const Ray& R) const
+	{
+		Intersection Int;
 
-HOST_DEVICE void IntersectRing(const Ray& R, const bool& OneSided, const float& InnerRadius, const float& OuterRadius, Intersection& Int)
-{
-	IntersectPlane(R, OneSided, Int);
+		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
+			return false;
 
-	if (Int.Valid && (Int.UV.Length() < InnerRadius || Int.UV.Length() > OuterRadius))
-		Int.Valid = false;
+		Int.NearT = (0.0f - R.O[2]) / R.D[2];
+		
+		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+			return false;
 
-	const float Diameter = 2.0f * OuterRadius;
+		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
+		Int.Valid	= true;
 
-	Int.UV /= Diameter;
-	Int.UV += Vec2f(0.5f);
-	Int.UV[0] = 1.0f - Int.UV[0]; 
-}
+		if (Int.Valid && (Int.UV.Length() < InnerRadius || Int.UV.Length() >= 1.0f))
+			Int.Valid = false;
+		
+		return Int.Valid;
+	}
 
-HOST_DEVICE void SampleUnitRing(SurfaceSample& SS, const Vec3f& UVW, const float& InnerRadius)
-{
-	float r = InnerRadius + (1.0f - InnerRadius) * sqrtf(UVW[0]);
-	float theta = 2.0f * PI_F * UVW[1];
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	{
+		Plane::Intersect(R, Int);
 
-	SS.P 	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
-	SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
-	SS.UV	= Vec2f(SS.P[0], SS.P[1]);
-}
+		if (Int.Valid && (Int.UV.Length() < this->InnerRadius || Int.UV.Length() > this->OuterRadius))
+			Int.Valid = false;
 
-HOST_DEVICE void SampleRing(SurfaceSample& SS, const Vec3f& UVW, const float& InnerRadius, const float& OuterRadius)
-{
-	SampleUnitRing(SS, UVW, InnerRadius / OuterRadius);
+		const float Diameter = 2.0f * this->OuterRadius;
 
-	SS.P *= OuterRadius;
-	SS.UV	= Vec2f(SS.P[0], SS.P[1]);
-}
+		Int.UV /= Diameter;
+		Int.UV += Vec2f(0.5f);
+		Int.UV[0] = 1.0f - Int.UV[0]; 
+	}
+
+	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW, const float& InnerRadius) const
+	{
+		float r = InnerRadius + (1.0f - InnerRadius) * sqrtf(UVW[0]);
+		float theta = 2.0f * PI_F * UVW[1];
+
+		SS.P 	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
+		SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
+		SS.UV	= Vec2f(SS.P[0], SS.P[1]);
+	}
+
+	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		this->SampleUnit(SS, UVW, this->InnerRadius / this->OuterRadius);
+
+		SS.P *= this->OuterRadius;
+		SS.UV	= Vec2f(SS.P[0], SS.P[1]);
+	}
+
+	HOST_DEVICE float GetArea() const
+	{
+		return (PI_F * (this->OuterRadius * this->OuterRadius)) - (PI_F * (this->InnerRadius * this->InnerRadius));
+	}
+
+	HOST_DEVICE bool GetOneSided() const
+	{
+		return Plane::GetOneSided();
+	}
+
+protected:
+	float	InnerRadius;
+	float	OuterRadius;
+};
 
 }

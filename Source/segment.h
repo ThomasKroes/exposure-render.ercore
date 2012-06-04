@@ -21,27 +21,33 @@ namespace ExposureRender
 class Segment
 {	
 public:
-	HOST_DEVICE Segment(const float& Start, const float& End) :
-		Start(Start),
-		End(max(Start, End))
+	HOST_DEVICE Segment(const float& Min, const float& Max) :
+		Start(Min),
+		End(max(Min, Max))
 	{
 	}
 
 	HOST_DEVICE Segment& operator = (const Segment& Other)
 	{
-		this->Start	= Other.Start;
-		this->End	= Other.End;
+		this->Min	= Other.Min;
+		this->Max	= Other.Max;
 
 		return *this;
 	}
 
-	HOST_DEVICE bool Inside(const float& T) const
+	HOST_DEVICE bool Inside(const float& T, float& MaxT) const
 	{
-		return T >= this->Start && T < this->End;
+		if (T >= this->Min && T < this->Max)
+		{
+			MaxT = this->Max;
+			return true;
+		}
+
+		return false;
 	}
 
-	float 	Start;
-	float 	End;
+	float 	Min;
+	float 	Max;
 };
 
 }

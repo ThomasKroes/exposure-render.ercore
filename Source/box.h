@@ -13,95 +13,195 @@
 
 #pragma once
 
+#include "intersection.h"
+#include "sample.h"
 #include "geometry.h"
 
 namespace ExposureRender
 {
 
-HOST_DEVICE void IntersectUnitBox(const Ray& R, Intersection& Int)
-{
-	const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
-	const Vec3f BottomT		= InvR * (Vec3f(-0.5f) - R.O);
-	const Vec3f TopT		= InvR * (Vec3f(0.5f) - R.O);
-	const Vec3f MinT		= TopT.Min(BottomT);
-	const Vec3f MaxT		= TopT.Max(BottomT);
-	const float LargestMinT = fmaxf(fmaxf(MinT[0], MinT[1]), fmaxf(MinT[0], MinT[2]));
-	const float LargestMaxT = fminf(fminf(MaxT[0], MaxT[1]), fminf(MaxT[0], MaxT[2]));
-
-	if (LargestMaxT < LargestMinT)
-		return;
-
-	Int.NearT	= LargestMinT > 0.0f ? LargestMinT : 0.0f;
-	Int.FarT	= LargestMaxT;
-
-	if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
-		return;
-
-	Int.Valid	= true;
-	Int.P		= R(Int.NearT);
-	Int.N		= Vec3f(0.0f, 0.0f, 1.0f);
-	Int.UV		= Vec2f(0.0f, 0.0f);
-}
-
-HOST_DEVICE void IntersectBox(const Ray& R, const Vec3f& MinAABB, const Vec3f& MaxAABB, Intersection& Int)
-{
-	const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
-	const Vec3f BottomT		= InvR * (MinAABB - R.O);
-	const Vec3f TopT		= InvR * (MaxAABB - R.O);
-	const Vec3f MinT		= TopT.Min(BottomT);
-	const Vec3f MaxT		= TopT.Max(BottomT);
-	const float LargestMinT = fmaxf(fmaxf(MinT[0], MinT[1]), fmaxf(MinT[0], MinT[2]));
-	const float LargestMaxT = fminf(fminf(MaxT[0], MaxT[1]), fminf(MaxT[0], MaxT[2]));
-
-	if (LargestMaxT < LargestMinT)
-		return;
-
-	Int.NearT	= LargestMinT > 0.0f ? LargestMinT : 0.0f;
-	Int.FarT	= LargestMaxT;
-
-	if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
-		return;
-
-	Int.Valid	= true;
-	Int.P		= R(Int.NearT);
-	Int.N		= Vec3f(0.0f);
-	Int.UV		= Vec2f(0.0f, 0.0f);
-
-	for (int i = 0; i < 3; i++)
+class EXPOSURE_RENDER_DLL Box
+{	
+public:
+	HOST_DEVICE Box() :
+		MinP(-0.5f),
+		MaxP(0.5f)
 	{
-		if (Int.P[i] <= MinAABB[i] + 0.0001f)
-			Int.N[i] = -1.0f;
-
-		if (Int.P[i] >= MaxAABB[i] - 0.0001f)
-			Int.N[i] = 1.0f;
 	}
-}
 
+	HOST_DEVICE Box(const Vec3f& Size) :
+		MinP(-0.5f * Size),
+		MaxP(0.5f * Size)
+	{
+	}
+
+	HOST_DEVICE Box(const Vec3f& MinP, const Vec3f& MaxP) :
+		MinP(MinP),
+		MaxP(MaxP)
+	{
+	}
+
+	HOST_DEVICE Box& operator = (const Box& Other)
+	{
+		this->MinP	= Other.MinP;
+		this->MaxP	= Other.MaxP;
+
+		return *this;
+	}
+
+	HOST_DEVICE bool Intersects(const Ray& R) const
+	{
+		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
+		const Vec3f BottomT		= InvR * (MinP - R.O);
+		const Vec3f TopT		= InvR * (MaxP - R.O);
+		const Vec3f MinT		= TopT.Min(BottomT);
+		const Vec3f MaxT		= TopT.Max(BottomT);
+		const float LargestMinT = max(max(MinT[0], MinT[1]), max(MinT[0], MinT[2]));
+		const float LargestMaxT = min(min(MaxT[0], MaxT[1]), min(MaxT[0], MaxT[2]));
+
+		if (LargestMaxT < LargestMinT)
+			return false;
+
+		const float NearT = LargestMinT > 0.0f ? LargestMinT : 0.0f;
+
+		if (NearT < R.MinT || NearT > R.MaxT)
+			return false;
+
+		return true;
+	}
+
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	{
+		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
+		const Vec3f BottomT		= InvR * (this->MinP - R.O);
+		const Vec3f TopT		= InvR * (this->MaxP - R.O);
+		const Vec3f MinT		= TopT.Min(BottomT);
+		const Vec3f MaxT		= TopT.Max(BottomT);
+		const float LargestMinT = max(max(MinT[0], MinT[1]), max(MinT[0], MinT[2]));
+		const float LargestMaxT = min(min(MaxT[0], MaxT[1]), min(MaxT[0], MaxT[2]));
+
+		if (LargestMaxT < LargestMinT)
+			return;
+
+		Int.NearT	= LargestMinT > 0.0f ? LargestMinT : 0.0f;
+		Int.FarT	= LargestMaxT;
+
+		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+			return;
+
+		Int.Valid	= true;
+		Int.P		= R(Int.NearT);
+		Int.N		= Vec3f(0.0f);
+		Int.UV		= Vec2f(0.0f, 0.0f);
+
+		for (int i = 0; i < 3; i++)
+		{
+			if (Int.P[i] <= MinP[i] + 0.0001f)
+				Int.N[i] = -1.0f;
+
+			if (Int.P[i] >= MaxP[i] - 0.0001f)
+				Int.N[i] = 1.0f;
+		}
+	}
+
+	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		int Side = (int)floorf(UVW[0] * 6.0f);
+
+		switch (Side)
+		{
+			case 0:
+			{
+				SS.P[0] = 0.5f;
+				SS.P[1] = -0.5f + UVW[2];
+				SS.P[2] = -0.5f + UVW[1];
+				SS.N	= Vec3f(1.0f, 0.0f, 0.0f);
+				break;
+			}
+
+			case 1:
+			{
+				SS.P[0] = -0.5f;
+				SS.P[1] = -0.5f + UVW[2];
+				SS.P[2] = -0.5f + UVW[1];
+				SS.N	= Vec3f(-1.0f, 0.0f, 0.0f);
+				break;
+			}
+
+			case 2:
+			{
+				SS.P[0] = -0.5f + UVW[1];
+				SS.P[1] = 0.5f;
+				SS.P[2] = -0.5f + UVW[2];
+				SS.N	= Vec3f(0.0f, 1.0f, 0.0f);
+				break;
+			}
+
+			case 3:
+			{
+				SS.P[0] = -0.5f + UVW[1];
+				SS.P[1] = -0.5f;
+				SS.P[2] = -0.5f + UVW[2];
+				SS.N	= Vec3f(0.0f, -1.0f, 0.0f);
+				break;
+			}
+
+			case 4:
+			{
+				SS.P[0] = -0.5f + UVW[1];
+				SS.P[1] = -0.5f + UVW[2];
+				SS.P[2] = 0.5f;
+				SS.N	= Vec3f(0.0f, 0.0f, 1.0f);
+				break;
+			}
+
+			case 5:
+			{
+				SS.P[0] = -0.5f + UVW[1];
+				SS.P[1] = -0.5f + UVW[2];
+				SS.P[2] = -0.5f;
+				SS.N	= Vec3f(0.0f, 0.0f, -1.0f);
+				break;
+			}
+		}
+
+		SS.UV = Vec2f(UVW[1], UVW[2]);
+	}
+
+	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		SampleUnit(SS, UVW);
+
+		SS.P = this->MinP + SS.P * (this->MaxP - this->MinP);
+	}
+
+	HOST_DEVICE float GetArea() const
+	{
+		const Vec3f Size = this->MaxP - this->MinP;
+		return (2.0f * Size[0] * Size[1]) + (2.0f * Size[0] * Size[2]) + (2.0f * Size[1] * Size[2]);
+	}
+
+	HOST_DEVICE bool GetOneSided() const
+	{
+		return false;
+	}
+
+protected:
+	Vec3f	MinP;
+	Vec3f	MaxP;
+};
+
+/*
 HOST_DEVICE void IntersectBox(const Ray& R, const Vec3f& Size, Intersection& Int)
 {
 	IntersectBox(R, -0.5f * Size, 0.5f * Size, Int);
 }
 
-HOST_DEVICE bool IntersectBoxP(const Ray& R, const Vec3f& MinAABB, const Vec3f& MaxAABB)
-{
-	const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
-	const Vec3f BottomT		= InvR * (MinAABB - R.O);
-	const Vec3f TopT		= InvR * (MaxAABB - R.O);
-	const Vec3f MinT		= TopT.Min(BottomT);
-	const Vec3f MaxT		= TopT.Max(BottomT);
-	const float LargestMinT = fmaxf(fmaxf(MinT[0], MinT[1]), fmaxf(MinT[0], MinT[2]));
-	const float LargestMaxT = fminf(fminf(MaxT[0], MaxT[1]), fminf(MaxT[0], MaxT[2]));
 
-	if (LargestMaxT < LargestMinT)
-		return false;
 
-	const float NearT = LargestMinT > 0.0f ? LargestMinT : 0.0f;
 
-	if (NearT < R.MinT || NearT > R.MaxT)
-		return false;
 
-	return true;
-}
+
 
 HOST_DEVICE bool IntersectBoxP(Ray R, Vec3f Size)
 {
@@ -184,5 +284,5 @@ HOST_DEVICE void SampleBox(SurfaceSample& SS, Vec3f UVW, Vec3f Size)
 
 	SS.P *= Size;
 }
-
+*/
 }

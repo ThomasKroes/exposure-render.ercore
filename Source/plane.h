@@ -19,86 +19,104 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE void IntersectPlaneP(const Ray& R, const bool& OneSided, Intersection& Int)
-{
-	if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
-		return;
-
-	Int.NearT = (0.0f - R.O[2]) / R.D[2];
-	
-	if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
-		return;
-
-	Int.UV		= Vec2f(Int.P[0], Int.P[1]);
-	Int.Valid	= true;
-}
-
-HOST_DEVICE void IntersectPlane(const Ray& R, const bool& OneSided, Intersection& Int)
-{
-	if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
-		return;
-
-	Int.NearT = (0.0f - R.O[2]) / R.D[2];
-	
-	if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
-		return;
-
-	Int.P 	= R(Int.NearT);
-	Int.UV	= Vec2f(Int.P[0], Int.P[1]);
-	Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
-
-	if (OneSided && R.D[2] >= 0.0f)
+class EXPOSURE_RENDER_DLL Plane
+{	
+public:
+	HOST_DEVICE Plane() :
+		Size(1.0f),
+		OneSided(false)
 	{
-		Int.Front	= false;
-		Int.N		= Vec3f(0.0f, 0.0f, -1.0f);
 	}
 
-	Int.Valid = true;
-}
+	HOST_DEVICE Plane(const Vec2f& Size, const bool& OneSided) :
+		Size(Size),
+		OneSided(OneSided)
+	{
+	}
 
-HOST_DEVICE bool IntersectPlaneP(const Ray& R, const bool& OneSided, const Vec2f& Size)
-{
-	Intersection Int;
-	
-	IntersectPlaneP(R, OneSided, Int);
+	HOST_DEVICE Plane& operator = (const Plane& Other)
+	{
+		this->Size		= Other.Size;
+		this->OneSided	= Other.OneSided;
 
-	if (Int.Valid && (Int.UV[0] < -0.5f * Size[0] || Int.UV[0] > 0.5f * Size[0] || Int.UV[1] < -0.5f * Size[1] || Int.UV[1] > 0.5f * Size[1]))
-		return false;
-	
-	return true;
-}
+		return *this;
+	}
 
-HOST_DEVICE void IntersectPlane(const Ray& R, const bool& OneSided, const Vec2f& Size, Intersection& Int)
-{
-	IntersectPlane(R, OneSided, Int);
+	HOST_DEVICE bool Intersects(const Ray& R) const
+	{	
+		Intersection Int;
 
-	if (Int.Valid && (Int.UV[0] < -0.5f * Size[0] || Int.UV[0] > 0.5f * Size[0] || Int.UV[1] < -0.5f * Size[1] || Int.UV[1] > 0.5f * Size[1]))
-		Int.Valid = false;
+		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
+			return false;
 
-	Int.UV[0] /= Size[0];
-	Int.UV[1] /= Size[1];
+		Int.NearT = (0.0f - R.O[2]) / R.D[2];
+		
+		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+			return false;
 
-	Int.UV += Vec2f(0.5f);
-	Int.UV[0] = 1.0f - Int.UV[0];
-}
+		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
+		Int.Valid	= true;
 
-HOST_DEVICE bool InsidePlane(Vec3f P)
-{
-	return P[2] > 0.0f;
-}
+		if (Int.Valid && (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1]))
+			return false;
+		
+		return true;
+	}
 
-HOST_DEVICE void SampleUnitPlane(SurfaceSample& SS, const Vec3f& UVW)
-{
-	SS.P 	= Vec3f(-0.5f + UVW[0], -0.5f + UVW[1], 0.0f);
-	SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
-	SS.UV	= Vec2f(UVW[0], UVW[1]);
-}
+	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	{
+		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
+			return;
 
-HOST_DEVICE void SamplePlane(SurfaceSample& SS, const Vec3f& UVW, const Vec2f& Size)
-{
-	SampleUnitPlane(SS, UVW);
+		Int.NearT = (0.0f - R.O[2]) / R.D[2];
+		
+		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+			return;
 
-	SS.P *= Vec3f(Size[0], Size[1], 0.0f);
-}
+		Int.P 	= R(Int.NearT);
+		Int.UV	= Vec2f(Int.P[0], Int.P[1]);
+		Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
+
+		if (this->OneSided && R.D[2] >= 0.0f)
+		{
+			Int.Front	= false;
+			Int.N		= Vec3f(0.0f, 0.0f, -1.0f);
+		}
+
+		Int.Valid = true;
+
+		if (Int.Valid && (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1]))
+			Int.Valid = false;
+
+		Int.UV[0] /= this->Size[0];
+		Int.UV[1] /= this->Size[1];
+
+		Int.UV += Vec2f(0.5f);
+		Int.UV[0] = 1.0f - Int.UV[0];
+	}
+
+	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
+	{
+		SS.P 	= Vec3f(-0.5f + UVW[0], -0.5f + UVW[1], 0.0f);
+		SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
+		SS.UV	= Vec2f(UVW[0], UVW[1]);
+
+		SS.P *= Vec3f(this->Size[0], this->Size[1], 0.0f);
+	}
+
+	HOST_DEVICE float GetArea() const
+	{
+		return this->Size[0] * this->Size[1];
+	}
+
+	HOST_DEVICE bool GetOneSided() const
+	{
+		return this->OneSided;
+	}
+
+protected:
+	Vec2f	Size;
+	bool	OneSided;
+};
 
 }
