@@ -36,7 +36,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[]		= "C://Volumes//backpack.mhd";
+char gVolumeFile[]		= "C://Volumes//engine.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -149,7 +149,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.9f;
+	const float GlossinessLevel = 0.3f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -214,7 +214,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErTexture> RimLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
 	RimLightTexture->SetTextureType(ExposureRender::Enums::Procedural);
-	RimLightTexture->SetProceduralType(ExposureRender::Enums::Gradient);
+	RimLightTexture->SetProceduralType(ExposureRender::Enums::Uniform);
 	RimLightTexture->SetOutputLevel(1.0f);
 
 	vtkSmartPointer<vtkColorTransferFunction> Gradient = vtkSmartPointer<vtkColorTransferFunction>::New();
@@ -251,7 +251,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
 	KeyLight->SetOuterRadius(0.01f);
-	KeyLight->SetOneSided(true);
+	KeyLight->SetOneSided(false);
 	KeyLight->SetElevation(60.0f);
 	KeyLight->SetAzimuth(250.0f);
 	KeyLight->SetOffset(1.5f);
@@ -259,22 +259,22 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
-	KeyLight->SetEnabled(true);
+	KeyLight->SetEnabled(false);
 
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float RimLightSize = 0.01f;
+	const float RimLightSize = 1.0f;
 
-	RimLight->SetAlignmentType(ExposureRender::Enums::AxisAlign);
+	RimLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	RimLight->SetAxis(ExposureRender::Enums::Y);
 	RimLight->SetPosition(0.0f, 0.0f, 0.0f);
-	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
+	RimLight->SetShapeType(ExposureRender::Enums::Plane);
 	RimLight->SetOneSided(false);
 	RimLight->SetOuterRadius(20.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
-	RimLight->SetOffset(30.0f);
-	RimLight->SetMultiplier(5.0f);
+	RimLight->SetOffset(3.0f);
+	RimLight->SetMultiplier(50.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());

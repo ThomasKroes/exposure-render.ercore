@@ -21,7 +21,7 @@ namespace ExposureRender
 class Segment
 {	
 public:
-	HOST_DEVICE Segment(const float& Min, const float& Max) :
+	HOST_DEVICE Segment(const float& Min = 0.0f, const float& Max = 0.0f) :
 		Min(Min),
 		Max(max(Min, Max))
 	{
@@ -51,6 +51,47 @@ public:
 
 		return false;
 	}
+
+	/*
+	HOST_DEVICE bool operator < (const float& Other)
+	{
+		return Other < this->Min;
+	};
+
+	HOST_DEVICE bool operator > (const float& Other)
+	{
+		return Other > this->Max;
+	};
+
+	HOST_DEVICE bool Overlaps(const Segment& Segment, OverlapType& OverlapType)
+	{
+		if (Segment.Min < this->Min && Segment.Max > this->Max)
+		{
+			OverlapType = Complete;
+			return true;
+		}
+
+		if (Segment.Min > this->Min && Segment.Min < this->Max)
+		{
+			OverlapType = Right;
+			return true;
+		}
+
+		if (Segment.Max > this->Min && Segment.Max < this->Max)
+		{
+			OverlapType = Left;
+			return true;
+		}
+
+		if (Segment.Min == this->Min && Segment.Max == this->Max)
+		{
+			OverlapType = Exact;
+			return true;
+		}
+
+		return false;
+	}
+	*/
 
 	float 	Min;
 	float 	Max;

@@ -19,6 +19,7 @@
 #include "transferfunction.h"
 #include "shapes.h"
 #include "scatterevent.h"
+#include "clippingobjects.h"
 
 namespace ExposureRender
 {
