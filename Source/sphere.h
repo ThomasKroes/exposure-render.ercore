@@ -43,50 +43,44 @@ public:
 
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
-		// Compute A, B and C coefficients
-		float a = Dot(R.D, R.D);
-		float b = 2 * Dot(R.D, R.O);
-		float c = Dot(R.O, R.O) - (this->Radius * this->Radius);
+		const float A = Dot(R.D, R.D);
+		const float B = 2 * Dot(R.D, R.O);
+		const float C = Dot(R.O, R.O) - (this->Radius * this->Radius);
 
-		//Find discriminant
-		const float disc = b * b - 4 * a * c;
+		const float D = B * B - 4 * A * C;
 	    
-		// if discriminant is negative there are no real roots, so return false, as ray misses sphere
-		if (disc < 0)
+		if (D < 0)
 			return false;
 
-		// compute q as described above
-		float distSqrt = sqrtf(disc);
-		float q;
+		const float SqrtD = sqrtf(D);
+		
+		float Q = 0.0f;
 
-		if (b < 0)
-			q = (-b - distSqrt) / 2.0f;
+		if (B < 0)
+			Q = 0.5f * (-B - SqrtD);
 		else
-			q = (-b + distSqrt) / 2.0f;
+			Q = 0.5f * (-B + SqrtD);
 
-		// compute t0 and t1
-		float t0 = q / a;
-		float t1 = c / q;
+		float Hit0 = Q / A;
+		float Hit1 = C / Q;
 
-		// make sure t0 is smaller than t1
-		if (t0 > t1)
+		if (Hit0 > Hit1)
 		{
-			// if t0 is bigger than t1 swap them around
-			float temp = t0;
-			t0 = t1;
-			t1 = temp;
+			const float TempHit = Hit0;
+			Hit0 = Hit1;
+			Hit1 = TempHit;
 		}
 
-		float NearT;
+		float NearT = 0.0f;
 
-		if (t0 >= R.MinT && t0 < R.MaxT)
+		if (Hit0 >= R.MinT && Hit0 < R.MaxT)
 		{
-			NearT = t0;
+			NearT = Hit0;
 		}
 		else
 		{
-			if (t1 >= R.MinT && t1 < R.MaxT)
-				NearT = t1;
+			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
+				NearT = Hit1;
 			else
 				return false;
 		}
@@ -99,55 +93,48 @@ public:
 
 	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
 	{
-		// Compute A, B and C coefficients
-		float a = Dot(R.D, R.D);
-		float b = 2 * Dot(R.D, R.O);
-		float c = Dot(R.O, R.O) - (this->Radius * this->Radius);
+		const float A = Dot(R.D, R.D);
+		const float B = 2 * Dot(R.D, R.O);
+		const float C = Dot(R.O, R.O) - (this->Radius * this->Radius);
 
-		//Find discriminant
-		const float disc = b * b - 4 * a * c;
+		const float D = B * B - 4 * A * C;
 	    
-		// if discriminant is negative there are no real roots, so return false, as ray misses sphere
-		if (disc < 0)
+		if (D < 0)
 			return;
 
-		// compute q as described above
-		float distSqrt = sqrtf(disc);
-		float q;
+		const float SqrtD = sqrtf(D);
+		
+		float Q = 0.0f;
 
-		if (b < 0)
-			q = (-b - distSqrt) / 2.0f;
+		if (B < 0)
+			Q = 0.5f * (-B - SqrtD);
 		else
-			q = (-b + distSqrt) / 2.0f;
+			Q = 0.5f * (-B + SqrtD);
 
-		// compute t0 and t1
-		float t0 = q / a;
-		float t1 = c / q;
+		float Hit0 = Q / A;
+		float Hit1 = C / Q;
 
-		// make sure t0 is smaller than t1
-		if (t0 > t1)
+		if (Hit0 > Hit1)
 		{
-			// if t0 is bigger than t1 swap them around
-			float temp = t0;
-			t0 = t1;
-			t1 = temp;
+			const float TempHit = Hit0;
+			Hit0 = Hit1;
+			Hit1 = TempHit;
 		}
 
-
-		if (t0 >= R.MinT && t0 < R.MaxT)
+		if (Hit0 >= R.MinT && Hit0 < R.MaxT)
 		{
-			Int.HitT[0] = t0;
+			Int.Add(Hit0);
+
+			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
+				Int.Add(Hit1);
 		}
 		else
 		{
-			if (t1 >= R.MinT && t1 < R.MaxT)
-				Int.HitT[1] = t1;
+			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
+				Int.Add(Hit1);
 			else
 				return;
 		}
-
-		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
-			return;
 
 		Int.Valid	= true;
 		Int.P		= R(Int.HitT[0]);
@@ -188,22 +175,5 @@ public:
 protected:
 	float	Radius;
 };
-
-
-/*
-
-
-HOST_DEVICE void IntersectUnitSphere(const Ray& R, Intersection& Int)
-{
-	IntersectSphere(R, 1.0f, Int);
-}
-
-
-HOST_DEVICE bool InsideSphere(const Vec3f& P, const float& Radius)
-{
-	return Length(P) < Radius;
-}
-*/
-
 
 }

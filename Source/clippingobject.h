@@ -37,6 +37,8 @@ public:
 		this->Shape		= Other.Shape;
 		this->Invert	= Other.Invert;
 
+		this->Shape.Update();
+
 		return *this;
 	}
 

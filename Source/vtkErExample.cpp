@@ -37,7 +37,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C://Volumes//backpack.mhd";
+char gVolumeFile[] = "C://Volumes//manix.mhd";
 
 void ConfigureER(vtkRenderer* Renderer);
 void LoadVolume(vtkErTracer* Tracer);
@@ -109,12 +109,12 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 5.0f;
+	const float StepSize = 3.0f;
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(ExposureRender::Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(5);
+	VolumeProperty->SetShadingMode(ExposureRender::Enums::BrdfOnly);
+	VolumeProperty->SetDensityScale(500);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -131,7 +131,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	for (int i = 0; i < 5; i++)
 	{
-		Diffuse->AddHSVPoint(i * 400.0f, rand() / (float)RAND_MAX, 1.0f, 1.0f);
+		Diffuse->AddHSVPoint(i * 1000.0f, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
 
 	/*
@@ -236,7 +236,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
 
-	JpegReader->SetFileName("C:\\Users\\Thomas\\Desktop\\lkSJ0.jpg");
+	JpegReader->SetFileName("C:\\Users\\Thomas Kroes\\Desktop\\cubemap-forest-env.jpg");
 	JpegReader->Update();
 
 	vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
@@ -249,7 +249,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 	
-	const float KeyLightSize = 0.1;
+	const float KeyLightSize = 1;
 
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
@@ -258,7 +258,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(60.0f);
 	KeyLight->SetAzimuth(250.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(2.0f);
+	KeyLight->SetMultiplier(20.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
@@ -268,16 +268,16 @@ void CreateLighting(vtkErTracer* Tracer)
 	
 	const float RimLightSize = 0.1f;
 
-	RimLight->SetAlignmentType(ExposureRender::Enums::Spherical);
+	RimLight->SetAlignmentType(ExposureRender::Enums::AxisAlign);
 	RimLight->SetAxis(ExposureRender::Enums::Y);
 	RimLight->SetPosition(0.0f, 0.0f, 0.0f);
-	RimLight->SetShapeType(ExposureRender::Enums::Plane);
-	RimLight->SetOneSided(false);
-	RimLight->SetOuterRadius(20.0f);
+	RimLight->SetShapeType(ExposureRender::Enums::Sphere);
+	RimLight->SetOneSided(true);
+	RimLight->SetRadius(10.0f);
 	RimLight->SetElevation(45.0f);
 	RimLight->SetAzimuth(125.0f);
 	RimLight->SetOffset(3.0f);
-	RimLight->SetMultiplier(5000.0f);
+	RimLight->SetMultiplier(1.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(ExposureRender::Enums::Lux);
 	RimLight->SetInputConnection(RimLightTexture->GetOutputPort());
@@ -329,7 +329,19 @@ void CreateObjects(vtkErTracer* Tracer)
 
 void CreateClippingObjects(vtkErTracer* Tracer)
 {
-	vtkSmartPointer<vtkErClippingObject> ClippingObject = vtkSmartPointer<vtkErClippingObject>::New();
-	
-	Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject->GetOutputPort());
+	return;
+
+	for (int i = 0; i < 1; i++)
+	{
+		vtkSmartPointer<vtkErClippingObject> ClippingObject = vtkSmartPointer<vtkErClippingObject>::New();
+
+		ClippingObject->SetAlignmentType(Enums::AxisAlign);
+		ClippingObject->SetAzimuth(0);
+		ClippingObject->SetSize(100, 100, 100);
+		ClippingObject->SetOffset(0.2f);
+		ClippingObject->SetPosition(0, -0.01, 0);
+		ClippingObject->SetAutoFlip(true);
+
+		Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject->GetOutputPort());
+	}
 }

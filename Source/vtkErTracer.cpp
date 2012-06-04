@@ -19,6 +19,7 @@
 #include "vtkErVolume.h"
 #include "vtkErLight.h"
 #include "vtkErObject.h"
+#include "vtkErClippingObject.h"
 
 #include "vtkgl.h"
 
@@ -251,6 +252,21 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		{
 			this->Tracer.ObjectIDs[this->Tracer.ObjectIDs.Count] = ObjectData->Bindable.ID;
 			this->Tracer.ObjectIDs.Count++;
+		}
+	}
+
+	const int NoClippingObjects = this->GetNumberOfInputConnections(ClippingObjectsPort);
+
+	this->Tracer.ClippingObjectIDs.Count = 0;
+	
+	for (int i = 0; i < NoClippingObjects; i++)
+	{
+		vtkErClippingObjectData* ClippingObjectData = vtkErClippingObjectData::SafeDownCast(this->GetInputDataObject(ClippingObjectsPort, i));
+
+		if (ClippingObjectData && ClippingObjectData->Bindable.Enabled)
+		{
+			this->Tracer.ClippingObjectIDs[this->Tracer.ClippingObjectIDs.Count] = ClippingObjectData->Bindable.ID;
+			this->Tracer.ClippingObjectIDs.Count++;
 		}
 	}
 
