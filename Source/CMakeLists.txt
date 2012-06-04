@@ -78,6 +78,8 @@ SET(General
 	timestamp.h
 	kelvin.h
 	enums.h
+	segment.h
+	segments.h
 	color.h
 	exposurerender.h
 	exposurerender.cpp

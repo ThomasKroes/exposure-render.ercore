@@ -71,6 +71,7 @@ namespace ExposureRender
 #define MAX_NO_TF_NODES				128
 #define NO_COLOR_COMPONENTS			4
 #define MAX_NO_VOLUMES				8
+#define MAX_NO_CLIPPING_SEGMENTS	8
 #define UAH							1
 
 #ifdef _MSC_VER
