@@ -83,14 +83,14 @@ public:
 		if (LargestMaxT < LargestMinT)
 			return;
 
-		Int.NearT	= LargestMinT > 0.0f ? LargestMinT : 0.0f;
-		Int.FarT	= LargestMaxT;
+		Int.Add(LargestMinT > 0.0f ? LargestMinT : 0.0f);
+		Int.Add(LargestMaxT);
 
-		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
 			return;
 
 		Int.Valid	= true;
-		Int.P		= R(Int.NearT);
+		Int.P		= R(Int.HitT[0]);
 		Int.N		= Vec3f(0.0f);
 		Int.UV		= Vec2f(0.0f, 0.0f);
 

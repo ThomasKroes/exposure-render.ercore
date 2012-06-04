@@ -25,51 +25,47 @@ namespace ExposureRender
 class Intersection
 {
 public:
-	HOST_DEVICE Intersection()
+	HOST_DEVICE Intersection() :
+		Valid(false),
+		Front(true),
+		NoIntersections(0),
+		P(),
+		N(),
+		UV()
 	{
-		this->SetInvalid();
-	}
-
-	HOST_DEVICE void SetValid(float NearT, Vec3f P, Vec3f N, Vec2f UV = Vec2f(0.0f))
-	{
-		this->Valid		= true;
-		this->NearT		= NearT;
-		this->P			= P;
-		this->N			= N;
-		this->UV		= UV;
-	}
-
-	HOST_DEVICE void SetInvalid()
-	{
-		this->Valid		= false;
-		this->Front		= true;
-		this->NearT		= 0.0f;
-		this->FarT		= FLT_MAX;
-		this->P			= Vec3f();
-		this->N			= Vec3f();
-		this->UV		= Vec2f(0.0f);
 	}
 
 	HOST_DEVICE Intersection& Intersection::operator = (const Intersection& Other)
 	{
-		this->Valid			= Other.Valid;	
-		this->Front			= Other.Front;
-		this->NearT			= Other.NearT;
-		this->FarT			= Other.FarT;
-		this->P				= Other.P;
-		this->N				= Other.N;
-		this->UV			= Other.UV;
+		this->Valid				= Other.Valid;	
+		this->Front				= Other.Front;
+
+		for (int i = 0; i < MAX_NO_INT; i++)
+			this->HitT[i] = Other.HitT[i];
+
+		this->NoIntersections	= Other.NoIntersections;
+		this->P					= Other.P;
+		this->N					= Other.N;
+		this->UV				= Other.UV;
 
 		return *this;
 	}
 
-	bool	Valid;
-	bool	Front;
-	float	NearT;
-	float	FarT;
-	Vec3f	P;
-	Vec3f	N;
-	Vec2f	UV;
+	HOST_DEVICE void Add(const float& T)
+	{
+		if (NoIntersections >= MAX_NO_INT)
+			return;
+
+		this->HitT[NoIntersections++] = T;
+	}
+
+	bool		Valid;
+	bool		Front;
+	float		HitT[MAX_NO_INT];
+	int			NoIntersections;
+	Vec3f		P;
+	Vec3f		N;
+	Vec2f		UV;
 };
 
 }

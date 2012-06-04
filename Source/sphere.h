@@ -136,21 +136,21 @@ public:
 
 		if (t0 >= R.MinT && t0 < R.MaxT)
 		{
-			Int.NearT = t0;
+			Int.HitT[0] = t0;
 		}
 		else
 		{
 			if (t1 >= R.MinT && t1 < R.MaxT)
-				Int.NearT = t1;
+				Int.HitT[1] = t1;
 			else
 				return;
 		}
 
-		if (Int.NearT < R.MinT || Int.NearT > R.MaxT)
+		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
 			return;
 
 		Int.Valid	= true;
-		Int.P		= R(Int.NearT);
+		Int.P		= R(Int.HitT[0]);
 		Int.N		= Normalize(Int.P);
 		Int.UV		= SphericalToUV(Int.P);
 	}

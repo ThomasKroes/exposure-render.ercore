@@ -22,8 +22,8 @@ class Segment
 {	
 public:
 	HOST_DEVICE Segment(const float& Min, const float& Max) :
-		Start(Min),
-		End(max(Min, Max))
+		Min(Min),
+		Max(max(Min, Max))
 	{
 	}
 
@@ -33,6 +33,12 @@ public:
 		this->Max	= Other.Max;
 
 		return *this;
+	}
+
+	HOST_DEVICE void Set(const float& Min, const float& Max)
+	{
+		this->Min	= Min;
+		this->Max	= max(Min, Max);
 	}
 
 	HOST_DEVICE bool Inside(const float& T, float& MaxT) const

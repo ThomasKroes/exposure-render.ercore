@@ -15,6 +15,7 @@
 
 #include "shapes.h"
 #include "alignment.h"
+#include "segment.h"
 
 namespace ExposureRender
 {
@@ -103,6 +104,18 @@ public:
 
 		Intersection.P	= TransformPoint(this->Transform.TM, Intersection.P);
 		Intersection.N	= TransformVector(this->Transform.TM, Intersection.N);
+	}
+
+	HOST_DEVICE void Intersect(const Ray& R, Segment& Segment) const
+	{
+		Intersection Int;
+
+		this->Intersect(R, Int);
+
+		if (Int.Valid)
+		{
+//			Segment.Set(max, min(Int.FarT, R.MaxT));
+		}
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
