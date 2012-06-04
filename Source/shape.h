@@ -53,6 +53,8 @@ public:
 		this->Transform		= Other.Transform;
 		this->Area			= Other.Area;
 
+		this->Update();
+
 		return *this;
 	}
 
@@ -117,8 +119,6 @@ public:
 
 		if (Int.Valid)
 		{
-			CS.Segments[0].Set(0.0f, Int.HitT[0]);
-
 			switch (Int.NoIntersections)
 			{
 				case 0:
@@ -126,13 +126,10 @@ public:
 
 				case 1:
 				{
-					/*
-					if (Dot(R.D, Int.N) > 0.0f)
-						CS.Add(Segment(Int.HitT[0], R.MaxT));
+					if (Dot(R.D, Int.N) < 0.0f)
+						CS.Add(Segment(R.MinT, Int.HitT[0]));
 					else
-					*/
-					
-					// CS.Add(Segment(0.0f, Int.HitT[0]));
+						CS.Add(Segment(Int.HitT[0], R.MaxT));
 
 					break;
 				}

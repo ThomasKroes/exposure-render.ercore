@@ -31,7 +31,9 @@ public:
 		Elevation(45.0f),
 		Azimuth(0.0f),
 		Offset(0.0f),
-		ManualTM()
+		ManualTM(),
+		RelativeToCamera(false)
+		CameraTM()
 	{
 	}
 
@@ -42,16 +44,18 @@ public:
 	
 	HOST_DEVICE Alignment& operator = (const Alignment& Other)
 	{
-		this->Type			= Other.Type;
-		this->Axis			= Other.Axis;
-		this->AutoFlip		= Other.AutoFlip;
-		this->Position		= Other.Position;
-		this->Target		= Other.Target;
-		this->Up			= Other.Up;
-		this->Elevation		= Other.Elevation;
-		this->Azimuth		= Other.Azimuth;
-		this->Offset		= Other.Offset;
-		this->ManualTM		= Other.ManualTM;
+		this->Type				= Other.Type;
+		this->Axis				= Other.Axis;
+		this->AutoFlip			= Other.AutoFlip;
+		this->Position			= Other.Position;
+		this->Target			= Other.Target;
+		this->Up				= Other.Up;
+		this->Elevation			= Other.Elevation;
+		this->Azimuth			= Other.Azimuth;
+		this->Offset			= Other.Offset;
+		this->ManualTM			= Other.ManualTM;
+		this->RelativeToCamera	= Other.RelativeToCamera;
+		this->CameraTM			= Other.CameraTM;
 
 		return *this;
 	}
@@ -180,6 +184,8 @@ public:
 	float					Azimuth;
 	float					Offset;
 	Matrix44				ManualTM;
+	bool					RelativeToCamera;
+	Matrix44				CameraTM;
 };
 
 }

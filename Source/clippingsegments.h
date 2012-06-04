@@ -57,47 +57,6 @@ public:
 		this->NoSegmentNodes++;
 	}
 
-	HOST_DEVICE void Build()
-	{
-		if (this->NoSegmentNodes <= 0)
-			return;
-
-		Vec2f TempSegmentNodes[2 * MAX_NO_CLIPPING_SEGMENTS];
-		
-		for (int i = 0; i < this->NoSegments; i++)
-			TempSegmentNodes[i] = this->SegmentNodes[i];
-
-		for (int i = 0; i < this->NoSegmentNodes; i++)
-		{
-			float Current = FLT_MAX;
-
-			int ID = 0;
-
-			for (int j = 0; j < this->NoSegmentNodes; j++)
-			{
-				if (this->SegmentNodes[j][0] < Current && this->SegmentNodes[j][1] != -1)
-				{
-					ID = j;
-					Current = this->SegmentNodes[j][0];
-				}
-			}
-
-			TempSegmentNodes[i] = this->SegmentNodes[ID];
-			this->SegmentNodes[ID][1] = -1;
-		}
-
-		this->NoSegmentNodes	= 0;
-		float LastValue			= 0.0f;
-		this->SegmentNodes[0]	= TempSegmentNodes[0];
-		this->NoSegmentNodes	= 1;
-
-		for (int i = 1; i < this->NoSegmentNodes; i++)
-		{
-			if (TempSegmentNodes[i][1] != LastValue)
-				this->SegmentNodes[this->NoSegmentNodes++] = TempSegmentNodes[i];				
-		}
-	}
-
 	HOST_DEVICE bool Inside(const float& T, float& MaxT) const
 	{
 		bool Inside = false;
@@ -118,23 +77,6 @@ public:
 			MaxT = TempMaxT;
 
 		return Inside;
-
-		/*
-		bool Inside = false;
-
-		float TempMaxT = 0.0f;
-
-		for (int i = 1; i < NoSegmentNodes; i++)
-		{
-			if (T > this->SegmentNodes[i - 1][0] && T > this->SegmentNodes[i][0] && this->SegmentNodes[i - 1][1] == 1.0f)
-			{
-				MaxT = this->SegmentNodes[i][0];
-				return true;
-			}
-		}
-
-		return false;
-		*/
 	}
 
 	Segment		Segments[MAX_NO_CLIPPING_SEGMENTS];

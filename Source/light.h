@@ -38,9 +38,9 @@ public:
 
 	HOST Light& operator = (const ErLight& Other)
 	{
-		this->ID			= Other.ID;
-		this->Visible		= Other.Visible;
-		this->Shape			= Other.Shape;
+		this->ID		= Other.ID;
+		this->Visible	= Other.Visible;
+		this->Shape		= Other.Shape;
 		
 		if (Other.TextureID >= 0)
 		{
@@ -52,8 +52,6 @@ public:
 
 		this->Multiplier	= Other.Multiplier;
 		this->EmissionUnit	= Other.EmissionUnit;
-
-		this->Shape.Update();
 
 		return *this;
 	}
