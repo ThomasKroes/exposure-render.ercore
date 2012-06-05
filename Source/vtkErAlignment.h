@@ -59,6 +59,10 @@ public:
 
 	void SetManualTM(vtkMatrix4x4* ManualTM) { this->ManualTM = ManualTM; };
 
+	vtkGetMacro(RelativeToCamera, int);
+	vtkSetMacro(RelativeToCamera, int);
+	vtkBooleanMacro(RelativeToCamera, int);
+
 protected:
 	vtkErAlignment();
 	virtual ~vtkErAlignment() {};
@@ -77,4 +81,5 @@ private:
 	float							Azimuth;
 	float							Offset;
 	vtkSmartPointer<vtkMatrix4x4>	ManualTM;
+	int								RelativeToCamera;
 };

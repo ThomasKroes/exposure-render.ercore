@@ -237,6 +237,12 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		{
 			this->Tracer.LightIDs[this->Tracer.LightIDs.Count] = LightData->Bindable.ID;
 			this->Tracer.LightIDs.Count++;
+
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					LightData->Bindable.Shape.Alignment.CameraTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+
+			LightData->Bind();
 		}
 	}
 
@@ -252,6 +258,12 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		{
 			this->Tracer.ObjectIDs[this->Tracer.ObjectIDs.Count] = ObjectData->Bindable.ID;
 			this->Tracer.ObjectIDs.Count++;
+
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					ObjectData->Bindable.Shape.Alignment.CameraTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+
+			ObjectData->Bind();
 		}
 	}
 
@@ -267,6 +279,12 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		{
 			this->Tracer.ClippingObjectIDs[this->Tracer.ClippingObjectIDs.Count] = ClippingObjectData->Bindable.ID;
 			this->Tracer.ClippingObjectIDs.Count++;
+
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					ClippingObjectData->Bindable.Shape.Alignment.CameraTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+
+			ClippingObjectData->Bind();
 		}
 	}
 

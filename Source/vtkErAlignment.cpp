@@ -46,7 +46,12 @@ void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
 	Alignment.Azimuth	= this->GetAzimuth();
 	Alignment.Offset	= this->GetOffset();
 
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			Alignment.ManualTM.NN[i][j] = this->ManualTM->GetElement(i, j);
+	if (this->ManualTM.GetPointer())
+	{
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++)
+				Alignment.ManualTM.NN[i][j] = this->ManualTM->GetElement(i, j);
+	}
+
+	Alignment.RelativeToCamera = this->GetRelativeToCamera();
 }

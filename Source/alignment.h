@@ -32,7 +32,7 @@ public:
 		Azimuth(0.0f),
 		Offset(0.0f),
 		ManualTM(),
-		RelativeToCamera(false)
+		RelativeToCamera(false),
 		CameraTM()
 	{
 	}
@@ -65,6 +65,9 @@ public:
 		Transform Result;
 
 		Matrix44 Offset, Translation, Rotation;
+
+		if (this->RelativeToCamera)
+			Offset = Matrix44::Inverse(this->CameraTM);
 
 		switch (this->Type)
 		{
