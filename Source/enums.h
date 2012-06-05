@@ -84,7 +84,6 @@ namespace Enums
 	{
 		Power = 0,
 		Lux,
-		Intensity
 	};
 
 	enum ScatterFunction
