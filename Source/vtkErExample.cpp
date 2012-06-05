@@ -22,7 +22,7 @@
 #include <vtkMetaImageReader.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkInteractorStyleTrackball.h>
-#include <vtkJPEGReader.h>
+#include <vtkPNGReader.h>
 #include <vtkImageCast.h>
 #include <vtkCommand.h>
 
@@ -44,11 +44,11 @@ char gVolumeFile[] = "C://Volumes//uah_segmentation.mhd";
 #define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
-	char gBackPlaneBitmap[] = "C:\\Bitmaps\\back_plane.jpg";
+	char gBackPlaneBitmap[] = "C:\\Bitmaps\\back_plane.png";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Bitmaps\\environment.jpg";
+	char gEnvironmentBitmap[] = "C:\\Bitmaps\\environment.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -268,25 +268,25 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErTexture> EnvironmentLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
-	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
+	vtkSmartPointer<vtkPNGReader> ImageReader = vtkSmartPointer<vtkPNGReader>::New();
 
-	if (JpegReader->CanReadFile(gEnvironmentBitmap))
+	if (ImageReader->CanReadFile(gEnvironmentBitmap))
 	{
 		EnvironmentLightTexture->SetTextureType(Enums::Bitmap);
 
-		JpegReader->SetFileName(gEnvironmentBitmap);
-		JpegReader->Update();
+		ImageReader->SetFileName(gEnvironmentBitmap);
+		ImageReader->Update();
 
 		vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
 	
 		Bitmap->SetFilterMode(Enums::Linear);
-		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, JpegReader->GetOutputPort());
+		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
 
 		EnvironmentLightTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
 	}
 	else
 	{
-		printf("%s not found, reverting to gradient background.", gEnvironmentBitmap);
+		printf("%s cannot be loaded, reverting to gradient background.", gEnvironmentBitmap);
 
 		EnvironmentLightTexture->SetTextureType(Enums::Procedural);
 		EnvironmentLightTexture->SetProceduralType(Enums::Uniform);
@@ -327,25 +327,25 @@ void CreateObjects(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
 
-	vtkSmartPointer<vtkJPEGReader> JpegReader = vtkSmartPointer<vtkJPEGReader>::New();
+	vtkSmartPointer<vtkPNGReader> ImageReader = vtkSmartPointer<vtkPNGReader>::New();
 
-	if (JpegReader->CanReadFile(gBackPlaneBitmap))
+	if (ImageReader->CanReadFile(gBackPlaneBitmap))
 	{
 		DiffuseTexture->SetTextureType(Enums::Bitmap);
 
-		JpegReader->SetFileName(gBackPlaneBitmap);
-		JpegReader->Update();
+		ImageReader->SetFileName(gBackPlaneBitmap);
+		ImageReader->Update();
 
 		vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
 	
 		Bitmap->SetFilterMode(Enums::Linear);
-		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, JpegReader->GetOutputPort());
+		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
 
 		DiffuseTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
 	}
 	else
 	{
-		printf("%s not found, reverting to checker background.", gBackPlaneBitmap);
+		printf("%s cannot be loaded, reverting to checker background.", gBackPlaneBitmap);
 
 		DiffuseTexture->SetTextureType(Enums::Procedural);
 		DiffuseTexture->SetProceduralType(Enums::Checker);

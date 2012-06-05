@@ -107,9 +107,9 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	const int NoScalarComponents = ImageDataIn->GetNumberOfScalarComponents();
 
-	if (NoScalarComponents != 3)
+	if (NoScalarComponents != 4)
 	{
-		vtkErrorMacro("vtkErBitmap currently only supports 3scalar components per pixel!");
+		vtkErrorMacro("vtkErBitmap currently only supports 4 scalar components per pixel!");
 		return 0;
 	}
 
@@ -148,7 +148,7 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	if (ImageDataIn->GetScalarType() == VTK_UNSIGNED_CHAR)
 	{
-		BitmapDataOut->Bindable.BindPixels(Resolution, (ColorRGBuc*)ImageDataIn->GetScalarPointer());
+		BitmapDataOut->Bindable.BindPixels(Resolution, (ColorRGBAuc*)ImageDataIn->GetScalarPointer());
 		BitmapDataOut->Bindable.Pixels.SetFilterMode(this->GetFilterMode());
 	}
 

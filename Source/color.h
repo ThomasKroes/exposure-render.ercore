@@ -223,22 +223,57 @@ HOST_DEVICE ColorRGBAuc ColorRGBAuc::FromXYZf(const ColorXYZf& XYZ)
 	return Result;
 };
 
-static inline HOST_DEVICE ColorRGBf operator * (ColorRGBf& RGB, const float& F)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
-static inline HOST_DEVICE ColorRGBf operator * (const float& F, ColorRGBf& RGB)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
+static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& RGB, const float& F)
+{
+	return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F);
+};
 
-// static inline HOST_DEVICE ColorRGBf operator * (ColorRGBf& RGB, const float& F)									{ return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F); };
+static inline HOST_DEVICE ColorRGBf operator * (const float& F, const ColorRGBf& RGB)
+{
+	return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F);
+};
+
+static inline HOST_DEVICE ColorXYZf operator * (const ColorXYZf& XYZ, const float& F)
+{
+	return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F);
+};
+
+static inline HOST_DEVICE ColorXYZf operator * (const float& F, const ColorXYZf& XYZ)
+{
+	return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F);
+};
+
+static inline HOST_DEVICE ColorRGBuc operator * (const ColorRGBuc& RGB, const float& F)
+{
+	return ColorRGBuc(	(unsigned char)((float)RGB[0] * F),
+						(unsigned char)((float)RGB[1] * F),
+						(unsigned char)((float)RGB[2] * F));
+};
+
+static inline HOST_DEVICE ColorRGBuc operator * (const float& F, const ColorRGBuc& RGB)
+{
+	return ColorRGBuc(	(unsigned char)((float)RGB[0] * F),
+						(unsigned char)((float)RGB[1] * F),
+						(unsigned char)((float)RGB[2] * F));
+};
+
+static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& RGBA, const float& F)
+{
+	return ColorRGBAuc(	(unsigned char)((float)RGBA[0] * F),
+						(unsigned char)((float)RGBA[1] * F),
+						(unsigned char)((float)RGBA[2] * F),
+						(unsigned char)((float)RGBA[3] * F));
+};
+
+static inline HOST_DEVICE ColorRGBAuc operator * (const float& F, const ColorRGBAuc& RGBA)
+{
+	return ColorRGBAuc(	(unsigned char)((float)RGBA[0] * F),
+						(unsigned char)((float)RGBA[1] * F),
+						(unsigned char)((float)RGBA[2] * F),
+						(unsigned char)((float)RGBA[3] * F));
+};
 
 static inline HOST_DEVICE ColorRGBf Lerp(const float& LerpC, const ColorRGBf& A, const ColorRGBf& B)			{ return LerpC * (B - A);						};
-
-static inline HOST_DEVICE ColorXYZf operator * (ColorXYZf& XYZ, const float& F)									{ return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F); };
-static inline HOST_DEVICE ColorXYZf operator * (const float& F, ColorXYZf& XYZ)									{ return ColorXYZf(XYZ[0] * F, XYZ[1] * F, XYZ[2] * F); };
-
 static inline HOST_DEVICE ColorXYZf Lerp(const float& LerpC, const ColorXYZf& A, const ColorXYZf& B)			{ return LerpC * (B - A);						};
-
-static inline HOST_DEVICE ColorRGBuc operator * (ColorRGBuc& RGB, const float& F)						{ return ColorRGBuc((float)RGB[0] * F, (float)RGB[1] * F, (float)RGB[2] * F); };
-static inline HOST_DEVICE ColorRGBuc operator * (const float& F, ColorRGBuc& RGB)						{ return ColorRGBuc((float)RGB[0] * F, (float)RGB[1] * F, (float)RGB[2] * F); };
-
-static inline HOST_DEVICE ColorRGBAuc operator * (ColorRGBAuc& RGBA, const unsigned char& UC)					{ return RGBA *= UC;							};
-static inline HOST_DEVICE ColorRGBAuc operator * (const unsigned char& UC, ColorRGBAuc& RGBA)					{ return RGBA *= UC;							};
 
 }
