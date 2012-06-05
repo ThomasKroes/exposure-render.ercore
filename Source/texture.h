@@ -56,6 +56,10 @@ public:
 			else
 				throw(Exception(Enums::Fatal, "Bitmap not found!"));
 		}
+		else
+		{
+			this->BitmapID = -1;
+		}
 
 		this->Procedural	= Other.Procedural;
 		this->Offset		= Other.Offset;

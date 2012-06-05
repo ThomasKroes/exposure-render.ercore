@@ -49,6 +49,10 @@ public:
 			else
 				throw(Exception(Enums::Fatal, "Texture not found!"));
 		}
+		else
+		{
+			this->TextureID = -1;
+		}
 
 		this->Multiplier	= Other.Multiplier;
 		this->EmissionUnit	= Other.EmissionUnit;

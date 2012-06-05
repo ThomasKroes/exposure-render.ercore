@@ -46,6 +46,10 @@ public:
 			else
 				throw(Exception(Enums::Fatal, "Texture not found!"));
 		}
+		else
+		{
+			this->DiffuseTextureID = -1;
+		}
 
 		if (Other.SpecularTextureID >= 0)
 		{
@@ -54,6 +58,10 @@ public:
 			else
 				throw(Exception(Enums::Fatal, "Texture not found!"));
 		}
+		else
+		{
+			this->SpecularTextureID = -1;
+		}
 
 		if (Other.GlossinessTextureID >= 0)
 		{
@@ -61,6 +69,10 @@ public:
 				this->GlossinessTextureID = gTexturesHashMap[Other.GlossinessTextureID];
 			else
 				throw(Exception(Enums::Fatal, "Texture not found!"));
+		}
+		else
+		{
+			this->GlossinessTextureID = -1;
 		}
 
 		this->Ior = Other.Ior;
