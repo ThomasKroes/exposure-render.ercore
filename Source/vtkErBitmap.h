@@ -42,6 +42,11 @@ public:
 	static vtkErBitmap* New();
 	vtkTypeRevisionMacro(vtkErBitmap, vtkAlgorithm);
 
+	enum Ports
+	{
+		ImageDataPort = 0
+	};
+
 	vtkGetMacro(FilterMode, Enums::FilterMode);
 	vtkSetMacro(FilterMode, Enums::FilterMode);
 

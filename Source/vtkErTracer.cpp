@@ -238,17 +238,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 			this->Tracer.LightIDs[this->Tracer.LightIDs.Count] = LightData->Bindable.ID;
 			this->Tracer.LightIDs.Count++;
 
-			for (int i = 0; i < 4; i++)
-				for (int j = 0; j < 4; j++)
-					LightData->Bindable.Shape.Alignment.OffsetTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
-			
-			if (LightData->Light->GetUseCameraFocalPoint())
-			{
-				LightData->Bindable.Shape.Alignment.OffsetTM.NN[0][3] = Camera->GetFocalPoint()[0];
-				LightData->Bindable.Shape.Alignment.OffsetTM.NN[1][3] = Camera->GetFocalPoint()[1];
-				LightData->Bindable.Shape.Alignment.OffsetTM.NN[2][3] = Camera->GetFocalPoint()[2];
-			}
-
+			LightData->Light->GetCameraOffset(Camera, LightData->Bindable.Shape.Alignment.OffsetTM);
 			LightData->Bind();
 		}
 	}
@@ -266,17 +256,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 			this->Tracer.ObjectIDs[this->Tracer.ObjectIDs.Count] = ObjectData->Bindable.ID;
 			this->Tracer.ObjectIDs.Count++;
 
-			for (int i = 0; i < 4; i++)
-				for (int j = 0; j < 4; j++)
-					ObjectData->Bindable.Shape.Alignment.OffsetTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
-
-			if (ObjectData->Object->GetUseCameraFocalPoint())
-			{
-				ObjectData->Bindable.Shape.Alignment.OffsetTM.NN[0][3] = Camera->GetFocalPoint()[0];
-				ObjectData->Bindable.Shape.Alignment.OffsetTM.NN[1][3] = Camera->GetFocalPoint()[1];
-				ObjectData->Bindable.Shape.Alignment.OffsetTM.NN[2][3] = Camera->GetFocalPoint()[2];
-			}
-
+			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.Alignment.OffsetTM);
 			ObjectData->Bind();
 		}
 	}
@@ -294,17 +274,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 			this->Tracer.ClippingObjectIDs[this->Tracer.ClippingObjectIDs.Count] = ClippingObjectData->Bindable.ID;
 			this->Tracer.ClippingObjectIDs.Count++;
 
-			for (int i = 0; i < 4; i++)
-				for (int j = 0; j < 4; j++)
-					ClippingObjectData->Bindable.Shape.Alignment.OffsetTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
-
-			if (ClippingObjectData->ClippingObject->GetUseCameraFocalPoint())
-			{
-				ClippingObjectData->Bindable.Shape.Alignment.OffsetTM.NN[0][3] = Camera->GetFocalPoint()[0];
-				ClippingObjectData->Bindable.Shape.Alignment.OffsetTM.NN[1][3] = Camera->GetFocalPoint()[1];
-				ClippingObjectData->Bindable.Shape.Alignment.OffsetTM.NN[2][3] = Camera->GetFocalPoint()[2];
-			}
-
+			ClippingObjectData->ClippingObject->GetCameraOffset(Camera, ClippingObjectData->Bindable.Shape.Alignment.OffsetTM);
 			ClippingObjectData->Bind();
 		}
 	}

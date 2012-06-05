@@ -58,7 +58,7 @@ HOST_DEVICE ColorXYZf EvaluateTexture(const int& ID, const Vec2f& UV)
 		case Enums::Bitmap:
 		{
 			if (T.BitmapID >= 0)
-				L = gpBitmaps[T.BitmapID].Pixels(TextureUV, true);
+				L = ColorXYZf::FromRGBuc(gpBitmaps[T.BitmapID].Pixels(TextureUV, true));
 
 			break;
 		}

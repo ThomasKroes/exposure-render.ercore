@@ -45,6 +45,11 @@ public:
 	static vtkErLight* New();
 	vtkTypeRevisionMacro(vtkErLight, vtkErShape);
 
+	enum Ports
+	{
+		TexturePort = 0
+	};
+
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 	
 	vtkGetMacro(Enabled, bool);

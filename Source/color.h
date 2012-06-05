@@ -235,8 +235,8 @@ static inline HOST_DEVICE ColorXYZf operator * (const float& F, ColorXYZf& XYZ)	
 
 static inline HOST_DEVICE ColorXYZf Lerp(const float& LerpC, const ColorXYZf& A, const ColorXYZf& B)			{ return LerpC * (B - A);						};
 
-static inline HOST_DEVICE ColorRGBuc operator * (ColorRGBuc& RGB, const unsigned char& UC)						{ return RGB *= UC;								};
-static inline HOST_DEVICE ColorRGBuc operator * (const unsigned char& UC, ColorRGBuc& RGB)						{ return RGB *= UC;								};
+static inline HOST_DEVICE ColorRGBuc operator * (ColorRGBuc& RGB, const float& F)						{ return ColorRGBuc((float)RGB[0] * F, (float)RGB[1] * F, (float)RGB[2] * F); };
+static inline HOST_DEVICE ColorRGBuc operator * (const float& F, ColorRGBuc& RGB)						{ return ColorRGBuc((float)RGB[0] * F, (float)RGB[1] * F, (float)RGB[2] * F); };
 
 static inline HOST_DEVICE ColorRGBAuc operator * (ColorRGBAuc& RGBA, const unsigned char& UC)					{ return RGBA *= UC;							};
 static inline HOST_DEVICE ColorRGBAuc operator * (const unsigned char& UC, ColorRGBAuc& RGBA)					{ return RGBA *= UC;							};

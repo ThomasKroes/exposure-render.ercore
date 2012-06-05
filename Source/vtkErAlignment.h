@@ -19,6 +19,7 @@
 #include <vtkAlgorithm.h>
 #include <vtkSmartPointer.h>
 #include <vtkMatrix4x4.h>
+#include <vtkCamera.h>
 
 using namespace ExposureRender;
 
@@ -59,13 +60,13 @@ public:
 
 	void SetManualTM(vtkMatrix4x4* ManualTM) { this->ManualTM = ManualTM; };
 
-	vtkGetMacro(RelativeToCamera, int);
-	vtkSetMacro(RelativeToCamera, int);
-	vtkBooleanMacro(RelativeToCamera, int);
+	vtkGetMacro(RelativeToCamera, bool);
+	vtkSetMacro(RelativeToCamera, bool);
 
-	vtkGetMacro(UseCameraFocalPoint, int);
-	vtkSetMacro(UseCameraFocalPoint, int);
-	vtkBooleanMacro(UseCameraFocalPoint, int);
+	vtkGetMacro(UseCameraFocalPoint, bool);
+	vtkSetMacro(UseCameraFocalPoint, bool);
+
+	virtual void GetCameraOffset(vtkCamera* Camera, Matrix44& Offset);
 
 protected:
 	vtkErAlignment();
@@ -85,6 +86,6 @@ private:
 	float							Azimuth;
 	float							Offset;
 	vtkSmartPointer<vtkMatrix4x4>	ManualTM;
-	int								RelativeToCamera;
-	int								UseCameraFocalPoint;
+	bool							RelativeToCamera;
+	bool							UseCameraFocalPoint;
 };

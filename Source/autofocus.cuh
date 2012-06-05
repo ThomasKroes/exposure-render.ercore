@@ -20,7 +20,7 @@
 namespace ExposureRender
 {
 
-KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, int FilmU, int FilmV, unsigned int Seed1, unsigned int Seed2)
+KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV, unsigned int Seed1, unsigned int Seed2)
 {
 	CRNG RNG(&Seed1, &Seed2);
 
@@ -34,8 +34,8 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, int FilmU, i
 	{
 		Vec2f ScreenPoint;
 
-		ScreenPoint[0] = gpTracer->Camera.Screen[0][0] + (gpTracer->Camera.InvScreen[0] * (float)FilmU);
-		ScreenPoint[1] = gpTracer->Camera.Screen[1][0] + (gpTracer->Camera.InvScreen[1] * (float)FilmV);
+		ScreenPoint[0] = gpTracer->Camera.Screen[0][0] + (gpTracer->Camera.InvScreen[0] * (float)FilmUV[0]);
+		ScreenPoint[1] = gpTracer->Camera.Screen[1][0] + (gpTracer->Camera.InvScreen[1] * (float)FilmUV[1]);
 
 		ScreenPoint += 0.01f * ConcentricSampleDisk(RNG.Get2());
 
@@ -59,13 +59,13 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, int FilmU, i
 		*pAutoFocusDistance = Sum / SumWeight;
 }
 
-void ComputeAutoFocusDistance(int FilmU, int FilmV, float& AutoFocusDistance)
+void ComputeAutoFocusDistance(const Vec2i& FilmUV, float& AutoFocusDistance)
 {
 	float* pAutoFocusDistance = NULL;
 
 	Cuda::Allocate(pAutoFocusDistance);
 
-	LAUNCH_CUDA_KERNEL((KrnlComputeAutoFocusDistance<<<1, 1>>>(pAutoFocusDistance, FilmU, FilmV, rand(), rand())));
+	LAUNCH_CUDA_KERNEL((KrnlComputeAutoFocusDistance<<<1, 1>>>(pAutoFocusDistance, FilmUV, rand(), rand())));
 	
 	Cuda::MemCopyDeviceToHost(pAutoFocusDistance, &AutoFocusDistance);
 	Cuda::Free(pAutoFocusDistance);
