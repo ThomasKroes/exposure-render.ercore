@@ -186,24 +186,21 @@ public:
 
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0) const
 	{
-		if (!this->Data)
-			return T();
-
 		const Vec2i ClampedXY(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1));
 		return this->Data[ClampedXY[1] * this->Resolution[0] + ClampedXY[0]];
 	}
 
 	HOST_DEVICE T& operator()(const Vec2i& XY) const
 	{
-		if (!this->Data)
-			return T();
-
 		const Vec2i ClampedXY(Clamp(XY[0], 0, this->Resolution[0] - 1), Clamp(XY[1], 0, this->Resolution[1] - 1));
 		return this->Data[ClampedXY[1] * this->Resolution[0] + ClampedXY[0]];
 	}
 
 	HOST_DEVICE T operator()(const Vec2f& XY, const bool Normalized = false) const
 	{
+		if (!this->Data)
+			return T();
+
 		const Vec2f UV = Normalized ? XY * Vec2f((float)this->Resolution[0], (float)this->Resolution[1]) : XY;
 
 		switch (this->FilterMode)
@@ -247,9 +244,6 @@ public:
 
 	HOST_DEVICE T& operator[](const int& ID) const
 	{
-		if (!this->Data)
-			return T();
-
 		const int ClampedID = Clamp(ID, 0, this->NoElements - 1);
 		return this->Data[ClampedID];
 	}
