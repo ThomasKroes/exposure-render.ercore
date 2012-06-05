@@ -230,12 +230,18 @@ public:
 
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0, const int& Z = 0) const
 	{
+		if (!this->Data)
+			return T();
+
 		const Vec3i ClampedXYZ(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1), Clamp(Z, 0, this->Resolution[2] - 1));
 		return this->Data[ClampedXYZ[2] * this->Resolution[0] * this->Resolution[1] + ClampedXYZ[1] * this->Resolution[0] + ClampedXYZ[0]];
 	}
 
 	HOST_DEVICE T& operator()(const Vec3i& XYZ) const
 	{
+		if (!this->Data)
+			return T();
+
 		const Vec3i ClampedXYZ(Clamp(XYZ[0], 0, this->Resolution[0] - 1), Clamp(XYZ[1], 0, this->Resolution[1] - 1), Clamp(XYZ[2], 0, this->Resolution[2] - 1));
 		return this->Data[ClampedXYZ[2] * this->Resolution[0] * this->Resolution[1] + ClampedXYZ[1] * this->Resolution[0] + ClampedXYZ[0]];
 	}
@@ -278,6 +284,9 @@ public:
 
 	HOST_DEVICE T& operator[](const int& ID) const
 	{
+		if (!this->Data)
+			return T();
+
 		const int ClampedID = Clamp(ID, 0, this->NoElements - 1);
 		return this->Data[ClampedID];
 	}
