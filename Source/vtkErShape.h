@@ -43,10 +43,6 @@ public:
 	vtkGetMacro(OuterRadius, float);
 	vtkSetMacro(OuterRadius, float);
 
-	vtkGetMacro(RelativeToCamera, int);
-	vtkSetMacro(RelativeToCamera, int);
-	vtkBooleanMacro(RelativeToCamera, int);
-
 protected:
 	vtkErShape();
 	virtual ~vtkErShape() {};
@@ -61,5 +57,4 @@ private:
 	float				Radius;
 	float				InnerRadius;
 	float				OuterRadius;
-	int					RelativeToCamera;
 };
