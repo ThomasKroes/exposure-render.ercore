@@ -55,3 +55,20 @@ void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
 
 	Alignment.UseOffset = this->GetRelativeToCamera();
 }
+
+void vtkErAlignment::GetCameraOffset(vtkCamera* Camera, Matrix44& Offset)
+{
+	if (this->RelativeToCamera)
+	{
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++)
+				Offset.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+
+		if (this->UseCameraFocalPoint)
+		{
+			Offset.NN[0][3] = Camera->GetFocalPoint()[0];
+			Offset.NN[1][3] = Camera->GetFocalPoint()[1];
+			Offset.NN[2][3] = Camera->GetFocalPoint()[2];
+		}
+	}
+}

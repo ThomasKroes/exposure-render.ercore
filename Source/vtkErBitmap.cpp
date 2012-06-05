@@ -36,7 +36,7 @@ vtkErBitmap::~vtkErBitmap(void)
 
 int vtkErBitmap::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
+	if (Port == ImageDataPort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
@@ -103,22 +103,25 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (!BitmapDataOut)
 		return 0;
 
-	ColorXYZf* Pixels = new ColorXYZf[ImageDataIn->GetNumberOfElements(0)];
-
 	const Vec2i Resolution(ImageDataIn->GetExtent()[1] + 1, ImageDataIn->GetExtent()[3] + 1);
 
 	const int NoScalarComponents = ImageDataIn->GetNumberOfScalarComponents();
 
-	if (NoScalarComponents > 4)
+	if (NoScalarComponents != 3)
 	{
-		vtkErrorMacro("vtkErBitmap does not support more than 4 scalar components per pixel!");
+		vtkErrorMacro("vtkErBitmap currently only supports 3scalar components per pixel!");
 		return 0;
 	}
 
+	/*
+	ColorRGBAuc* Pixels = new ColorRGBAuc[Resolution[0] * Resolution[1]];
+	
 	for (int x = 0; x < Resolution[0]; x++)
 	{
 		for (int y = 0; y < Resolution[1]; y++)
 		{
+			Pixels[y * Resolution[0] + x] = 255;
+			
 			const int PID = y * Resolution[0] + x;
 
 			ColorRGBf Color;
@@ -141,13 +144,17 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 			Pixels[PID] = ColorXYZf::FromRGBf(Color);
 		}
 	}
-	
-	BitmapDataOut->Bindable.BindPixels(Resolution, (ColorXYZf*)Pixels);
-	BitmapDataOut->Bindable.Pixels.SetFilterMode(this->GetFilterMode());
+	*/
+
+	if (ImageDataIn->GetScalarType() == VTK_UNSIGNED_CHAR)
+	{
+		BitmapDataOut->Bindable.BindPixels(Resolution, (ColorRGBuc*)ImageDataIn->GetScalarPointer());
+		BitmapDataOut->Bindable.Pixels.SetFilterMode(this->GetFilterMode());
+	}
 
 	BitmapDataOut->Bind();
 
-	delete[] Pixels;
+//	delete[] Pixels;
 
 	return 1;
 }

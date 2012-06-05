@@ -29,10 +29,6 @@ public:
 	{
 	}
 
-	HOST virtual ~ErBitmap()
-	{
-	}
-
 	HOST ErBitmap(const ErBitmap& Other) :
 		ErBindable(),
 		Pixels("Host Pixels", Enums::Host)
@@ -49,12 +45,12 @@ public:
 		return *this;
 	}
 
-	HOST void BindPixels(const Vec2i& Resolution, ColorXYZf* Pixels)
+	HOST void BindPixels(const Vec2i& Resolution, ColorRGBuc* Pixels)
 	{
 		this->Pixels.Set(Enums::Host, Resolution, Pixels);
 	}
 
-	Buffer2D<ColorXYZf> Pixels;
+	Buffer2D<ColorRGBuc>	Pixels;
 };
 
 }

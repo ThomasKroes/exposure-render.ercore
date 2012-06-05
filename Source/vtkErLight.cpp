@@ -47,7 +47,7 @@ vtkErLight::~vtkErLight(void)
 
 int vtkErLight::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
+	if (Port == TexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);

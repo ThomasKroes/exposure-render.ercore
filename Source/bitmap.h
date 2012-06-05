@@ -27,7 +27,8 @@ public:
 	{
 	}
 	
-	HOST Bitmap(const ErBitmap& Other)
+	HOST Bitmap(const ErBitmap& Other) :
+		Pixels("Device Pixels", Enums::Device)
 	{
 		*this = Other;
 	}
@@ -39,7 +40,7 @@ public:
 		return *this;
 	}
 
-	Buffer2D<ColorXYZf> Pixels;
+	Buffer2D<ColorRGBuc> Pixels;
 };
 
 }

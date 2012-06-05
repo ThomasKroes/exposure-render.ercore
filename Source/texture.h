@@ -32,7 +32,14 @@ public:
 	{
 	}
 
-	HOST Texture(const ErTexture& Other)
+	HOST Texture(const ErTexture& Other) :
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
 	{
 		*this = Other;
 	}

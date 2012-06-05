@@ -144,7 +144,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		{
 			float AutoFocusDistance = -1.0f;
 
-			ComputeAutoFocusDistance(gTracers[TracerID].Camera.FocusUV[0] * (float)gTracers[TracerID].FrameBuffer.Resolution[0], gTracers[TracerID].Camera.FocusUV[1] * (float)gTracers[TracerID].FrameBuffer.Resolution[1], AutoFocusDistance);
+			const Vec2i FilmUV((int)(gTracers[TracerID].Camera.FocusUV[0] * (float)gTracers[TracerID].FrameBuffer.Resolution[0]), (int)(gTracers[TracerID].Camera.FocusUV[1] * (float)gTracers[TracerID].FrameBuffer.Resolution[1]));
+			ComputeAutoFocusDistance(FilmUV, AutoFocusDistance);
 
 			if (AutoFocusDistance >= 0.0f)
 				gTracers[TracerID].Camera.FocalDistance = AutoFocusDistance;
