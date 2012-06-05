@@ -17,6 +17,8 @@
 
 #include <vtkDataObject.h>
 
+class vtkErClippingObject;
+
 class vtkErClippingObjectData : public vtkDataObject, public vtkErBindableClippingObject
 {
 public:
@@ -27,9 +29,14 @@ protected:
 	vtkErClippingObjectData() {};
 	virtual ~vtkErClippingObjectData() {};
 
+	vtkErClippingObject* ClippingObject;
+
 private:
 	vtkErClippingObjectData(const vtkErClippingObjectData& Other);		// Not implemented.
     void operator = (const vtkErClippingObjectData& Other);				// Not implemented.
+
+	friend class vtkErClippingObject;
+	friend class vtkErTracer;
 };
 
 class VTK_ER_EXPORT vtkErClippingObject : public vtkErShape

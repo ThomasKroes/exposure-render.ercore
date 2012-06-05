@@ -240,7 +240,14 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 			for (int i = 0; i < 4; i++)
 				for (int j = 0; j < 4; j++)
-					LightData->Bindable.Shape.Alignment.CameraTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+					LightData->Bindable.Shape.Alignment.OffsetTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+			
+			if (LightData->Light->GetUseCameraFocalPoint())
+			{
+				LightData->Bindable.Shape.Alignment.OffsetTM.NN[0][3] = Camera->GetFocalPoint()[0];
+				LightData->Bindable.Shape.Alignment.OffsetTM.NN[1][3] = Camera->GetFocalPoint()[1];
+				LightData->Bindable.Shape.Alignment.OffsetTM.NN[2][3] = Camera->GetFocalPoint()[2];
+			}
 
 			LightData->Bind();
 		}
@@ -261,7 +268,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 			for (int i = 0; i < 4; i++)
 				for (int j = 0; j < 4; j++)
-					ObjectData->Bindable.Shape.Alignment.CameraTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+					ObjectData->Bindable.Shape.Alignment.OffsetTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
 
 			ObjectData->Bind();
 		}
@@ -282,7 +289,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 			for (int i = 0; i < 4; i++)
 				for (int j = 0; j < 4; j++)
-					ClippingObjectData->Bindable.Shape.Alignment.CameraTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
+					ClippingObjectData->Bindable.Shape.Alignment.OffsetTM.NN[i][j] = Camera->GetViewTransformMatrix()->GetElement(i, j);
 
 			ClippingObjectData->Bind();
 		}

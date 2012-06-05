@@ -32,8 +32,8 @@ public:
 		Azimuth(0.0f),
 		Offset(0.0f),
 		ManualTM(),
-		RelativeToCamera(false),
-		CameraTM()
+		UseOffset(),
+		OffsetTM()
 	{
 	}
 
@@ -54,8 +54,8 @@ public:
 		this->Azimuth			= Other.Azimuth;
 		this->Offset			= Other.Offset;
 		this->ManualTM			= Other.ManualTM;
-		this->RelativeToCamera	= Other.RelativeToCamera;
-		this->CameraTM			= Other.CameraTM;
+		this->UseOffset			= Other.UseOffset;
+		this->OffsetTM			= Other.OffsetTM;
 
 		return *this;
 	}
@@ -66,8 +66,8 @@ public:
 
 		Matrix44 Offset, Translation, Rotation;
 
-		if (this->RelativeToCamera)
-			Offset = Matrix44::Inverse(this->CameraTM);
+		if (this->UseOffset)
+			Offset = Matrix44::Inverse(this->OffsetTM);
 
 		switch (this->Type)
 		{
@@ -187,8 +187,8 @@ public:
 	float					Azimuth;
 	float					Offset;
 	Matrix44				ManualTM;
-	bool					RelativeToCamera;
-	Matrix44				CameraTM;
+	bool					UseOffset;
+	Matrix44				OffsetTM;
 };
 
 }

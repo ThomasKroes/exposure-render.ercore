@@ -254,14 +254,15 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetAlignmentType(ExposureRender::Enums::Spherical);
 	KeyLight->SetShapeType(ExposureRender::Enums::Plane);
 	KeyLight->SetOuterRadius(0.01f);
-	KeyLight->SetOneSided(false);
-	KeyLight->SetElevation(60.0f);
-	KeyLight->SetAzimuth(250.0f);
+	KeyLight->SetOneSided(true);
+	KeyLight->SetElevation(30.0f);
+	KeyLight->SetAzimuth(120.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(20.0f);
+	KeyLight->SetMultiplier(200.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
-	KeyLight->SetEmissionUnit(ExposureRender::Enums::Lux);
+	KeyLight->SetEmissionUnit(ExposureRender::Enums::Power);
 	KeyLight->SetRelativeToCamera(1);
+	KeyLight->SetUseCameraFocalPoint(1);
 	KeyLight->SetInputConnection(KeyLightTexture->GetOutputPort());
 	KeyLight->SetEnabled(true);
 

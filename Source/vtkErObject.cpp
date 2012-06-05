@@ -79,6 +79,7 @@ int vtkErObject::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInfor
 	if (!Output)
 	{
 		Output = vtkErObjectData::New();
+		Output->Object = this;
 		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
 		Output->FastDelete();
 		Output->SetPipelineInformation(OutInfo);

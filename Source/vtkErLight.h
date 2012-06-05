@@ -17,6 +17,8 @@
 
 #include <vtkDataObject.h>
 
+class vtkErLight;
+
 class vtkErLightData : public vtkDataObject, public vtkErBindableLight
 {
 public:
@@ -27,9 +29,14 @@ protected:
 	vtkErLightData() {};
 	virtual ~vtkErLightData() {};
 
+	vtkErLight* Light;
+
 private:
 	vtkErLightData(const vtkErLightData& Other);	// Not implemented.
     void operator = (const vtkErLightData& Other);	// Not implemented.
+
+	friend class vtkErLight;
+	friend class vtkErTracer;
 };
 
 class VTK_ER_EXPORT vtkErLight : public vtkErShape
