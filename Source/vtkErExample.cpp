@@ -39,8 +39,8 @@
 
 char gVolumeFile[] = "C://Volumes//uah_segmentation.mhd";
 
-// #define BACK_PLANE_ON
-// #define KEY_LIGHT_ON
+#define BACK_PLANE_ON
+#define KEY_LIGHT_ON
 #define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -128,7 +128,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
 	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(500);
+	VolumeProperty->SetDensityScale(5000);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -142,12 +142,12 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
 	const float DiffuseLevel = 1.0f;
-
+	
 	for (int i = 0; i < 50; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-
+	
 	/*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
@@ -225,7 +225,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 0.2;
+	const float KeyLightSize = 0.1;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
@@ -233,8 +233,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetVisible(false);
 	KeyLight->SetElevation(25.0f);
 	KeyLight->SetAzimuth(-25.0f);
-	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(5.0f);
+	KeyLight->SetOffset(0.8f);
+	KeyLight->SetMultiplier(0.5f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 	KeyLight->SetRelativeToCamera(1);
@@ -326,6 +326,9 @@ void CreateObjects(vtkErTracer* Tracer)
 	Object->SetEnabled(true);
 
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
+
+	DiffuseTexture->SetOutputLevel(0.3f);
+	DiffuseTexture->SetRepeat(3, 3);
 
 	vtkSmartPointer<vtkPNGReader> ImageReader = vtkSmartPointer<vtkPNGReader>::New();
 
