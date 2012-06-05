@@ -63,6 +63,10 @@ public:
 	vtkSetMacro(RelativeToCamera, int);
 	vtkBooleanMacro(RelativeToCamera, int);
 
+	vtkGetMacro(UseCameraFocalPoint, int);
+	vtkSetMacro(UseCameraFocalPoint, int);
+	vtkBooleanMacro(UseCameraFocalPoint, int);
+
 protected:
 	vtkErAlignment();
 	virtual ~vtkErAlignment() {};
@@ -82,4 +86,5 @@ private:
 	float							Offset;
 	vtkSmartPointer<vtkMatrix4x4>	ManualTM;
 	int								RelativeToCamera;
+	int								UseCameraFocalPoint;
 };

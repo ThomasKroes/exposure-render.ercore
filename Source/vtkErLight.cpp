@@ -75,6 +75,7 @@ int vtkErLight::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInform
 	if (!Output)
 	{
 		Output = vtkErLightData::New();
+		Output->Light = this;
 		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
 		Output->FastDelete();
 		Output->SetPipelineInformation(OutInfo);

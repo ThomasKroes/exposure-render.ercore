@@ -53,5 +53,5 @@ void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
 				Alignment.ManualTM.NN[i][j] = this->ManualTM->GetElement(i, j);
 	}
 
-	Alignment.RelativeToCamera = this->GetRelativeToCamera();
+	Alignment.UseOffset = this->GetRelativeToCamera();
 }

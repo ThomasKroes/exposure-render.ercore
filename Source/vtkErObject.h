@@ -17,6 +17,8 @@
 
 #include <vtkDataObject.h>
 
+class vtkErObject;
+
 class vtkErObjectData : public vtkDataObject, public vtkErBindableObject
 {
 public:
@@ -26,10 +28,15 @@ public:
 protected:
 	vtkErObjectData() {};
 	virtual ~vtkErObjectData() {};
+	
+	vtkErObject* Object;
 
 private:
 	vtkErObjectData(const vtkErObjectData& Other);		// Not implemented.
     void operator = (const vtkErObjectData& Other);		// Not implemented.
+
+	friend class vtkErObject;
+	friend class vtkErTracer;
 };
 
 class VTK_ER_EXPORT vtkErObject : public vtkErShape

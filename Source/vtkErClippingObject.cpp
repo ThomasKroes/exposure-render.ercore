@@ -65,6 +65,7 @@ int vtkErClippingObject::RequestDataObject(vtkInformation* vtkNotUsed(request), 
 	if (!Output)
 	{
 		Output = vtkErClippingObjectData::New();
+		Output->ClippingObject = this;
 		OutInfo->Set(vtkDataObject::DATA_OBJECT(), Output);
 		Output->FastDelete();
 		Output->SetPipelineInformation(OutInfo);
