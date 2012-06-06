@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include "buffer3d.h"
+#include "buffer1d.h"
 
 namespace ExposureRender
 {
 
 template<class T>
-class EXPOSURE_RENDER_DLL CudaTexture3D
+class EXPOSURE_RENDER_DLL CudaTexture1D
 {
 public:
-	HOST CudaTexture3D() :
+	HOST CudaTexture1D() :
 		Resolution(0),
 		Array(NULL),
 		Normalized(true),
@@ -31,42 +31,29 @@ public:
 	{
 	}
 
-	HOST virtual ~CudaTexture3D(void)
+	HOST virtual ~CudaTexture1D(void)
 	{
 		this->Free();
 	}
 
-	HOST CudaTexture3D& operator = (const CudaTexture3D& Other)
+	HOST CudaTexture1D& operator = (const CudaTexture1D& Other)
 	{
 		throw (Exception(Enums::Error, "Not implemented yet!"));
 	}
 
-	HOST CudaTexture3D<T>& operator = (const Buffer3D<T>& Other)
+	HOST CudaTexture1D<T>& operator = (const Buffer1D<T>& Other)
 	{
 		this->Resize(Other.GetResolution());
 		
 		this->FilterMode	= Other.GetFilterMode();
 		this->AddressMode	= Other.GetAddressMode();
 
-		const int NoElements = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+		const int NoElements = this->Resolution;
 
 		if (NoElements <= 0)
 			return *this;
 
-		cudaExtent CudaExtent;
-		
-		CudaExtent.width	= this->Resolution[0];
-		CudaExtent.height	= this->Resolution[1];
-		CudaExtent.depth	= this->Resolution[2];
-
-		cudaMemcpy3DParms CopyParams = {0};
-		
-		CopyParams.srcPtr		= make_cudaPitchedPtr((void*)Other.GetData(), CudaExtent.width * sizeof(T), CudaExtent.width, CudaExtent.height);
-		CopyParams.dstArray		= this->Array;
-		CopyParams.extent		= CudaExtent;
-		CopyParams.kind			= cudaMemcpyHostToDevice;
-		
-		Cuda::Memcpy3D(&CopyParams);
+		Cuda::MemcpyToArray(this->Array, 0, 0, Other.GetData(), Other.GetNoBytes(), cudaMemcpyHostToDevice);
 
 		return *this;
 	}
@@ -76,7 +63,7 @@ public:
 		Cuda::FreeArray(this->Array);
 	}
 
-	HOST void Resize(const Vec3i& Resolution)
+	HOST void Resize(const int& Resolution)
 	{
 		if (this->Resolution == Resolution)
 			return;
@@ -85,18 +72,17 @@ public:
 		
 		this->Resolution = Resolution;
 		
-		const int NoElementes = this->Resolution[0] * this->Resolution[1] * this->Resolution[2];
+		const int NoElementes = this->Resolution;
 
 		if (NoElementes <= 0)
 			throw (Exception(Enums::Error, "No. elements is zero!"));
 
-		Cuda::Malloc3DArray(&this->Array, cudaCreateChannelDesc<T>(), this->Resolution);
+		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Vec2i(NoElements, 1));
 	}
 
-#ifdef __CUDACC__
 	HOST void Bind(textureReference& TextureReference)
 	{
-		if (this->Resolution[0] * this->Resolution[1] * this->Resolution[2] == 0)
+		if (this->Resolution == 0)
 			return;
 
 		if (this->Array == NULL)
@@ -105,21 +91,18 @@ public:
 		TextureReference.normalized		= this->Normalized;
 		TextureReference.filterMode		= (cudaTextureFilterMode)this->FilterMode;
 		TextureReference.addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference.addressMode[1]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference.addressMode[2]	= (cudaTextureAddressMode)this->AddressMode;
 
 		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
 		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
 	}
-#endif
 
-	HOST_DEVICE Vec3i GetResolution() const
+	HOST_DEVICE int GetResolution() const
 	{
 		return this->Resolution;
 	}
 
 protected:
-	Vec3i					Resolution;
+	int						Resolution;
 	cudaArray*				Array;
 	bool					Normalized;
 	Enums::FilterMode		FilterMode;

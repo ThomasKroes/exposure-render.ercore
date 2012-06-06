@@ -56,3 +56,70 @@ vtkErVolumeProperty::vtkErVolumeProperty()
 	this->SetGradientThreshold(0.5f);
 	this->SetGradientFactor(1.0f);
 }
+
+void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProperty)
+{
+	VolumeProperty.Opacity1D.Reset();
+	
+	for (int j = 0; j < GetOpacity()->GetSize(); j++)
+	{
+		double NodeValue[4];
+		GetOpacity()->GetNodeValue(j, NodeValue);
+		VolumeProperty.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+	}
+	
+	VolumeProperty.Diffuse1D.Reset();
+
+	for (int j = 0; j < GetDiffuse()->GetSize(); j++)
+	{
+		double NodeValue[6];
+		GetDiffuse()->GetNodeValue(j, NodeValue);
+		VolumeProperty.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+	}
+	
+	VolumeProperty.Specular1D.Reset();
+
+	for (int j = 0; j < GetSpecular()->GetSize(); j++)
+	{
+		double NodeValue[6];
+		GetSpecular()->GetNodeValue(j, NodeValue);
+		VolumeProperty.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+	}
+
+	VolumeProperty.Glossiness1D.Reset();
+	
+	for (int j = 0; j < GetGlossiness()->GetSize(); j++)
+	{
+		double NodeValue[4];
+		GetGlossiness()->GetNodeValue(j, NodeValue);
+		VolumeProperty.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+	}
+
+	VolumeProperty.IndexOfReflection1D.Reset();
+	
+	for (int j = 0; j < GetIndexOfReflection()->GetSize(); j++)
+	{
+		double NodeValue[4];
+		GetIndexOfReflection()->GetNodeValue(j, NodeValue);
+		VolumeProperty.IndexOfReflection1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+	}
+
+	VolumeProperty.Emission1D.Reset();
+
+	for (int j = 0; j < GetEmission()->GetSize(); j++)
+	{
+		double NodeValue[6];
+		GetEmission()->GetNodeValue(j, NodeValue);
+		VolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+	}
+
+	VolumeProperty.StepFactorPrimary 	= GetStepFactorPrimary();
+	VolumeProperty.StepFactorShadow		= GetStepFactorShadow();
+	VolumeProperty.Shadows				= GetShadows();
+	VolumeProperty.ShadingType			= GetShadingMode();
+	VolumeProperty.DensityScale			= GetDensityScale();
+	VolumeProperty.OpacityModulated		= GetOpacityModulated();
+	VolumeProperty.GradientMode			= GetGradientMode();
+	VolumeProperty.GradientThreshold	= GetGradientThreshold();
+	VolumeProperty.GradientFactor		= GetGradientFactor();
+}

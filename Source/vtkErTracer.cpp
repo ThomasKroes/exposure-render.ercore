@@ -36,16 +36,12 @@ vtkErTracer::vtkErTracer(void)
 
 	glGenTextures(1, &TextureID);
 
-	this->ImageBuffer		= NULL;
-	this->RenderSize[0]		= 0;
-	this->RenderSize[1]		= 0;
-	this->CameraTimeStamp	= 0;
-
-	for (int i = 0; i < MAX_NO_VOLUMES; i++)
-	{
-		this->VolumeProperties[i]			= vtkSmartPointer<vtkErVolumeProperty>::New();
-		this->VolumePropertiesTimeStamp[i]	= this->VolumeProperties[i]->GetMTime();
-	}
+	this->ImageBuffer				= NULL;
+	this->RenderSize[0]				= 0;
+	this->RenderSize[1]				= 0;
+	this->CameraTimeStamp			= 0;
+	this->VolumeProperty			= vtkSmartPointer<vtkErVolumeProperty>::New();
+	this->VolumePropertyTimeStamp	= 0;
 
 	this->Tracer.SetDirty();
 }
@@ -102,112 +98,24 @@ int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 
 void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
-	for (int i = 0; i < MAX_NO_VOLUMES; i++)
+	if (this->VolumePropertyTimeStamp < this->VolumeProperty->GetMTime())
 	{
-		if (this->VolumePropertiesTimeStamp[i] >= this->VolumeProperties[i]->GetMTime())
-			continue;
-
-		vtkErVolumeProperty* VolumeProperty = this->VolumeProperties[i].GetPointer();
+		this->VolumeProperty->RequestData(this->Tracer.VolumeProperty);
 		
-		ExposureRender::VolumeProperty& ErVolumeProperty = this->Tracer.VolumeProperties[i];
-
-		ErVolumeProperty.Opacity1D.Reset();
-		
-		for (int j = 0; j < VolumeProperty->GetOpacity()->GetSize(); j++)
-		{
-			double NodeValue[4];
-			VolumeProperty->GetOpacity()->GetNodeValue(j, NodeValue);
-			ErVolumeProperty.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
-		}
-		
-		ErVolumeProperty.Diffuse1D.Reset();
-
-		for (int j = 0; j < VolumeProperty->GetDiffuse()->GetSize(); j++)
-		{
-			double NodeValue[6];
-			VolumeProperty->GetDiffuse()->GetNodeValue(j, NodeValue);
-			ErVolumeProperty.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
-		}
-		
-		ErVolumeProperty.Specular1D.Reset();
-
-		for (int j = 0; j < VolumeProperty->GetSpecular()->GetSize(); j++)
-		{
-			double NodeValue[6];
-			VolumeProperty->GetSpecular()->GetNodeValue(j, NodeValue);
-			ErVolumeProperty.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
-		}
-
-		ErVolumeProperty.Glossiness1D.Reset();
-		
-		for (int j = 0; j < VolumeProperty->GetGlossiness()->GetSize(); j++)
-		{
-			double NodeValue[4];
-			VolumeProperty->GetGlossiness()->GetNodeValue(j, NodeValue);
-			ErVolumeProperty.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
-		}
-
-		ErVolumeProperty.IndexOfReflection1D.Reset();
-		
-		for (int j = 0; j < VolumeProperty->GetIndexOfReflection()->GetSize(); j++)
-		{
-			double NodeValue[4];
-			VolumeProperty->GetIndexOfReflection()->GetNodeValue(j, NodeValue);
-			ErVolumeProperty.IndexOfReflection1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
-		}
-
-		ErVolumeProperty.Emission1D.Reset();
-
-		for (int j = 0; j < VolumeProperty->GetEmission()->GetSize(); j++)
-		{
-			double NodeValue[6];
-			VolumeProperty->GetEmission()->GetNodeValue(j, NodeValue);
-			ErVolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
-		}
-
-		ErVolumeProperty.StepFactorPrimary 	= VolumeProperty->GetStepFactorPrimary();
-		ErVolumeProperty.StepFactorShadow	= VolumeProperty->GetStepFactorShadow();
-		ErVolumeProperty.Shadows			= VolumeProperty->GetShadows();
-		ErVolumeProperty.ShadingType		= VolumeProperty->GetShadingMode();
-		ErVolumeProperty.DensityScale		= VolumeProperty->GetDensityScale();
-		ErVolumeProperty.OpacityModulated	= VolumeProperty->GetOpacityModulated();
-		ErVolumeProperty.GradientMode		= VolumeProperty->GetGradientMode();
-		ErVolumeProperty.GradientThreshold	= VolumeProperty->GetGradientThreshold();
-		ErVolumeProperty.GradientFactor		= VolumeProperty->GetGradientFactor();
-
-		this->VolumePropertiesTimeStamp[i] = this->VolumeProperties[i]->GetMTime();
-	}
-	
-	vtkCamera* Camera = Renderer->GetActiveCamera();
-	
-	if (Camera->GetMTime() != this->CameraTimeStamp)
-	{
+		this->VolumePropertyTimeStamp = this->VolumeProperty->GetMTime();
 		this->Tracer.SetDirty();
+	}
+
+	vtkErCamera* Camera = dynamic_cast<vtkErCamera*>(Renderer->GetActiveCamera());
+	
+	if (Camera && Camera->GetMTime() != this->CameraTimeStamp)
+	{
+		this->Tracer.Camera.FilmSize = Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
+
+		Camera->RequestData(this->Tracer.Camera);
+
 		this->CameraTimeStamp = Camera->GetMTime();
-
-		if (Camera)
-		{
-			this->Tracer.Camera.FilmSize		= Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
-			this->Tracer.Camera.Pos				= Vec3f(Camera->GetPosition()[0], Camera->GetPosition()[1], Camera->GetPosition()[2]);
-			this->Tracer.Camera.Target			= Vec3f(Camera->GetFocalPoint()[0], Camera->GetFocalPoint()[1], Camera->GetFocalPoint()[2]);
-			this->Tracer.Camera.Up				= Vec3f(Camera->GetViewUp()[0], Camera->GetViewUp()[1], Camera->GetViewUp()[2]);
-			this->Tracer.Camera.ClipNear		= 0.0f;//Camera->GetClippingRange()[0];
-			this->Tracer.Camera.ClipFar			= 10000.0f;//Camera->GetClippingRange()[1];
-			this->Tracer.Camera.FOV				= Camera->GetViewAngle();
-		}
-
-		vtkErCamera* ErCamera = dynamic_cast<vtkErCamera*>(Camera);
-
-		if (ErCamera)
-		{
-			this->Tracer.Camera.FocalDistance		= ErCamera->GetFocalDistance();
-			this->Tracer.Camera.Exposure			= ErCamera->GetExposure();
-			this->Tracer.Camera.Gamma				= ErCamera->GetGamma();
-			this->Tracer.Camera.ApertureShape		= ErCamera->GetApertureShape();
-			this->Tracer.Camera.ApertureSize		= ErCamera->GetApertureSize();
-			this->Tracer.Camera.NoApertureBlades	= ErCamera->GetNoApertureBlades();
-			this->Tracer.Camera.ApertureAngle		= ErCamera->GetApertureAngle();
-		}
+		this->Tracer.SetDirty();
 	}
 	
 	const int NoVolumes = this->GetNumberOfInputConnections(VolumesPort);

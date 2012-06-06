@@ -21,10 +21,32 @@ vtkCxxRevisionMacro(vtkErCamera, "$Revision: 1.0 $");
 
 vtkErCamera::vtkErCamera(void)
 {
+	this->SetFocalDistance(1.0f);
 	this->SetExposure(1.0f);
 	this->SetGamma(2.2f);
+	this->SetApertureShape(Enums::Polygon);
+	this->SetApertureSize(0.0f);
+	this->SetNoApertureBlades(6);
+	this->SetApertureAngle(0.0f);
 }
 
 vtkErCamera::~vtkErCamera(void)
 {
+}
+
+void vtkErCamera::RequestData(ExposureRender::Camera& Camera)
+{
+	Camera.Pos					= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
+	Camera.Target				= Vec3f(this->GetFocalPoint()[0], this->GetFocalPoint()[1], this->GetFocalPoint()[2]);
+	Camera.Up					= Vec3f(this->GetViewUp()[0], this->GetViewUp()[1], this->GetViewUp()[2]);
+	Camera.ClipNear				= 0.0f;//this->GetClippingRange()[0];
+	Camera.ClipFar				= 1000.0f;//this->GetClippingRange()[1];
+	Camera.FOV					= this->GetViewAngle();
+	Camera.FocalDistance		= this->GetFocalDistance();
+	Camera.Exposure				= this->GetExposure();
+	Camera.Gamma				= this->GetGamma();
+	Camera.ApertureShape		= this->GetApertureShape();
+	Camera.ApertureSize			= this->GetApertureSize();
+	Camera.NoApertureBlades		= this->GetNoApertureBlades();
+	Camera.ApertureAngle		= this->GetApertureAngle();
 }

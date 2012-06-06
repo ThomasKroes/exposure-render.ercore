@@ -29,7 +29,7 @@ public:
 	static vtkErVolumeProperty* New();
 	vtkTypeRevisionMacro(vtkErVolumeProperty, vtkAlgorithm);
 
-	void RequestData(ExposureRender::Shape& Shape);
+	void RequestData(ExposureRender::VolumeProperty& VolumeProperty);
 
 	vtkPiecewiseFunction* GetOpacity()										{	return this->Opacity.GetPointer();									};
 	void SetOpacity(vtkPiecewiseFunction* Opacity)							{	this->Opacity = Opacity; this->Modified();							};

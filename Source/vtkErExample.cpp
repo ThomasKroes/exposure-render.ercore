@@ -40,7 +40,7 @@
 
 char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
 
-#define BACK_PLANE_ON
+//#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
 #define ENVIRONMENT_ON
 

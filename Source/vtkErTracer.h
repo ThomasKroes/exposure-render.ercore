@@ -54,8 +54,8 @@ public:
 		ClippingObjectsPort
 	};
 
-	vtkErVolumeProperty* GetVolumeProperty(const int& ID = 0)							{	return this->VolumeProperties[ID].GetPointer();						};
-	void SetVolumeProperty(vtkErVolumeProperty* VolumeProperty, const int& ID = 0)		{	this->VolumeProperties[ID] = VolumeProperty; this->Modified();		};
+	vtkErVolumeProperty* GetVolumeProperty()						{	return this->VolumeProperty.GetPointer();										};
+	void SetVolumeProperty(vtkErVolumeProperty* VolumeProperty)		{	this->VolumeProperty = VolumeProperty; this->VolumeProperty->Modified();		};
 
 protected:
 	vtkErTracer();
@@ -72,7 +72,7 @@ private:
 	ExposureRender::ColorRGBAuc*			ImageBuffer;
 	int										RenderSize[2];
 	unsigned long							CameraTimeStamp;
-	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperties[MAX_NO_VOLUMES];
-	unsigned long							VolumePropertiesTimeStamp[MAX_NO_VOLUMES];
+	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperty;
+	unsigned long							VolumePropertyTimeStamp;
 	ExposureRender::ErTracer				Tracer;
 };

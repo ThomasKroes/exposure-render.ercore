@@ -112,8 +112,10 @@ SOURCE_GROUP("General" FILES ${General})
 
 SET(Buffer
 	buffer.h
+	buffer1d.h
 	buffer2d.h
 	buffer3d.h
+	cudatexture1d.h
 	cudatexture3d.h
 	randomseedbuffer2d.h
 	framebuffer.h

@@ -15,6 +15,7 @@
 
 #include "ertracer.h"
 #include "framebuffer.h"
+#include "cudatexture1d.h"
 
 #include <map>
 
@@ -27,6 +28,7 @@ class Tracer
 {
 public:
 	HOST Tracer() :
+		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
 		LightIDs(),
@@ -37,17 +39,23 @@ public:
 	{
 	}
 
-	HOST Tracer(const ErTracer& Other)
+	HOST Tracer(const ErTracer& Other) :
+		VolumeProperty(),
+		Camera(),
+		VolumeIDs(),
+		LightIDs(),
+		ObjectIDs(),
+		ClippingObjectIDs(),
+		FrameBuffer(),
+		NoEstimates(0)
 	{
 		*this = Other;
 	}
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		for (int i = 0; i < MAX_NO_VOLUMES; i++)
-			this->VolumeProperties[i] = Other.VolumeProperties[i];
-
-		this->Camera = Other.Camera;
+		this->VolumeProperty	= Other.VolumeProperty;
+		this->Camera			= Other.Camera;
 
 		this->VolumeIDs.Count = 0;
 
@@ -105,14 +113,17 @@ public:
 		return *this;
 	}
 
-	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
-	Camera			Camera;
-	Indices			VolumeIDs;
-	Indices			LightIDs;
-	Indices			ObjectIDs;
-	Indices			ClippingObjectIDs;
-	FrameBuffer		FrameBuffer;
-	int				NoEstimates;
+	VolumeProperty				VolumeProperty;
+	CudaTexture1D<ColorRGBAuc>	TexDiffuse1D;
+	CudaTexture1D<ColorRGBAuc>	TexSpecular1D;
+	CudaTexture1D<ColorRGBAuc>	TexEmission1D;
+	Camera						Camera;
+	Indices						VolumeIDs;
+	Indices						LightIDs;
+	Indices						ObjectIDs;
+	Indices						ClippingObjectIDs;
+	FrameBuffer					FrameBuffer;
+	int							NoEstimates;
 };
 
 }

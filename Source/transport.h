@@ -40,7 +40,7 @@ DEVICE_NI bool Intersect(const Ray& R, CRNG& RNG)
 
 DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 {
-	if (!gpTracer->VolumeProperties[0].Shadows)
+	if (!gpTracer->VolumeProperty.Shadows)
 		return true;
 
 	Vec3f W = Normalize(P2 - P1);
@@ -131,7 +131,7 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	SE.GetShader(Shader, RNG);
 
 	if (SE.Type == Enums::Volume)
-		Ld += gpTracer->VolumeProperties[0].Opacity1D.Evaluate(SE.Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
+		Ld += gpTracer->VolumeProperty.Opacity1D.Evaluate(SE.Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
 	else
 		Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
 

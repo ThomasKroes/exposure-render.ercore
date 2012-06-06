@@ -30,6 +30,7 @@ class EXPOSURE_RENDER_DLL ErTracer : public ErBindable
 public:
 	HOST ErTracer() :
 		ErBindable(),
+		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
 		LightIDs(),
@@ -38,11 +39,14 @@ public:
 	{
 	}
 
-	HOST virtual ~ErTracer()
-	{
-	}
-	
-	HOST ErTracer(const ErTracer& Other)
+	HOST ErTracer(const ErTracer& Other) :
+		ErBindable(),
+		VolumeProperty(),
+		Camera(),
+		VolumeIDs(),
+		LightIDs(),
+		ObjectIDs(),
+		ClippingObjectIDs()
 	{
 		*this = Other;
 	}
@@ -51,9 +55,7 @@ public:
 	{
 		ErBindable::operator = (Other);
 
-		for (int i = 0; i < MAX_NO_VOLUMES; i++)
-			this->VolumeProperties[i] = Other.VolumeProperties[i];
-
+		this->VolumeProperty	= Other.VolumeProperty;
 		this->Camera			= Other.Camera;
 		this->VolumeIDs			= Other.VolumeIDs;
 		this->LightIDs			= Other.LightIDs;
@@ -63,7 +65,7 @@ public:
 		return *this;
 	}
 
-	VolumeProperty	VolumeProperties[MAX_NO_VOLUMES];
+	VolumeProperty	VolumeProperty;
 	Camera			Camera;
 	Indices			VolumeIDs;
 	Indices			LightIDs;
