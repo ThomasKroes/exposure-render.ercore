@@ -84,7 +84,7 @@ public:
 		{
 			case Enums::Volume:
 			{
-				VolumeProperty& VolumeProperty = gpTracer->VolumeProperties[VolumeID];
+				VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
 
 				this->Le = VolumeProperty.Emission1D.Evaluate(this->Intensity);
 

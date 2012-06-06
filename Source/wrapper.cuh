@@ -52,6 +52,24 @@ template<class T> static inline void Allocate(T*& pDevicePointer, int Num = 1)
 	Cuda::ThreadSynchronize();
 }
 
+static inline void MallocArray(struct cudaArray** CudaArray, const cudaChannelFormatDesc& ChannelFormatDescription, const Vec2i& Resolution, unsigned int Flags = 0)
+{
+	Cuda::ThreadSynchronize();
+
+	HandleCudaError(cudaMallocArray(CudaArray, &ChannelFormatDescription, Resolution[0], Resolution[1]), __FUNCTION__);
+
+	Cuda::ThreadSynchronize();
+}
+
+static inline void MemcpyToArray(struct cudaArray* Destination, const int& WidthOffset, const int& HeightOffset, const void* Source, const int& Count, enum cudaMemcpyKind Kind)
+{
+	Cuda::ThreadSynchronize();
+	
+	HandleCudaError(cudaMemcpyToArray(Destination, WidthOffset, HeightOffset, Source, Count, Kind), __FUNCTION__);
+
+	Cuda::ThreadSynchronize();
+}
+
 static inline void Malloc3DArray(struct cudaArray** CudaArray, const cudaChannelFormatDesc& ChannelDescription, const Vec3i& Resolution, unsigned int Flags = 0)
 {
 	Cuda::ThreadSynchronize();

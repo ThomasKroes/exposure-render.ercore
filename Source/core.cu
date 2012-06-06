@@ -64,6 +64,10 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "estimate.cuh"
 #include "tonemap.cuh"
 
+texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> TexDiffuse;
+texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> TexSpecular;
+texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> TexEmission;
+
 namespace ExposureRender
 {
 
@@ -85,12 +89,6 @@ EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*=
 		gVolumes.Unbind(Volume);
 
 	gVolumesHashMap = gVolumes.HashMap;
-
-	/*
-	gVolumes[gVolumesHashMap[Volume.ID]].Voxels.Bind(TexVolume0);
-
-	MaximumGradientMagnitude(gVolumesHashMap[Volume.ID], gVolumes[gVolumesHashMap[Volume.ID]].MaxGradientMagnitude);
-	*/
 }
 
 EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind /*= true*/)
@@ -174,6 +172,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
+	GaussianFilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 	GaussianFilterRunningEstimate(gTracers[TracerID]);

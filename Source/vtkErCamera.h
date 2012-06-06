@@ -28,6 +28,8 @@ public:
 	static vtkErCamera *New();
 	vtkTypeRevisionMacro(vtkErCamera, vtkOpenGLCamera);
 
+	void RequestData(ExposureRender::Camera& Camera);
+
 	vtkGetMacro(Renderer, vtkRenderer*);
 	vtkSetMacro(Renderer, vtkRenderer*);
 
