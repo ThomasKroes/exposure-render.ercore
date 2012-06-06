@@ -72,56 +72,31 @@ public:
 
 		const Vec3i Resolution = this->Voxels.GetResolution();
 		
-		Vec3f Pts[3][2];
-		Vec3f P;
+		const int Coarseness = 1;
 		
-		
-		
-		for (int x = 0; x < Resolution[0] - 1; x += 3)
+		const Vec3f HalfSpacing = 0.5f / this->Spacing;
+
+		for (int x = 0; x < Resolution[0]; x += Coarseness)
 		{
-			for (int y = 0; y < Resolution[1] - 1; y += 3)
+			for (int y = 0; y < Resolution[1]; y += Coarseness)
 			{
-				for (int z = 0; z < Resolution[2] - 1; z += 3)
+				for (int z = 0; z < Resolution[2]; z += Coarseness)
 				{
 					float Sum = 0.0f, D = 0.0f;
 
-					D = (float)(this->Voxels(x + 1, y, z) - this->Voxels(x, y, z));
-					D *= 0.5f / this->Spacing[0];
+					D = (float)(this->Voxels(min(x + 1, Resolution[0] - 1), y, z) - this->Voxels(max(x - 1, 0), y, z)) * HalfSpacing[0];
 					Sum += D * D;
 
-					D = (float)(this->Voxels(x, y + 1, z) - this->Voxels(x, y, z));
-					D *= 0.5f / this->Spacing[1];
+					D = (float)(this->Voxels(x, min(y + 1, Resolution[1] - 1), z) - this->Voxels(x, max(y - 1, 0), z)) * HalfSpacing[1];
 					Sum += D * D;
 
-					D = (float)(this->Voxels(x, y, z + 1) - this->Voxels(x, y, z));
-					D *= 0.5f / this->Spacing[2];
+					D = (float)(this->Voxels(x, y, min(z + 1, Resolution[2] - 1)) - this->Voxels(x, y, max(z - 1, 0))) * HalfSpacing[2];
 					Sum += D * D;
 
 					const float GradientMagnitude = sqrtf(Sum);
 
 					if (GradientMagnitude > MaximumGradientMagnitude)
 						MaximumGradientMagnitude = GradientMagnitude;
-					/*
-					Pts[0][0] = P + Vec3f(this->Spacing[0], 0.0f, 0.0f);
-					Pts[0][1] = P - Vec3f(this->Spacing[0], 0.0f, 0.0f);
-					Pts[1][0] = P + Vec3f(0.0f, this->Spacing[1], 0.0f);
-					Pts[1][1] = P - Vec3f(0.0f, this->Spacing[1], 0.0f);
-					Pts[2][0] = P + Vec3f(0.0f, 0.0f, this->Spacing[2]);
-					Pts[2][1] = P - Vec3f(0.0f, 0.0f, this->Spacing[2]);
-
-					float D = 0.0f, Sum = 0.0f;
-
-					for (int i = 0; i < 3; i++)
-					{
-						D = (float)(this->Voxels(Pts[i][1], false) - this->Voxels(Pts[i][0], false));
-						D *= 0.5f / this->Spacing[i];
-						Sum += D * D;
-					}
-
-					const float GradientMagnitude = sqrtf(Sum);
-
-					if (GradientMagnitude > MaximumGradientMagnitude)
-						MaximumGradientMagnitude = GradientMagnitude;*/
 				}
 			}
 		}
