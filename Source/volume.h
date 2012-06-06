@@ -20,6 +20,8 @@
 #include "utilities.h"
 #include "transform.h"
 
+#include "gradientmagnitude.cuh"
+
 namespace ExposureRender
 {
 
@@ -215,6 +217,7 @@ public:
 	CudaTexture3D<unsigned short>	Voxels;
 	Enums::AcceleratorType			AcceleratorType;
 	Octree							Octree;
+	float							MaxGradientMagnitude;
 };
 
 }

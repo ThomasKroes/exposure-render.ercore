@@ -44,12 +44,12 @@ public:
 		return this->MapIt != this->Map.end();
 	}
 
-	HOST void Bind(const H& Item)
+	HOST D* Bind(const H& Item)
 	{
 		if (this->Map.size() + 1 >= MaxSize)
 		{
 			DebugLog("%s failed, max. no. items reached", __FUNCTION__);
-			return;
+			return NULL;
 		}
 		
 		const bool Exists = this->Exists(Item.ID);
@@ -66,6 +66,8 @@ public:
 		}
 
 		this->Synchronize();
+
+		return this->Map[Item.ID];
 	}
 
 	HOST void Unbind(const H& Item)

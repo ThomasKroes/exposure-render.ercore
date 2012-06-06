@@ -79,7 +79,9 @@ EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*=
 EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*= true*/)
 {
 	if (Bind)
+	{
 		gVolumes.Bind(Volume);
+	}
 	else
 		gVolumes.Unbind(Volume);
 
