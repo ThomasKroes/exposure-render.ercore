@@ -120,16 +120,6 @@ public:
 					{
 						break;
 					}
-
-					case Enums::Threshold:
-					{
-						break;
-					}
-
-					case Enums::GradientMagnitude:
-					{
-						break;
-					}
 				}
 
 				break;

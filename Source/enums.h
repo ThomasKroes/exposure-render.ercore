@@ -60,9 +60,7 @@ namespace Enums
 		BrdfOnly = 0,
 		PhaseFunctionOnly,
 		Hybrid,
-		Modulation,
-		Threshold,
-		GradientMagnitude
+		Modulation
 	};
 
 	enum GradientMode

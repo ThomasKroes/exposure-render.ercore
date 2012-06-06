@@ -11,6 +11,10 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+OPTION(ER_VTK "Exposure Render connection with VTK" OFF)
+OPTION(ER_VTK_PYTHON "Python wrapping for Exposure Render VTK" OFF)
+OPTION(ER_VTK_EXAMPLE "Example project which shows how to use Exposure Render in VTK" OFF)
+
 PROJECT(ExposureRender)
 
 # Use CUDA
@@ -184,111 +188,113 @@ SOURCE_GROUP("Cuda" FILES ${Cuda})
 # Create the ErCore project as a shared library (DLL)
 CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Cuda} SHARED)
 
-# Use vtk
-IF(NOT VTK_BINARY_DIR)
-	FIND_PACKAGE(VTK)
-	IF(NOT VTK_DIR)
-	 MESSAGE(FATAL_ERROR "Please set VTK_DIR.")
-	ENDIF(NOT VTK_DIR)
-	INCLUDE(${VTK_USE_FILE})
-ENDIF(NOT VTK_BINARY_DIR)
+IF(ER_VTK)
 
-INCLUDE(CMakeOptions.cmake)
+	IF(NOT VTK_BINARY_DIR)
+		FIND_PACKAGE(VTK)
+		IF(NOT VTK_DIR)
+		 MESSAGE(FATAL_ERROR "Please set VTK_DIR.")
+		ENDIF(NOT VTK_DIR)
+		INCLUDE(${VTK_USE_FILE})
+	ENDIF(NOT VTK_BINARY_DIR)
 
-INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}
-)
+	INCLUDE(CMakeOptions.cmake)
 
-# Make sure classes are exported
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
+	INCLUDE_DIRECTORIES(
+		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}
+	)
 
-SET(General
-	vtkErLight.h
-	vtkErLight.cpp
-	vtkErObject.h
-	vtkErObject.cpp
-	vtkErClippingObject.h
-	vtkErClippingObject.cpp
-	vtkErVolume.h
-	vtkErVolume.cpp
-	vtkErTracer.h
-	vtkErTracer.cpp
-	vtkErTexture.h
-	vtkErTexture.cpp
-	vtkErBindable.h
-	vtkErBindable.cpp
-	vtkErCamera.h
-	vtkErCamera.cpp
-	vtkErAlignment.h
-	vtkErAlignment.cpp
-	vtkErBitmap.h
-	vtkErBitmap.cpp
-	vtkErShape.h
-	vtkErShape.cpp
-	vtkErTimerCallback.h
-	vtkErTimerCallback.cpp
-	vtkErVolumeProperty.h
-	vtkErVolumeProperty.cpp
-	vtkErStable.h
-	vtkErStable.cpp
-	vtkErConfigure.h
-	vtkErDll.h
-	vtkErUtilities.h
-)
+	# Make sure classes are exported
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 
-SOURCE_GROUP("General" FILES ${General})
+	SET(General
+		vtkErLight.h
+		vtkErLight.cpp
+		vtkErObject.h
+		vtkErObject.cpp
+		vtkErClippingObject.h
+		vtkErClippingObject.cpp
+		vtkErVolume.h
+		vtkErVolume.cpp
+		vtkErTracer.h
+		vtkErTracer.cpp
+		vtkErTexture.h
+		vtkErTexture.cpp
+		vtkErBindable.h
+		vtkErBindable.cpp
+		vtkErCamera.h
+		vtkErCamera.cpp
+		vtkErAlignment.h
+		vtkErAlignment.cpp
+		vtkErBitmap.h
+		vtkErBitmap.cpp
+		vtkErShape.h
+		vtkErShape.cpp
+		vtkErTimerCallback.h
+		vtkErTimerCallback.cpp
+		vtkErVolumeProperty.h
+		vtkErVolumeProperty.cpp
+		vtkErStable.h
+		vtkErStable.cpp
+		vtkErConfigure.h
+		vtkErDll.h
+		vtkErUtilities.h
+	)
 
-# Sources that will be wrapped by python
-SET(WrapPython
-	vtkErShape.h
-	vtkErShape.cpp
-	vtkErAlignment.h
-	vtkErAlignment.cpp
-	vtkErLight.h
-	vtkErLight.cpp
-	vtkErObject.h
-	vtkErObject.cpp
-	vtkErVolume.h
-	vtkErVolume.cpp
-	vtkErTracer.h
-	vtkErTracer.cpp
-	vtkErTexture.h
-	vtkErTexture.cpp
-	vtkErCamera.h
-	vtkErCamera.cpp
-	vtkErBitmap.h
-	vtkErBitmap.cpp
-)
+	SOURCE_GROUP("General" FILES ${General})
 
-# Create VtkEr wrapping library
-ADD_LIBRARY(VtkEr ${General})
+	# Sources that will be wrapped by python
+	SET(WrapPython
+		vtkErShape.h
+		vtkErShape.cpp
+		vtkErAlignment.h
+		vtkErAlignment.cpp
+		vtkErLight.h
+		vtkErLight.cpp
+		vtkErObject.h
+		vtkErObject.cpp
+		vtkErVolume.h
+		vtkErVolume.cpp
+		vtkErTracer.h
+		vtkErTracer.cpp
+		vtkErTexture.h
+		vtkErTexture.cpp
+		vtkErCamera.h
+		vtkErCamera.cpp
+		vtkErBitmap.h
+		vtkErBitmap.cpp
+	)
 
-# Link against ErCore
-TARGET_LINK_LIBRARIES(VtkEr vtkCommon vtkRendering vtkGraphics vtkVolumeRendering ErCore OpenGL32.lib)
-
-# Make use of precompiled headers to speed up compilation
-if (MSVC)
-   set_target_properties(VtkEr PROPERTIES COMPILE_FLAGS "/YuvtkErStable.h")
-   set_source_files_properties(vtkErStable.cpp PROPERTIES COMPILE_FLAGS "/YcvtkErStable.h")
-endif(MSVC)
-
-# Python wrapping
-IF(VTK_WRAP_PYTHON)
-	INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_PATH}")
-	VTK_WRAP_PYTHON3(vtkErPython vtkErPython_SRCS "${WrapPython}")
-	ADD_LIBRARY(vtkErPythonD ${vtkErPython_SRCS})
-	PYTHON_ADD_MODULE(vtkErPython vtkErPythonInit.cxx)
+	ADD_LIBRARY(vtkEr ${General})
 	
-	# Create the VtkEr Python wrapper
-	TARGET_LINK_LIBRARIES(vtkErPython vtkErPythonD)
+	# Make use of precompiled headers to speed up compilation
+	if (MSVC)
+	   set_target_properties(vtkEr PROPERTIES COMPILE_FLAGS "/YuvtkErStable.h")
+	   set_source_files_properties(vtkErStable.cpp PROPERTIES COMPILE_FLAGS "/YcvtkErStable.h")
+	endif(MSVC)
 	
-	# Create the VtkEr Python debug wrapper
-	TARGET_LINK_LIBRARIES(vtkErPythonD VtkEr vtkCommonPythonD vtkRenderingPythonD vtkGraphicsPythonD vtkVolumeRenderingPythonD)
-ENDIF(VTK_WRAP_PYTHON)
+	TARGET_LINK_LIBRARIES(vtkEr vtkCommon vtkRendering vtkGraphics vtkVolumeRendering ErCore OpenGL32.lib)
+	
+ENDIF(ER_VTK)
 
-# Create an example project
-ADD_EXECUTABLE(vtkErExample vtkErExample.cpp)
+IF(ER_VTK_PYTHON)
 
-# Link it against the VtkEr wrapper
-TARGET_LINK_LIBRARIES(vtkErExample VtkEr)
+	IF(VTK_WRAP_PYTHON)
+		INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_PATH}")
+		VTK_WRAP_PYTHON3(vtkErPython vtkErPython_SRCS "${WrapPython}")
+		ADD_LIBRARY(vtkErPythonD ${vtkErPython_SRCS})
+		PYTHON_ADD_MODULE(vtkErPython vtkErPythonInit.cxx)
+		
+		TARGET_LINK_LIBRARIES(vtkErPython vtkErPythonD)
+		TARGET_LINK_LIBRARIES(vtkErPythonD vtkEr vtkCommonPythonD vtkRenderingPythonD vtkGraphicsPythonD vtkVolumeRenderingPythonD)
+	ENDIF(VTK_WRAP_PYTHON)
+
+ENDIF(ER_VTK_PYTHON)
+
+IF(ER_VTK_EXAMPLE)
+
+	ADD_EXECUTABLE(vtkErExample vtkErExample.cpp)
+	TARGET_LINK_LIBRARIES(vtkErExample vtkEr)
+
+ENDIF(ER_VTK_EXAMPLE)
