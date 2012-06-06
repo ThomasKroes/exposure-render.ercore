@@ -71,11 +71,14 @@ public:
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		this->VolumeProperty = Other.VolumeProperty;
+		const bool UpdateOpacity	= this->VolumeProperty.Opacity1D.TimeStamp < Other.VolumeProperty.Opacity1D.TimeStamp;
 
-		this->CreateOpacityTransferFunctionTexture();
+		this->VolumeProperty	= Other.VolumeProperty;
 
-		this->Camera = Other.Camera;
+		if (UpdateOpacity)
+			this->UpdateOpacityTexture1D();
+
+		this->Camera			= Other.Camera;
 
 		this->VolumeIDs.Count = 0;
 
@@ -133,7 +136,7 @@ public:
 		return *this;
 	}
 
-	HOST void CreateOpacityTransferFunctionTexture()
+	HOST void UpdateOpacityTexture1D()
 	{
 		this->OpacityRange1D = this->VolumeProperty.Opacity1D.PLF.NodeRange;
 
@@ -151,7 +154,7 @@ public:
 
 	DEVICE float GetOpacity(const unsigned short& Intensity)
 	{
-		return tex1D(Opacity1D, 0.00001f + ((Intensity - this->OpacityRange1D.Min) * this->OpacityRange1D.InvLength));
+		return tex1D(Opacity1D, (Intensity - this->OpacityRange1D.Min) * this->OpacityRange1D.InvLength);
 	}
 
 	VolumeProperty					VolumeProperty;

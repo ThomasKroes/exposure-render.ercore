@@ -41,7 +41,7 @@
 char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
+// #define KEY_LIGHT_ON
 #define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -129,15 +129,15 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetShadingMode(Enums::Hybrid);
 	VolumeProperty->SetDensityScale(50);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(100, 0);
-	Opacity->AddPoint(101, 1);
+	Opacity->AddPoint(1, 0);
+	Opacity->AddPoint(2, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);

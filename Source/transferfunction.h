@@ -15,6 +15,7 @@
 
 #include "plf.h"
 #include "color.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
@@ -113,8 +114,9 @@ public:
 
 	HOST ScalarTransferFunction1D& operator = (const ScalarTransferFunction1D& Other)
 	{	
-		this->PLF = Other.PLF;
-		
+		this->PLF		= Other.PLF;
+		this->TimeStamp	= Other.TimeStamp;
+
 		return *this;
 	}
 
@@ -133,7 +135,8 @@ public:
 		return this->PLF.Evaluate(Intensity);
 	}
 
-	PiecewiseLinearFunction<MAX_NO_TF_NODES> PLF;
+	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF;
+	TimeStamp									TimeStamp;
 };
 
 class EXPOSURE_RENDER_DLL ColorTransferFunction1D
@@ -157,6 +160,8 @@ public:
 		for (int i = 0; i < 3; i++)
 			this->PLF[i] = Other.PLF[i];
 		
+		this->TimeStamp	= Other.TimeStamp;
+
 		return *this;
 	}
 
@@ -178,7 +183,8 @@ public:
 		return ColorXYZf(this->PLF[0].Evaluate(Intensity), this->PLF[1].Evaluate(Intensity), this->PLF[2].Evaluate(Intensity));
 	}
 
-	PiecewiseLinearFunction<MAX_NO_TF_NODES> PLF[3];
+	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF[3];
+	TimeStamp									TimeStamp;
 };
 
 }
