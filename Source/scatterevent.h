@@ -88,7 +88,7 @@ public:
 
 				this->Le = VolumeProperty.Emission1D.Evaluate(this->Intensity);
 
-				const ColorXYZf Diffuse			= VolumeProperty.Diffuse1D.Evaluate(this->Intensity);
+				const ColorXYZf Diffuse			= gpTracer->GetDiffuse(this->Intensity);//VolumeProperty.Diffuse1D.Evaluate(this->Intensity);
 				const ColorXYZf Specular		= VolumeProperty.Specular1D.Evaluate(this->Intensity);
 				const float Glossiness			= VolumeProperty.Glossiness1D.Evaluate(this->Intensity);
 				const float IndexOfReflection	= VolumeProperty.IndexOfReflection1D.Evaluate(this->Intensity);

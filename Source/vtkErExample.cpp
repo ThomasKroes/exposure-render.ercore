@@ -129,9 +129,9 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::Hybrid);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(50);
-	VolumeProperty->SetGradientFactor(0);
+	VolumeProperty->SetGradientFactor(2);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -145,17 +145,17 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
 	const float DiffuseLevel = 1.0f;
-	/*
+	
 	for (int i = 0; i < 50; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	*/
 	
+	/*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	
-
+*/
 	VolumeProperty->SetDiffuse(Diffuse);
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
@@ -169,7 +169,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 1.0f;
+	const float GlossinessLevel = 0.3f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
