@@ -25,8 +25,9 @@ texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
 
 #include "color.h"
 
-texture<float, 1, cudaReadModeElementType>								Opacity1D;
-texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Diffuse1D;
+texture<float, 1, cudaReadModeElementType>			Opacity1D;
+texture<float4, 1, cudaReadModeElementType> 		Diffuse1D;
+
 texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Specular1D;
 texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Emission1D;
 
@@ -161,6 +162,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	}
 
 	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
+	gTracers[TracerID].TexDiffuse1D.Bind(Diffuse1D);
 
 	gTracers.Synchronize(TracerID);
 

@@ -72,11 +72,15 @@ public:
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
 		const bool UpdateOpacity	= this->VolumeProperty.Opacity1D.TimeStamp < Other.VolumeProperty.Opacity1D.TimeStamp;
+		const bool UpdateDiffuse	= this->VolumeProperty.Diffuse1D.TimeStamp < Other.VolumeProperty.Diffuse1D.TimeStamp;
 
 		this->VolumeProperty	= Other.VolumeProperty;
 
 		if (UpdateOpacity)
 			this->UpdateOpacityTexture1D();
+
+		if (UpdateDiffuse)
+			this->UpdateDiffuseTexture1D();
 
 		this->Camera			= Other.Camera;
 
@@ -152,15 +156,43 @@ public:
 		this->TexOpacity1D = Opacity;
 	}
 
+	HOST void UpdateDiffuseTexture1D()
+	{
+		this->DiffuseRange1D = this->VolumeProperty.Diffuse1D.PLF[0].NodeRange;
+
+		const float Delta = this->DiffuseRange1D.Length / (float)TF_TEXTURE_RESOLUTION;
+
+		Buffer1D<float4> Diffuse;
+
+		Diffuse.Resize(TF_TEXTURE_RESOLUTION);
+
+		for (int i = 0; i < TF_TEXTURE_RESOLUTION; i++)
+		{
+			const ColorXYZf Col = this->VolumeProperty.Diffuse1D.Evaluate(this->OpacityRange1D.Min + (float)i * Delta);
+
+			Diffuse[i].x = Col[0];
+			Diffuse[i].y = Col[1];
+			Diffuse[i].z = Col[2];
+		}
+
+		this->TexDiffuse1D = Diffuse;
+	}
+
 	DEVICE float GetOpacity(const unsigned short& Intensity)
 	{
 		return tex1D(Opacity1D, (Intensity - this->OpacityRange1D.Min) * this->OpacityRange1D.InvLength);
 	}
 
+	DEVICE ColorXYZf GetDiffuse(const unsigned short& Intensity)
+	{
+		const float4 Diffuse = tex1D(Diffuse1D, (Intensity - this->DiffuseRange1D.Min) * this->DiffuseRange1D.InvLength);
+		return ColorXYZf(Diffuse.x, Diffuse.y, Diffuse.z);
+	}
+
 	VolumeProperty					VolumeProperty;
 	CudaTexture1D<float>			TexOpacity1D;
 	Range							OpacityRange1D;
-	CudaTexture1D<ColorRGBAuc>		TexDiffuse1D;
+	CudaTexture1D<float4>			TexDiffuse1D;
 	Range							DiffuseRange1D;
 	CudaTexture1D<ColorRGBAuc>		TexSpecular1D;
 	Range							SpecularRange1D;
