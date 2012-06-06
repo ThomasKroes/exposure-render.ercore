@@ -27,9 +27,10 @@ texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
 
 texture<float, 1, cudaReadModeElementType>			Opacity1D;
 texture<float4, 1, cudaReadModeElementType> 		Diffuse1D;
-
-texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Specular1D;
-texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Emission1D;
+texture<float4, 1, cudaReadModeElementType> 		Specular1D;
+texture<float, 1, cudaReadModeElementType> 			Glossiness1D;
+texture<float, 1, cudaReadModeElementType> 			IndexOfReflection1D;
+texture<float4, 1, cudaReadModeElementType> 		Emission1D;
 
 map<int, int> gTracersHashMap;
 map<int, int> gVolumesHashMap;
@@ -163,6 +164,10 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 
 	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
 	gTracers[TracerID].TexDiffuse1D.Bind(Diffuse1D);
+	gTracers[TracerID].TexSpecular1D.Bind(Specular1D);
+	gTracers[TracerID].TexGlossiness1D.Bind(Glossiness1D);
+	gTracers[TracerID].TexIndexOfReflection1D.Bind(IndexOfReflection1D);
+	gTracers[TracerID].TexEmission1D.Bind(Emission1D);
 
 	gTracers.Synchronize(TracerID);
 

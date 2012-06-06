@@ -21,6 +21,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkColorTransferFunction.h>
 
+#include "kelvin.h"
+
 class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture
 {
 public:
@@ -55,13 +57,16 @@ public:
 
 	vtkGetVector3Macro(UniformColor, float);
 	vtkSetVector3Macro(UniformColor, float);
+	void SetUniformColor(const float& Temperature) { const ColorRGBf RGB = ExposureRender::KelvinToColorRGBf(Temperature) / 255.0f; this->SetUniformColor(RGB[0], RGB[1], RGB[2]); }
 
 	vtkGetVector3Macro(CheckerColor1, float);
 	vtkSetVector3Macro(CheckerColor1, float);
+	void SetCheckerColor1(const float& Temperature) { const ColorRGBf RGB = ExposureRender::KelvinToColorRGBf(Temperature) / 255.0f; this->SetCheckerColor1(RGB[0], RGB[1], RGB[2]); }
 
 	vtkGetVector3Macro(CheckerColor2, float);
 	vtkSetVector3Macro(CheckerColor2, float);
-	
+	void SetCheckerColor2(const float& Temperature) { const ColorRGBf RGB = ExposureRender::KelvinToColorRGBf(Temperature) / 255.0f; this->SetCheckerColor2(RGB[0], RGB[1], RGB[2]); }
+
 	vtkColorTransferFunction* GetGradient() { return this->Gradient; }
 	void SetGradient(vtkColorTransferFunction* Gradient) { this->Gradient->DeepCopy(Gradient); }
 

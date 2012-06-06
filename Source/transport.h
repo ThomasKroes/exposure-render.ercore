@@ -114,7 +114,7 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 {
 	ColorXYZf Ld;
 
-	Ld += SE.Le;
+	Ld += gpTracer->GetEmission(SE.Intensity);
 
 	if (gpTracer->LightIDs.Count <= 0)
 		return Ld;
