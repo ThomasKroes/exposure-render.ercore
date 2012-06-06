@@ -37,10 +37,10 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C://Volumes//engine.mhd";
+char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
 
-#define BACK_PLANE_ON
-#define KEY_LIGHT_ON
+//#define BACK_PLANE_ON
+//#define KEY_LIGHT_ON
 #define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -142,16 +142,16 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
 	const float DiffuseLevel = 1.0f;
-	
+	/*
 	for (int i = 0; i < 50; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
+	*/
 	
-	/*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-	*/
+	
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
