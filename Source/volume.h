@@ -200,23 +200,18 @@ public:
 
 	DEVICE float GradientMagnitude(const Vec3f& P)
 	{
-		Vec3f Pts[3][2];
-
-		Pts[0][0] = P + Vec3f(this->Spacing[0], 0.0f, 0.0f);
-		Pts[0][1] = P - Vec3f(this->Spacing[0], 0.0f, 0.0f);
-		Pts[1][0] = P + Vec3f(0.0f, this->Spacing[1], 0.0f);
-		Pts[1][1] = P - Vec3f(0.0f, this->Spacing[1], 0.0f);
-		Pts[2][0] = P + Vec3f(0.0f, 0.0f, this->Spacing[2]);
-		Pts[2][1] = P - Vec3f(0.0f, 0.0f, this->Spacing[2]);
+		const Vec3f HalfSpacing = 0.5f / this->Spacing;
 
 		float D = 0.0f, Sum = 0.0f;
 
-		for (int i = 0; i < 3; i++)
-		{
-			D = GetIntensity(Pts[i][1]) - GetIntensity(Pts[i][0]);
-			D *= 0.5f / this->Spacing[i];
-			Sum += D * D;
-		}
+		D = (GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
+		Sum += D * D;
+
+		D = (GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
+		Sum += D * D;
+
+		D = (GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
+		Sum += D * D;
 
 		return sqrtf(Sum);
 	}

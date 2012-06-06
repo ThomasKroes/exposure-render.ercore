@@ -25,6 +25,7 @@
 #include <vtkPNGReader.h>
 #include <vtkImageCast.h>
 #include <vtkCommand.h>
+#include <vtkImageGaussianSmooth.h>
 
 #include "vtkErVolume.h"
 #include "vtkErLight.h"
@@ -39,7 +40,7 @@
 
 char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
 
-//#define BACK_PLANE_ON
+#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
 #define ENVIRONMENT_ON
 
@@ -123,25 +124,26 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 6.0f;
+	const float StepSize = 5.0f;
 
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(5000);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(1, 0);
-	Opacity->AddPoint(1.01, 1);
+	Opacity->AddPoint(2, 0.5);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float DiffuseLevel = 1.0f;
+	const float DiffuseLevel = 0.0f;
 	/*
 	for (int i = 0; i < 50; i++)
 	{
@@ -166,7 +168,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.25f;
+	const float GlossinessLevel = 1.0f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -200,7 +202,7 @@ void LoadVolume(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
 
 	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(Enums::NearestNeighbour);
+	Volume->SetFilterMode(Enums::Linear);
 	Volume->SetAcceleratorType(Enums::NoAcceleration);
 
 	Tracer->SetInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
@@ -225,18 +227,18 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 0.1;
+	const float KeyLightSize = 0.2;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
 	KeyLight->SetVisible(false);
-	KeyLight->SetElevation(25.0f);
-	KeyLight->SetAzimuth(-25.0f);
+	KeyLight->SetElevation(45.0f);
+	KeyLight->SetAzimuth(-45.0f);
 	KeyLight->SetOffset(0.8f);
-	KeyLight->SetMultiplier(0.5f);
+	KeyLight->SetMultiplier(2.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
-	KeyLight->SetEmissionUnit(Enums::Power);
+	KeyLight->SetEmissionUnit(Enums::Lux);
 	KeyLight->SetRelativeToCamera(1);
 	KeyLight->SetUseCameraFocalPoint(1);
 	KeyLight->SetEnabled(true);
@@ -260,7 +262,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(100.0f);
-	EnvironmentLight->SetMultiplier(1.0f);
+	EnvironmentLight->SetMultiplier(5.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -277,10 +279,17 @@ void CreateLighting(vtkErTracer* Tracer)
 		ImageReader->SetFileName(gEnvironmentBitmap);
 		ImageReader->Update();
 
+		vtkSmartPointer<vtkImageGaussianSmooth> ImageGaussianSmooth = vtkSmartPointer<vtkImageGaussianSmooth>::New();
+		
+		ImageGaussianSmooth->SetInputConnection(ImageReader->GetOutputPort());
+		ImageGaussianSmooth->SetRadiusFactor(2);
+		ImageGaussianSmooth->SetStandardDeviation(2);
+		ImageGaussianSmooth->Update();
+
 		vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
 	
 		Bitmap->SetFilterMode(Enums::Linear);
-		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
+		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageGaussianSmooth->GetOutputPort());
 
 		EnvironmentLightTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
 	}

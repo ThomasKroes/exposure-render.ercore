@@ -78,7 +78,7 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void GetShader(Shader& Shader, const int& VolumeID = 0)
+	DEVICE void GetShader(Shader& Shader, CRNG& RNG, const int& VolumeID = 0)
 	{
 		switch (this->Type)
 		{
@@ -113,11 +113,52 @@ public:
 
 					case Enums::Hybrid:
 					{
+						Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+
+						const float GradientMagnitude			= Volume.GradientMagnitude(this->P);
+						const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
+
+						const float Sensitivity	= 25;
+						const float ExpGF		= 3;
+						const float Exponent	= Sensitivity * powf(VolumeProperty.GradientFactor, ExpGF) * NormalizedGradientMagnitude;
+						
+						const float PdfBrdf = 1.0f - __expf(-Exponent);
+						
+						if (RNG.Get1() < PdfBrdf)
+						{
+							Shader.Type	= Enums::Brdf;			
+							Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+						}
+						else
+						{
+							Shader.Type				= Enums::PhaseFunction;
+							Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
+						}
+
 						break;
 					}
-
+					
 					case Enums::Modulation:
 					{
+						Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+
+						const float GradientMagnitude = Volume.GradientMagnitude(this->P);
+
+						const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
+		
+						const float PdfBrdf = 1.0f - powf(1.0f - NormalizedGradientMagnitude, 2.0f);
+						
+						if (RNG.Get1() < PdfBrdf)
+						{
+							Shader.Type	= Enums::Brdf;			
+							Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+						}
+						else
+						{
+							Shader.Type				= Enums::PhaseFunction;
+							Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
+						}
+
 						break;
 					}
 				}
@@ -162,62 +203,3 @@ public:
 };
 
 }
-
-/*
-bool BRDF = false;
-
-float PdfBrdf = 1.0f;
-
-switch (gpTracer->RenderSettings.Shading.Type)
-{
-	case 0:
-	{
-		BRDF = true;
-		break;
-	}
-
-	case 1:
-	{
-		BRDF = false;
-		break;
-	}
-
-	
-	case 2:
-	{
-		const float NGM			= GradientMagnitude(SE.P) * gpTracer->Volume.GradientMagnitudeRange.Inv;
-		const float Sensitivity	= 25;
-		const float ExpGF		= 3;
-		const float Exponent	= Sensitivity * powf(gpTracer->RenderSettings.Shading.GradientFactor, ExpGF) * NGM;
-		
-		PdfBrdf = gpTracer->RenderSettings.Shading.OpacityModulated ? GetOpacity(SE.P) * (1.0f - __expf(-Exponent)) : 1.0f - __expf(-Exponent);
-		BRDF = RNG.Get1() <= PdfBrdf;
-		break;
-	}
-
-	case 3:
-	{
-		const float NGM = GradientMagnitude(SE.P) * gpTracer->Volume.GradientMagnitudeRange.Inv;
-		
-		PdfBrdf = 1.0f - powf(1.0f - NGM, 2.0f);
-		BRDF = RNG.Get1() < PdfBrdf;
-		break;
-	}
-
-	case 4:
-	{
-		const float NGM = GradientMagnitude(SE.P) * gpTracer->Volume.GradientMagnitudeRange.Inv;
-
-		if (NGM > gpTracer->RenderSettings.Shading.GradientThreshold)
-			BRDF = true;
-		else
-			BRDF = false;
-	}
-	
-}
-
-if (BRDF)
-	return Shader(Shader::Brdf, SE.N, SE.Wo, GetDiffuse(I), GetSpecular(I), gpTracer->RenderSettings.Shading.IndexOfReflection, GetGlossiness(I));
-else
-	return Shader(Shader::Phase, SE.N, SE.Wo, GetDiffuse(I), GetSpecular(I), gpTracer->RenderSettings.Shading.IndexOfReflection, GetGlossiness(I));
-*/
