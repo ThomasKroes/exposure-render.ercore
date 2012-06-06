@@ -15,6 +15,7 @@
 
 #include "ertracer.h"
 #include "framebuffer.h"
+#include "range.h"
 #include "cudatexture1d.h"
 
 #include <map>
@@ -29,6 +30,8 @@ class Tracer
 public:
 	HOST Tracer() :
 		VolumeProperty(),
+		TexOpacity1D(true),
+		OpacityRange1D(),
 		TexDiffuse1D(),
 		DiffuseRange1D(),
 		TexSpecular1D(),
@@ -47,6 +50,8 @@ public:
 
 	HOST Tracer(const ErTracer& Other) :
 		VolumeProperty(),
+		TexOpacity1D(true),
+		OpacityRange1D(),
 		TexDiffuse1D(),
 		DiffuseRange1D(),
 		TexSpecular1D(),
@@ -132,34 +137,32 @@ public:
 	{
 		this->OpacityRange1D = this->VolumeProperty.Opacity1D.PLF.NodeRange;
 
-		const float Delta = (this->OpacityRange1D[1] - this->OpacityRange1D[0]) / 1024.0f;
+		const float Delta = this->OpacityRange1D.Length / (float)TF_TEXTURE_RESOLUTION;
 
 		Buffer1D<float> Opacity;
 
-		Opacity.Resize(1024);
+		Opacity.Resize(TF_TEXTURE_RESOLUTION);
 
-		for (int i = 0; i < 1024; i++)
-		{
-			Opacity(i) = this->VolumeProperty.Opacity1D.Evaluate(this->OpacityRange1D[0] + i * Delta);
-		}
+		for (int i = 0; i < TF_TEXTURE_RESOLUTION; i++)
+			Opacity[i] = this->VolumeProperty.Opacity1D.Evaluate(this->OpacityRange1D.Min + (float)i * Delta);
 
 		this->TexOpacity1D = Opacity;
 	}
 
-	DEVICE float GetOpacity(const float& Intensity)
+	DEVICE float GetOpacity(const unsigned short& Intensity)
 	{
-		return tex1D(Opacity1D, Intensity - this->OpacityRange1D[0]);
+		return tex1D(Opacity1D, 0.00001f + ((Intensity - this->OpacityRange1D.Min) * this->OpacityRange1D.InvLength));
 	}
 
 	VolumeProperty					VolumeProperty;
 	CudaTexture1D<float>			TexOpacity1D;
-	Vec2f							OpacityRange1D;
+	Range							OpacityRange1D;
 	CudaTexture1D<ColorRGBAuc>		TexDiffuse1D;
-	Vec2f							DiffuseRange1D;
+	Range							DiffuseRange1D;
 	CudaTexture1D<ColorRGBAuc>		TexSpecular1D;
-	Vec2f							SpecularRange1D;
+	Range							SpecularRange1D;
 	CudaTexture1D<ColorRGBAuc>		TexEmission1D;
-	Vec2f							EmissionRange1D;
+	Range							EmissionRange1D;
 	Camera							Camera;
 	Indices							VolumeIDs;
 	Indices							LightIDs;

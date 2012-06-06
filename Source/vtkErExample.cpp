@@ -126,24 +126,25 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	const float StepSize = 5.0f;
 
+	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetDensityScale(50);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(1, 0);
-	Opacity->AddPoint(2, 0.5);
+	Opacity->AddPoint(100, 0);
+	Opacity->AddPoint(101, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float DiffuseLevel = 0.0f;
+	const float DiffuseLevel = 1.0f;
 	/*
 	for (int i = 0; i < 50; i++)
 	{
@@ -262,7 +263,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(100.0f);
-	EnvironmentLight->SetMultiplier(5.0f);
+	EnvironmentLight->SetMultiplier(2.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 

@@ -74,6 +74,7 @@ namespace ExposureRender
 #define MAX_NO_INT					4
 #define MAX_NO_CLIPPING_SEGMENTS	8
 #define UAH							1
+#define TF_TEXTURE_RESOLUTION		1024
 
 #ifdef _MSC_VER
 	#define DEBUG_BREAK __debugbreak();
