@@ -31,26 +31,23 @@ public:
 
 	void RequestData(ExposureRender::VolumeProperty& VolumeProperty);
 
-	vtkPiecewiseFunction* GetOpacity()										{	return this->Opacity.GetPointer();									};
-	void SetOpacity(vtkPiecewiseFunction* Opacity)							{	this->Opacity = Opacity; this->Modified();							};
+	vtkPiecewiseFunction* GetOpacity()										{	return this->Opacity.GetPointer();																		};
+	void SetOpacity(vtkPiecewiseFunction* Opacity)							{	this->Opacity = Opacity; this->Opacity->Modified(); this->Modified();									};
 	
-	vtkColorTransferFunction* GetDiffuse()									{	return this->Diffuse.GetPointer();									};
-	void SetDiffuse(vtkColorTransferFunction* Diffuse)						{	this->Diffuse = Diffuse; this->Modified();							};
+	vtkColorTransferFunction* GetDiffuse()									{	return this->Diffuse.GetPointer();																		};
+	void SetDiffuse(vtkColorTransferFunction* Diffuse)						{	this->Diffuse = Diffuse; this->Diffuse->Modified(); this->Modified();									};
 
-	vtkColorTransferFunction* GetSpecular()									{ 	return this->Specular.GetPointer();									};
-	void SetSpecular(vtkColorTransferFunction* Specular)					{ 	this->Specular = Specular; this->Modified();						};
+	vtkColorTransferFunction* GetSpecular()									{ 	return this->Specular.GetPointer();																		};
+	void SetSpecular(vtkColorTransferFunction* Specular)					{ 	this->Specular = Specular; this->Specular->Modified(); this->Modified();								};
 
-	vtkPiecewiseFunction* GetGlossiness()									{ 	return this->Glossiness.GetPointer();								};
-	void SetGlossiness(vtkPiecewiseFunction* Glossiness)					{ 	this->Glossiness = Glossiness; this->Modified();					};
+	vtkPiecewiseFunction* GetGlossiness()									{ 	return this->Glossiness.GetPointer();																	};
+	void SetGlossiness(vtkPiecewiseFunction* Glossiness)					{ 	this->Glossiness = Glossiness; this->Glossiness->Modified(); this->Modified();							};
 	
-	vtkPiecewiseFunction* GetIndexOfReflection()							{ 	return this->IndexOfReflection.GetPointer();						};
-	void SetIndexOfReflection(vtkPiecewiseFunction* IndexOfReflection)		{ 	this->IndexOfReflection = IndexOfReflection; this->Modified();		};
+	vtkPiecewiseFunction* GetIndexOfReflection()							{ 	return this->IndexOfReflection.GetPointer();															};
+	void SetIndexOfReflection(vtkPiecewiseFunction* IndexOfReflection)		{ 	this->IndexOfReflection = IndexOfReflection; this->IndexOfReflection->Modified(); this->Modified();		};
 
-	vtkColorTransferFunction* GetEmission()									{ 	return this->Emission.GetPointer();									};
-	void SetEmission(vtkColorTransferFunction* Emission)					{ 	this->Emission = Emission; this->Modified();						};
-
-	vtkPiecewiseFunction* GetG()											{ 	return this->G.GetPointer();										};
-	void SetG(vtkPiecewiseFunction* G)										{ 	this->G = G; this->Modified();										};
+	vtkColorTransferFunction* GetEmission()									{ 	return this->Emission.GetPointer();																		};
+	void SetEmission(vtkColorTransferFunction* Emission)					{ 	this->Emission = Emission; this->Emission->Modified(); this->Modified();								};
 
 	vtkGetMacro(StepFactorPrimary, float);
 	vtkSetMacro(StepFactorPrimary, float);
@@ -93,7 +90,12 @@ private:
 	vtkSmartPointer<vtkPiecewiseFunction>			Glossiness;
 	vtkSmartPointer<vtkPiecewiseFunction>			IndexOfReflection;
 	vtkSmartPointer<vtkColorTransferFunction>		Emission;
-	vtkSmartPointer<vtkPiecewiseFunction>			G;
+	unsigned long									LastOpacityTimeStamp;
+	unsigned long									LastDiffuseTimeStamp;
+	unsigned long									LastSpecularTimeStamp;
+	unsigned long									LastGlossinessTimeStamp;
+	unsigned long									LastIndexOfReflectionTimeStamp;
+	unsigned long									LastEmissionTimeStamp;
 	float											StepFactorPrimary;
 	float											StepFactorShadow;
 	bool											Shadows;

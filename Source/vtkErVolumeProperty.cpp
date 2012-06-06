@@ -27,7 +27,6 @@ vtkErVolumeProperty::vtkErVolumeProperty()
 	this->Glossiness			= vtkPiecewiseFunction::New();
 	this->IndexOfReflection		= vtkPiecewiseFunction::New();
 	this->Emission				= vtkColorTransferFunction::New();
-	this->G						= vtkPiecewiseFunction::New();
 
 	double Min = 0, Max = 2048;
 
@@ -43,8 +42,13 @@ vtkErVolumeProperty::vtkErVolumeProperty()
 	IndexOfReflection->AddPoint(Max, 15.0f);
 	Emission->AddRGBPoint(Min, 0, 0, 0);
 	Emission->AddRGBPoint(Max, 0, 0, 0);
-	G->AddPoint(Min, 0, 0, 0);
-	G->AddPoint(Max, 0, 0, 0);
+	
+	this->LastOpacityTimeStamp				= 0;
+	this->LastDiffuseTimeStamp				= 0;
+	this->LastSpecularTimeStamp				= 0;
+	this->LastGlossinessTimeStamp			= 0;
+	this->LastIndexOfReflectionTimeStamp	= 0;
+	this->LastEmissionTimeStamp				= 0;
 
 	this->SetStepFactorPrimary(3.0f);
 	this->SetStepFactorShadow(3.0f);
@@ -59,58 +63,100 @@ vtkErVolumeProperty::vtkErVolumeProperty()
 
 void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProperty)
 {
-	VolumeProperty.Opacity1D.Reset();
-	
-	for (int j = 0; j < GetOpacity()->GetSize(); j++)
+	if (this->LastOpacityTimeStamp < Opacity->GetMTime())
 	{
-		double NodeValue[4];
-		GetOpacity()->GetNodeValue(j, NodeValue);
-		VolumeProperty.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
-	}
-	
-	VolumeProperty.Diffuse1D.Reset();
+		VolumeProperty.Opacity1D.Reset();
+		
+		for (int j = 0; j < GetOpacity()->GetSize(); j++)
+		{
+			double NodeValue[4];
+			GetOpacity()->GetNodeValue(j, NodeValue);
+			VolumeProperty.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+		}
 
-	for (int j = 0; j < GetDiffuse()->GetSize(); j++)
-	{
-		double NodeValue[6];
-		GetDiffuse()->GetNodeValue(j, NodeValue);
-		VolumeProperty.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
-	}
-	
-	VolumeProperty.Specular1D.Reset();
+		VolumeProperty.Opacity1D.TimeStamp.Modified();
 
-	for (int j = 0; j < GetSpecular()->GetSize(); j++)
-	{
-		double NodeValue[6];
-		GetSpecular()->GetNodeValue(j, NodeValue);
-		VolumeProperty.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		this->LastOpacityTimeStamp = Opacity->GetMTime();
 	}
 
-	VolumeProperty.Glossiness1D.Reset();
-	
-	for (int j = 0; j < GetGlossiness()->GetSize(); j++)
+	if (this->LastDiffuseTimeStamp < Diffuse->GetMTime())
 	{
-		double NodeValue[4];
-		GetGlossiness()->GetNodeValue(j, NodeValue);
-		VolumeProperty.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+		VolumeProperty.Diffuse1D.Reset();
+
+		for (int j = 0; j < GetDiffuse()->GetSize(); j++)
+		{
+			double NodeValue[6];
+			GetDiffuse()->GetNodeValue(j, NodeValue);
+			VolumeProperty.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		}
+
+		VolumeProperty.Diffuse1D.TimeStamp.Modified();
+
+		this->LastDiffuseTimeStamp = Diffuse->GetMTime();
+	}
+	
+	if (this->LastSpecularTimeStamp < Specular->GetMTime())
+	{
+		VolumeProperty.Specular1D.Reset();
+
+		for (int j = 0; j < GetSpecular()->GetSize(); j++)
+		{
+			double NodeValue[6];
+			GetSpecular()->GetNodeValue(j, NodeValue);
+			VolumeProperty.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		}
+
+		VolumeProperty.Specular1D.TimeStamp.Modified();
+
+		this->LastSpecularTimeStamp = Specular->GetMTime();
 	}
 
-	VolumeProperty.IndexOfReflection1D.Reset();
-	
-	for (int j = 0; j < GetIndexOfReflection()->GetSize(); j++)
+	if (this->LastGlossinessTimeStamp < Glossiness->GetMTime())
 	{
-		double NodeValue[4];
-		GetIndexOfReflection()->GetNodeValue(j, NodeValue);
-		VolumeProperty.IndexOfReflection1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+		VolumeProperty.Glossiness1D.Reset();
+		
+		for (int j = 0; j < GetGlossiness()->GetSize(); j++)
+		{
+			double NodeValue[4];
+			GetGlossiness()->GetNodeValue(j, NodeValue);
+			VolumeProperty.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+		}
+
+		VolumeProperty.Glossiness1D.TimeStamp.Modified();
+
+		this->LastGlossinessTimeStamp = Glossiness->GetMTime();
 	}
 
-	VolumeProperty.Emission1D.Reset();
-
-	for (int j = 0; j < GetEmission()->GetSize(); j++)
+	if (this->LastIndexOfReflectionTimeStamp < IndexOfReflection->GetMTime())
 	{
-		double NodeValue[6];
-		GetEmission()->GetNodeValue(j, NodeValue);
-		VolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		VolumeProperty.IndexOfReflection1D.Reset();
+		
+		for (int j = 0; j < GetIndexOfReflection()->GetSize(); j++)
+		{
+			double NodeValue[4];
+			GetIndexOfReflection()->GetNodeValue(j, NodeValue);
+			VolumeProperty.IndexOfReflection1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+		}
+
+		VolumeProperty.IndexOfReflection1D.TimeStamp.Modified();
+
+		this->LastIndexOfReflectionTimeStamp = IndexOfReflection->GetMTime();
+	}
+
+	if (this->LastEmissionTimeStamp < Emission->GetMTime())
+	{
+		VolumeProperty.Emission1D.Reset();
+
+		for (int j = 0; j < GetEmission()->GetSize(); j++)
+		{
+			double NodeValue[6];
+			GetEmission()->GetNodeValue(j, NodeValue);
+			VolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		}
+
+		VolumeProperty.Emission1D.TimeStamp.Modified();
+
+		this->LastEmissionTimeStamp = Emission->GetMTime();
 	}
 
 	VolumeProperty.StepFactorPrimary 	= GetStepFactorPrimary();
