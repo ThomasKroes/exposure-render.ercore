@@ -86,6 +86,7 @@ SET(General
 	color.h
 	exposurerender.h
 	exposurerender.cpp
+	range.h
 	tracer.h
 	volume.h
 	extinctionvolume.h

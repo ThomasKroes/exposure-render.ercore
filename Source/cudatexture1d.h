@@ -22,12 +22,12 @@ template<class T>
 class EXPOSURE_RENDER_DLL CudaTexture1D
 {
 public:
-	HOST CudaTexture1D() :
+	HOST CudaTexture1D(const bool& Normalized = true, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Clamp) :
 		Resolution(0),
 		Array(NULL),
-		Normalized(true),
-		FilterMode(Enums::Linear),
-		AddressMode(Enums::Border)
+		Normalized(Normalized),
+		FilterMode(FilterMode),
+		AddressMode(AddressMode)
 	{
 	}
 
@@ -89,10 +89,11 @@ public:
 			return;
 
 		TextureReference.normalized		= this->Normalized;
-		TextureReference.filterMode		= (cudaTextureFilterMode)this->FilterMode;
-		TextureReference.addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
+		TextureReference.filterMode		= cudaFilterModeLinear;//(cudaTextureFilterMode)this->FilterMode;
+		TextureReference.addressMode[0]	= cudaAddressModeClamp;//(cudaTextureAddressMode)this->AddressMode;
 
 		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
+
 		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
 	}
 

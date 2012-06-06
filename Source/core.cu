@@ -160,6 +160,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		}
 	}
 
+	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
+
 	gTracers.Synchronize(TracerID);
 
 	if (gTracers[TracerID].VolumeIDs[0] >= 0)
@@ -173,8 +175,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 
 	if (gTracers[TracerID].VolumeIDs[3] >= 0)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
-
-	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
 
 	SingleScattering(gTracers[TracerID]);
 	GaussianFilterFrameEstimate(gTracers[TracerID]);

@@ -63,7 +63,7 @@ DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID
 			return;
 		
 		Intensity	= Volume(Ps, VolumeID);
-		Sum			+= VolumeProperty.DensityScale * VolumeProperty.Opacity1D.Evaluate(Intensity) * StepSize;
+		Sum			+= VolumeProperty.DensityScale * gpTracer->GetOpacity(Intensity) * StepSize;
 		MinT		+= StepSize;
 	}
 
@@ -107,7 +107,7 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 		if (MinT > MaxT)
 			return false;
 		
-		Sum		+= DensityScale * VolumeProperty.Opacity1D.Evaluate(Volume(Ps, VolumeID)) * StepSize;
+		Sum		+= DensityScale * gpTracer->GetOpacity(Volume(Ps, VolumeID)) * StepSize;
 		MinT	+= StepSize;
 	}
 
