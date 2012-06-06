@@ -86,6 +86,8 @@ public:
 			this->BoundingBox.SetMaxP(0.5f * Size);
 
 			this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
+
+			this->MaxGradientMagnitude = Other.GetMaximumGradientMagnitude();
 		}
 
 		return *this;

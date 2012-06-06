@@ -37,7 +37,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C://Volumes//uah_segmentation.mhd";
+char gVolumeFile[] = "C://Volumes//engine.mhd";
 
 #define BACK_PLANE_ON
 #define KEY_LIGHT_ON

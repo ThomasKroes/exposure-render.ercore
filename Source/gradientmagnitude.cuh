@@ -39,7 +39,7 @@ KERNEL void KrnlComputeGradientMagnitudeVolume(unsigned short* pGradientMagnitud
 	*/
 }
 
-void ComputeGradientMagnitudeVolume(int Extent[3], float& MaximumGradientMagnitude)
+void MaximumGradientMagnitude(int VolumeID, float& MaximumGradientMagnitude)
 {
 	/*
 	const dim3 BlockDim(8, 8, 8);
