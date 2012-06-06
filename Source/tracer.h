@@ -71,17 +71,25 @@ public:
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		const bool UpdateOpacity	= this->VolumeProperty.Opacity1D.TimeStamp < Other.VolumeProperty.Opacity1D.TimeStamp;
-		const bool UpdateDiffuse	= this->VolumeProperty.Diffuse1D.TimeStamp < Other.VolumeProperty.Diffuse1D.TimeStamp;
+		if (this->VolumeProperty.Opacity1D.TimeStamp < Other.VolumeProperty.Opacity1D.TimeStamp)
+			this->UpdateScalarTransferFunctionTexture1D(Other.VolumeProperty.Opacity1D, this->TexOpacity1D, this->OpacityRange1D);
+
+		if (this->VolumeProperty.Diffuse1D.TimeStamp < Other.VolumeProperty.Diffuse1D.TimeStamp)
+			this->UpdateColorTransferFunctionTexture1D(Other.VolumeProperty.Diffuse1D, this->TexDiffuse1D, this->DiffuseRange1D);
+
+		if (this->VolumeProperty.Specular1D.TimeStamp < Other.VolumeProperty.Specular1D.TimeStamp)
+			this->UpdateColorTransferFunctionTexture1D(Other.VolumeProperty.Specular1D, this->TexSpecular1D, this->SpecularRange1D);
+
+		if (this->VolumeProperty.Glossiness1D.TimeStamp < Other.VolumeProperty.Glossiness1D.TimeStamp)
+			this->UpdateScalarTransferFunctionTexture1D(Other.VolumeProperty.Glossiness1D, this->TexGlossiness1D, this->GlossinessRange1D);
+
+		if (this->VolumeProperty.IndexOfReflection1D.TimeStamp < Other.VolumeProperty.IndexOfReflection1D.TimeStamp)
+			this->UpdateScalarTransferFunctionTexture1D(Other.VolumeProperty.IndexOfReflection1D, this->TexIndexOfReflection1D, this->IndexOfReflectionRange1D);
+
+		if (this->VolumeProperty.Emission1D.TimeStamp < Other.VolumeProperty.Emission1D.TimeStamp)
+			this->UpdateColorTransferFunctionTexture1D(Other.VolumeProperty.Emission1D, this->TexEmission1D, this->EmissionRange1D);
 
 		this->VolumeProperty	= Other.VolumeProperty;
-
-		if (UpdateOpacity)
-			this->UpdateOpacityTexture1D();
-
-		if (UpdateDiffuse)
-			this->UpdateDiffuseTexture1D();
-
 		this->Camera			= Other.Camera;
 
 		this->VolumeIDs.Count = 0;
@@ -140,42 +148,42 @@ public:
 		return *this;
 	}
 
-	HOST void UpdateOpacityTexture1D()
+	HOST void UpdateScalarTransferFunctionTexture1D(const ScalarTransferFunction1D& TF, CudaTexture1D<float>& Texture, Range& Range)
 	{
-		this->OpacityRange1D = this->VolumeProperty.Opacity1D.PLF.NodeRange;
+		Range = TF.PLF.NodeRange;
 
-		const float Delta = this->OpacityRange1D.Length / (float)TF_TEXTURE_RESOLUTION;
+		const float Delta = Range.Length / (float)TF_TEXTURE_RESOLUTION;
 
-		Buffer1D<float> Opacity;
+		Buffer1D<float> Buffer;
 
-		Opacity.Resize(TF_TEXTURE_RESOLUTION);
+		Buffer.Resize(TF_TEXTURE_RESOLUTION);
 
 		for (int i = 0; i < TF_TEXTURE_RESOLUTION; i++)
-			Opacity[i] = this->VolumeProperty.Opacity1D.Evaluate(this->OpacityRange1D.Min + (float)i * Delta);
+			Buffer[i] = TF.Evaluate(Range.Min + (float)i * Delta);
 
-		this->TexOpacity1D = Opacity;
+		Texture = Buffer;
 	}
 
-	HOST void UpdateDiffuseTexture1D()
+	HOST void UpdateColorTransferFunctionTexture1D(const ColorTransferFunction1D& TF, CudaTexture1D<float4>& Texture, Range& Range)
 	{
-		this->DiffuseRange1D = this->VolumeProperty.Diffuse1D.PLF[0].NodeRange;
+		Range = TF.PLF[0].NodeRange;
 
-		const float Delta = this->DiffuseRange1D.Length / (float)TF_TEXTURE_RESOLUTION;
+		const float Delta = Range.Length / (float)TF_TEXTURE_RESOLUTION;
 
-		Buffer1D<float4> Diffuse;
+		Buffer1D<float4> Buffer;
 
-		Diffuse.Resize(TF_TEXTURE_RESOLUTION);
+		Buffer.Resize(TF_TEXTURE_RESOLUTION);
 
 		for (int i = 0; i < TF_TEXTURE_RESOLUTION; i++)
 		{
-			const ColorXYZf Col = this->VolumeProperty.Diffuse1D.Evaluate(this->OpacityRange1D.Min + (float)i * Delta);
+			const ColorXYZf Col = TF.Evaluate(Range.Min + (float)i * Delta);
 
-			Diffuse[i].x = Col[0];
-			Diffuse[i].y = Col[1];
-			Diffuse[i].z = Col[2];
+			Buffer[i].x = Col[0];
+			Buffer[i].y = Col[1];
+			Buffer[i].z = Col[2];
 		}
 
-		this->TexDiffuse1D = Diffuse;
+		Texture = Buffer;
 	}
 
 	DEVICE float GetOpacity(const unsigned short& Intensity)
@@ -189,22 +197,48 @@ public:
 		return ColorXYZf(Diffuse.x, Diffuse.y, Diffuse.z);
 	}
 
-	VolumeProperty					VolumeProperty;
-	CudaTexture1D<float>			TexOpacity1D;
-	Range							OpacityRange1D;
-	CudaTexture1D<float4>			TexDiffuse1D;
-	Range							DiffuseRange1D;
-	CudaTexture1D<ColorRGBAuc>		TexSpecular1D;
-	Range							SpecularRange1D;
-	CudaTexture1D<ColorRGBAuc>		TexEmission1D;
-	Range							EmissionRange1D;
-	Camera							Camera;
-	Indices							VolumeIDs;
-	Indices							LightIDs;
-	Indices							ObjectIDs;
-	Indices							ClippingObjectIDs;
-	FrameBuffer						FrameBuffer;
-	int								NoEstimates;
+	DEVICE ColorXYZf GetSpecular(const unsigned short& Intensity)
+	{
+		const float4 Specular = tex1D(Specular1D, (Intensity - this->SpecularRange1D.Min) * this->SpecularRange1D.InvLength);
+		return ColorXYZf(Specular.x, Specular.y, Specular.z);
+	}
+
+	DEVICE float GetGlossiness(const unsigned short& Intensity)
+	{
+		return tex1D(Glossiness1D, (Intensity - this->GlossinessRange1D.Min) * this->GlossinessRange1D.InvLength);
+	}
+
+	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)
+	{
+		return tex1D(IndexOfReflection1D, (Intensity - this->IndexOfReflectionRange1D.Min) * this->IndexOfReflectionRange1D.InvLength);
+	}
+
+	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)
+	{
+		const float4 Emission = tex1D(Emission1D, (Intensity - this->EmissionRange1D.Min) * this->EmissionRange1D.InvLength);
+		return ColorXYZf(Emission.x, Emission.y, Emission.z);
+	}
+
+	VolumeProperty			VolumeProperty;
+	CudaTexture1D<float>	TexOpacity1D;
+	Range					OpacityRange1D;
+	CudaTexture1D<float4>	TexDiffuse1D;
+	Range					DiffuseRange1D;
+	CudaTexture1D<float4>	TexSpecular1D;
+	Range					SpecularRange1D;
+	CudaTexture1D<float>	TexGlossiness1D;
+	Range					GlossinessRange1D;
+	CudaTexture1D<float>	TexIndexOfReflection1D;
+	Range					IndexOfReflectionRange1D;
+	CudaTexture1D<float4>	TexEmission1D;
+	Range					EmissionRange1D;
+	Camera					Camera;
+	Indices					VolumeIDs;
+	Indices					LightIDs;
+	Indices					ObjectIDs;
+	Indices					ClippingObjectIDs;
+	FrameBuffer				FrameBuffer;
+	int						NoEstimates;
 };
 
 }

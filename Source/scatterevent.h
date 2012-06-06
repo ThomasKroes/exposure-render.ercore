@@ -86,12 +86,10 @@ public:
 			{
 				VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
 
-				this->Le = VolumeProperty.Emission1D.Evaluate(this->Intensity);
-
 				const ColorXYZf Diffuse			= gpTracer->GetDiffuse(this->Intensity);//VolumeProperty.Diffuse1D.Evaluate(this->Intensity);
-				const ColorXYZf Specular		= VolumeProperty.Specular1D.Evaluate(this->Intensity);
-				const float Glossiness			= VolumeProperty.Glossiness1D.Evaluate(this->Intensity);
-				const float IndexOfReflection	= VolumeProperty.IndexOfReflection1D.Evaluate(this->Intensity);
+				const ColorXYZf Specular		= gpTracer->GetSpecular(this->Intensity);//VolumeProperty.Specular1D.Evaluate(this->Intensity);
+				const float Glossiness			= gpTracer->GetGlossiness(this->Intensity);//VolumeProperty.Glossiness1D.Evaluate(this->Intensity);
+				const float IndexOfReflection	= gpTracer->GetIndexOfReflection(this->Intensity);//VolumeProperty.IndexOfReflection1D.Evaluate(this->Intensity);
 
 				switch (VolumeProperty.ShadingType)
 				{
