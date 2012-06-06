@@ -38,8 +38,8 @@ vtkErVolumeProperty::vtkErVolumeProperty()
 	Specular->AddRGBPoint(Max, 0, 0, 0);
 	Glossiness->AddPoint(Min, 1);
 	Glossiness->AddPoint(Max, 1);
-	IndexOfReflection->AddPoint(Min, 15.0f);
-	IndexOfReflection->AddPoint(Max, 15.0f);
+	IndexOfReflection->AddPoint(Min, 50.0f);
+	IndexOfReflection->AddPoint(Max, 50.0f);
 	Emission->AddRGBPoint(Min, 0, 0, 0);
 	Emission->AddRGBPoint(Max, 0, 0, 0);
 	

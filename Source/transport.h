@@ -50,7 +50,7 @@ DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 	return !Intersect(R, RNG);
 }
 
-DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, ScatterEvent& SE, CRNG& RNG, Shader& Shader)
+DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, const int& LightID, LightingSample& LS, ScatterEvent& SE, CRNG& RNG, Shader& Shader)
 {
 	Vec3f Wi;
 	
@@ -85,14 +85,14 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 
 	IntersectLights(Ray(SE.P, Wi), SE2);
 	
-	/*
-	if (!SE2.Valid || SE2.ID != Light.ID)
+	
+	if (!SE2.Valid || SE2.ID != LightID)
 		return Ld;
-	*/
+	/*
 
 	if (!SE2.Valid)
 		return Ld;
-
+*/
 	Li = SE2.Le;
 
 	if (!Li.IsBlack() && Visible(SE.P, SE2.P, RNG))
@@ -131,9 +131,9 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	SE.GetShader(Shader, RNG);
 
 	if (SE.Type == Enums::Volume)
-		Ld += gpTracer->VolumeProperty.Opacity1D.Evaluate(SE.Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
+		Ld += gpTracer->GetOpacity(SE.Intensity) * EstimateDirectLight(Light, LightID, LS, SE, RNG, Shader);
 	else
-		Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
+		Ld += EstimateDirectLight(Light, LightID, LS, SE, RNG, Shader);
 
 	return (float)gpTracer->LightIDs.Count * Ld;
 }
