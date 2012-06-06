@@ -29,6 +29,12 @@ class Tracer
 public:
 	HOST Tracer() :
 		VolumeProperty(),
+		TexDiffuse1D(),
+		DiffuseRange1D(),
+		TexSpecular1D(),
+		SpecularRange1D(),
+		TexEmission1D(),
+		EmissionRange1D(),
 		Camera(),
 		VolumeIDs(),
 		LightIDs(),
@@ -41,6 +47,12 @@ public:
 
 	HOST Tracer(const ErTracer& Other) :
 		VolumeProperty(),
+		TexDiffuse1D(),
+		DiffuseRange1D(),
+		TexSpecular1D(),
+		SpecularRange1D(),
+		TexEmission1D(),
+		EmissionRange1D(),
 		Camera(),
 		VolumeIDs(),
 		LightIDs(),
@@ -54,8 +66,11 @@ public:
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		this->VolumeProperty	= Other.VolumeProperty;
-		this->Camera			= Other.Camera;
+		this->VolumeProperty = Other.VolumeProperty;
+
+		this->CreateOpacityTransferFunctionTexture();
+
+		this->Camera = Other.Camera;
 
 		this->VolumeIDs.Count = 0;
 
@@ -113,17 +128,45 @@ public:
 		return *this;
 	}
 
-	VolumeProperty				VolumeProperty;
-	CudaTexture1D<ColorRGBAuc>	TexDiffuse1D;
-	CudaTexture1D<ColorRGBAuc>	TexSpecular1D;
-	CudaTexture1D<ColorRGBAuc>	TexEmission1D;
-	Camera						Camera;
-	Indices						VolumeIDs;
-	Indices						LightIDs;
-	Indices						ObjectIDs;
-	Indices						ClippingObjectIDs;
-	FrameBuffer					FrameBuffer;
-	int							NoEstimates;
+	HOST void CreateOpacityTransferFunctionTexture()
+	{
+		this->OpacityRange1D = this->VolumeProperty.Opacity1D.PLF.NodeRange;
+
+		const float Delta = (this->OpacityRange1D[1] - this->OpacityRange1D[0]) / 1024.0f;
+
+		Buffer1D<float> Opacity;
+
+		Opacity.Resize(1024);
+
+		for (int i = 0; i < 1024; i++)
+		{
+			Opacity(i) = this->VolumeProperty.Opacity1D.Evaluate(this->OpacityRange1D[0] + i * Delta);
+		}
+
+		this->TexOpacity1D = Opacity;
+	}
+
+	DEVICE float GetOpacity(const float& Intensity)
+	{
+		return tex1D(Opacity1D, Intensity - this->OpacityRange1D[0]);
+	}
+
+	VolumeProperty					VolumeProperty;
+	CudaTexture1D<float>			TexOpacity1D;
+	Vec2f							OpacityRange1D;
+	CudaTexture1D<ColorRGBAuc>		TexDiffuse1D;
+	Vec2f							DiffuseRange1D;
+	CudaTexture1D<ColorRGBAuc>		TexSpecular1D;
+	Vec2f							SpecularRange1D;
+	CudaTexture1D<ColorRGBAuc>		TexEmission1D;
+	Vec2f							EmissionRange1D;
+	Camera							Camera;
+	Indices							VolumeIDs;
+	Indices							LightIDs;
+	Indices							ObjectIDs;
+	Indices							ClippingObjectIDs;
+	FrameBuffer						FrameBuffer;
+	int								NoEstimates;
 };
 
 }
