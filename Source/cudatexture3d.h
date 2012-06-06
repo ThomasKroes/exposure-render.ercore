@@ -95,6 +95,12 @@ public:
 
 	HOST void Bind(textureReference& TextureReference)
 	{
+		if (this->Resolution[0] * this->Resolution[1] * this->Resolution[2] == 0)
+			return;
+
+		if (this->Array == NULL)
+			return;
+
 		TextureReference.normalized		= this->Normalized;
 		TextureReference.filterMode		= (cudaTextureFilterMode)this->FilterMode;
 		TextureReference.addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;

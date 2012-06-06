@@ -80,7 +80,12 @@ EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*=
 {
 	if (Bind)
 	{
-		gVolumes.Bind(Volume);
+		ExposureRender::Volume* DeviceVolume = gVolumes.Bind(Volume);
+
+		if (DeviceVolume)
+		{
+			DeviceVolume->Voxels.Bind(TexVolume0);
+		}
 	}
 	else
 		gVolumes.Unbind(Volume);
