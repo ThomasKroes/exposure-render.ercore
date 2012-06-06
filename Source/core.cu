@@ -57,11 +57,12 @@ ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErCli
 ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
 ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
 
+#include "gradientmagnitude.cuh"
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
 #include "filtering.cuh"
 #include "estimate.cuh"
-#include "toneMap.cuh"
+#include "tonemap.cuh"
 
 namespace ExposureRender
 {
@@ -79,18 +80,17 @@ EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*=
 EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*= true*/)
 {
 	if (Bind)
-	{
-		ExposureRender::Volume* DeviceVolume = gVolumes.Bind(Volume);
-
-		if (DeviceVolume)
-		{
-			DeviceVolume->Voxels.Bind(TexVolume0);
-		}
-	}
+		gVolumes.Bind(Volume);
 	else
 		gVolumes.Unbind(Volume);
 
 	gVolumesHashMap = gVolumes.HashMap;
+
+	/*
+	gVolumes[gVolumesHashMap[Volume.ID]].Voxels.Bind(TexVolume0);
+
+	MaximumGradientMagnitude(gVolumesHashMap[Volume.ID], gVolumes[gVolumesHashMap[Volume.ID]].MaxGradientMagnitude);
+	*/
 }
 
 EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind /*= true*/)
