@@ -72,7 +72,7 @@ public:
 
 		const Vec3i Resolution = this->Voxels.GetResolution();
 		
-		const int Coarseness = 1;
+		const int Coarseness = 5;
 		
 		const Vec3f HalfSpacing = 0.5f / this->Spacing;
 

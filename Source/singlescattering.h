@@ -144,6 +144,17 @@ DEVICE ColorXYZf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		}
 	}
 
+	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
+
+	const float GradientMagnitude = Volume.GradientMagnitude(SE.P);
+
+	/*
+	if (GradientMagnitude > 0 && GradientMagnitude < Volume.MaxGradientMagnitude)
+		return ColorXYZf::FromRGBf(ColorRGBf(0, 1, 0));
+	else
+		return ColorXYZf::FromRGBf(ColorRGBf(1, 0, 0));
+	*/
+
 	return L;
 }
 
