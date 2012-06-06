@@ -23,6 +23,13 @@ texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume2;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume3;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
 
+#include "color.h"
+
+texture<float, 1, cudaReadModeElementType>								Opacity1D;
+texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Diffuse1D;
+texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Specular1D;
+texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> 	Emission1D;
+
 map<int, int> gTracersHashMap;
 map<int, int> gVolumesHashMap;
 map<int, int> gLightsHashMap;
@@ -63,10 +70,6 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "filtering.cuh"
 #include "estimate.cuh"
 #include "tonemap.cuh"
-
-texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> TexDiffuse;
-texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> TexSpecular;
-texture<ExposureRender::ColorRGBAuc, 1, cudaReadModeNormalizedFloat> TexEmission;
 
 namespace ExposureRender
 {
@@ -170,6 +173,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 
 	if (gTracers[TracerID].VolumeIDs[3] >= 0)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
+
+	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
 
 	SingleScattering(gTracers[TracerID]);
 	GaussianFilterFrameEstimate(gTracers[TracerID]);

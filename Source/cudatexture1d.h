@@ -72,9 +72,9 @@ public:
 		
 		this->Resolution = Resolution;
 		
-		const int NoElementes = this->Resolution;
+		const int NoElements = this->Resolution;
 
-		if (NoElementes <= 0)
+		if (NoElements <= 0)
 			throw (Exception(Enums::Error, "No. elements is zero!"));
 
 		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Vec2i(NoElements, 1));
