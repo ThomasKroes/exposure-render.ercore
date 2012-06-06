@@ -14,13 +14,14 @@
 #pragma once
 
 #include "geometry.h"
+#include "wrapper.cuh"
 
 #include <thrust/reduce.h>
 
 namespace ExposureRender
 {
 
-KERNEL void KrnlComputeGradientMagnitudeVolume(CudaTexture3D<unsigned short> Intensity, Buffer3D<unsigned short> GradientMagnitude)
+KERNEL void KrnlComputeGradientMagnitudeVolume(unsigned short* pGradientMagnitude, int Width, int Height, int Depth)
 {
 	/*
 	const int X = blockIdx.x * blockDim.x + threadIdx.x;
@@ -38,24 +39,31 @@ KERNEL void KrnlComputeGradientMagnitudeVolume(CudaTexture3D<unsigned short> Int
 	*/
 }
 
-void ComputeGradientMagnitudeVolume(CudaTexture3D<unsigned short>)
+void ComputeGradientMagnitudeVolume(int Extent[3], float& MaximumGradientMagnitude)
 {
 	/*
 	const dim3 BlockDim(8, 8, 8);
 	const dim3 GridDim((int)ceilf((float)Extent[0] / (float)BlockDim.x), (int)ceilf((float)Extent[1] / (float)BlockDim.y), (int)ceilf((float)Extent[2] / (float)BlockDim.z));
 
-	Buffer3D<unsigned short> GradientMagnitude("Gradient magnitude", Enums::Device);
+	unsigned short* pGradientMagnitude = NULL;
+
+	// Allocate temporary linear memory for computation
+	Cuda::Allocate(pGradientMagnitude, Extent[0] * Extent[1] * Extent[2]);
 
 	// Execute gradient computation kernel
-	LAUNCH_CUDA_KERNEL((KrnlComputeGradientMagnitudeVolume<<<GridDim, BlockDim>>>(Intensity, Intensity)));
+	LAUNCH_CUDA_KERNEL((KrnlComputeGradientMagnitudeVolume<<<GridDim, BlockDim>>>(pGradientMagnitude, Extent[0], Extent[1], Extent[2])));
 	
 	// Create thrust device pointer
-	thrust::device_ptr<unsigned short> DevicePtr(GradientMagnitude.GetData()); 
+	thrust::device_ptr<unsigned short> DevicePtr(pGradientMagnitude); 
 
 	// Reduce the volume to a maximum gradient magnitude
 	float Result = 0.0f;
 	Result = thrust::reduce(DevicePtr, DevicePtr + Extent[0] * Extent[1] * Extent[2], Result, thrust::maximum<unsigned short>());
 	
+	// Free temporary memory
+	Cuda::Free(pGradientMagnitude);
+
+	// Set result
 	MaximumGradientMagnitude = Result;
 	*/
 }

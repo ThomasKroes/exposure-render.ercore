@@ -37,12 +37,24 @@ public:
 		InvSize(1.0f),
 		MinStep(1.0f),
 		Voxels(),
+		AcceleratorType(Enums::Octree),
 		Octree(),
-		AcceleratorType(Enums::Octree)
+		MaxGradientMagnitude(0.0f)
 	{
 	}
 
-	HOST Volume(const ErVolume& Other)
+	HOST Volume(const ErVolume& Other) :
+		Transform(),
+		BoundingBox(),
+		Spacing(1.0f),
+		InvSpacing(1.0f),
+		Size(1.0f),
+		InvSize(1.0f),
+		MinStep(1.0f),
+		Voxels(),
+		AcceleratorType(Enums::Octree),
+		Octree(),
+		MaxGradientMagnitude(0.0f)
 	{
 		*this = Other;
 	}
