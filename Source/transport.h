@@ -66,7 +66,7 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 
 	if (!Li.IsBlack() && !F.IsBlack() && BsdfPdf > 0.0f && Visible(SE.P, SS.P, RNG))
 	{
-		const float LightPdf = DistanceSquared(SE.P, SS.P) / (Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SE.P, SS.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, BsdfPdf);
 
@@ -97,7 +97,7 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 
 	if (!Li.IsBlack() && Visible(SE.P, SE2.P, RNG))
 	{
-		const float LightPdf = DistanceSquared(SE.P, SE2.P) / (Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SE.P, SE2.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, BsdfPdf, 1, LightPdf);
 
