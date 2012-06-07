@@ -39,7 +39,7 @@ public:
 		Vec3f Wh = SphericalDirection(SinTheta, CosTheta, Phi);
 
 		if (!SameHemisphere(Wo, Wh))
-			Wh = -Wh;
+			Wh *= -1.0f;
 
 		Wi = -Wo + 2.0f * Dot(Wo, Wh) * Wh;
 

@@ -19,14 +19,4 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void GetClippingSegments(const Ray& R, ClippingSegments& CS)
-{
-	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
-	{
-		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
-
-		ClippingObject.Shape.Intersect(R, CS);
-	}
-}
-
 }

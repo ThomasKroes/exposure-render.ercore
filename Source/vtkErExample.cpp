@@ -227,7 +227,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.05f);
+	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
@@ -240,16 +240,16 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 1;
+	const float KeyLightSize = 2.2;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
 //	KeyLight->SetVisible(false);
-	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(-35.0f);
-	KeyLight->SetOffset(0.8f);
-	KeyLight->SetMultiplier(5.0f);
+	KeyLight->SetElevation(25.0f);
+	KeyLight->SetAzimuth(0.0f);
+	KeyLight->SetOffset(2.0f);
+	KeyLight->SetMultiplier(25.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
 //	KeyLight->SetRelativeToCamera(1);
@@ -364,18 +364,19 @@ void CreateObjects(vtkErTracer* Tracer)
 #ifdef BACK_PLANE_ON
 	vtkSmartPointer<vtkErObject> Object = vtkSmartPointer<vtkErObject>::New();
 
-	const float BackPlaneSize = 10;
+	const float BackPlaneSize = 2;
 
 	Object->SetAlignmentType(Enums::AxisAlign);
 	Object->SetAxis(Enums::Z);
 	Object->SetPosition(0.0f, 0.0f, -0.5f);
 	Object->SetShapeType(Enums::Plane);
 	Object->SetSize(BackPlaneSize, BackPlaneSize, BackPlaneSize);
-//	Object->SetRelativeToCamera(1);
-	Object->SetUseCameraFocalPoint(1);
+//	Object->SetRelativeToCamera(true);
+	Object->SetUseCameraFocalPoint(true);
 	Object->SetElevation(0.0f);
 	Object->SetAzimuth(0.0f);
-	Object->SetOffset(-0.0f);
+	Object->SetOffset(0.0f);
+	Object->SetOneSided(true);
 	Object->SetEnabled(true);
 
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
@@ -401,16 +402,18 @@ void CreateObjects(vtkErTracer* Tracer)
 	}
 	else
 	{
-		printf("%s cannot be loaded, reverting to checker background.", gBackPlaneBitmap);
+		printf("%s cannot be loaded, reverting to unform texture\n", gBackPlaneBitmap);
 
 		DiffuseTexture->SetTextureType(Enums::Procedural);
-		DiffuseTexture->SetProceduralType(Enums::Checker);
+		DiffuseTexture->SetProceduralType(Enums::Uniform);
+		DiffuseTexture->SetUniformColor(1, 1, 1);
 		DiffuseTexture->SetRepeat(10, 10);
+		DiffuseTexture->SetOutputLevel(5.00f);
 	}
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
 //	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
-//	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
+	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
 #endif
