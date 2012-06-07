@@ -37,8 +37,7 @@ vtkErTracer::vtkErTracer(void)
 	glGenTextures(1, &TextureID);
 
 	this->ImageBuffer				= NULL;
-	this->RenderSize[0]				= 0;
-	this->RenderSize[1]				= 0;
+	this->LastRenderSize				= Vec2i(0);
 	this->CameraTimeStamp			= 0;
 	this->VolumeProperty			= vtkSmartPointer<vtkErVolumeProperty>::New();
 	this->VolumePropertyTimeStamp	= 0;
@@ -106,12 +105,23 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->Tracer.SetDirty();
 	}
 
+	const Vec2i CurrentRenderSize = Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
+
+	if (this->LastRenderSize != CurrentRenderSize)
+	{
+		this->LastRenderSize = CurrentRenderSize;
+
+		delete[] this->ImageBuffer;
+		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->LastRenderSize[0] * this->LastRenderSize[1]];
+
+		this->Tracer.Camera.FilmSize = this->LastRenderSize;
+		this->Tracer.SetDirty();
+	}
+
 	vtkErCamera* Camera = dynamic_cast<vtkErCamera*>(Renderer->GetActiveCamera());
 	
 	if (Camera && Camera->GetMTime() != this->CameraTimeStamp)
 	{
-		this->Tracer.Camera.FilmSize = Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
-
 		Camera->RequestData(this->Tracer.Camera);
 
 		this->CameraTimeStamp = Camera->GetMTime();
@@ -200,17 +210,6 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	this->BeforeRender(Renderer, Volume);
 
-	int* WindowSize = Renderer->GetRenderWindow()->GetSize();
-
-	if (WindowSize[0] != this->RenderSize[0] || WindowSize[1] != this->RenderSize[1])
-	{
-		RenderSize[0] = WindowSize[0];
-		RenderSize[1] = WindowSize[1];
-
-		delete[] this->ImageBuffer;
-		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->RenderSize[0] * this->RenderSize[1]];
-	}
-
 	ER_CALL(ExposureRender::Render(this->Tracer.ID));
 	ER_CALL(ExposureRender::GetRunningEstimate(this->Tracer.ID, this->ImageBuffer));
 
@@ -222,7 +221,7 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RenderSize[0], RenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)this->ImageBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->LastRenderSize[0], this->LastRenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)this->ImageBuffer);
 	glBindTexture(GL_TEXTURE_2D, TextureID);
 
 	double d = 0.5;
@@ -232,17 +231,17 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
     double coordinatesA[4];
     Renderer->GetWorldPoint(coordinatesA);
 
-    Renderer->SetDisplayPoint(RenderSize[0],0,d);
+    Renderer->SetDisplayPoint(this->LastRenderSize[0],0,d);
     Renderer->DisplayToWorld();
     double coordinatesB[4];
     Renderer->GetWorldPoint(coordinatesB);
 
-    Renderer->SetDisplayPoint(RenderSize[0], RenderSize[1],d);
+    Renderer->SetDisplayPoint(this->LastRenderSize[0], this->LastRenderSize[1],d);
     Renderer->DisplayToWorld();
     double coordinatesC[4];
     Renderer->GetWorldPoint(coordinatesC);
 
-    Renderer->SetDisplayPoint(0,RenderSize[1],d);
+    Renderer->SetDisplayPoint(0,this->LastRenderSize[1],d);
     Renderer->DisplayToWorld();
     double coordinatesD[4];
     Renderer->GetWorldPoint(coordinatesD);

@@ -68,6 +68,9 @@ public:
 
 		ColorXYZf R;
 
+		this->Microfacet.SampleF(Wol, Wil, Pdf, S.Dir);
+
+		/*
 		if (S.Component <= 0.5f)
 		{
 			this->Lambert.SampleF(Wol, Wil, Pdf, S.Dir);
@@ -76,6 +79,7 @@ public:
 		{
 			this->Microfacet.SampleF(Wol, Wil, Pdf, S.Dir);
 		}
+		*/
 
 		Pdf += this->Lambert.Pdf(Wol, Wil);
 		Pdf += this->Microfacet.Pdf(Wol, Wil);
@@ -106,7 +110,7 @@ public:
 		this->Nn 			= Other.Nn;
 		this->Nu 			= Other.Nu;
 		this->Nv 			= Other.Nv;
-		this->Lambert 	= Other.Lambert;
+		this->Lambert 		= Other.Lambert;
 		this->Microfacet 	= Other.Microfacet;
 
 		return *this;
@@ -115,7 +119,7 @@ public:
 	Vec3f			Nn;
 	Vec3f			Nu;
 	Vec3f			Nv;
-	Lambert		Lambert;
+	Lambert			Lambert;
 	Microfacet		Microfacet;
 };
 

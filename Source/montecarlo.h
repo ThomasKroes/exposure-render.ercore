@@ -168,7 +168,7 @@ HOST_DEVICE_NI inline Vec3f SphericalDirection(const float& SinTheta, const floa
 {
 	const Vec3f Wl = SphericalDirection(SinTheta, CosTheta, Phi);
 
-	const Vec3f u = Normalize(Cross(N, Vec3f(0.0072f, 1.0f, 0.0034f)));
+	const Vec3f u = Normalize(Cross(N, Vec3f(0.0072f, 0.0034f, 1.0f)));
 	const Vec3f v = Normalize(Cross(N, u));
 
 	return Vec3f(	u[0] * Wl[0] + v[0] * Wl[1] + N[0] * Wl[2],

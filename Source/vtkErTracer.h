@@ -70,7 +70,7 @@ protected:
 private:
 	unsigned int							TextureID;
 	ExposureRender::ColorRGBAuc*			ImageBuffer;
-	int										RenderSize[2];
+	Vec2i									LastRenderSize;
 	unsigned long							CameraTimeStamp;
 	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperty;
 	unsigned long							VolumePropertyTimeStamp;
