@@ -68,9 +68,6 @@ public:
 
 		ColorXYZf R;
 
-		this->Microfacet.SampleF(Wol, Wil, Pdf, S.Dir);
-
-		/*
 		if (S.Component <= 0.5f)
 		{
 			this->Lambert.SampleF(Wol, Wil, Pdf, S.Dir);
@@ -79,7 +76,6 @@ public:
 		{
 			this->Microfacet.SampleF(Wol, Wil, Pdf, S.Dir);
 		}
-		*/
 
 		Pdf += this->Lambert.Pdf(Wol, Wil);
 		Pdf += this->Microfacet.Pdf(Wol, Wil);

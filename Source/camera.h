@@ -31,7 +31,7 @@ public:
 		FocalDistance(0.0f),
 		ApertureShape(Enums::Polygon),
 		ApertureSize(0.0f),
-		NoApertureBlades(4),
+		NoApertureBlades(6),
 		ApertureAngle(0.0f),
 		ClipNear(0.0f),
 		ClipFar(10000.0f),
@@ -46,15 +46,32 @@ public:
 	{
 	}
 
-	HOST Camera(const Camera& Other)
+	HOST Camera(const Camera& Other) :
+		FilmSize(0, 0),
+		Pos(1.0f),
+		Target(0.0f),
+		Up(0.0f, 1.0f, 0.0f),
+		FocusMode(Enums::AutoFocus),
+		FocusUV(0.5f),
+		FocalDistance(0.0f),
+		ApertureShape(Enums::Polygon),
+		ApertureSize(0.0f),
+		NoApertureBlades(6),
+		ApertureAngle(0.0f),
+		ClipNear(0.0f),
+		ClipFar(10000.0f),
+		Exposure(1.0f),
+		Gamma(2.2f),
+		FOV(35.0f),
+		N(0.0f),
+		U(0.0f),
+		V(0.0f),
+		InvExposure(1.0f),
+		InvGamma(1.0f / 2.2f)
 	{
 		*this = Other;
 	}
 
-	HOST ~Camera()
-	{
-	}
-	
 	HOST Camera& Camera::operator = (const Camera& Other)
 	{
 		this->FilmSize			= Other.FilmSize;
