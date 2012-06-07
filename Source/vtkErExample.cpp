@@ -40,9 +40,9 @@
 
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
-//#define BACK_PLANE_ON
+#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
+//#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -125,7 +125,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 4.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -227,7 +227,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.0f);
+	Camera->SetApertureSize(0.05f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
@@ -245,14 +245,14 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
-	KeyLight->SetVisible(false);
+//	KeyLight->SetVisible(false);
 	KeyLight->SetElevation(45.0f);
 	KeyLight->SetAzimuth(-35.0f);
 	KeyLight->SetOffset(0.8f);
-	KeyLight->SetMultiplier(20.0f);
+	KeyLight->SetMultiplier(5.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
-	KeyLight->SetRelativeToCamera(1);
+//	KeyLight->SetRelativeToCamera(1);
 	KeyLight->SetUseCameraFocalPoint(1);
 	KeyLight->SetEnabled(true);
 
@@ -371,7 +371,7 @@ void CreateObjects(vtkErTracer* Tracer)
 	Object->SetPosition(0.0f, 0.0f, -0.5f);
 	Object->SetShapeType(Enums::Plane);
 	Object->SetSize(BackPlaneSize, BackPlaneSize, BackPlaneSize);
-	Object->SetRelativeToCamera(1);
+//	Object->SetRelativeToCamera(1);
 	Object->SetUseCameraFocalPoint(1);
 	Object->SetElevation(0.0f);
 	Object->SetAzimuth(0.0f);
