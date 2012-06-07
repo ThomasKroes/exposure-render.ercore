@@ -94,8 +94,10 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[0] = Sum[0] / SumWeight;
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[1] = Sum[1] / SumWeight;
 		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[2] = Sum[2] / SumWeight;
-		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[3] = 255;
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy)[3] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3];
 	}
+	else
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy) = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy);
 }
 
 void GaussianFilterRunningEstimate(Tracer& Tracer)
@@ -113,51 +115,12 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 
 	int Range[2][2];
 
-	/*
-	Range[0][0] = max((int)ceilf(IDx - 1), 0);
-	Range[0][1] = min((int)floorf(IDx + 1), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - 1), 0);
-	Range[1][1] = min((int)floorf(IDy + 1), gpTracer->FrameBuffer.Resolution[1] - 1);
-
-	ColorRGBf Sum, CenterColor;
-	float SumWeight = 0.0f;
-
-	for (int y = Range[1][0]; y <= Range[1][1]; y++)
-	{
-		for (int x = Range[0][0]; x <= Range[0][1]; x++)
-		{
-			const ColorRGBf KernelPosColor(gpTracer->FrameBuffer.DisplayEstimate(x, y)[0], gpTracer->FrameBuffer.DisplayEstimate(x, y)[1], gpTracer->FrameBuffer.DisplayEstimate(x, y)[2]);
-			
-			const float Weight = Gauss2D(1.0f, x - IDx, y - IDy);
-
-			Sum			+= KernelPosColor * Weight;
-			SumWeight	+= Weight;
-		}
-	}
-
-	if (SumWeight > 0.0f)
-	{
-		CenterColor[0] = Sum[0] / SumWeight;
-		CenterColor[1] = Sum[1] / SumWeight;
-		CenterColor[2] = Sum[2] / SumWeight;
-		CenterColor[3] = CenterColor[3];
-	}
-	else
-	{
-		CenterColor[0] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0];
-		CenterColor[1] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1];
-		CenterColor[2] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2];
-		CenterColor[3] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3];
-	}
-	*/
-
 	ColorRGBf Sum, CenterColor; 
 	float SumWeight = 0.0f;
 
 	CenterColor[0] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0];
 	CenterColor[1] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1];
 	CenterColor[2] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2];
-	CenterColor[3] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3];
 
 	Sum = ColorRGBf::Black();
 	SumWeight = 0.0f;
@@ -193,8 +156,10 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 		FinalColor[0] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[0] / SumWeight, FinalColor[0]);
 		FinalColor[1] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[1] / SumWeight, FinalColor[1]);
 		FinalColor[2] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[2] / SumWeight, FinalColor[2]);
-		FinalColor[3] = CenterColor[3];
+		FinalColor[3] = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3];
 	}
+	else
+		gpTracer->FrameBuffer.TempDisplayEstimate(IDx, IDy) = gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy);
 }
 
 void BilateralFilterRunningEstimate(Tracer& Tracer)
