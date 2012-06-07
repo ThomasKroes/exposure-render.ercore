@@ -38,19 +38,19 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
-#define BACK_PLANE_ON
-#define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
-//#define ENVIRONMENT_ON
+//#define BACK_PLANE_ON
+// #define KEY_LIGHT_ON
+// #define RIM_LIGHT_ON
+#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
-	char gBackPlaneBitmap[] = "C:\\Bitmaps\\back_plane.png";
+	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Bitmaps\\environment.png";
+	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environment.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -125,14 +125,14 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 6.0f;
+	const float StepSize = 5.0f;
 
 	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::Hybrid);
-	VolumeProperty->SetDensityScale(50);
-	VolumeProperty->SetGradientFactor(1);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -174,7 +174,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.25f;
+	const float GlossinessLevel = 0.5f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -227,7 +227,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.01f);
+	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
