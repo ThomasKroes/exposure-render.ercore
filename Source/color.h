@@ -51,6 +51,16 @@ public:
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
 	}
 
+	HOST_DEVICE float LengthSquared(void) const
+	{
+		return (float)this->D[0] * (float)this->D[0] + (float)this->D[1] * (float)this->D[1] + (float)this->D[2] * (float)this->D[2];
+	}
+
+	HOST_DEVICE float Length(void) const
+	{
+		return sqrtf(this->LengthSquared());
+	}
+
 	DATA(float, 3)
 };
 
