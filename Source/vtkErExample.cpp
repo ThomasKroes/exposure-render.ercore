@@ -42,7 +42,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-// #define RIM_LIGHT_ON
+#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -125,7 +125,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 15.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -279,7 +279,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(120.0f);
 	RimLight->SetOffset(0.8f);
-	RimLight->SetMultiplier(2.0f);
+	RimLight->SetMultiplier(10.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
 	RimLight->SetRelativeToCamera(1);
@@ -306,7 +306,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(100.0f);
-	EnvironmentLight->SetMultiplier(50.0f);
+	EnvironmentLight->SetMultiplier(10.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
