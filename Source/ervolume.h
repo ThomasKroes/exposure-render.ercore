@@ -72,7 +72,7 @@ public:
 
 		const Vec3i Resolution = this->Voxels.GetResolution();
 		
-		const int Coarseness = 5;
+		const int Coarseness = 3;
 		
 		const Vec3f HalfSpacing = 0.5f / this->Spacing;
 
@@ -101,8 +101,6 @@ public:
 			}
 		}
 		
-		printf("%0.4f", MaximumGradientMagnitude);
-
 		return MaximumGradientMagnitude;
 	}
 

@@ -45,13 +45,13 @@ void vtkErShape::RequestData(ExposureRender::Shape& Shape)
 
 		case Enums::Disk:
 		{
-			Shape.Disk = Disk(this->GetRadius());
+			Shape.Disk = Disk(this->GetRadius(), this->GetOneSided());
 			break;
 		}
 
 		case Enums::Ring:
 		{
-			Shape.Ring = Ring(this->GetInnerRadius(), this->GetOuterRadius());
+			Shape.Ring = Ring(this->GetInnerRadius(), this->GetOuterRadius(), this->GetOneSided());
 			break;
 		}
 

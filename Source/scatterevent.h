@@ -176,7 +176,7 @@ public:
 				const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[this->ID].GlossinessTextureID, this->UV);
 
 				Shader.Type	= Enums::Brdf;			
-				Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, 15, GlossinessExponent(Glossiness.Y()));
+				Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, 15, 500);
 
 				break;
 			}

@@ -106,7 +106,7 @@ public:
 		this->Nn 			= Other.Nn;
 		this->Nu 			= Other.Nu;
 		this->Nv 			= Other.Nv;
-		this->Lambert 	= Other.Lambert;
+		this->Lambert 		= Other.Lambert;
 		this->Microfacet 	= Other.Microfacet;
 
 		return *this;
@@ -115,7 +115,7 @@ public:
 	Vec3f			Nn;
 	Vec3f			Nu;
 	Vec3f			Nv;
-	Lambert		Lambert;
+	Lambert			Lambert;
 	Microfacet		Microfacet;
 };
 

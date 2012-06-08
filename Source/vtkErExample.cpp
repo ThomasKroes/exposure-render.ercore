@@ -38,7 +38,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
@@ -46,11 +46,11 @@ char gVolumeFile[] = "C:\\Volumes\\manix.mhd";
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
-	char gBackPlaneBitmap[] = "C:\\Bitmaps\\back_plane.png";
+	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Bitmaps\\environment.png";
+	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environment.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -75,16 +75,14 @@ int main(int, char *[])
 	
 	RenderWindow->AddRenderer(Renderer);
 
-	// Create and apply timer callback
 	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
 	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
 	
-	// Create and apply interactor style
 	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
 	InteractorStyle->SetMotionFactor(10);
 		
 	RenderWindowInteractor->Initialize();
-	RenderWindowInteractor->CreateRepeatingTimer(1);
+	RenderWindowInteractor->CreateRepeatingTimer(10);
 	RenderWindowInteractor->AddObserver(vtkCommand::TimerEvent, TimerCallback);
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
@@ -125,41 +123,40 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 7.0f;
+	const float StepSize = 8.0f;
 
-	VolumeProperty->SetShadows(1);
+	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::Hybrid);
-	VolumeProperty->SetDensityScale(60);
-	VolumeProperty->SetGradientFactor(2);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetDensityScale(500);
+	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(10, 0);
-	Opacity->AddPoint(20, 0.1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float DiffuseLevel = 1.0f;
-	
 	/*
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	
-	
+	*/
+
+	const float DiffuseLevel = 1.0f;
+/*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	*/
 	
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
+	
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -174,7 +171,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.4f;
+	const float GlossinessLevel = 0.2f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -227,7 +224,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.01f);
+	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
@@ -240,20 +237,20 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 0.5;
+	const float KeyLightSize = 2.2;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
-	KeyLight->SetVisible(false);
-	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(-35.0f);
-	KeyLight->SetOffset(0.8f);
-	KeyLight->SetMultiplier(1.0f);
+//	KeyLight->SetVisible(false);
+	KeyLight->SetElevation(75.0f);
+	KeyLight->SetAzimuth(15.0f);
+	KeyLight->SetOffset(2.0f);
+	KeyLight->SetMultiplier(5.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
-	KeyLight->SetEmissionUnit(Enums::Power);
-	KeyLight->SetRelativeToCamera(1);
-	KeyLight->SetUseCameraFocalPoint(1);
+	KeyLight->SetEmissionUnit(Enums::Lux);
+	KeyLight->SetRelativeToCamera(true);
+	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
@@ -262,15 +259,15 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLightTexture->SetTextureType(Enums::Procedural);
 	KeyLightTexture->SetProceduralType(Enums::Uniform);
-	KeyLightTexture->SetUniformColor(1500);
-
+	KeyLightTexture->SetUniformColor(3500);
+	
 	KeyLight->SetInputConnection(vtkErLight::TexturePort, KeyLightTexture->GetOutputPort());
 #endif
 
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float RimLightSize = 0.5f;
+	const float RimLightSize = 1.0f;
 
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Plane);
@@ -279,11 +276,11 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(120.0f);
 	RimLight->SetOffset(0.8f);
-	RimLight->SetMultiplier(10.0f);
+	RimLight->SetMultiplier(3.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
-	RimLight->SetRelativeToCamera(0);
-	RimLight->SetUseCameraFocalPoint(1);
+	RimLight->SetRelativeToCamera(true);
+	RimLight->SetUseCameraFocalPoint(true);
 	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
@@ -306,7 +303,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(100.0f);
-	EnvironmentLight->SetMultiplier(5.0f);
+	EnvironmentLight->SetMultiplier(0.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -333,7 +330,7 @@ void CreateLighting(vtkErTracer* Tracer)
 		vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
 	
 		Bitmap->SetFilterMode(Enums::Linear);
-		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
+		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageGaussianSmooth->GetOutputPort());
 
 		EnvironmentLightTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
 	}
@@ -364,18 +361,19 @@ void CreateObjects(vtkErTracer* Tracer)
 #ifdef BACK_PLANE_ON
 	vtkSmartPointer<vtkErObject> Object = vtkSmartPointer<vtkErObject>::New();
 
-	const float BackPlaneSize = 10;
+	const float BackPlaneSize = 2;
 
 	Object->SetAlignmentType(Enums::AxisAlign);
 	Object->SetAxis(Enums::Z);
 	Object->SetPosition(0.0f, 0.0f, -0.5f);
 	Object->SetShapeType(Enums::Plane);
 	Object->SetSize(BackPlaneSize, BackPlaneSize, BackPlaneSize);
-	Object->SetRelativeToCamera(1);
-	Object->SetUseCameraFocalPoint(1);
+//	Object->SetRelativeToCamera(true);
+	Object->SetUseCameraFocalPoint(true);
 	Object->SetElevation(0.0f);
 	Object->SetAzimuth(0.0f);
-	Object->SetOffset(-0.0f);
+	Object->SetOffset(0.0f);
+	Object->SetOneSided(true);
 	Object->SetEnabled(true);
 
 	vtkSmartPointer<vtkErTexture> DiffuseTexture = vtkSmartPointer<vtkErTexture>::New();
@@ -401,16 +399,18 @@ void CreateObjects(vtkErTracer* Tracer)
 	}
 	else
 	{
-		printf("%s cannot be loaded, reverting to checker background.", gBackPlaneBitmap);
+		printf("%s cannot be loaded, reverting to unform texture\n", gBackPlaneBitmap);
 
 		DiffuseTexture->SetTextureType(Enums::Procedural);
-		DiffuseTexture->SetProceduralType(Enums::Checker);
+		DiffuseTexture->SetProceduralType(Enums::Uniform);
+		DiffuseTexture->SetUniformColor(1, 1, 1);
 		DiffuseTexture->SetRepeat(10, 10);
+		DiffuseTexture->SetOutputLevel(5.00f);
 	}
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
 //	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
-//	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
+	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
 #endif

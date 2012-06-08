@@ -50,7 +50,7 @@ DEVICE_NI bool Visible(const Vec3f& P1, const Vec3f& P2, CRNG& RNG)
 	return !Intersect(R, RNG);
 }
 
-DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, const int& LightID, LightingSample& LS, ScatterEvent& SE, CRNG& RNG, Shader& Shader)
+DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, ScatterEvent& SE, CRNG& RNG, Shader& Shader)
 {
 	Vec3f Wi;
 	
@@ -66,7 +66,7 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, const int& LightID, 
 
 	if (!Li.IsBlack() && !F.IsBlack() && BsdfPdf > 0.0f && Visible(SE.P, SS.P, RNG))
 	{
-		const float LightPdf = DistanceSquared(SE.P, SS.P) / (Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SE.P, SS.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, BsdfPdf);
 
@@ -81,23 +81,25 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, const int& LightID, 
 	if (F.IsBlack() || BsdfPdf <= 0.0f)
 		return Ld;
 	
-	ScatterEvent SE2(Enums::Light);
+	ScatterEvent LightSE(Enums::Light);
 
-	IntersectLights(Ray(SE.P, Wi), SE2);
+	IntersectLights(Ray(SE.P, Wi), LightSE);
 	
-	
-	if (!SE2.Valid || SE2.ID != LightID)
-		return Ld;
+	return Ld;
+
 	/*
-
-	if (!SE2.Valid)
+	if (!LightSE.Valid || LightSE.ID != Light.ID)
 		return Ld;
-*/
-	Li = SE2.Le;
+	*/
 
-	if (!Li.IsBlack() && Visible(SE.P, SE2.P, RNG))
+	if (!LightSE.Valid)
+		return Ld;
+
+	Li = LightSE.Le;
+
+	if (!Li.IsBlack() && Visible(SE.P, LightSE.P, RNG))
 	{
-		const float LightPdf = DistanceSquared(SE.P, SE2.P) / (Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SE.P, LightSE.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, BsdfPdf, 1, LightPdf);
 
@@ -131,9 +133,9 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	SE.GetShader(Shader, RNG);
 
 	if (SE.Type == Enums::Volume)
-		Ld += gpTracer->GetOpacity(SE.Intensity) * EstimateDirectLight(Light, LightID, LS, SE, RNG, Shader);
+		Ld += /*gpTracer->GetOpacity(SE.Intensity) */ EstimateDirectLight(Light, LS, SE, RNG, Shader);
 	else
-		Ld += EstimateDirectLight(Light, LightID, LS, SE, RNG, Shader);
+		Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
 
 	return (float)gpTracer->LightIDs.Count * Ld;
 }

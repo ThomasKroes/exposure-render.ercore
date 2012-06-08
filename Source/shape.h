@@ -111,38 +111,6 @@ public:
 			Int.HitT[i] = (Int.P - R.O).Length();
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, ClippingSegments& CS) const
-	{
-		Intersection Int;
-
-		this->Intersect(R, Int);
-
-		if (Int.Valid)
-		{
-			switch (Int.NoIntersections)
-			{
-				case 0:
-					return;
-
-				case 1:
-				{
-					if (Dot(R.D, Int.N) < 0.0f)
-						CS.Add(Segment(R.MinT, Int.HitT[0]));
-					else
-						CS.Add(Segment(Int.HitT[0], R.MaxT));
-
-					break;
-				}
-
-				case 2:
-				{
-					CS.Add(Segment(Int.HitT[0], Int.HitT[1]));
-					break;
-				}
-			}
-		}
-	}
-
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		switch (this->Type)

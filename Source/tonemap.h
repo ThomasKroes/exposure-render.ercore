@@ -18,23 +18,24 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE ColorRGBuc ToneMap(const ColorXYZf& XYZ)
+HOST_DEVICE ColorRGBAuc ToneMap(const ColorXYZAf& XYZA)
 {
-	ColorRGBf RGBf = ColorRGBf::FromXYZf(XYZ);
+	ColorRGBf RGB = ColorRGBf::FromXYZAf(XYZA.D);
 
-	RGBf[0] = 1.0f - expf(-(RGBf[0] / gpTracer->Camera.Exposure));
-	RGBf[1] = 1.0f - expf(-(RGBf[1] / gpTracer->Camera.Exposure));
-	RGBf[2] = 1.0f - expf(-(RGBf[2] / gpTracer->Camera.Exposure));
+	RGB[0] = 1.0f - expf(-(RGB[0] / gpTracer->Camera.Exposure));
+	RGB[1] = 1.0f - expf(-(RGB[1] / gpTracer->Camera.Exposure));
+	RGB[2] = 1.0f - expf(-(RGB[2] / gpTracer->Camera.Exposure));
 
-	RGBf.Clamp(0.0f, 1.0f);
+	RGB.Clamp(0.0f, 1.0f);
 
-	ColorRGBuc RGBuc;
+	ColorRGBAuc Result;
 
-	RGBuc[0] = (unsigned char)(255.0f * powf(RGBf[0], gpTracer->Camera.InvGamma));
-	RGBuc[1] = (unsigned char)(255.0f * powf(RGBf[1], gpTracer->Camera.InvGamma));
-	RGBuc[2] = (unsigned char)(255.0f * powf(RGBf[2], gpTracer->Camera.InvGamma));
+	Result[0] = (unsigned char)(255.0f * powf(RGB[0], gpTracer->Camera.InvGamma));
+	Result[1] = (unsigned char)(255.0f * powf(RGB[1], gpTracer->Camera.InvGamma));
+	Result[2] = (unsigned char)(255.0f * powf(RGB[2], gpTracer->Camera.InvGamma));
+	Result[3] = (unsigned char)Clamp((int)(XYZA[3] * 255.0f), 0, 255);
 
-	return RGBuc;
+	return Result;
 }
 
 }

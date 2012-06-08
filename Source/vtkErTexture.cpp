@@ -112,9 +112,9 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
 
 	Procedural.Type				= this->GetProceduralType();
-	Procedural.UniformColor		= ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]));
-	Procedural.CheckerColor1	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor1()[0], this->GetCheckerColor1()[1], this->GetCheckerColor1()[2]));
-	Procedural.CheckerColor2	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor2()[0], this->GetCheckerColor2()[1], this->GetCheckerColor2()[2]));
+	Procedural.UniformColor		= ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]).D);
+	Procedural.CheckerColor1	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor1()[0], this->GetCheckerColor1()[1], this->GetCheckerColor1()[2]).D);
+	Procedural.CheckerColor2	= ColorXYZf::FromRGBf(ColorRGBf(this->GetCheckerColor2()[0], this->GetCheckerColor2()[1], this->GetCheckerColor2()[2]).D);
 	
 	Procedural.Gradient.Reset();
 
@@ -122,7 +122,7 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	{
 		double NodeValue[6];
 		this->Gradient->GetNodeValue(i, NodeValue);
-		Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+		Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]).D));
 	}
 
 	TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
