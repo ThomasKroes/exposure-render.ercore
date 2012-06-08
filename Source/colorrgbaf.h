@@ -22,7 +22,7 @@ class EXPOSURE_RENDER_DLL ColorRGBAf
 {
 public:
 	CONSTRUCTORS(ColorRGBAf, float, 4)
-	VEC3_CONSTRUCTOR(ColorRGBAf, float)
+	VEC4_CONSTRUCTOR(ColorRGBAf, float)
 	ALL_OPERATORS(ColorRGBAf, float, 4)
 	MIN_MAX(ColorRGBAf, float, 4)
 	CLAMP(ColorRGBAf, float, 4)
