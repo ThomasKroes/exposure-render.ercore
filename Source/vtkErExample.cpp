@@ -42,8 +42,8 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+#define RIM_LIGHT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -75,16 +75,14 @@ int main(int, char *[])
 	
 	RenderWindow->AddRenderer(Renderer);
 
-	// Create and apply timer callback
 	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
 	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
 	
-	// Create and apply interactor style
 	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
 	InteractorStyle->SetMotionFactor(10);
 		
 	RenderWindowInteractor->Initialize();
-	RenderWindowInteractor->CreateRepeatingTimer(1);
+	RenderWindowInteractor->CreateRepeatingTimer(10);
 	RenderWindowInteractor->AddObserver(vtkCommand::TimerEvent, TimerCallback);
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
@@ -125,13 +123,13 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 4.0f;
+	const float StepSize = 3.0f;
 
-	VolumeProperty->SetShadows(1);
+	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(50);
+	VolumeProperty->SetDensityScale(500);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -248,7 +246,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(75.0f);
 	KeyLight->SetAzimuth(15.0f);
 	KeyLight->SetOffset(2.0f);
-	KeyLight->SetMultiplier(2.0f);
+	KeyLight->SetMultiplier(20.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
 //	KeyLight->SetRelativeToCamera(1);
@@ -305,7 +303,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(100.0f);
-	EnvironmentLight->SetMultiplier(20.0f);
+	EnvironmentLight->SetMultiplier(0.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 

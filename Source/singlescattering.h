@@ -144,7 +144,7 @@ DEVICE ColorXYZf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		}
 	}
 
-	gpTracer->FrameBuffer.Alpha(PixelCoord[0], PixelCoord[1]) += SE.Valid ? 1.0f : 0.0f;
+	gpTracer->FrameBuffer.Alpha(PixelCoord[0], PixelCoord[1]) = SE.Valid ? 1.0f : 0.0f;
 
 	return L;
 }

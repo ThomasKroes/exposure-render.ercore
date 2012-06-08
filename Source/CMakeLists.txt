@@ -173,6 +173,14 @@ SET(Filter
 
 SOURCE_GROUP("Filter" FILES ${Filter})
 
+SET(Color
+	color.h
+	colorxyz.h
+	colorrgb.h
+)
+
+SOURCE_GROUP("Color" FILES ${Color})
+
 SET(Cuda
 	singlescattering.cuh
 	estimate.cuh

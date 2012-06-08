@@ -182,7 +182,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
 	GaussianFilterRunningEstimate(gTracers[TracerID]);
-	BilateralFilterRunningEstimate(gTracers[TracerID]);
+//	BilateralFilterRunningEstimate(gTracers[TracerID]);
 	Composite(gTracers[TracerID]);
 
 	gTracers[TracerID].NoEstimates++;
