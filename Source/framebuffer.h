@@ -26,7 +26,6 @@ public:
 		Resolution(),
 		FrameEstimate("Frame Estimate", Enums::Device),
 		TempFrameEstimate("Temp Frame Estimate", Enums::Device),
-		Alpha("Alpha", Enums::Device),
 		RunningEstimateXYZ("Running estimate XYZ", Enums::Device),
 		RunningEstimateRGB("Running estimate RGB", Enums::Device),
 		TempRunningEstimateRGB("Temp running estimate RGB", Enums::Device),
@@ -53,7 +52,6 @@ public:
 		this->TempRunningEstimateRGB.Resize(this->Resolution);
 		this->TempRunningEstimateRGB.Resize(this->Resolution);
 		this->DisplayEstimate.Resize(this->Resolution);
-		this->Alpha.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
 		this->HostDisplayEstimate.Resize(this->Resolution);
@@ -63,12 +61,11 @@ public:
 	}
 
 	Vec2i					Resolution;
-	Buffer2D<ColorXYZf>		FrameEstimate;
-	Buffer2D<ColorXYZf>		TempFrameEstimate;
-	Buffer2D<float>			Alpha;
-	Buffer2D<ColorXYZf>		RunningEstimateXYZ;
-	Buffer2D<ColorRGBf>		RunningEstimateRGB;
-	Buffer2D<ColorRGBf>		TempRunningEstimateRGB;
+	Buffer2D<ColorXYZAf>	FrameEstimate;
+	Buffer2D<ColorXYZAf>	TempFrameEstimate;
+	Buffer2D<ColorXYZAf>	RunningEstimateXYZ;
+	Buffer2D<ColorRGBAf>	RunningEstimateRGB;
+	Buffer2D<ColorRGBAf>	TempRunningEstimateRGB;
 	Buffer2D<ColorRGBAuc>	DisplayEstimate;
 	RandomSeedBuffer2D		RandomSeeds1;
 	RandomSeedBuffer2D		RandomSeeds2;
