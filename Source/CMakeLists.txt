@@ -176,7 +176,9 @@ SOURCE_GROUP("Filter" FILES ${Filter})
 SET(Color
 	color.h
 	colorxyz.h
-	colorrgb.h
+	colorxyza.h
+	colorrgbf.h
+	colorrgbauc.h
 )
 
 SOURCE_GROUP("Color" FILES ${Color})
