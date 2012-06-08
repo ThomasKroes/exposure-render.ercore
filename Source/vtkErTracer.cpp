@@ -213,54 +213,7 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 	ER_CALL(ExposureRender::Render(this->Tracer.ID));
 	ER_CALL(ExposureRender::GetDisplayEstimate(this->Tracer.ID, this->ImageBuffer));
 
-	glEnable(GL_TEXTURE_2D);
-
-    glBindTexture(GL_TEXTURE_2D, TextureID);
-    
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->LastRenderSize[0], this->LastRenderSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)this->ImageBuffer);
-	glBindTexture(GL_TEXTURE_2D, TextureID);
-
-	double d = 0.5;
-	
-    Renderer->SetDisplayPoint(0,0,d);
-    Renderer->DisplayToWorld();
-    double coordinatesA[4];
-    Renderer->GetWorldPoint(coordinatesA);
-
-    Renderer->SetDisplayPoint(this->LastRenderSize[0],0,d);
-    Renderer->DisplayToWorld();
-    double coordinatesB[4];
-    Renderer->GetWorldPoint(coordinatesB);
-
-    Renderer->SetDisplayPoint(this->LastRenderSize[0], this->LastRenderSize[1],d);
-    Renderer->DisplayToWorld();
-    double coordinatesC[4];
-    Renderer->GetWorldPoint(coordinatesC);
-
-    Renderer->SetDisplayPoint(0,this->LastRenderSize[1],d);
-    Renderer->DisplayToWorld();
-    double coordinatesD[4];
-    Renderer->GetWorldPoint(coordinatesD);
-	
-	glPushAttrib(GL_LIGHTING);
-	glDisable(GL_LIGHTING);
-
-	glBegin(GL_QUADS);
-		glTexCoord2i(0, 0);
-		glVertex4dv(coordinatesA);
-		glTexCoord2i(1, 0);
-		glVertex4dv(coordinatesB);
-		glTexCoord2i(1, 1);
-		glVertex4dv(coordinatesC);
-		glTexCoord2i(0, 1);
-		glVertex4dv(coordinatesD);
-	glEnd();
-
-	glPopAttrib();
+	glDrawPixels(this->LastRenderSize[0], this->LastRenderSize[1], GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
 
 	this->InvokeEvent(vtkCommand::VolumeMapperRenderEndEvent,0);
 }

@@ -41,7 +41,7 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
+#define KEY_LIGHT_ON
 #define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
@@ -123,7 +123,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 3.0f;
+	const float StepSize = 8.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -141,22 +141,22 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	
+	/*
 	for (int i = 0; i < 2; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	/**/
+	*/
 
 	const float DiffuseLevel = 1.0f;
 
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	
-	
+	/*
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	/**/
+	*/
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -249,8 +249,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetMultiplier(20.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
-//	KeyLight->SetRelativeToCamera(1);
-	KeyLight->SetUseCameraFocalPoint(1);
+//	KeyLight->SetRelativeToCamera(true);
+	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
@@ -279,8 +279,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetMultiplier(10.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
-	RimLight->SetRelativeToCamera(1);
-	RimLight->SetUseCameraFocalPoint(1);
+	RimLight->SetRelativeToCamera(true);
+	RimLight->SetUseCameraFocalPoint(true);
 	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
