@@ -85,14 +85,7 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 
 	IntersectLights(Ray(SE.P, Wi), LightSE);
 	
-	return Ld;
-
-	/*
 	if (!LightSE.Valid || LightSE.ID != Light.ID)
-		return Ld;
-	*/
-
-	if (!LightSE.Valid)
 		return Ld;
 
 	Li = LightSE.Le;
