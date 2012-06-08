@@ -176,10 +176,10 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		gVolumes[gTracers[TracerID].VolumeIDs[3]].Voxels.Bind(TexVolume3);
 
 	SingleScattering(gTracers[TracerID]);
-//	GaussianFilterFrameEstimate(gTracers[TracerID]);
+	GaussianFilterFrameEstimate(gTracers[TracerID]);
 	ComputeEstimate(gTracers[TracerID]);
 	ToneMap(gTracers[TracerID]);
-//	GaussianFilterRunningEstimate(gTracers[TracerID]);
+	GaussianFilterRunningEstimate(gTracers[TracerID]);
 //	BilateralFilterRunningEstimate(gTracers[TracerID]);
 	Composite(gTracers[TracerID]);
 

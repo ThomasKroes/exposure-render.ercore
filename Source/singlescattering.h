@@ -144,7 +144,7 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		}
 	}
 
-	return ColorXYZAf(L[0], L[1], L[2], SE.Valid ? 0.0f : 1.0f);
+	return ColorXYZAf(L[0], L[1], L[2], SE.Valid ? 1.0f : 0.0f);
 }
 
 }

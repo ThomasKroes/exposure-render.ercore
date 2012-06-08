@@ -38,7 +38,7 @@ KERNEL void KrnlGaussianFilterFrameEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(1.0f, x - IDx, y - IDy);
+			const float Weight = Gauss2D(0.75f, x - IDx, y - IDy);
 
 			Sum			+= Weight * gpTracer->FrameBuffer.FrameEstimate(x, y);
 			SumWeight	+= Weight;
@@ -71,22 +71,28 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 	Range[1][0] = max((int)ceilf(IDy - 1), 0);
 	Range[1][1] = min((int)floorf(IDy + 1), gpTracer->FrameBuffer.Resolution[1] - 1);
 
-	ColorRGBAuc Sum;
+	ColorRGBAf Sum;
 	float SumWeight = 0.0f;
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y++)
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(1.0f, x - IDx, y - IDy);
+			const float Weight = Gauss2D(0.75f, x - IDx, y - IDy);
 
-			Sum			+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y);
+			Sum[0]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[0];
+			Sum[1]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[1];
+			Sum[2]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[2];
 			SumWeight	+= Weight;
 		}
 	}
 	
 	if (SumWeight > 0.0f)
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy) = Sum / SumWeight;
+	{
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Sum[0] / SumWeight;
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Sum[1] / SumWeight;
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Sum[2] / SumWeight;
+	}
 	else
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
 }
