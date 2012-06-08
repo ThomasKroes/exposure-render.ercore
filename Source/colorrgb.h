@@ -18,16 +18,6 @@
 namespace ExposureRender
 {
 
-#define IS_BLACK(size)						\
-HOST_DEVICE bool IsBlack()					\
-{											\
-	for (int i = 0; i < size; i++)			\
-		if (this->D[i] != 0)				\
-			return false;					\
-											\
-	return true;							\
-}
-
 class ColorRGBf;
 class ColorXYZf;
 class ColorRGBuc;
@@ -45,6 +35,15 @@ public:
 
 	static inline HOST_DEVICE ColorRGBf FromXYZf(const ColorXYZf& XYZ);
 	static inline HOST_DEVICE ColorRGBf Black() { return ColorRGBf(); }
+
+	HOST_DEVICE bool IsBlack()
+	{
+		for (int i = 0; i < 3; i++)
+			if (this->D[i] != 0)
+				return false;
+												
+		return true;
+	}
 
 	HOST_DEVICE float Luminance() const
 	{
@@ -64,71 +63,6 @@ public:
 	DATA(float, 3)
 };
 
-class EXPOSURE_RENDER_DLL ColorXYZf
-{
-public:
-	CONSTRUCTORS(ColorXYZf, float, 3)
-	VEC3_CONSTRUCTOR(ColorXYZf, float)
-	ALL_OPERATORS(ColorXYZf, float, 3)
-	MIN_MAX(ColorXYZf, float, 3)
-	CLAMP(ColorXYZf, float, 3)
-	IS_BLACK(3)
-
-	static inline HOST_DEVICE ColorXYZf FromRGBf(const ColorRGBf& RGB);
-	static inline HOST_DEVICE ColorXYZf FromRGBuc(const ColorRGBuc& RGB);
-	static inline HOST_DEVICE ColorXYZf FromRGBAuc(const ColorRGBAuc& RGB);
-	static inline HOST_DEVICE ColorXYZf Black() { return ColorXYZf(); }
-
-	HOST_DEVICE float Y() const
-	{
-		float Weight[3] =
-		{
-			0.212671f, 0.715160f, 0.072169f
-		};
-		
-		float L = 0.0f;
-		
-		for (int i = 0; i < 3; i++)
-			L += Weight[i] * this->D[i];
-		
-		return L;
-	}
-
-	DATA(float, 3)
-};
-
-class EXPOSURE_RENDER_DLL ColorXYZAf
-{
-public:
-	CONSTRUCTORS(ColorXYZAf, float, 4)
-	VEC3_CONSTRUCTOR(ColorXYZAf, float)
-	ALL_OPERATORS(ColorXYZAf, float, 4)
-	MIN_MAX(ColorXYZAf, float, 4)
-	CLAMP(ColorXYZAf, float, 4)
-	IS_BLACK(3)
-
-	static inline HOST_DEVICE ColorXYZAf FromRGBf(const ColorRGBf& RGB);
-	static inline HOST_DEVICE ColorXYZAf FromRGBuc(const ColorRGBuc& RGB);
-	static inline HOST_DEVICE ColorXYZAf FromRGBAuc(const ColorRGBAuc& RGB);
-
-	HOST_DEVICE float Y() const
-	{
-		float Weight[3] =
-		{
-			0.212671f, 0.715160f, 0.072169f
-		};
-		
-		float L = 0.0f;
-		
-		for (int i = 0; i < 3; i++)
-			L += Weight[i] * this->D[i];
-		
-		return L;
-	}
-
-	DATA(float, 4)
-};
-
 class EXPOSURE_RENDER_DLL ColorRGBuc
 {
 public:
@@ -142,6 +76,15 @@ public:
 	static inline HOST_DEVICE ColorRGBuc FromXYZf(const ColorXYZf& XYZ);
 	static inline HOST_DEVICE ColorRGBuc Black() { return ColorRGBuc(); }
 	
+	HOST_DEVICE bool IsBlack()
+	{
+		for (int i = 0; i < 3; i++)
+			if (this->D[i] != 0)
+				return false;
+												
+		return true;
+	}
+
 	HOST_DEVICE float Luminance() const
 	{
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
@@ -162,6 +105,15 @@ public:
 
 	static inline HOST_DEVICE ColorRGBAuc FromXYZf(const ColorXYZf& XYZ);
 	static inline HOST_DEVICE ColorRGBAuc Black() { return ColorRGBAuc(); }
+
+	HOST_DEVICE bool IsBlack()
+	{
+		for (int i = 0; i < 3; i++)
+			if (this->D[i] != 0)
+				return false;
+												
+		return true;
+	}
 
 	HOST_DEVICE float Luminance() const
 	{
@@ -189,24 +141,6 @@ HOST_DEVICE ColorXYZf ColorXYZf::FromRGBf(const ColorRGBf& RGB)
 	Result[0] = 0.412453f * RGB[0] + 0.357580f * RGB[1] + 0.180423f * RGB[2];
 	Result[1] = 0.212671f * RGB[0] + 0.715160f * RGB[1] + 0.072169f * RGB[2];
 	Result[2] = 0.019334f * RGB[0] + 0.119193f * RGB[1] + 0.950227f * RGB[2];
-
-	return Result;
-};
-
-HOST_DEVICE ColorXYZf ColorXYZf::FromRGBuc(const ColorRGBuc& RGB)
-{
-	ColorXYZf Result;
-
-	float RGBf[3] = 
-	{
-		ONE_OVER_255 * (float)RGB[0],
-		ONE_OVER_255 * (float)RGB[1],
-		ONE_OVER_255 * (float)RGB[2]
-	};
-
-	Result[0] = 0.412453f * RGBf[0] + 0.357580f * RGBf[1] + 0.180423f * RGBf[2];
-	Result[1] = 0.212671f * RGBf[0] + 0.715160f * RGBf[1] + 0.072169f * RGBf[2];
-	Result[2] = 0.019334f * RGBf[0] + 0.119193f * RGBf[1] + 0.950227f * RGBf[2];
 
 	return Result;
 };
