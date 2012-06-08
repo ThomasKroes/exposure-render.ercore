@@ -53,7 +53,7 @@ KERNEL void KrnlGaussianFilterFrameEstimate()
 
 void GaussianFilterFrameEstimate(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 32, 8, 1)
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterFrameEstimate<<<GridDim, BlockDim>>>()), "Gaussian filter frame estimate");
 
 	Tracer.FrameBuffer.TempFrameEstimate.Modified();
@@ -101,7 +101,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 
 void GaussianFilterRunningEstimate(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 32, 8, 1)
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Gaussian filter running estimate");
 	
 	Tracer.FrameBuffer.TempRunningEstimateRGB.Modified();
@@ -160,7 +160,7 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 
 void BilateralFilterRunningEstimate(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 32, 8, 1)
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlBilateralFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Bilateral filter running estimate");
 	
 	Tracer.FrameBuffer.TempRunningEstimateRGB.Modified();
