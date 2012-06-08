@@ -23,9 +23,9 @@ KERNEL void KrnlComputeEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[0], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0], gpTracer->NoEstimates + 1);
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[1], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1], gpTracer->NoEstimates + 1);
-	gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimate(IDx, IDy)[2], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2], gpTracer->NoEstimates + 1);
+	gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[0] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[0], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0], gpTracer->NoEstimates + 1);
+	gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[1] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[1], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1], gpTracer->NoEstimates + 1);
+	gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[2] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[2], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2], gpTracer->NoEstimates + 1);
 }
 
 void ComputeEstimate(Tracer& Tracer)
