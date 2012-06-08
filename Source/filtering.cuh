@@ -83,7 +83,6 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 			Sum[0]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[0];
 			Sum[1]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[1];
 			Sum[2]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[2];
-			Sum[3]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[3];
 			SumWeight	+= Weight;
 		}
 	}
@@ -93,7 +92,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Sum[0] / SumWeight;
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Sum[1] / SumWeight;
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Sum[2] / SumWeight;
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[3] = Sum[3] / SumWeight;
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[3] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[3];
 	}
 	else
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
@@ -151,7 +150,7 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
 	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
 	
-	const float Factor = expf(-0.09f * (float)gpTracer->NoEstimates);
+	const float Factor = expf(-0.04f * (float)gpTracer->NoEstimates);
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y += 2)
 	{
