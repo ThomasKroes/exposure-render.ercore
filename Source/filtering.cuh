@@ -58,9 +58,6 @@ void GaussianFilterFrameEstimate(Tracer& Tracer)
 
 	Tracer.FrameBuffer.TempFrameEstimate.Modified();
 	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.TempFrameEstimate;
-
-	Tracer.FrameBuffer.TempAlpha.Modified();
-	Tracer.FrameBuffer.Alpha = Tracer.FrameBuffer.TempAlpha;
 }
 
 KERNEL void KrnlGaussianFilterRunningEstimate()
@@ -74,7 +71,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 	Range[1][0] = max((int)ceilf(IDy - 1), 0);
 	Range[1][1] = min((int)floorf(IDy + 1), gpTracer->FrameBuffer.Resolution[1] - 1);
 
-	ColorRGBf Sum;
+	ColorRGBAuc Sum;
 	float SumWeight = 0.0f;
 
 	for (int y = Range[1][0]; y <= Range[1][1]; y++)
@@ -109,14 +106,14 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 
 	int Range[2][2];
 
-	ColorRGBf Sum, CenterColor; 
+	ColorRGBAuc Sum, CenterColor; 
 	float SumWeight = 0.0f;
 
 	CenterColor[0] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[0];
 	CenterColor[1] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[1];
 	CenterColor[2] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[2];
 
-	Sum = ColorRGBf::Black();
+	Sum = ColorRGBAuc::Black();
 	SumWeight = 0.0f;
 		
 	const int Radius = 6;
@@ -130,10 +127,10 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x += 2)
 		{
-			const ColorRGBf KernelPosColor = gpTracer->FrameBuffer.RunningEstimateRGB(x, y);
+			const ColorRGBAuc KernelPosColor = gpTracer->FrameBuffer.RunningEstimateRGB(x, y);
 
 			const float SpatialWeight		= Gauss2D(Radius, x - IDx, y - IDy);
-			const float GaussianSimilarity	= Gauss2D(1.0f, (KernelPosColor - CenterColor).Length() / 255.0f, 0.0f);
+			const float GaussianSimilarity	= 1.0f;//Gauss2D(1.0f, (KernelPosColor - CenterColor).Length() / 255.0f, 0.0f);
 			const float LuminanceFactor		= 1.0f;// - powf(Clamp(KernelPosColor.Luminance() - CenterColor.Luminance(), 0.0f, 1.0f), 2.0f);
 
 			const float Weight = SpatialWeight * GaussianSimilarity * LuminanceFactor;

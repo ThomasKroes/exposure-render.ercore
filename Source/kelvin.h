@@ -192,7 +192,7 @@ inline ColorRGBf KelvinToColorRGBf(const float& Kelvin)
 
 inline ColorXYZf KelvinToColorXYZf(const float& Kelvin)
 {
-	return ColorXYZf::FromRGBf(KelvinToColorRGBf(Kelvin));
+	return ColorXYZf::FromRGBf(KelvinToColorRGBf(Kelvin).D);
 }
 
 }

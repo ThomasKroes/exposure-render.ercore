@@ -43,6 +43,17 @@ public:
 		return Result;
 	};
 
+	static HOST_DEVICE ColorRGBf FromXYZAf(const float XYZA[4])
+	{
+		ColorRGBf Result;
+
+		Result[0] =  3.240479f * XYZA[0] - 1.537150f * XYZA[1] - 0.498535f * XYZA[2];
+		Result[1] = -0.969256f * XYZA[0] + 1.875991f * XYZA[1] + 0.041556f * XYZA[2];
+		Result[2] =  0.055648f * XYZA[0] - 0.204043f * XYZA[1] + 1.057311f * XYZA[2];
+
+		return Result;
+	};
+
 	HOST_DEVICE bool IsBlack()
 	{
 		for (int i = 0; i < 3; i++)

@@ -23,12 +23,7 @@ KERNEL void KrnlComposite()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	const float Alpha = Clamp(gpTracer->FrameBuffer.Alpha(IDx, IDy) / (float)gpTracer->NoEstimates, 0.0f, 1.0f);
-	
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[0] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[0];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[1] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[1];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[2] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[2];
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255.0f;
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
 }
 
 void Composite(Tracer& Tracer)

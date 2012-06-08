@@ -74,7 +74,7 @@ public:
 	
 	HOST static ColorNode FromRGB(const float& Position, const ColorRGBf& RGB)
 	{
-		const ColorXYZf XYZ = ColorXYZf::FromRGBf(RGB);
+		const ColorXYZf XYZ = ColorXYZf::FromRGBf(RGB.D);
 
 		return ColorNode::FromXYZ(Position, XYZ);
 	}
