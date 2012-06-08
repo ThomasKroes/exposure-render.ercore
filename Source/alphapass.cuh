@@ -13,26 +13,25 @@
 
 #pragma once
 
-#include "tonemap.h"
+#include "geometry.h"
+#include "utilities.h"
 
 namespace ExposureRender
 {
 
-KERNEL void KrnlToneMap()
+KERNEL void KrnlComposite()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy));
- 
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[0] = (unsigned char)Clamp((int)RGB[0], 0, 255);
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[1] = (unsigned char)Clamp((int)RGB[1], 0, 255);
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[2] = (unsigned char)Clamp((int)RGB[2], 0, 255);
+	const float Alpha = Clamp(gpTracer->FrameBuffer.Alpha(IDx, IDy) / (float)gpTracer->NoEstimates, 0.0f, 1.0f);
+
+	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[3] = Alpha * 255.0f;
 }
 
-void ToneMap(Tracer& Tracer)
+void AlphaPass(Tracer& Tracer)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 16, 8, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlToneMap<<<GridDim, BlockDim>>>()), "Tone map");
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, 8, 8, 1)
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlComposite<<<GridDim, BlockDim>>>()), "Composite");
 }
 
 }

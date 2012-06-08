@@ -180,6 +180,7 @@ SET(Cuda
 	filtering.cuh
 	tonemap.cuh
 	autofocus.cuh
+	alphapass.cuh
 	list.cuh
 	wrapper.cuh
 	macros.cuh
