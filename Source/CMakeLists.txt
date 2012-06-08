@@ -178,6 +178,7 @@ SET(Color
 	colorxyzf.h
 	colorxyzaf.h
 	colorrgbf.h
+	colorrgbaf.h
 	colorrgbauc.h
 )
 

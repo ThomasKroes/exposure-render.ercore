@@ -15,6 +15,7 @@
 
 #include "colorrgbauc.h"
 #include "colorrgbf.h"
+#include "colorrgbaf.h"
 #include "colorxyzf.h"
 #include "colorxyzaf.h"
 
