@@ -58,7 +58,7 @@ public:
 		Int.Valid	= true;
 
 		if (Int.Valid && (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1]))
-			return false;
+			Int.Valid = false;
 		
 		return true;
 	}

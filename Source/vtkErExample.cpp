@@ -149,14 +149,14 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	*/
 
 	const float DiffuseLevel = 1.0f;
-
+/*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
+	*/
 	
-	/*
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	*/
+	
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -171,7 +171,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 1.0f;
+	const float GlossinessLevel = 0.2f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -246,10 +246,10 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(75.0f);
 	KeyLight->SetAzimuth(15.0f);
 	KeyLight->SetOffset(2.0f);
-	KeyLight->SetMultiplier(20.0f);
+	KeyLight->SetMultiplier(5.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
-//	KeyLight->SetRelativeToCamera(true);
+	KeyLight->SetRelativeToCamera(true);
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
@@ -276,7 +276,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(120.0f);
 	RimLight->SetOffset(0.8f);
-	RimLight->SetMultiplier(10.0f);
+	RimLight->SetMultiplier(3.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
 	RimLight->SetRelativeToCamera(true);
