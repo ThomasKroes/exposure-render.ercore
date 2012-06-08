@@ -85,7 +85,7 @@ DEVICE_NI ColorXYZf EstimateDirectLight(const Light& Light, LightingSample& LS, 
 
 	IntersectLights(Ray(SE.P, Wi), LightSE);
 	
-//	return Ld;
+	return Ld;
 
 	/*
 	if (!LightSE.Valid || LightSE.ID != Light.ID)
@@ -133,7 +133,7 @@ DEVICE_NI ColorXYZf UniformSampleOneLight(ScatterEvent& SE, CRNG& RNG, LightingS
 	SE.GetShader(Shader, RNG);
 
 	if (SE.Type == Enums::Volume)
-		Ld += gpTracer->GetOpacity(SE.Intensity) * EstimateDirectLight(Light, LS, SE, RNG, Shader);
+		Ld += /*gpTracer->GetOpacity(SE.Intensity) */ EstimateDirectLight(Light, LS, SE, RNG, Shader);
 	else
 		Ld += EstimateDirectLight(Light, LS, SE, RNG, Shader);
 
