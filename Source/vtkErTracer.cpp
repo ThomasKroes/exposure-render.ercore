@@ -41,6 +41,7 @@ vtkErTracer::vtkErTracer(void)
 	this->CameraTimeStamp			= 0;
 	this->VolumeProperty			= vtkSmartPointer<vtkErVolumeProperty>::New();
 	this->VolumePropertyTimeStamp	= 0;
+	this->NoiseReduction			= true;
 
 	this->Tracer.SetDirty();
 }
@@ -196,6 +197,11 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 			ClippingObjectData->Bind();
 		}
 	}
+
+	if (this->Tracer.NoiseReduction != this->NoiseReduction)
+		this->Tracer.SetDirty();
+
+	this->Tracer.NoiseReduction = this->NoiseReduction;
 
 	if (this->Tracer.GetDirty())
 	{

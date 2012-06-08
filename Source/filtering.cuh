@@ -66,10 +66,10 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 		
 	int Range[2][2];
 
-	Range[0][0] = max((int)ceilf(IDx - 1), 0);
-	Range[0][1] = min((int)floorf(IDx + 1), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - 1), 0);
-	Range[1][1] = min((int)floorf(IDy + 1), gpTracer->FrameBuffer.Resolution[1] - 1);
+	Range[0][0] = max((int)ceilf(IDx - 2), 0);
+	Range[0][1] = min((int)floorf(IDx + 2), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - 2), 0);
+	Range[1][1] = min((int)floorf(IDy + 2), gpTracer->FrameBuffer.Resolution[1] - 1);
 
 	ColorRGBAf Sum;
 	float SumWeight = 0.0f;
@@ -78,7 +78,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(1.0f, x - IDx, y - IDy);
+			const float Weight = Gauss2D(2.0f, x - IDx, y - IDy);
 
 			Sum[0]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[0];
 			Sum[1]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[1];
@@ -108,51 +108,76 @@ void GaussianFilterRunningEstimate(Tracer& Tracer)
 	Tracer.FrameBuffer.RunningEstimateRGB = Tracer.FrameBuffer.TempRunningEstimateRGB;
 }
 
+DEVICE inline float NormalizedColorDistance(const ColorRGBAuc& A, const ColorRGBAuc& B)
+{
+	return ONE_OVER_255 * sqrtf(powf(A[0] - B[0], 2.0f) + powf(A[1] - B[1], 2.0f) + powf(A[2] - B[2], 2.0f));
+}
+
+HOST_DEVICE float Mitchell1D(const float& B, const float& C, const float& v)
+{
+	float av = ::fabsf(v);
+    if (av > 1.0f)
+    {
+        return ((-B - C * 6.0f) * av * av * av +
+                (B * 6.0f + C * 30.0f) * av * av +
+                (B * -12.0f - C * 48.0f) * av +
+                B * 8.0f + C * 24.0f) / 6.0f;
+    }
+    else
+    {
+        return ((12.0f - B * 9.0f - C * 6.0f) * av * av * av +
+                (B * 12.0f + C * 6.0f - 18.0f) * av * av +
+                6.0f - B * 2.0f) / 6.0f;
+    }
+}
+
 KERNEL void KrnlBilateralFilterRunningEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
 	int Range[2][2];
 
-	ColorRGBAuc Sum, CenterColor; 
+	ColorRGBAuc CenterColor, KernelPosColor; 
 	float SumWeight = 0.0f;
 
-	CenterColor[0] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[0];
-	CenterColor[1] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[1];
-	CenterColor[2] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[2];
+	ColorRGBf Sum;
 
-	Sum = ColorRGBAuc::Black();
-	SumWeight = 0.0f;
-		
-	const int Radius = 6;
+	CenterColor = gpTracer->FrameBuffer.RunningEstimateRGB(Vec2f(IDx, IDy));
+
+	const int Radius = 2;
 
 	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
 	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
 	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
 	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
 	
-	for (int y = Range[1][0]; y <= Range[1][1]; y += 2)
+	const float Factor = expf(-0.09f * (float)gpTracer->NoEstimates);
+
+	for (int y = Range[1][0]; y <= Range[1][1]; y += 1)
 	{
-		for (int x = Range[0][0]; x <= Range[0][1]; x += 2)
+		for (int x = Range[0][0]; x <= Range[0][1]; x += 1)
 		{
-			const ColorRGBAuc KernelPosColor = gpTracer->FrameBuffer.RunningEstimateRGB(x, y);
+			KernelPosColor = gpTracer->FrameBuffer.RunningEstimateRGB(Vec2f(x, y));
 
-			const float SpatialWeight		= Gauss2D(Radius, x - IDx, y - IDy);
-			const float GaussianSimilarity	= 1.0f;//Gauss2D(1.0f, (KernelPosColor - CenterColor).Length() / 255.0f, 0.0f);
-			const float LuminanceFactor		= 1.0f;// - powf(Clamp(KernelPosColor.Luminance() - CenterColor.Luminance(), 0.0f, 1.0f), 2.0f);
+			const float Weight = Gauss2D(Radius, 1.0f - NormalizedColorDistance(KernelPosColor, CenterColor), 0.0f) * Gauss2D(Factor * (float)Radius, x - IDx, y - IDy);
 
-			const float Weight = SpatialWeight * GaussianSimilarity * LuminanceFactor;
-
-			Sum			+= KernelPosColor * Weight;
-			SumWeight	+= Weight;
+			if (Weight > 0.0f)
+			{
+				Sum[0]		+= KernelPosColor[0] * Weight;
+				Sum[1]		+= KernelPosColor[1] * Weight;
+				Sum[2]		+= KernelPosColor[2] * Weight;
+//				Sum[3]		+= KernelPosColor[3] * Weight;
+				SumWeight	+= Weight;
+			}
 		}
 	}
 	
 	if (SumWeight > 0.0f)
 	{
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[0] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0]);
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[1] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1]);
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[2] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2]);
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Sum[0] / SumWeight;
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Sum[1] / SumWeight;
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Sum[2] / SumWeight;
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[3] = CenterColor[3];
 	}
 	else
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);

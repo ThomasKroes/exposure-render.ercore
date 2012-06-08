@@ -57,6 +57,9 @@ public:
 	vtkErVolumeProperty* GetVolumeProperty()						{	return this->VolumeProperty.GetPointer();										};
 	void SetVolumeProperty(vtkErVolumeProperty* VolumeProperty)		{	this->VolumeProperty = VolumeProperty; this->VolumeProperty->Modified();		};
 
+	vtkGetMacro(NoiseReduction, bool);
+	vtkSetMacro(NoiseReduction, bool);
+
 protected:
 	vtkErTracer();
     virtual ~vtkErTracer();
@@ -75,4 +78,5 @@ private:
 	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperty;
 	unsigned long							VolumePropertyTimeStamp;
 	ExposureRender::ErTracer				Tracer;
+	bool									NoiseReduction;
 };

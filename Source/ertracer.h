@@ -35,7 +35,8 @@ public:
 		VolumeIDs(),
 		LightIDs(),
 		ObjectIDs(),
-		ClippingObjectIDs()
+		ClippingObjectIDs(),
+		NoiseReduction(true)
 	{
 	}
 
@@ -46,7 +47,8 @@ public:
 		VolumeIDs(),
 		LightIDs(),
 		ObjectIDs(),
-		ClippingObjectIDs()
+		ClippingObjectIDs(),
+		NoiseReduction(true)
 	{
 		*this = Other;
 	}
@@ -55,12 +57,13 @@ public:
 	{
 		ErBindable::operator = (Other);
 
-		this->VolumeProperty	= Other.VolumeProperty;
-		this->Camera			= Other.Camera;
-		this->VolumeIDs			= Other.VolumeIDs;
-		this->LightIDs			= Other.LightIDs;
-		this->ObjectIDs			= Other.ObjectIDs;
-		this->ClippingObjectIDs	= Other.ClippingObjectIDs;
+		this->VolumeProperty		= Other.VolumeProperty;
+		this->Camera				= Other.Camera;
+		this->VolumeIDs				= Other.VolumeIDs;
+		this->LightIDs				= Other.LightIDs;
+		this->ObjectIDs				= Other.ObjectIDs;
+		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
+		this->NoiseReduction		= Other.NoiseReduction
 
 		return *this;
 	}
@@ -71,6 +74,7 @@ public:
 	Indices			LightIDs;
 	Indices			ObjectIDs;
 	Indices			ClippingObjectIDs;
+	bool			NoiseReduction;
 };
 
 }

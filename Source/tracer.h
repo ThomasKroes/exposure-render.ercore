@@ -36,7 +36,8 @@ public:
 		ObjectIDs(),
 		ClippingObjectIDs(),
 		FrameBuffer(),
-		NoEstimates(0)
+		NoEstimates(0),
+		NoiseReduction(true)
 	{
 	}
 
@@ -48,7 +49,8 @@ public:
 		ObjectIDs(),
 		ClippingObjectIDs(),
 		FrameBuffer(),
-		NoEstimates(0)
+		NoEstimates(0),
+		NoiseReduction(true)
 	{
 		*this = Other;
 	}
@@ -110,6 +112,8 @@ public:
 			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;
 		}
 
+		this->NoiseReduction = Other.NoiseReduction;
+
 		return *this;
 	}
 
@@ -120,14 +124,15 @@ public:
 	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)		{	return this->VolumeProperty.IndexOfReflection1D.Evaluate(Intensity);	}
 	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)			{	return this->VolumeProperty.Emission1D.Evaluate(Intensity);				}
 
-	VolumeProperty			VolumeProperty;
-	Camera					Camera;
-	Indices					VolumeIDs;
-	Indices					LightIDs;
-	Indices					ObjectIDs;
-	Indices					ClippingObjectIDs;
-	FrameBuffer				FrameBuffer;
-	int						NoEstimates;
+	VolumeProperty		VolumeProperty;
+	Camera				Camera;
+	Indices				VolumeIDs;
+	Indices				LightIDs;
+	Indices				ObjectIDs;
+	Indices				ClippingObjectIDs;
+	FrameBuffer			FrameBuffer;
+	int					NoEstimates;
+	bool				NoiseReduction;
 };
 
 }
