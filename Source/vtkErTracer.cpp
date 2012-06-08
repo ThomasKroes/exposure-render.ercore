@@ -211,7 +211,7 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 	this->BeforeRender(Renderer, Volume);
 
 	ER_CALL(ExposureRender::Render(this->Tracer.ID));
-	ER_CALL(ExposureRender::GetRunningEstimate(this->Tracer.ID, this->ImageBuffer));
+	ER_CALL(ExposureRender::GetDisplayEstimate(this->Tracer.ID, this->ImageBuffer));
 
 	glEnable(GL_TEXTURE_2D);
 

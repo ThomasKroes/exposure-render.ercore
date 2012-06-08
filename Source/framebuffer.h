@@ -27,9 +27,10 @@ public:
 		FrameEstimate("Frame Estimate", Enums::Device),
 		TempFrameEstimate("Temp Frame Estimate", Enums::Device),
 		Alpha("Alpha", Enums::Device),
-		RunningEstimateXYZ("Running Estimate", Enums::Device),
-		RunningEstimateRGB("Display Estimate", Enums::Device),
-		TempRunningEstimateRGB("Temp Display Estimate", Enums::Device),
+		RunningEstimateXYZ("Running estimate XYZ", Enums::Device),
+		RunningEstimateRGB("Running estimate RGB", Enums::Device),
+		TempRunningEstimateRGB("Temp running estimate RGB", Enums::Device),
+		DisplayEstimate("Display Estimate", Enums::Device),
 		RandomSeeds1("Random Seeds 1", Enums::Device),
 		RandomSeeds2("Random Seeds 2", Enums::Device),
 		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
@@ -51,6 +52,7 @@ public:
 		this->RunningEstimateRGB.Resize(this->Resolution);
 		this->TempRunningEstimateRGB.Resize(this->Resolution);
 		this->TempRunningEstimateRGB.Resize(this->Resolution);
+		this->DisplayEstimate.Resize(this->Resolution);
 		this->Alpha.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
@@ -60,19 +62,19 @@ public:
 		this->RandomSeedsCopy2 = this->RandomSeeds2;
 	}
 
-	Vec2i						Resolution;
-	Buffer2D<ColorXYZf>			FrameEstimate;
-	Buffer2D<ColorXYZf>			TempFrameEstimate;
-	Buffer2D<float>				Alpha;
-	Buffer2D<ColorXYZf>			RunningEstimateXYZ;
-	Buffer2D<ColorRGBf>			RunningEstimateRGB;
-	Buffer2D<ColorRGBf>			TempRunningEstimateRGB;
-	Buffer2D<ColorRGBAuc>		DisplayEstimate;
-	RandomSeedBuffer2D			RandomSeeds1;
-	RandomSeedBuffer2D			RandomSeeds2;
-	RandomSeedBuffer2D			RandomSeedsCopy1;
-	RandomSeedBuffer2D			RandomSeedsCopy2;
-	Buffer2D<ColorRGBAuc>		HostDisplayEstimate;
+	Vec2i					Resolution;
+	Buffer2D<ColorXYZf>		FrameEstimate;
+	Buffer2D<ColorXYZf>		TempFrameEstimate;
+	Buffer2D<float>			Alpha;
+	Buffer2D<ColorXYZf>		RunningEstimateXYZ;
+	Buffer2D<ColorRGBf>		RunningEstimateRGB;
+	Buffer2D<ColorRGBf>		TempRunningEstimateRGB;
+	Buffer2D<ColorRGBAuc>	DisplayEstimate;
+	RandomSeedBuffer2D		RandomSeeds1;
+	RandomSeedBuffer2D		RandomSeeds2;
+	RandomSeedBuffer2D		RandomSeedsCopy1;
+	RandomSeedBuffer2D		RandomSeedsCopy2;
+	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
 };
 
 }
