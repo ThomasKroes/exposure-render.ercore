@@ -87,7 +87,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
 	RenderWindow->Render();
-	RenderWindow->SetSize(512, 512);
+	RenderWindow->SetSize(1024, 1024);
 
 	ConfigureER(Renderer);
 
@@ -109,6 +109,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateClippingObjects(Tracer);
 	CreateCamera(Renderer);
 
+	Tracer->SetNoiseReduction(true);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -123,13 +124,13 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 8.0f;
+	const float StepSize = 3.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
+	VolumeProperty->SetStepFactorShadow(5.0f * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(500);
+	VolumeProperty->SetDensityScale(100);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();

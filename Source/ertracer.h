@@ -63,7 +63,7 @@ public:
 		this->LightIDs				= Other.LightIDs;
 		this->ObjectIDs				= Other.ObjectIDs;
 		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
-		this->NoiseReduction		= Other.NoiseReduction
+		this->NoiseReduction		= Other.NoiseReduction;
 
 		return *this;
 	}

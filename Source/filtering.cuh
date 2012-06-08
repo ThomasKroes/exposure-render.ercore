@@ -144,7 +144,7 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 
 	CenterColor = gpTracer->FrameBuffer.RunningEstimateRGB(Vec2f(IDx, IDy));
 
-	const int Radius = 2;
+	const int Radius = 6;
 
 	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
 	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
@@ -153,9 +153,9 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 	
 	const float Factor = expf(-0.09f * (float)gpTracer->NoEstimates);
 
-	for (int y = Range[1][0]; y <= Range[1][1]; y += 1)
+	for (int y = Range[1][0]; y <= Range[1][1]; y += 2)
 	{
-		for (int x = Range[0][0]; x <= Range[0][1]; x += 1)
+		for (int x = Range[0][0]; x <= Range[0][1]; x += 2)
 		{
 			KernelPosColor = gpTracer->FrameBuffer.RunningEstimateRGB(Vec2f(x, y));
 
@@ -166,7 +166,6 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 				Sum[0]		+= KernelPosColor[0] * Weight;
 				Sum[1]		+= KernelPosColor[1] * Weight;
 				Sum[2]		+= KernelPosColor[2] * Weight;
-//				Sum[3]		+= KernelPosColor[3] * Weight;
 				SumWeight	+= Weight;
 			}
 		}
