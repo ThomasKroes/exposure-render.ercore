@@ -163,13 +163,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		}
 	}
 
-	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
-	gTracers[TracerID].TexDiffuse1D.Bind(Diffuse1D);
-	gTracers[TracerID].TexSpecular1D.Bind(Specular1D);
-	gTracers[TracerID].TexGlossiness1D.Bind(Glossiness1D);
-	gTracers[TracerID].TexIndexOfReflection1D.Bind(IndexOfReflection1D);
-	gTracers[TracerID].TexEmission1D.Bind(Emission1D);
-
 	gTracers.Synchronize(TracerID);
 
 	if (gTracers[TracerID].VolumeIDs[0] >= 0)
