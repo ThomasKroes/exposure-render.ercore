@@ -130,36 +130,37 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetShadows(1);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetDensityScale(50);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(10, 0);
-	Opacity->AddPoint(50, 0.1);
+	Opacity->AddPoint(50, 0);
+	Opacity->AddPoint(51, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float DiffuseLevel = 1.0f;
-	
 	/*
 	for (int i = 0; i < 50; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	
-	
+	*/
+
+	const float DiffuseLevel = 1.0f;
+
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-	*/
 	
+	/*
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
+	*/
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -306,7 +307,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(100.0f);
-	EnvironmentLight->SetMultiplier(1.0f);
+	EnvironmentLight->SetMultiplier(2.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
