@@ -24,6 +24,7 @@ KERNEL void KrnlComposite()
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
 	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
+//	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;
 }
 
 void Composite(Tracer& Tracer)
