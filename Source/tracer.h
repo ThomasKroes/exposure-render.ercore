@@ -23,8 +23,6 @@ using namespace std;
 namespace ExposureRender
 {
 
-//#define TF_TEXTURED
-
 class Tracer
 {
 public:
@@ -105,6 +103,8 @@ public:
 			this->FrameBuffer.Resize(Other.Camera.FilmSize);
 
 			this->NoEstimates = 0;
+			
+			this->FrameBuffer.RunningEstimateXYZ.Reset();
 
 			this->FrameBuffer.RandomSeedsCopy1.Modified();
 			this->FrameBuffer.RandomSeedsCopy2.Modified();
