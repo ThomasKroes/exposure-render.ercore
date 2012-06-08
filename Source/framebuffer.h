@@ -64,8 +64,8 @@ public:
 	Buffer2D<ColorXYZAf>	FrameEstimate;
 	Buffer2D<ColorXYZAf>	TempFrameEstimate;
 	Buffer2D<ColorXYZAf>	RunningEstimateXYZ;
-	Buffer2D<ColorRGBAf>	RunningEstimateRGB;
-	Buffer2D<ColorRGBAf>	TempRunningEstimateRGB;
+	Buffer2D<ColorRGBAuc>	RunningEstimateRGB;
+	Buffer2D<ColorRGBAuc>	TempRunningEstimateRGB;
 	Buffer2D<ColorRGBAuc>	DisplayEstimate;
 	RandomSeedBuffer2D		RandomSeeds1;
 	RandomSeedBuffer2D		RandomSeeds2;
