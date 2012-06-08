@@ -72,6 +72,7 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "filtering.cuh"
 #include "estimate.cuh"
 #include "tonemap.cuh"
+#include "composite.cuh"
 
 namespace ExposureRender
 {
@@ -189,15 +190,16 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	ToneMap(gTracers[TracerID]);
 	GaussianFilterRunningEstimate(gTracers[TracerID]);
 	BilateralFilterRunningEstimate(gTracers[TracerID]);
+	Composite(gTracers[TracerID]);
 
 	gTracers[TracerID].NoEstimates++;
 }
 
-EXPOSURE_RENDER_DLL void GetRunningEstimate(int TracerID, ColorRGBAuc* pData)
+EXPOSURE_RENDER_DLL void GetDisplayEstimate(int TracerID, ColorRGBAuc* pData)
 {
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 
-	Cuda::MemCopyDeviceToHost(FB.RunningEstimateRGB.GetData(), (ColorRGBAuc*)pData, FB.RunningEstimateRGB.GetNoElements());
+	Cuda::MemCopyDeviceToHost(FB.DisplayEstimate.GetData(), (ColorRGBAuc*)pData, FB.DisplayEstimate.GetNoElements());
 }
 
 }

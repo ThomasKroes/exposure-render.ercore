@@ -144,9 +144,9 @@ KERNEL void KrnlBilateralFilterRunningEstimate()
 	
 	if (SumWeight > 0.0f)
 	{
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[0] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0][0]);
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[1] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0][1]);
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[2] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0][2]);
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[0] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0]);
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[1] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1]);
+		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Lerp(1.0f - expf(-0.03f * (float)gpTracer->NoEstimates), Sum[2] / SumWeight, gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2]);
 	}
 	else
 		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
