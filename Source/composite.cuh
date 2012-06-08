@@ -13,10 +13,24 @@
 
 #pragma once
 
-#include "clippingobject.h"
-#include "clippingsegments.h"
+#include "geometry.h"
+#include "utilities.h"
 
 namespace ExposureRender
 {
+
+KERNEL void KrnlComposite()
+{
+	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+
+	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
+//	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy)[3] = 255;
+}
+
+void Composite(Tracer& Tracer)
+{
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlComposite<<<GridDim, BlockDim>>>()), "Composite");
+}
 
 }

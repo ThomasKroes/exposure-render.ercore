@@ -85,12 +85,12 @@ public:
 		sprintf_s(this->FullName, MAX_CHAR_SIZE, "['%s', %s]", this->Name, MemoryTypeName);
 	}
 
-	HOST_DEVICE int GetNoElements(void) const
+	HOST_DEVICE long GetNoElements(void) const
 	{
 		return this->NoElements;
 	}
 
-	HOST_DEVICE virtual int GetNoBytes(void) const
+	HOST_DEVICE virtual long GetNoBytes(void) const
 	{
 		return this->GetNoElements() * sizeof(T);
 	} 

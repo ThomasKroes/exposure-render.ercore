@@ -173,13 +173,24 @@ SET(Filter
 
 SOURCE_GROUP("Filter" FILES ${Filter})
 
+SET(Color
+	color.h
+	colorxyzf.h
+	colorxyzaf.h
+	colorrgbf.h
+	colorrgbaf.h
+	colorrgbauc.h
+)
+
+SOURCE_GROUP("Color" FILES ${Color})
+
 SET(Cuda
 	singlescattering.cuh
 	estimate.cuh
-	gradientmagnitude.cuh
 	filtering.cuh
 	tonemap.cuh
 	autofocus.cuh
+	composite.cuh
 	list.cuh
 	wrapper.cuh
 	macros.cuh
@@ -189,7 +200,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Cuda} SHARED)
 
 IF(ER_VTK)
 

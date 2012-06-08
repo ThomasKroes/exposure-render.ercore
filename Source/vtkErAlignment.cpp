@@ -32,6 +32,8 @@ vtkErAlignment::vtkErAlignment()
 	this->SetElevation(45.0f);
 	this->SetAzimuth(180.0f);
 	this->SetOffset(1.0f);
+	this->SetRelativeToCamera(0);
+	this->SetUseCameraFocalPoint(1);
 }
 
 void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)

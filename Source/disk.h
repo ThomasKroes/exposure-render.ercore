@@ -22,19 +22,20 @@ class EXPOSURE_RENDER_DLL Disk : public Plane
 {	
 public:
 	HOST_DEVICE Disk() :
-		Plane(),
+		Plane(Vec2f(1.0f), true),
 		Radius(1.0f)
 	{
 	}
 
-	HOST_DEVICE Disk(const float& Radius) :
+	HOST_DEVICE Disk(const float& Radius, const bool& OneSided) :
+		Plane(Vec2f(2.0f * Radius), OneSided),
 		Radius(Radius)
 	{
 	}
 
 	HOST_DEVICE Disk& operator = (const Disk& Other)
 	{
-		this->Radius	= Other.Radius;
+		this->Radius = Other.Radius;
 
 		return *this;
 	}
@@ -62,7 +63,25 @@ public:
 
 	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
 	{
-		Plane::Intersect(R, Int);
+		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
+			return;
+
+		Int.Add((0.0f - R.O[2]) / R.D[2]);
+		
+		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
+			return;
+
+		Int.P 	= R(Int.HitT[0]);
+		Int.UV	= Vec2f(Int.P[0], Int.P[1]);
+		Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
+
+		if (this->OneSided && R.D[2] >= 0.0f)
+		{
+			Int.Front	= false;
+			Int.N		= Vec3f(0.0f, 0.0f, -1.0f);
+		}
+
+		Int.Valid = true;
 
 		if (Int.Valid && Int.UV.Length() > this->Radius)
 			Int.Valid = false;

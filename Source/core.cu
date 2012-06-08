@@ -11,8 +11,6 @@
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//#define __CUDA_ARCH__ 200
-
 #include <map>
 
 using namespace std;
@@ -66,12 +64,12 @@ ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErCli
 ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
 ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
 
-#include "gradientmagnitude.cuh"
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
 #include "filtering.cuh"
 #include "estimate.cuh"
 #include "tonemap.cuh"
+#include "composite.cuh"
 
 namespace ExposureRender
 {
@@ -162,13 +160,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 		}
 	}
 
-	gTracers[TracerID].TexOpacity1D.Bind(Opacity1D);
-	gTracers[TracerID].TexDiffuse1D.Bind(Diffuse1D);
-	gTracers[TracerID].TexSpecular1D.Bind(Specular1D);
-	gTracers[TracerID].TexGlossiness1D.Bind(Glossiness1D);
-	gTracers[TracerID].TexIndexOfReflection1D.Bind(IndexOfReflection1D);
-	gTracers[TracerID].TexEmission1D.Bind(Emission1D);
-
 	gTracers.Synchronize(TracerID);
 
 	if (gTracers[TracerID].VolumeIDs[0] >= 0)
@@ -189,11 +180,12 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	ToneMap(gTracers[TracerID]);
 	GaussianFilterRunningEstimate(gTracers[TracerID]);
 //	BilateralFilterRunningEstimate(gTracers[TracerID]);
+	Composite(gTracers[TracerID]);
 
 	gTracers[TracerID].NoEstimates++;
 }
 
-EXPOSURE_RENDER_DLL void GetRunningEstimate(int TracerID, ColorRGBAuc* pData)
+EXPOSURE_RENDER_DLL void GetDisplayEstimate(int TracerID, ColorRGBAuc* pData)
 {
 	FrameBuffer& FB = gTracers[TracerID].FrameBuffer;
 

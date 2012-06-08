@@ -26,21 +26,17 @@ public:
 		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
 		Resolution(0)
 	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
 	}
 
 	HOST Buffer2D(const Buffer2D& Other) :
 		Buffer<T>(),
 		Resolution(0)
 	{
-		DebugLog("%s: Other = %s", __FUNCTION__, Other.GetFullName());
-		
 		*this = Other;
 	}
 
 	HOST virtual ~Buffer2D(void)
 	{
-		DebugLog(__FUNCTION__);
 		this->Free();
 	}
 
@@ -48,23 +44,17 @@ public:
 	{
 		Buffer<T>::operator = (Other);
 
-		DebugLog("%s: this = %s, Other = %s", __FUNCTION__, this->GetFullName(), Other.GetFullName());
-		
 		if (this->TimeStamp != Other.TimeStamp)
 		{
 			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
 			this->TimeStamp = Other.TimeStamp;
 		}
-		
-		sprintf_s(this->Name, MAX_CHAR_SIZE, "Copy of %s", Other.Name);
 
 		return *this;
 	}
 
 	HOST void Free(void)
 	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-
 		char MemoryString[MAX_CHAR_SIZE];
 		
 		this->GetMemoryString(MemoryString, Enums::MegaByte);
@@ -75,14 +65,12 @@ public:
 			{
 				free(this->Data);
 				this->Data = NULL;
-				DebugLog("Freed %s on host", MemoryString);
 			}
 
 #ifdef __CUDACC__
 			if (this->MemoryType == Enums::Device)
 			{
 				Cuda::Free(this->Data);
-				DebugLog("Freed %s on device", MemoryString);
 			}
 #endif
 		}
@@ -95,8 +83,6 @@ public:
 
 	HOST void Reset(void)
 	{
-		DebugLog("%s: %s", __FUNCTION__, this->GetFullName());
-		
 		if (this->GetNoElements() <= 0)
 			return;
 		
@@ -113,8 +99,6 @@ public:
 
 	HOST void Resize(const Vec2i& Resolution)
 	{
-		DebugLog("%s", __FUNCTION__);
-
 		if (this->Resolution == Resolution)
 			return;
 		else
@@ -122,14 +106,10 @@ public:
 
 		this->Resolution = Resolution;
 
-		DebugLog("Resolution = [%d x %d]", this->Resolution[0], this->Resolution[1]);
-
 		this->NoElements = this->Resolution[0] * this->Resolution[1];
 
 		if (this->NoElements <= 0)
 			return;
-		
-		DebugLog("No. Elements = %d", this->NoElements);
 		
 		char MemoryString[MAX_CHAR_SIZE];
 		
@@ -138,14 +118,12 @@ public:
 		if (this->MemoryType == Enums::Host)
 		{
 			this->Data = (T*)malloc(this->GetNoBytes());
-			DebugLog("Allocated %s on host", MemoryString);
 		}
 
 #ifdef __CUDACC__
 		if (this->MemoryType == Enums::Device)
 		{
 			Cuda::Allocate(this->Data, this->GetNoElements());
-			DebugLog("Allocated %s on device", MemoryString);
 		}
 #endif
 
@@ -154,8 +132,6 @@ public:
 
 	HOST void Set(const Enums::MemoryType& MemoryType, const Vec2i& Resolution, T* Data)
 	{
-		DebugLog("%s: %s, %d x %d", __FUNCTION__, this->GetFullName(), Resolution[0], Resolution[1]);
-
 		this->Resize(Resolution);
 
 		if (this->NoElements <= 0)

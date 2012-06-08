@@ -64,20 +64,6 @@ HOST_DEVICE_NI inline bool InShadingHemisphere(const Vec3f& W1, const Vec3f& W2,
    return Dot(W1, N) >= 0.0f && Dot(W2, N) >= 0.0f;
 }
 
-HOST_DEVICE_NI Vec3f inline SampleHemisphere(Vec2f U, float Radius, Vec3f* pN = NULL)
-{
-	float z		= U[0];
-	float r		= sqrtf(max(0.0f, 1.0f - z * z));
-	float phi	= 2 * PI_F * U[1];
-	float x		= r * cosf(phi);
-	float y		= r * sinf(phi);
-
-	if (pN)
-		*pN = Vec3f(x, y, z);
-
-	return Vec3f(x, y, z);
-}
-
 HOST_DEVICE_NI Vec2f inline ConcentricSampleDisk(const Vec2f& U)
 {
 	float r, theta;
@@ -164,25 +150,6 @@ HOST_DEVICE_NI inline Vec3f SphericalDirection(float sintheta, float costheta, f
 	return sintheta * cosf(phi) * x + sintheta * sinf(phi) * y + costheta * z;
 }
 
-HOST_DEVICE_NI inline Vec3f SphericalDirection(const float& SinTheta, const float& CosTheta, const float& Phi, const Vec3f& N)
-{
-	const Vec3f Wl = SphericalDirection(SinTheta, CosTheta, Phi);
-
-	const Vec3f u = Normalize(Cross(N, Vec3f(0.0072f, 1.0f, 0.0034f)));
-	const Vec3f v = Normalize(Cross(N, u));
-
-	return Vec3f(	u[0] * Wl[0] + v[0] * Wl[1] + N[0] * Wl[2],
-						u[1] * Wl[0] + v[1] * Wl[1] + N[1] * Wl[2],
-						u[2] * Wl[0] + v[2] * Wl[1] + N[2] * Wl[2]);
-}
-
-HOST_DEVICE_NI inline Vec2f UniformSampleTriangle(const Vec2f& U)
-{
-	float su1 = sqrtf(U[0]);
-
-	return Vec2f(1.0f - su1, U[1] * su1);
-}
-
 HOST_DEVICE_NI inline Vec3f UniformSampleSphereSurface(const Vec2f& U)
 {
 	float z = 1.f - 2.f * U[0];
@@ -201,18 +168,6 @@ HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U)
 	float x = r * cosf(phi);
 	float y = r * sinf(phi);
 	return Vec3f(x, y, z);
-}
-
-HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U, const Vec3f& N)
-{
-	const Vec3f Wl = UniformSampleHemisphere(U);
-
-	const Vec3f u = Normalize(Cross(N, Vec3f(0.0072f, 1.0f, 0.0034f)));
-	const Vec3f v = Normalize(Cross(N, u));
-
-	return Vec3f(	u[0] * Wl[0] + v[0] * Wl[1] + N[0] * Wl[2],
-						u[1] * Wl[0] + v[1] * Wl[1] + N[1] * Wl[2],
-						u[2] * Wl[0] + v[2] * Wl[1] + N[2] * Wl[2]);
 }
 
 HOST_DEVICE_NI inline float PowerHeuristic(int nf, float fPdf, int ng, float gPdf)
