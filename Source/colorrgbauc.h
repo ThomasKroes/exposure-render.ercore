@@ -27,7 +27,7 @@ public:
 
 	static inline HOST_DEVICE ColorRGBAuc Black()
 	{
-		return ColorRGBAuc(0);
+		return ColorRGBAuc();
 	}
 
 	HOST_DEVICE ColorRGBAuc FromXYZf(const float XYZ[3])

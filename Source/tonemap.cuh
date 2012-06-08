@@ -22,11 +22,7 @@ KERNEL void KrnlToneMap()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	const ColorRGBuc RGB = ToneMap(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy));
- 
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[0] = (unsigned char)Clamp((int)RGB[0], 0, 255);
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[1] = (unsigned char)Clamp((int)RGB[1], 0, 255);
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[2] = (unsigned char)Clamp((int)RGB[2], 0, 255);
+	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ToneMap(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy));
 }
 
 void ToneMap(Tracer& Tracer)

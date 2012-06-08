@@ -102,7 +102,7 @@ DEVICE ScatterEvent SampleRay(Ray R, CRNG& RNG)
 	return NearestRS;
 }
 
-DEVICE ColorXYZf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
+DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 {
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
 
@@ -144,9 +144,7 @@ DEVICE ColorXYZf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		}
 	}
 
-	gpTracer->FrameBuffer.Alpha(PixelCoord[0], PixelCoord[1]) = SE.Valid ? 1.0f : 0.0f;
-
-	return L;
+	return ColorXYZAf(L[0], L[1], L[2], SE.Valid ? 1.0f : 0.0f);
 }
 
 }
