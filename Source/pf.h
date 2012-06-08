@@ -61,7 +61,7 @@ public:
 
 	HOST void Reset()
 	{
-		this->NodeRange	= Vec2f(0.0f);
+		this->NodeRange	= Vec2f(FLT_MAX, FLT_MIN);
 		this->Count		= 0;
 	}
 

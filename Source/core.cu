@@ -64,7 +64,6 @@ ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErCli
 ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
 ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
 
-#include "gradientmagnitude.cuh"
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
 #include "filtering.cuh"

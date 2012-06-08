@@ -20,8 +20,6 @@
 #include "utilities.h"
 #include "transform.h"
 
-#include "gradientmagnitude.cuh"
-
 namespace ExposureRender
 {
 
