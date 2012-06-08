@@ -187,7 +187,6 @@ SOURCE_GROUP("Color" FILES ${Color})
 SET(Cuda
 	singlescattering.cuh
 	estimate.cuh
-	gradientmagnitude.cuh
 	filtering.cuh
 	tonemap.cuh
 	autofocus.cuh
