@@ -120,7 +120,7 @@ public:
 						const float ExpGF		= 3;
 						const float Exponent	= Sensitivity * powf(VolumeProperty.GradientFactor, ExpGF) * NormalizedGradientMagnitude;
 						
-						const float PdfBrdf = 1.0f - __expf(-Exponent);
+						const float PdfBrdf = gpTracer->VolumeProperty.OpacityModulated ? gpTracer->GetOpacity(this->Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
 						
 						if (RNG.Get1() < PdfBrdf)
 						{
