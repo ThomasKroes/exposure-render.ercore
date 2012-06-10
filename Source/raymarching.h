@@ -24,7 +24,7 @@
 namespace ExposureRender
 {
 
-DEVICE void SampleVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
+DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
 {
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 	VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
@@ -106,6 +106,12 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 
 		if (MinT > MaxT)
 			return false;
+
+		if (InsideClippingObjects(Ps))
+		{
+			MinT	+= StepSize;
+			continue;
+		}
 		
 		Sum		+= DensityScale * gpTracer->GetOpacity(Volume(Ps, VolumeID)) * StepSize;
 		MinT	+= StepSize;

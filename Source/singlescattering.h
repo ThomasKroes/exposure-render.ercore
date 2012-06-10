@@ -77,20 +77,23 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 	}
 }
 
-DEVICE ScatterEvent SampleRay(Ray R, CRNG& RNG)
+DEVICE ScatterEvent NearestIntersection(const Ray& R, CRNG& RNG)
 {
-	ScatterEvent SE[3] = { ScatterEvent(Enums::Volume), ScatterEvent(Enums::Light), ScatterEvent(Enums::Object) };
-
-	SampleVolume(R, RNG, SE[0]);
+	ScatterEvent SE[4] = { ScatterEvent(Enums::Volume), ScatterEvent(Enums::Light), ScatterEvent(Enums::Object) };
+	
+	IntersectVolume(R, RNG, SE[0]);
+	
+	if (SE[0].Valid && InsideClippingObjects(SE[0].P))
+		SE[0].Valid = false;
 
 	IntersectLights(R, SE[1], true);
 	IntersectObjects(R, SE[2]);
-
+	
 	float T = FLT_MAX;
 
 	ScatterEvent NearestRS(Enums::Volume);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (SE[i].Valid && SE[i].T < T)
 		{
@@ -118,13 +121,15 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 
 	ScatterEvent SE;
 
-	SE = SampleRay(R, RNG);
+	SE = NearestIntersection(R, RNG);
 
 	if (SE.Valid)
 	{
 		switch (SE.Type)
 		{
 			case Enums::Volume:
+			case Enums::Object:
+			case Enums::ClippingObject:
 			{
 				L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 				break;
@@ -133,12 +138,6 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 			case Enums::Light:
 			{
 				L += SE.Le;
-				break;
-			}
-
-			case Enums::Object:
-			{
-				L += UniformSampleOneLight(SE, RNG, Sample.LightingSample);
 				break;
 			}
 		}

@@ -142,6 +142,23 @@ public:
 		return false;
 	}
 
+	HOST_DEVICE bool Inside(const Vec3f& P) const
+	{
+		const Ray LocalP = TransformPoint(this->Transform.InvTM, P);
+
+		switch (this->Type)
+		{
+			case Enums::Plane:		return this->Plane.Inside(P);
+			case Enums::Disk:		return this->Disk.Inside(P);
+			case Enums::Ring:		return this->Ring.Inside(P);
+			case Enums::Box:		return this->Box.Inside(P);
+			case Enums::Sphere:		return this->Sphere.Inside(P);
+//			case Enums::Cylinder:	return this->Cylinder.Inside(P);
+		}
+
+		return false;
+	}
+
 	Enums::ShapeType	Type;
 	Plane				Plane;
 	Disk				Disk;

@@ -44,7 +44,7 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV
 		Rc.MinT	= gpTracer->Camera.ClipNear;
 		Rc.MaxT	= gpTracer->Camera.ClipFar;
 
-		SampleVolume(Rc, RNG, SE);
+		IntersectVolume(Rc, RNG, SE);
 
 		if (SE.Valid)
 		{

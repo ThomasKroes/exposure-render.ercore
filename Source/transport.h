@@ -16,6 +16,7 @@
 #include "raymarching.h"
 #include "lights.h"
 #include "objects.h"
+#include "clippingobjects.h"
 #include "shader.h"
 #include "textures.h"
 
