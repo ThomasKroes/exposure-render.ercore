@@ -115,6 +115,11 @@ public:
 		return Plane::GetOneSided();
 	}
 
+	HOST_DEVICE bool Inside(const Vec3f& P) const
+	{
+		return P[2] > 0.0f;
+	}
+
 protected:
 	float	Radius;
 };

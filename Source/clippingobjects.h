@@ -19,4 +19,34 @@
 namespace ExposureRender
 {
 
+HOST_DEVICE_NI void NearestClippingObject(const Ray& R, float& MinT, float MaxT)
+{
+	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
+	{
+		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
+
+		Intersection Int;
+
+		ClippingObject.Shape.Intersect(R, Int);
+
+		if (Int.HitT[0] > MinT && Int.HitT[0] < MaxT)
+			MinT = Int.HitT[0];
+	}
+}
+
+HOST_DEVICE_NI bool InsideClippingObjects(const Vec3f& P)
+{
+	float T = FLT_MAX;
+
+	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
+	{
+		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
+
+		if (ClippingObject.Shape.Inside(P))
+			return true;
+	}
+
+	return false;
+}
+
 }

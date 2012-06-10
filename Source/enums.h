@@ -96,6 +96,7 @@ namespace Enums
 		Volume,
 		Light,
 		Object,
+		ClippingObject,
 		SlicePlane
 	};
 

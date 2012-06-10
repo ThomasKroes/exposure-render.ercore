@@ -87,7 +87,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
 	RenderWindow->Render();
-	RenderWindow->SetSize(1024, 1024);
+	RenderWindow->SetSize(512, 512);
 
 	ConfigureER(Renderer);
 
@@ -109,7 +109,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateClippingObjects(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetNoiseReduction(true);
+	Tracer->SetNoiseReduction(false);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -419,18 +419,17 @@ void CreateObjects(vtkErTracer* Tracer)
 
 void CreateClippingObjects(vtkErTracer* Tracer)
 {
-	return;
-
 	for (int i = 0; i < 1; i++)
 	{
 		vtkSmartPointer<vtkErClippingObject> ClippingObject = vtkSmartPointer<vtkErClippingObject>::New();
 
 		ClippingObject->SetAlignmentType(Enums::AxisAlign);
-		ClippingObject->SetAzimuth(0);
+		ClippingObject->SetAzimuth(i * 40);
 		ClippingObject->SetSize(100, 100, 100);
 		ClippingObject->SetOffset(0.2f);
 		ClippingObject->SetPosition(0, -0.01, 0);
 		ClippingObject->SetAutoFlip(true);
+		ClippingObject->SetOneSided(true);
 
 		Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject->GetOutputPort());
 	}

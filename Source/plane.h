@@ -73,17 +73,11 @@ public:
 		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
 			return;
 
-		Int.P 	= R(Int.HitT[0]);
-		Int.UV	= Vec2f(Int.P[0], Int.P[1]);
-		Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
-
-		if (this->OneSided && R.D[2] >= 0.0f)
-		{
-			Int.Front	= false;
-			Int.N		= Vec3f(0.0f, 0.0f, -1.0f);
-		}
-
-		Int.Valid = true;
+		Int.P 		= R(Int.HitT[0]);
+		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
+		Int.N		= this->OneSided && R.D[2] >= 0.0f ? Vec3f(0.0f, 0.0f, -1.0f) : Vec3f(0.0f, 0.0f, 1.0f);
+		Int.Front	= this->OneSided && R.D[2] >= 0.0f ? false : true;
+		Int.Valid	= true;
 
 		if (Int.Valid && (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1]))
 			Int.Valid = false;
@@ -112,6 +106,11 @@ public:
 	HOST_DEVICE bool GetOneSided() const
 	{
 		return this->OneSided;
+	}
+
+	HOST_DEVICE bool Inside(const Vec3f& P) const
+	{
+		return P[2] > 0.0f;
 	}
 
 protected:

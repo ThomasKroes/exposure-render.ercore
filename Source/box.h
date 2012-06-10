@@ -186,6 +186,11 @@ public:
 		return false;
 	}
 
+	HOST_DEVICE bool Inside(const Vec3f& P) const
+	{
+		return P[2] > 0.0f;
+	}
+
 protected:
 	Vec3f	MinP;
 	Vec3f	MaxP;
