@@ -41,16 +41,16 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
+#define KEY_LIGHT_ON
 //#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environment.png";
+	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environmentm.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -124,18 +124,18 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 6.0f;
+	const float StepSize = 4.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(5.0f * StepSize);
-	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetStepFactorShadow(StepSize);
+	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetDensityScale(10000);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(0, 0);
+	Opacity->AddPoint(100, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
@@ -163,7 +163,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float SpecularLevel = 0.1f;
+	const float SpecularLevel = 0.2f;
 
 	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
 	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
@@ -172,7 +172,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.5f;
+	const float GlossinessLevel = 1.0f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -238,16 +238,16 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 2.2;
+	const float KeyLightSize = 0.2f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
 //	KeyLight->SetVisible(false);
-	KeyLight->SetElevation(75.0f);
-	KeyLight->SetAzimuth(15.0f);
+	KeyLight->SetElevation(45.0f);
+	KeyLight->SetAzimuth(-45.0f);
 	KeyLight->SetOffset(2.0f);
-	KeyLight->SetMultiplier(5.0f);
+	KeyLight->SetMultiplier(100.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
 	KeyLight->SetRelativeToCamera(true);
@@ -299,7 +299,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErLight> EnvironmentLight = vtkSmartPointer<vtkErLight>::New();
 	
 	EnvironmentLight->SetAlignmentType(Enums::AxisAlign);
-	EnvironmentLight->SetAxis(ExposureRender::Enums::X);
+	EnvironmentLight->SetAxis(ExposureRender::Enums::Y);
 	EnvironmentLight->SetPosition(0, 0, 0);
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);

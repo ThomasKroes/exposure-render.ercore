@@ -46,7 +46,7 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV
 
 		IntersectVolume(Rc, RNG, SE);
 
-		if (SE.Valid)
+		if (SE.T > 0.0f)
 		{
 			Sum += (SE.P - Rc.O).Length();
 			SumWeight += 1.0f;

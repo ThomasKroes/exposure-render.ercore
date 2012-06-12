@@ -26,7 +26,6 @@ class ScatterEvent
 public:
 	HOST_DEVICE ScatterEvent() :
 		Type(Enums::NoScattering),
-		Valid(false),
 		T(),
 		P(),
 		N(),
@@ -40,7 +39,6 @@ public:
 
 	HOST_DEVICE ScatterEvent(const Enums::ScatterType& Type) :
 		Type(Type),
-		Valid(false),
 		T(),
 		P(),
 		N(),
@@ -54,7 +52,6 @@ public:
 
 	HOST_DEVICE void SetVolumeScattering(const float& T, const Vec3f& P, const Vec3f& N, const Vec3f& Wo, const float& Intensity)
 	{
-		this->Valid		= true;
 		this->T			= T;
 		this->P			= P;
 		this->N			= N;
@@ -65,7 +62,6 @@ public:
 	HOST_DEVICE ScatterEvent& ScatterEvent::operator = (const ScatterEvent& Other)
 	{
 		this->Type			= Other.Type;
-		this->Valid			= Other.Valid;
 		this->T				= Other.T;
 		this->P				= Other.P;
 		this->N				= Other.N;
@@ -189,7 +185,6 @@ public:
 	}
 
 	Enums::ScatterType	Type;
-	bool				Valid;
 	float				T;
 	Vec3f				P;
 	Vec3f				N;

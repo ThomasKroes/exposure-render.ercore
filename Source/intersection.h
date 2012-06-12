@@ -13,9 +13,7 @@
 
 #pragma once
 
-#include "color.h"
-#include "ray.h"
-#include "matrix.h"
+#include "vector.h"
 
 using namespace std;
 
@@ -26,44 +24,37 @@ class Intersection
 {
 public:
 	HOST_DEVICE Intersection() :
-		Valid(false),
 		Front(true),
-		NoIntersections(0),
+		T(0.0f),
 		P(),
 		N(),
 		UV()
 	{
 	}
 
+	HOST_DEVICE Intersection(const Intersection& Other) :
+		Front(true),
+		T(0.0f),
+		P(),
+		N(),
+		UV()
+	{
+		*this = Other;
+	}
+
 	HOST_DEVICE Intersection& Intersection::operator = (const Intersection& Other)
 	{
-		this->Valid				= Other.Valid;	
-		this->Front				= Other.Front;
-
-		for (int i = 0; i < MAX_NO_INT; i++)
-			this->HitT[i] = Other.HitT[i];
-
-		this->NoIntersections	= Other.NoIntersections;
-		this->P					= Other.P;
-		this->N					= Other.N;
-		this->UV				= Other.UV;
+		this->Front		= Other.Front;
+		this->T			= Other.T;
+		this->P			= Other.P;
+		this->N			= Other.N;
+		this->UV		= Other.UV;
 
 		return *this;
 	}
 
-	HOST_DEVICE void Add(const float& T)
-	{
-		if (this->NoIntersections >= MAX_NO_INT)
-			return;
-
-		this->HitT[this->NoIntersections] = T;
-		this->NoIntersections++;
-	}
-
-	bool		Valid;
 	bool		Front;
-	float		HitT[MAX_NO_INT];
-	int			NoIntersections;
+	float		T;
 	Vec3f		P;
 	Vec3f		N;
 	Vec2f		UV;

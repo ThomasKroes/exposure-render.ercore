@@ -91,7 +91,7 @@ DEVICE ScatterEvent NearestIntersection(const Ray& R, CRNG& RNG)
 
 	for (int i = 0; i < 3; i++)
 	{
-		if (SE[i].Valid && SE[i].T < T)
+		if (SE[i].T > 0.0f && SE[i].T < T)
 		{
 			NearestRS = SE[i];
 			T = SE[i].T;
@@ -119,7 +119,7 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 
 	SE = NearestIntersection(R, RNG);
 
-	if (SE.Valid)
+	if (SE.T > 0.0f)
 	{
 		switch (SE.Type)
 		{
@@ -139,7 +139,7 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 		}
 	}
 
-	return ColorXYZAf(L[0], L[1], L[2], SE.Valid ? 1.0f : 0.0f);
+	return ColorXYZAf(L[0], L[1], L[2], SE.T > 0.0f ? 1.0f : 0.0f);
 }
 
 }

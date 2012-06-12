@@ -49,44 +49,44 @@ public:
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.Add((0.0f - R.O[2]) / R.D[2]);
+		Int.T = (0.0f - R.O[2]) / R.D[2];
 		
-		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
+		if (Int.T < R.MinT || Int.T > R.MaxT)
 			return false;
 
-		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
-		Int.Valid	= true;
+		Int.UV = Vec2f(Int.P[0], Int.P[1]);
 
-		if (Int.Valid && (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1]))
-			Int.Valid = false;
+		if (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1])
+			return false;
 		
 		return true;
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
-			return;
+			return false;
 
-		Int.Add((0.0f - R.O[2]) / R.D[2]);
+		Int.T = (0.0f - R.O[2]) / R.D[2];
 		
-		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
-			return;
+		if (Int.T < R.MinT || Int.T > R.MaxT)
+			return false;
 
-		Int.P 		= R(Int.HitT[0]);
+		Int.P 		= R(Int.T);
 		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
 		Int.N		= this->OneSided && R.D[2] >= 0.0f ? Vec3f(0.0f, 0.0f, -1.0f) : Vec3f(0.0f, 0.0f, 1.0f);
 		Int.Front	= this->OneSided && R.D[2] >= 0.0f ? false : true;
-		Int.Valid	= true;
 
-		if (Int.Valid && (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1]))
-			Int.Valid = false;
+		if (Int.UV[0] < -0.5f * this->Size[0] || Int.UV[0] > 0.5f * this->Size[0] || Int.UV[1] < -0.5f * this->Size[1] || Int.UV[1] > 0.5f * this->Size[1])
+			return false;
 
 		Int.UV[0] /= this->Size[0];
 		Int.UV[1] /= this->Size[1];
 
 		Int.UV += Vec2f(0.5f);
 		Int.UV[0] = 1.0f - Int.UV[0];
+
+		return true;
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const

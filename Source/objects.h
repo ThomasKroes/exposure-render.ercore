@@ -18,22 +18,23 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void IntersectObject(const Object& Object, const Ray& R, ScatterEvent& SE)
+HOST_DEVICE_NI bool IntersectObject(const Object& Object, const Ray& R, ScatterEvent& SE)
 {
 	Intersection Int;
 
-	Object.Shape.Intersect(R, Int);
-
-	if (Int.Valid)
+	if (Object.Shape.Intersect(R, Int))
 	{
-		SE.Valid	= true;
-		SE.N 		= Int.N;
-		SE.P 		= Int.P;
-		SE.T 		= Length(SE.P - R.O);
-		SE.Wo		= -R.D;
-		SE.Le		= ColorXYZf(0.0f);
-		SE.UV		= Int.UV;
+		SE.N 	= Int.N;
+		SE.P 	= Int.P;
+		SE.T 	= Length(SE.P - R.O);
+		SE.Wo	= -R.D;
+		SE.Le	= ColorXYZf(0.0f);
+		SE.UV	= Int.UV;
+
+		return true;
 	}
+
+	return false;
 }
 
 HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
@@ -48,9 +49,7 @@ HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
 
 		LocalRS.ID = i;
 
-		IntersectObject(Object, R, LocalRS);
-
-		if (LocalRS.Valid && LocalRS.T < T)
+		if (IntersectObject(Object, R, LocalRS) && LocalRS.T < T)
 		{
 			RS = LocalRS;
 			T = LocalRS.T;
