@@ -74,7 +74,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 			VolumeProperty.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
 		}
 
-		VolumeProperty.Opacity1D.TimeStamp.Modified();
+		VolumeProperty.Opacity1D.Modified();
+		VolumeProperty.Modified();
 
 		this->LastOpacityTimeStamp = Opacity->GetMTime();
 	}
@@ -90,7 +91,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 			VolumeProperty.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 		}
 
-		VolumeProperty.Diffuse1D.TimeStamp.Modified();
+		VolumeProperty.Diffuse1D.Modified();
+		VolumeProperty.Modified();
 
 		this->LastDiffuseTimeStamp = Diffuse->GetMTime();
 	}
@@ -106,7 +108,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 			VolumeProperty.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 		}
 
-		VolumeProperty.Specular1D.TimeStamp.Modified();
+		VolumeProperty.Specular1D.Modified();
+		VolumeProperty.Modified();
 
 		this->LastSpecularTimeStamp = Specular->GetMTime();
 	}
@@ -122,7 +125,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 			VolumeProperty.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
 		}
 
-		VolumeProperty.Glossiness1D.TimeStamp.Modified();
+		VolumeProperty.Glossiness1D.Modified();
+		VolumeProperty.Modified();
 
 		this->LastGlossinessTimeStamp = Glossiness->GetMTime();
 	}
@@ -138,7 +142,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 			VolumeProperty.IndexOfReflection1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
 		}
 
-		VolumeProperty.IndexOfReflection1D.TimeStamp.Modified();
+		VolumeProperty.IndexOfReflection1D.Modified();
+		VolumeProperty.Modified();
 
 		this->LastIndexOfReflectionTimeStamp = IndexOfReflection->GetMTime();
 	}
@@ -154,7 +159,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 			VolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 		}
 
-		VolumeProperty.Emission1D.TimeStamp.Modified();
+		VolumeProperty.Emission1D.Modified();
+		VolumeProperty.Modified();
 
 		this->LastEmissionTimeStamp = Emission->GetMTime();
 	}

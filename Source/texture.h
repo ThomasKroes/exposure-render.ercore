@@ -18,10 +18,11 @@
 namespace ExposureRender
 {
 
-class Texture
+class Texture : public TimeStamp
 {
 public:
 	HOST Texture() :
+		TimeStamp(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
 		BitmapID(-1),
@@ -33,6 +34,7 @@ public:
 	}
 
 	HOST Texture(const ErTexture& Other) :
+		TimeStamp(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
 		BitmapID(-1),
@@ -46,6 +48,8 @@ public:
 
 	HOST Texture& operator = (const ErTexture& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Type			= Other.Type;
 		this->OutputLevel	= Other.OutputLevel;
 

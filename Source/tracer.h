@@ -24,10 +24,11 @@ using namespace std;
 namespace ExposureRender
 {
 
-class Tracer
+class Tracer : public TimeStamp
 {
 public:
 	HOST Tracer() :
+		TimeStamp(),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -42,6 +43,7 @@ public:
 	}
 
 	HOST Tracer(const ErTracer& Other) :
+		TimeStamp(),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -58,6 +60,8 @@ public:
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Camera			= Other.Camera;
 
 		this->VolumeIDs.Count = 0;
@@ -116,12 +120,14 @@ public:
 
 		this->NoiseReduction = Other.NoiseReduction;
 
-		if (this->VolumeProperty.Opacity1D.TimeStamp != Other.VolumeProperty.Opacity1D.TimeStamp)
+		if (this->VolumeProperty.Opacity1D != Other.VolumeProperty.Opacity1D)
 		{
+			/*
 			gVolumes[gVolumesHashMap[this->VolumeIDs[0]]]
 			const Vec3i Resolution();
 
 			this->EmptySpace.Resize();
+			*/
 		}
 
 		this->VolumeProperty = Other.VolumeProperty;

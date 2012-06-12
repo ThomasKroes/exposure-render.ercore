@@ -15,32 +15,35 @@
 
 #include "erbindable.h"
 #include "shape.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErClippingObject : public ErBindable
+class EXPOSURE_RENDER_DLL ErClippingObject : public ErBindable, public TimeStamp
 {
 public:
 	HOST ErClippingObject() :
 		ErBindable(),
+		TimeStamp(),
 		Shape(),
 		Invert(false)
 	{
 	}
 	
-	HOST virtual ~ErClippingObject()
-	{
-	}
-	
-	HOST ErClippingObject(const ErClippingObject& Other)
+	HOST ErClippingObject(const ErClippingObject& Other) :
+		ErBindable(),
+		TimeStamp(),
+		Shape(),
+		Invert(false)
 	{
 		*this = Other;
 	}
 
 	HOST ErClippingObject& operator = (const ErClippingObject& Other)
 	{
-		ErBindable::operator=(Other);
+		ErBindable::operator = (Other);
+		TimeStamp::operator = (Other);
 
 		this->Shape		= Other.Shape;
 		this->Invert	= Other.Invert;

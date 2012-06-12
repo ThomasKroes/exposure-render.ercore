@@ -19,10 +19,11 @@
 namespace ExposureRender
 {
 
-class Light
+class Light : public TimeStamp
 {
 public:
 	HOST Light() :
+		TimeStamp(),
 		ID(),
 		Visible(),
 		TextureID(-1),
@@ -31,13 +32,21 @@ public:
 	{
 	}
 
-	HOST Light(const ErLight& Other)
+	HOST Light(const ErLight& Other) :
+		TimeStamp(),
+		ID(),
+		Visible(),
+		TextureID(-1),
+		Multiplier(0.0f),
+		EmissionUnit(Enums::Power)
 	{
 		*this = Other;
 	}
 
 	HOST Light& operator = (const ErLight& Other)
 	{
+		TimeStamp::operator = (Other);
+		
 		this->ID		= Other.ID;
 		this->Visible	= Other.Visible;
 		this->Shape		= Other.Shape;

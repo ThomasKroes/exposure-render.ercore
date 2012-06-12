@@ -20,17 +20,19 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErBitmap : public ErBindable
+class EXPOSURE_RENDER_DLL ErBitmap : public ErBindable, public TimeStamp
 {
 public:
 	HOST ErBitmap() :
 		ErBindable(),
+		TimeStamp(),
 		Pixels("Host Pixels", Enums::Host)
 	{
 	}
 
 	HOST ErBitmap(const ErBitmap& Other) :
 		ErBindable(),
+		TimeStamp(),
 		Pixels("Host Pixels", Enums::Host)
 	{
 		*this = Other;
@@ -39,6 +41,7 @@ public:
 	HOST ErBitmap& operator = (const ErBitmap& Other)
 	{
 		ErBindable::operator = (Other);
+		TimeStamp::operator = (Other);
 
 		this->Pixels = Other.Pixels;
 		

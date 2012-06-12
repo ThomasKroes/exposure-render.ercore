@@ -19,11 +19,12 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErLight : public ErBindable
+class EXPOSURE_RENDER_DLL ErLight : public ErBindable, public TimeStamp
 {
 public:
 	HOST ErLight() :
 		ErBindable(),
+		TimeStamp(),
 		Visible(),
 		TextureID(-1),
 		Multiplier(0.0f),
@@ -31,18 +32,21 @@ public:
 	{
 	}
 
-	HOST virtual ~ErLight()
-	{
-	}
-
-	HOST ErLight(const ErLight& Other)
+	HOST ErLight(const ErLight& Other) :
+		ErBindable(),
+		TimeStamp(),
+		Visible(),
+		TextureID(-1),
+		Multiplier(0.0f),
+		EmissionUnit(Enums::Power)
 	{
 		*this = Other;
 	}
 	
 	HOST ErLight& operator = (const ErLight& Other)
 	{
-		ErBindable::operator=(Other);
+		ErBindable::operator = (Other);
+		TimeStamp::operator = (Other);
 
 		this->Visible		= Other.Visible;
 		this->Shape			= Other.Shape;

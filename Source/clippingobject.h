@@ -18,22 +18,28 @@
 namespace ExposureRender
 {
 
-class ClippingObject
+class ClippingObject : public TimeStamp
 {
 public:
 	HOST ClippingObject() :
+		TimeStamp(),
 		Shape(),
 		Invert(false)
 	{
 	}
 	
-	HOST ClippingObject(const ErClippingObject& Other)
+	HOST ClippingObject(const ErClippingObject& Other) :
+		TimeStamp(),
+		Shape(),
+		Invert(false)
 	{
 		*this = Other;
 	}
 
 	HOST ClippingObject& operator = (const ErClippingObject& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Shape		= Other.Shape;
 		this->Invert	= Other.Invert;
 

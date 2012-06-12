@@ -21,11 +21,12 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErVolume : public ErBindable
+class EXPOSURE_RENDER_DLL ErVolume : public ErBindable, public TimeStamp
 {
 public:
 	HOST ErVolume() :
 		ErBindable(),
+		TimeStamp(),
 		Alignment(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
@@ -36,6 +37,7 @@ public:
 
 	HOST ErVolume(const ErVolume& Other) :
 		ErBindable(),
+		TimeStamp(),
 		Alignment(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
@@ -47,7 +49,8 @@ public:
 
 	HOST ErVolume& ErVolume::operator = (const ErVolume& Other)
 	{
-		ErBindable::operator=(Other);
+		ErBindable::operator = (Other);
+		TimeStamp::operator = (Other);
 
 		this->Alignment			= Other.Alignment;
 		this->Voxels			= Other.Voxels;
