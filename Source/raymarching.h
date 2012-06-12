@@ -19,7 +19,7 @@
 #include "transferfunction.h"
 #include "shapes.h"
 #include "scatterevent.h"
-#include "clippingobjects.h"
+#include "segment.h"
 
 namespace ExposureRender
 {
@@ -45,10 +45,10 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 
 	float Intensity = 0.0f;
 
-	Vec2f Range[8];
+	ClippingSegment Segments[32];
 
 	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
-		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Range[i]);
+		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Segments[i]);
 
 	R.MinT += RNG.Get1() * StepSize;
 
@@ -59,8 +59,11 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 
 		for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 		{
-			if (R.MinT > Range[i][0] && R.MinT < Range[i][1])
-				R.MinT = Range[i][1] + RNG.Get1() * StepSize;
+			if (!Segments[i].Ignore && R.MinT > Segments[i].Range[0] && R.MinT < Segments[i].Range[1])
+			{
+				R.MinT = Segments[i].Range[1] + RNG.Get1() * StepSize;
+				Segments[i].Ignore = true;
+			}
 		}
 
 		Ps			= R.O + R.MinT * R.D;
@@ -92,10 +95,10 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 
 	const float StepSize = VolumeProperty.StepFactorShadow * Volume.MinStep;
 
-	Vec2f Range[8];
+	ClippingSegment Segments[32];
 
 	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
-		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Range[i]);
+		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Segments[i]);
 
 	R.MinT += RNG.Get1() * StepSize;
 
@@ -106,8 +109,11 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 
 		for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 		{
-			if (R.MinT > Range[i][0] && R.MinT < Range[i][1])
-				R.MinT = Range[i][1] + RNG.Get1() * StepSize;
+			if (!Segments[i].Ignore && R.MinT > Segments[i].Range[0] && R.MinT < Segments[i].Range[1])
+			{
+				R.MinT = Segments[i].Range[1] + RNG.Get1() * StepSize;
+				Segments[i].Ignore = true;
+			}
 		}
 		
 		Ps		= R.O + R.MinT * R.D;

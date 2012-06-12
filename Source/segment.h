@@ -18,47 +18,43 @@
 namespace ExposureRender
 {
 
-class Segment
+class ClippingSegment
 {	
 public:
-	HOST_DEVICE Segment(const float& Min = 0.0f, const float& Max = 0.0f) :
-		Min(Min),
-		Max(max(Min, Max))
+	HOST_DEVICE ClippingSegment(const Vec2f& Range, const Vec3f& N, const bool& Ignore = false) :
+		Range(Range),
+		N(N),
+		Ignore(Ignore)
 	{
 	}
 
-	HOST_DEVICE Segment(const Segment& Other)
+	HOST_DEVICE ClippingSegment() :
+		Range(),
+		N(),
+		Ignore(false)
+	{
+	}
+
+	HOST_DEVICE ClippingSegment(const ClippingSegment& Other) :
+		Range(),
+		N(),
+		Ignore(false)
 	{
 		*this = Other;
 	}
 
-	HOST_DEVICE Segment& operator = (const Segment& Other)
+	HOST_DEVICE ClippingSegment& operator = (const ClippingSegment& Other)
 	{
-		this->Min	= Other.Min;
-		this->Max	= Other.Max;
+		this->Range		= Other.Range;
+		this->N			= Other.N;
+		this->Ignore	= Other.Ignore;
 
 		return *this;
 	}
 
-	HOST_DEVICE void Set(const float& Min, const float& Max)
-	{
-		this->Min	= Min;
-		this->Max	= max(Min, Max);
-	}
-
-	HOST_DEVICE bool Inside(const float& T, float& MaxT) const
-	{
-		if (T >= this->Min && T < this->Max)
-		{
-			MaxT = this->Max;
-			return true;
-		}
-
-		return false;
-	}
-
-	float 	Min;
-	float 	Max;
+	Vec2f 	Range;
+	Vec3f 	N;
+	bool	Ignore;
 };
 
 }
