@@ -164,26 +164,51 @@ public:
 		return false;
 	}
 
-	/*
-	HOST_DEVICE bool GetClippingRange(const Vec3f& P, const Vec3f& D, float& MinT, float& MaxT) const
+	
+	HOST_DEVICE bool GetClippingRange(const Ray& R, float& MinT, float& MaxT) const
 	{
-		const Vec3f LocalP = TransformPoint(this->Transform.InvTM, P);
-		const Vec3f LocalD = TransformVector(this->Transform.InvTM, D);
-
+		const Ray LocalR = TransformRay(this->Transform.InvTM, R);
 		
+		Intersection Int;
+
 		switch (this->Type)
 		{
-			case Enums::Plane:		return this->Plane.InsideClippingRegion(LocalP, LocalD);
-			case Enums::Disk:		return this->Disk.Inside(LocalP, LocalD, T);
-			case Enums::Ring:		return this->Ring.Inside(LocalP, LocalD, T);
+			case Enums::Plane:
+			{
+				if (this->Plane.Intersect(LocalR, Int))
+				{
+					Int.P	= TransformPoint(this->Transform.TM, Int.P);
+					Int.N	= TransformVector(this->Transform.TM, Int.N);
+					Int.T	= (Int.P - R.O).Length();
+
+					if (Int.T > R.MinT && Int.T < R.MinT)
+					{
+						if (Dot(R.D, Int.N) < 0.0f)
+						{
+							MinT = R.MinT;
+							MaxT = Int.T;
+						}
+						else
+						{
+							MinT = Int.T;
+							MaxT = R.MaxT;
+						}
+
+						return true;
+					}
+				}
+
+			}
+			
+			/*
 			case Enums::Box:		return this->Box.Inside(LocalP, LocalD, T);
 			case Enums::Sphere:		return this->Sphere.Inside(LocalP, LocalD, T);
 //			case Enums::Cylinder:	return this->Cylinder.Inside(LocalP, LocalD, T);
+			*/
 		}
 
 		return false;
 	}
-	*/
 
 	Enums::ShapeType	Type;
 	Plane				Plane;
