@@ -124,47 +124,47 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 4.0f;
+	const float StepSize = 5.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2 * StepSize);
-	VolumeProperty->SetShadingMode(Enums::Hybrid);
-	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetDensityScale(10000);
 	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(10, 0);
+	Opacity->AddPoint(100, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	/*
-	for (int i = 0; i < 15; i++)
+	
+	for (int i = 0; i < 1; i++)
 	{
-		Diffuse->AddHSVPoint(i * 100, rand() / (float)RAND_MAX, 1.0f, 1.0f);
+		Diffuse->AddHSVPoint(i * 300, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	*/
+	/**/
 
 	const float DiffuseLevel = 1.0f;
 /*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	
-	*/
+	
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	
+	*/
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float SpecularLevel = 0.2f;
+	const float SpecularLevel = 0.4f;
 
 	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
 	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
@@ -173,7 +173,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 0.3f;
+	const float GlossinessLevel = 0.5f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 2.0f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
@@ -248,7 +248,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(0.0f);
 	KeyLight->SetAzimuth(-65.0f);
 	KeyLight->SetOffset(2.0f);
-	KeyLight->SetMultiplier(10.0f);
+	KeyLight->SetMultiplier(50.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 //	KeyLight->SetRelativeToCamera(true);
@@ -422,14 +422,14 @@ void CreateClippingObjects(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErClippingObject> ClippingObject[10];
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
 
 		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
-		ClippingObject[i]->SetAzimuth(90);
+		ClippingObject[i]->SetElevation(i * 56);
 		ClippingObject[i]->SetSize(1000, 1000, 100);
-		ClippingObject[i]->SetOffset(0.0f);
+		ClippingObject[i]->SetOffset(0.2f);
 		ClippingObject[i]->SetPosition(0, -0.01, 0);
 		ClippingObject[i]->SetAutoFlip(true);
 		ClippingObject[i]->SetOneSided(false);

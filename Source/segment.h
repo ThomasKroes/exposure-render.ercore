@@ -21,8 +21,9 @@ namespace ExposureRender
 class ClippingSegment
 {	
 public:
-	HOST_DEVICE ClippingSegment(const Vec2f& Range, const Vec3f& N, const bool& Ignore = false) :
+	HOST_DEVICE ClippingSegment(const Vec2f& Range, const Vec3f& P, const Vec3f& N, const bool& Ignore = false) :
 		Range(Range),
+		P(P),
 		N(N),
 		Ignore(Ignore)
 	{
@@ -30,6 +31,7 @@ public:
 
 	HOST_DEVICE ClippingSegment() :
 		Range(),
+		P(),
 		N(),
 		Ignore(false)
 	{
@@ -37,6 +39,7 @@ public:
 
 	HOST_DEVICE ClippingSegment(const ClippingSegment& Other) :
 		Range(),
+		P(),
 		N(),
 		Ignore(false)
 	{
@@ -53,6 +56,7 @@ public:
 	}
 
 	Vec2f 	Range;
+	Vec3f 	P;
 	Vec3f 	N;
 	bool	Ignore;
 };
