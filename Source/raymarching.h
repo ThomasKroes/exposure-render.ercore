@@ -54,28 +54,19 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 
 	int SegmentID = -1;
 
+	float ClipT = 0.0f;
+
 	while (Sum < S)
 	{
 		for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 		{
-			if (!Segments[i].Ignore && R.MinT > Segments[i].Range[0] && R.MinT < Segments[i].Range[1])
-			{
+			if (Segments[i].Range[1] > R.MinT)
 				R.MinT = Segments[i].Range[1] + RNG.Get1() * StepSize;
-				Segments[i].Ignore = true;
-				SegmentID = i;
 				continue;
-			}
 		}
 
 		if (R.MinT >= R.MaxT)
 			return;
-		/*
-		if (SegmentID >= 0)
-		{
-			SE.SetVolumeScattering(R.MinT, Segments[SegmentID].P, Segments[SegmentID].N, -R.D, Volume(Segments[SegmentID].P, VolumeID));
-			return;
-		}
-		*/
 
 		Ps			= R.O + R.MinT * R.D;
 		Intensity	= Volume(Ps, VolumeID);
@@ -83,7 +74,10 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 		R.MinT		+= StepSize;
 	}
 
-	SE.SetVolumeScattering(R.MinT, Ps, Volume.NormalizedGradient(Ps, VolumeProperty.GradientMode), -R.D, Intensity);
+//	if (R.MinT > ClipT)
+//		SE.SetVolumeScattering(Segments[SegmentID].Range[1], Segments[SegmentID].P, Segments[SegmentID].N, -R.D, Intensity);
+//	else
+		SE.SetVolumeScattering(R.MinT, Ps, Volume.NormalizedGradient(Ps, VolumeProperty.GradientMode), -R.D, Intensity);
 }
 
 DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)

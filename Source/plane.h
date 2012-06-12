@@ -113,13 +113,6 @@ public:
 		return P[2] < 0.0f;
 	}
 
-	HOST_DEVICE void ClipRange(const Ray& R, Vec2f& Range) const
-	{
-		Intersection Int;
-
-		
-	}
-
 protected:
 	Vec2f	Size;
 	bool	OneSided;

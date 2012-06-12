@@ -124,13 +124,13 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 5.0f;
+	const float StepSize = 2.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(10000);
+	VolumeProperty->SetDensityScale(100000);
 	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -245,13 +245,13 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
 //	KeyLight->SetVisible(false);
-	KeyLight->SetElevation(0.0f);
-	KeyLight->SetAzimuth(-65.0f);
+	KeyLight->SetElevation(45.0f);
+	KeyLight->SetAzimuth(45.0f);
 	KeyLight->SetOffset(2.0f);
 	KeyLight->SetMultiplier(50.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
-//	KeyLight->SetRelativeToCamera(true);
+	KeyLight->SetRelativeToCamera(true);
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
@@ -427,9 +427,10 @@ void CreateClippingObjects(vtkErTracer* Tracer)
 		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
 
 		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
-		ClippingObject[i]->SetElevation(i * 56);
+		ClippingObject[i]->SetElevation(0);
+		ClippingObject[i]->SetAzimuth(15*i);
 		ClippingObject[i]->SetSize(1000, 1000, 100);
-		ClippingObject[i]->SetOffset(0.2f);
+		ClippingObject[i]->SetOffset(0.02f);
 		ClippingObject[i]->SetPosition(0, -0.01, 0);
 		ClippingObject[i]->SetAutoFlip(true);
 		ClippingObject[i]->SetOneSided(false);

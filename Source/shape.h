@@ -170,7 +170,7 @@ public:
 		Ray LocalR = TransformRay(this->Transform.InvTM, R);
 		
 		LocalR.MinT = 0.0f;
-		LocalR.MaxT = FLT_MAX;
+		LocalR.MaxT = 1000;
 
 		Intersection Int;
 
@@ -194,7 +194,7 @@ public:
 					if (LocalR.O[2] > 0.0f && LocalR.D[2] > 0.0f)
 					{
 //						CS.Range[0] = R.MinT;
-						//CS.Range[1] = FLT_MAX;
+						CS.Range[1] = FLT_MAX;
 					}
 				}
 
