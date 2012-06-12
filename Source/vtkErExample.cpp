@@ -124,42 +124,41 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 2.0f;
+	const float StepSize = 4.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2 * StepSize);
-	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(80000);
-	VolumeProperty->SetGradientFactor(0);
+	VolumeProperty->SetShadingMode(Enums::Hybrid);
+	VolumeProperty->SetDensityScale(100);
+	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(100, 0);
-	Opacity->AddPoint(101, 1);
+	Opacity->AddPoint(10, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	
+	/*
 	for (int i = 0; i < 15; i++)
 	{
 		Diffuse->AddHSVPoint(i * 100, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	/**/
+	*/
 
 	const float DiffuseLevel = 1.0f;
 /*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	
-	
+	*/
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	*/
+	
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -174,7 +173,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 1.0f;
+	const float GlossinessLevel = 0.3f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -240,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 1.0f;
+	const float KeyLightSize = 0.1f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);

@@ -165,7 +165,7 @@ public:
 	}
 
 	
-	HOST_DEVICE void ClipRange(const Ray& R, Vec2f& Range) const
+	HOST_DEVICE void ClipRange(const Ray& R, ClippingSegment& CS) const
 	{
 		Ray LocalR = TransformRay(this->Transform.InvTM, R);
 		
@@ -185,20 +185,14 @@ public:
 					Int.T	= (Int.P - R.O).Length();
 
 					if (Dot(R.D, Int.N) < 0.0f)
-					{
-						Range[0] = R.MinT;
-						Range[1] = Int.T;
-					}
+						CS = ClippingSegment(Vec2f(R.MinT, Int.T), Int.N);
 					else
-					{
-						Range[0] = Int.T;
-						Range[1] = R.MaxT;
-					}
+						CS = ClippingSegment(Vec2f(Int.T, R.MaxT), Int.N);
 				}
 				else
 				{
 					if (LocalR.O[2] > 0.0f && LocalR.D[2] > 0.0f)
-						Range[1] = FLT_MAX;
+						CS.Range[1] = FLT_MAX;
 				}
 
 				break;
