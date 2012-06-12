@@ -29,12 +29,10 @@ HOST_DEVICE_NI void NearestClippingObject(const Ray& R, Intersection& Int)
 
 		Intersection LocalInt;
 
-		ClippingObject.Shape.Intersect(R, LocalInt);
-
-		if (Int.Valid && Int.HitT[0] < T)
+		if (ClippingObject.Shape.Intersect(R, LocalInt) && LocalInt.T < T)
 		{
 			Int = LocalInt;
-			T = Int.HitT[0];
+			T = Int.T;
 		}
 	}
 }

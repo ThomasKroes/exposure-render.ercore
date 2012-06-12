@@ -90,25 +90,30 @@ public:
 		return false;
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, Intersection& NI) const
 	{
 		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
 
+		bool Intersects = false;
+
 		switch (this->Type)
 		{
-			case Enums::Plane:		Plane.Intersect(LocalShapeR, Int);		break;
-			case Enums::Disk:		Disk.Intersect(LocalShapeR, Int);		break;
-			case Enums::Ring:		Ring.Intersect(LocalShapeR, Int);		break;
-			case Enums::Box:		Box.Intersect(LocalShapeR, Int);		break;
-			case Enums::Sphere:		Sphere.Intersect(LocalShapeR, Int);		break;
-//			case Enums::Cylinder:	Plane.IntersectP(LocalShapeR, Int);		break;
+			case Enums::Plane:		Intersects = Plane.Intersect(LocalShapeR, NI);		break;
+			case Enums::Disk:		Intersects = Disk.Intersect(LocalShapeR, NI);		break;
+			case Enums::Ring:		Intersects = Ring.Intersect(LocalShapeR, NI);		break;
+			case Enums::Box:		Intersects = Box.Intersect(LocalShapeR, NI);		break;
+			case Enums::Sphere:		Intersects = Sphere.Intersect(LocalShapeR, NI);		break;
+//			case Enums::Cylinder:	Intersects = Plane.Intersect(LocalShapeR, NI);		break;
 		}
 
-		Int.P	= TransformPoint(this->Transform.TM, Int.P);
-		Int.N	= TransformVector(this->Transform.TM, Int.N);
-
-		for (int i = 0; i < 4; i++)
-			Int.HitT[i] = (Int.P - R.O).Length();
+		if (Intersects)
+		{
+			NI.P	= TransformPoint(this->Transform.TM, NI.P);
+			NI.N	= TransformVector(this->Transform.TM, NI.N);
+			NI.T	= (NI.P - R.O).Length();
+		}
+		
+		return Intersects;
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const

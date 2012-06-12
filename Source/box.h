@@ -70,7 +70,7 @@ public:
 		return true;
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
 		const Vec3f BottomT		= InvR * (this->MinP - R.O);
@@ -81,16 +81,14 @@ public:
 		const float LargestMaxT = min(min(MaxT[0], MaxT[1]), min(MaxT[0], MaxT[2]));
 
 		if (LargestMaxT < LargestMinT)
-			return;
+			return false;
 
-		Int.Add(LargestMinT > 0.0f ? LargestMinT : 0.0f);
-		Int.Add(LargestMaxT);
+		Int.T = LargestMinT > 0.0f ? LargestMinT : 0.0f;
 
-		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
-			return;
+		if (Int.T < R.MinT || Int.T > R.MaxT)
+			return false;
 
-		Int.Valid	= true;
-		Int.P		= R(Int.HitT[0]);
+		Int.P		= R(Int.T);
 		Int.N		= Vec3f(0.0f);
 		Int.UV		= Vec2f(0.0f, 0.0f);
 
@@ -102,6 +100,30 @@ public:
 			if (Int.P[i] >= MaxP[i] - 0.0001f)
 				Int.N[i] = 1.0f;
 		}
+
+		return true;
+	}
+
+	HOST_DEVICE bool Intersect(const Ray& R, float& T0, float& T1) const
+	{
+		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
+		const Vec3f BottomT		= InvR * (this->MinP - R.O);
+		const Vec3f TopT		= InvR * (this->MaxP - R.O);
+		const Vec3f MinT		= TopT.Min(BottomT);
+		const Vec3f MaxT		= TopT.Max(BottomT);
+		const float LargestMinT = max(max(MinT[0], MinT[1]), max(MinT[0], MinT[2]));
+		const float LargestMaxT = min(min(MaxT[0], MaxT[1]), min(MaxT[0], MaxT[2]));
+
+		if (LargestMaxT < LargestMinT)
+			return false;
+
+		T0 = LargestMinT > 0.0f ? LargestMinT : 0.0f;
+		T1 = LargestMaxT;
+
+		T0 = max(T0, R.MinT);
+		T1 = min(T1, R.MaxT);
+
+		return true;
 	}
 
 	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW) const

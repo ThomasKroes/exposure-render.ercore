@@ -35,25 +35,26 @@ HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSamp
 		Le /= Light.Shape.Area;
 }
 
-HOST_DEVICE_NI void IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
+HOST_DEVICE_NI bool IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
 {
 	Intersection Int;
 
-	Light.Shape.Intersect(R, Int);
-
-	if (Int.Valid)
+	if (Light.Shape.Intersect(R, Int))
 	{
-		SE.Valid	= true;
-		SE.T 		= Length(Int.P - R.O);
-		SE.P		= Int.P;
-		SE.N		= Int.N;
-		SE.Wo		= -R.D;
-		SE.UV		= Int.UV;
-		SE.Le		= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
+		SE.T 	= Length(Int.P - R.O);
+		SE.P	= Int.P;
+		SE.N	= Int.N;
+		SE.Wo	= -R.D;
+		SE.UV	= Int.UV;
+		SE.Le	= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
 		
 		if (Light.EmissionUnit == Enums::Power)
 			SE.Le /= Light.Shape.Area;
+
+		return true;
 	}
+
+	return false;
 }
 
 HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool RespectVisibility = false)
@@ -71,9 +72,7 @@ HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool Respect
 		if (RespectVisibility && !Light.Visible)
 			continue;
 
-		IntersectLight(Light, R, LocalRS);
-
-		if (LocalRS.Valid && LocalRS.T < T)
+		if (IntersectLight(Light, R, LocalRS) && LocalRS.T < T)
 		{
 			RS = LocalRS;
 			T = LocalRS.T;

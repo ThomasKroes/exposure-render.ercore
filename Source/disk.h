@@ -47,31 +47,30 @@ public:
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.Add((0.0f - R.O[2]) / R.D[2]);
+		Int.T = (0.0f - R.O[2]) / R.D[2];
 		
-		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
+		if (Int.T < R.MinT || Int.T > R.MaxT)
 			return false;
 
-		Int.UV		= Vec2f(Int.P[0], Int.P[1]);
-		Int.Valid	= true;
+		Int.UV = Vec2f(Int.P[0], Int.P[1]);
 
-		if (Int.Valid && Int.UV.Length() > this->Radius)
-			Int.Valid = false;
+		if (Int.UV.Length() > this->Radius)
+			return false;
 		
-		return Int.Valid;
+		return true;
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
-			return;
+			return false;
 
-		Int.Add((0.0f - R.O[2]) / R.D[2]);
+		Int.T = (0.0f - R.O[2]) / R.D[2];
 		
-		if (Int.HitT[0] < R.MinT || Int.HitT[0] > R.MaxT)
-			return;
+		if (Int.T < R.MinT || Int.T > R.MaxT)
+			return false;
 
-		Int.P 	= R(Int.HitT[0]);
+		Int.P 	= R(Int.T);
 		Int.UV	= Vec2f(Int.P[0], Int.P[1]);
 		Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
 
@@ -81,16 +80,16 @@ public:
 			Int.N		= Vec3f(0.0f, 0.0f, -1.0f);
 		}
 
-		Int.Valid = true;
-
-		if (Int.Valid && Int.UV.Length() > this->Radius)
-			Int.Valid = false;
+		if (Int.UV.Length() > this->Radius)
+			return false;
 
 		const float Diameter = 2.0f * this->Radius;
 
 		Int.UV /= Diameter;
 		Int.UV += Vec2f(0.5f);
 		Int.UV[0] = 1.0f - Int.UV[0];
+
+		return true;
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const

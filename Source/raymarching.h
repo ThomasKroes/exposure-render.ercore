@@ -33,13 +33,8 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 
 	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
 
-	BoundingBox.Intersect(R, Int);
-
-	if (!Int.Valid)
+	if (!BoundingBox.Intersect(R, R.MinT, R.MaxT))
 		return;
-
-	R.MinT = max(Int.HitT[0], R.MinT);
-	R.MaxT = min(Int.HitT[1], R.MaxT);
 
 	const float S	= -log(RNG.Get1()) / VolumeProperty.DensityScale;
 	float Sum		= 0.0f;
@@ -81,13 +76,8 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 		
 	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
 
-	BoundingBox.Intersect(R, Int);
-	
-	if (!Int.Valid)
+	if (!BoundingBox.Intersect(R, R.MinT, R.MaxT))
 		return false;
-
-	R.MinT = max(Int.HitT[0], R.MinT);
-	R.MaxT = min(Int.HitT[1], R.MaxT);
 
 	const float	DensityScale	= VolumeProperty.DensityScale;
 	const float S				= -log(RNG.Get1());

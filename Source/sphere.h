@@ -91,7 +91,7 @@ public:
 		return true;
 	}
 
-	HOST_DEVICE void Intersect(const Ray& R, Intersection& Int) const
+	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		const float A = Dot(R.D, R.D);
 		const float B = 2 * Dot(R.D, R.O);
@@ -100,7 +100,7 @@ public:
 		const float D = B * B - 4 * A * C;
 	    
 		if (D < 0)
-			return;
+			return false;
 
 		const float SqrtD = sqrtf(D);
 		
@@ -123,23 +123,24 @@ public:
 
 		if (Hit0 >= R.MinT && Hit0 < R.MaxT)
 		{
-			Int.Add(Hit0);
+			Int.T = Hit0;
 
 			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
-				Int.Add(Hit1);
+				Int.T = Hit1;
 		}
 		else
 		{
 			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
-				Int.Add(Hit1);
+				Int.T = Hit1;
 			else
-				return;
+				return false;
 		}
 
-		Int.Valid	= true;
-		Int.P		= R(Int.HitT[0]);
+		Int.P		= R(Int.T);
 		Int.N		= Normalize(Int.P);
 		Int.UV		= SphericalToUV(Int.P);
+
+		return true;
 	}
 
 	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW) const
