@@ -19,22 +19,7 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI void NearestClippingObject(const Ray& R, float& MinT, float MaxT)
-{
-	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
-	{
-		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
-
-		Intersection Int;
-
-		ClippingObject.Shape.Intersect(R, Int);
-
-		if (Int.HitT[0] > MinT && Int.HitT[0] < MaxT)
-			MinT = Int.HitT[0];
-	}
-}
-
-HOST_DEVICE_NI bool InsideClippingObjects(const Vec3f& P)
+HOST_DEVICE_NI void NearestClippingObject(const Ray& R, Intersection& Int)
 {
 	float T = FLT_MAX;
 
@@ -42,8 +27,26 @@ HOST_DEVICE_NI bool InsideClippingObjects(const Vec3f& P)
 	{
 		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
 
-		if (ClippingObject.Shape.Inside(P))
-			return true;
+		Intersection LocalInt;
+
+		ClippingObject.Shape.Intersect(R, LocalInt);
+
+		if (Int.Valid && Int.HitT[0] < T)
+		{
+			Int = LocalInt;
+			T = Int.HitT[0];
+		}
+	}
+}
+
+HOST_DEVICE_NI bool InsideClippingRegion(const Ray& R)
+{
+	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
+	{
+		const ClippingObject& ClippingObject = gpClippingObjects[gpTracer->ClippingObjectIDs[i]];
+
+//		if (ClippingObject.Shape.InsideClippingRegion(R.O, R.D))
+//			return true;
 	}
 
 	return false;
