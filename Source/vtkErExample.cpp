@@ -126,7 +126,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	const float StepSize = 2.0f;
 
-	VolumeProperty->SetShadows(false);
+	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
