@@ -23,10 +23,11 @@
 namespace ExposureRender
 {
 
-class Volume
+class Volume : public TimeStamp
 {
 public:
 	HOST Volume() :
+		TimeStamp(),
 		Transform(),
 		BoundingBox(),
 		Spacing(1.0f),
@@ -42,6 +43,7 @@ public:
 	}
 
 	HOST Volume(const ErVolume& Other) :
+		TimeStamp(),
 		Transform(),
 		BoundingBox(),
 		Spacing(1.0f),
@@ -59,6 +61,8 @@ public:
 
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Transform			= Other.Alignment.GetTransform();
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;
@@ -94,21 +98,7 @@ public:
 	DEVICE unsigned short operator()(const Vec3f& XYZ, const int& TextureID = 0)
 	{
 		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;
-
-		switch (TextureID)
-		{
-			case 0:
-				return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
-
-			case 1:
-				return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
-
-			case 2:
-				return (float)USHRT_MAX * tex3D(TexVolume2, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
-
-			case 3:
-				return (float)USHRT_MAX * tex3D(TexVolume3, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
-		}
+		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 
 		return 0; 
 	}

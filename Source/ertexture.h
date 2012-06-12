@@ -19,11 +19,12 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErTexture : public ErBindable
+class EXPOSURE_RENDER_DLL ErTexture : public ErBindable, public TimeStamp
 {
 public:
 	HOST ErTexture() :
 		ErBindable(),
+		TimeStamp(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
 		BitmapID(-1),
@@ -34,18 +35,24 @@ public:
 	{
 	}
 
-	HOST virtual ~ErTexture()
-	{
-	}
-	
-	HOST ErTexture(const ErTexture& Other)
+	HOST ErTexture(const ErTexture& Other) :
+		ErBindable(),
+		TimeStamp(),
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
 	{
 		*this = Other;
 	}
 
 	HOST ErTexture& operator = (const ErTexture& Other)
 	{
-		ErBindable::operator=(Other);
+		ErBindable::operator = (Other);
+		TimeStamp::operator = (Other);
 
 		this->Type			= Other.Type;
 		this->OutputLevel	= Other.OutputLevel;
@@ -56,15 +63,6 @@ public:
 		this->Flip			= Other.Flip;
 		
 		return *this;
-	}
-
-	HOST void BindDevice(const ErTexture& HostTexture)
-	{
-		*this = HostTexture;
-	}
-
-	HOST void UnbindDevice()
-	{
 	}
 
 	Enums::TextureType	Type;

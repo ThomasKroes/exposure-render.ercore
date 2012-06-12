@@ -18,10 +18,11 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL VolumeProperty
+class EXPOSURE_RENDER_DLL VolumeProperty : public TimeStamp
 {
 public:
 	HOST VolumeProperty() :
+		TimeStamp(),
 		Opacity1D(),
 		Diffuse1D(),
 		Specular1D(),
@@ -41,7 +42,24 @@ public:
 	{
 	}
 
-	HOST VolumeProperty(const VolumeProperty& Other)
+	HOST VolumeProperty(const VolumeProperty& Other) :
+		TimeStamp(),
+		Opacity1D(),
+		Diffuse1D(),
+		Specular1D(),
+		Glossiness1D(),
+		IndexOfReflection1D(),
+		Emission1D(),
+		G(),
+		StepFactorPrimary(2),
+		StepFactorShadow(2),
+		Shadows(true),
+		ShadingType(Enums::BrdfOnly),
+		DensityScale(100),
+		OpacityModulated(true),
+		GradientMode(Enums::CentralDifferences),
+		GradientThreshold(0.5f),
+		GradientFactor(0.5f)
 	{
 		*this = Other;
 	}

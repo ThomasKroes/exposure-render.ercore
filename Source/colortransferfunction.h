@@ -20,38 +20,6 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ScalarNode
-{
-public:
-	HOST ScalarNode(float Position, float Value) :
-		Position(Position),
-		Value(Value)
-	{
-	}
-
-	HOST ScalarNode() :
-		Position(0.0f),
-		Value(0.0f)
-	{
-	}
-
-	HOST ScalarNode(const ScalarNode& Other)
-	{
-		*this = Other;
-	}
-
-	HOST ScalarNode& operator = (const ScalarNode& Other)
-	{
-		this->Position	= Other.Position;
-		this->Value		= Other.Value;
-
-		return *this;
-	}
-
-	float	Position;
-	float	Value;
-};
-
 class EXPOSURE_RENDER_DLL ColorNode
 {
 public:
@@ -96,57 +64,11 @@ public:
 	ScalarNode	ScalarNodes[3];
 };
 
-class EXPOSURE_RENDER_DLL ScalarTransferFunction1D
+class EXPOSURE_RENDER_DLL ColorTransferFunction1D : public TimeStamp
 {
 public:
-	HOST ScalarTransferFunction1D()
-	{
-	}
-
-	HOST ~ScalarTransferFunction1D()
-	{
-	}
-
-	HOST ScalarTransferFunction1D(const ScalarTransferFunction1D& Other)
-	{
-		*this = Other;
-	}
-
-	HOST ScalarTransferFunction1D& operator = (const ScalarTransferFunction1D& Other)
-	{	
-		this->PLF		= Other.PLF;
-		this->TimeStamp	= Other.TimeStamp;
-
-		return *this;
-	}
-
-	HOST void AddNode(const ScalarNode& Node)
-	{
-		this->PLF.AddNode(Node.Position, Node.Value);
-	}
-
-	HOST void Reset()
-	{
-		this->PLF.Reset();
-	}
-
-	HOST_DEVICE float Evaluate(const float& Intensity) const
-	{
-		return this->PLF.Evaluate(Intensity);
-	}
-
-	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF;
-	TimeStamp									TimeStamp;
-};
-
-class EXPOSURE_RENDER_DLL ColorTransferFunction1D
-{
-public:
-	HOST ColorTransferFunction1D()
-	{
-	}
-
-	HOST ~ColorTransferFunction1D()
+	HOST ColorTransferFunction1D() :
+		TimeStamp()
 	{
 	}
 
@@ -160,8 +82,6 @@ public:
 		for (int i = 0; i < 3; i++)
 			this->PLF[i] = Other.PLF[i];
 		
-		this->TimeStamp	= Other.TimeStamp;
-
 		return *this;
 	}
 
@@ -184,7 +104,6 @@ public:
 	}
 
 	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF[3];
-	TimeStamp									TimeStamp;
 };
 
 }

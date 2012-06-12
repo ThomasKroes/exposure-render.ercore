@@ -42,7 +42,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
+//#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON

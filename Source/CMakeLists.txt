@@ -126,6 +126,7 @@ SET(TransferFunction
 	pcf.h
 	colortransferfunction.h
 	scalartransferfunction.h
+	transferfunction.h
 )
 
 SOURCE_GROUP("Transfer Function" FILES ${TransferFunction})

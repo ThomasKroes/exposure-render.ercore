@@ -18,10 +18,11 @@
 namespace ExposureRender
 {
 
-class Object
+class Object : public TimeStamp
 {
 public:
 	HOST Object() :
+		TimeStamp(),
 		Shape(),
 		DiffuseTextureID(-1),
 		SpecularTextureID(-1),
@@ -30,13 +31,21 @@ public:
 	{
 	}
 
-	HOST Object(const ErObject& Other)
+	HOST Object(const ErObject& Other) :
+		TimeStamp(),
+		Shape(),
+		DiffuseTextureID(-1),
+		SpecularTextureID(-1),
+		GlossinessTextureID(-1),
+		Ior(5.0f)
 	{
 		*this = Other;
 	}
 
 	HOST Object& operator = (const ErObject& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Shape	= Other.Shape;
 
 		if (Other.DiffuseTextureID >= 0)
