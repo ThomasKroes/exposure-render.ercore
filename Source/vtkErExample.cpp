@@ -41,16 +41,16 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
+#define KEY_LIGHT_ON
 //#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environmentm.png";
+	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environment.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -124,40 +124,42 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 4.0f;
+	const float StepSize = 2.0f;
 
 	VolumeProperty->SetShadows(false);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(StepSize);
+	VolumeProperty->SetStepFactorShadow(2 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(10000);
+	VolumeProperty->SetDensityScale(80000);
 	VolumeProperty->SetGradientFactor(0);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
+	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(100, 0);
+	Opacity->AddPoint(101, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	/*
-	for (int i = 0; i < 2; i++)
+	
+	for (int i = 0; i < 15; i++)
 	{
-		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
+		Diffuse->AddHSVPoint(i * 100, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	*/
+	/**/
 
 	const float DiffuseLevel = 1.0f;
 /*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-	*/
+	
 	
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	
+	*/
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -238,18 +240,18 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 0.2f;
+	const float KeyLightSize = 1.0f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(true);
 //	KeyLight->SetVisible(false);
-	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(-45.0f);
+	KeyLight->SetElevation(0.0f);
+	KeyLight->SetAzimuth(-65.0f);
 	KeyLight->SetOffset(2.0f);
-	KeyLight->SetMultiplier(100.0f);
+	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
-	KeyLight->SetEmissionUnit(Enums::Lux);
+	KeyLight->SetEmissionUnit(Enums::Power);
 //	KeyLight->SetRelativeToCamera(true);
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
@@ -421,14 +423,14 @@ void CreateClippingObjects(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErClippingObject> ClippingObject[10];
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
 
 		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
-		ClippingObject[i]->SetElevation(i * 36);
+		ClippingObject[i]->SetAzimuth(90);
 		ClippingObject[i]->SetSize(1000, 1000, 100);
-		ClippingObject[i]->SetOffset(-0.2f);
+		ClippingObject[i]->SetOffset(0.0f);
 		ClippingObject[i]->SetPosition(0, -0.01, 0);
 		ClippingObject[i]->SetAutoFlip(true);
 		ClippingObject[i]->SetOneSided(false);
