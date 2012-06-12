@@ -110,8 +110,18 @@ public:
 
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
-		return P[2] > 0.0f;
+		return P[2] < 0.0f;
 	}
+
+	/*
+	HOST_DEVICE bool GetClippingRange(const Vec3f& P, const Vec3f& D, float& MinT, float& MaxT) const
+	{
+		if (P[2] >= 0.0f && D[2] >= 0.0f)
+			return false;
+
+		return true;
+	}
+	*/
 
 protected:
 	Vec2f	Size;

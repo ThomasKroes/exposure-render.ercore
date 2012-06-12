@@ -144,20 +144,41 @@ public:
 
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
-		const Ray LocalP = TransformPoint(this->Transform.InvTM, P);
+		const Vec3f LocalP = TransformPoint(this->Transform.InvTM, P);
 
 		switch (this->Type)
 		{
-			case Enums::Plane:		return this->Plane.Inside(P);
-			case Enums::Disk:		return this->Disk.Inside(P);
-			case Enums::Ring:		return this->Ring.Inside(P);
-			case Enums::Box:		return this->Box.Inside(P);
-			case Enums::Sphere:		return this->Sphere.Inside(P);
-//			case Enums::Cylinder:	return this->Cylinder.Inside(P);
+			case Enums::Plane:		return this->Plane.Inside(LocalP);
+			case Enums::Disk:		return this->Disk.Inside(LocalP);
+			case Enums::Ring:		return this->Ring.Inside(LocalP);
+			case Enums::Box:		return this->Box.Inside(LocalP);
+			case Enums::Sphere:		return this->Sphere.Inside(LocalP);
+//			case Enums::Cylinder:	return this->Cylinder.Inside(LocalP);
 		}
 
 		return false;
 	}
+
+	/*
+	HOST_DEVICE bool GetClippingRange(const Vec3f& P, const Vec3f& D, float& MinT, float& MaxT) const
+	{
+		const Vec3f LocalP = TransformPoint(this->Transform.InvTM, P);
+		const Vec3f LocalD = TransformVector(this->Transform.InvTM, D);
+
+		
+		switch (this->Type)
+		{
+			case Enums::Plane:		return this->Plane.InsideClippingRegion(LocalP, LocalD);
+			case Enums::Disk:		return this->Disk.Inside(LocalP, LocalD, T);
+			case Enums::Ring:		return this->Ring.Inside(LocalP, LocalD, T);
+			case Enums::Box:		return this->Box.Inside(LocalP, LocalD, T);
+			case Enums::Sphere:		return this->Sphere.Inside(LocalP, LocalD, T);
+//			case Enums::Cylinder:	return this->Cylinder.Inside(LocalP, LocalD, T);
+		}
+
+		return false;
+	}
+	*/
 
 	Enums::ShapeType	Type;
 	Plane				Plane;

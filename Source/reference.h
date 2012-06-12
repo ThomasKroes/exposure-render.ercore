@@ -13,9 +13,59 @@
 
 #pragma once
 
-#include "segment.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
+
+class Reference : public TimeStamp
+{	
+public:
+	HOST_DEVICE Reference() :
+		TimeStamp()
+	{
+	}
+
+	HOST Reference(const Reference& Other) :
+		TimeStamp()
+	{
+		*this = Other;
+	}
+
+	HOST_DEVICE Reference& operator = (const Reference& Other)
+	{
+		TimeStamp::operator = (Other);
+
+		this->ID	= Other.ID;
+
+		return *this;
+	}
+
+	int			ID;
+};
+
+class References
+{	
+public:
+	HOST_DEVICE References()
+	{
+	}
+
+	HOST References(const References& Other)
+	{
+		*this = Other;
+	}
+
+	HOST_DEVICE References& operator = (const References& Other)
+	{
+		TimeStamp::operator = (Other);
+
+		this->ID	= Other.ID;
+
+		return *this;
+	}
+
+	Reference	List;
+};
 
 }
