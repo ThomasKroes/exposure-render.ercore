@@ -49,12 +49,9 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 
 	Vec2f Range[8];
 
-	int NoRanges = 0;
-
 	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 	{
-		if (gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.GetClippingRange(R, Range[NoRanges]))
-			NoRanges++;
+		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Range[i]);
 	}
 
 	while (Sum < S)
@@ -64,12 +61,14 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 		if (R.MinT >= R.MaxT)
 			return;
 		
-		for (int i = 0; i < NoRanges; i++)
+		for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 		{
+			if (R.MinT > Range[i][0] && R.MinT < Range[i][1])
+			{
+				R.MinT = Range[i][1];
+				continue;
+			}
 		}
-
-//		if (InsideClippingRegion(Ray(Ps, R.D)))
-//			return;
 
 		Intensity	= Volume(Ps, VolumeID);
 		Sum			+= VolumeProperty.DensityScale * gpTracer->GetOpacity(Intensity) * StepSize;

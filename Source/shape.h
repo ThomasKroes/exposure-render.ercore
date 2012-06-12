@@ -165,10 +165,13 @@ public:
 	}
 
 	
-	HOST_DEVICE bool GetClippingRange(const Ray& R, Vec2f& Range) const
+	HOST_DEVICE void ClipRange(const Ray& R, Vec2f& Range) const
 	{
-		const Ray LocalR = TransformRay(this->Transform.InvTM, R);
+		Ray LocalR = TransformRay(this->Transform.InvTM, R);
 		
+		LocalR.MinT = FLT_MIN;
+		LocalR.MaxT = FLT_MAX;
+
 		Intersection Int;
 
 		switch (this->Type)
@@ -181,23 +184,24 @@ public:
 					Int.N	= TransformVector(this->Transform.TM, Int.N);
 					Int.T	= (Int.P - R.O).Length();
 
-					if (Int.T > R.MinT && Int.T < R.MinT)
+					if (Dot(R.D, Int.N) < 0.0f)
 					{
-						if (Dot(R.D, Int.N) < 0.0f)
-						{
-							Range[0] = R.MinT;
-							Range[1] = Int.T;
-						}
-						else
-						{
-							Range[0] = Int.T;
-							Range[1] = R.MaxT;
-						}
-
-						return true;
+						Range[0] = R.MinT;
+						Range[1] = Int.T;
+					}
+					else
+					{
+						Range[0] = Int.T;
+						Range[1] = R.MaxT;
 					}
 				}
+				else
+				{
+					if (LocalR.O[2] > 0.0f && LocalR.D[2] > 0.0f)
+						Range[1] = FLT_MAX;
+				}
 
+				break;
 			}
 			
 			/*
@@ -206,8 +210,6 @@ public:
 //			case Enums::Cylinder:	return this->Cylinder.Inside(LocalP, LocalD, T);
 			*/
 		}
-
-		return false;
 	}
 
 	Enums::ShapeType	Type;

@@ -41,9 +41,9 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
-#define KEY_LIGHT_ON
+//#define KEY_LIGHT_ON
 //#define RIM_LIGHT_ON
-//#define ENVIRONMENT_ON
+#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -126,7 +126,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	const float StepSize = 4.0f;
 
-	VolumeProperty->SetShadows(true);
+	VolumeProperty->SetShadows(false);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(StepSize);
 	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
@@ -250,7 +250,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetMultiplier(100.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Lux);
-	KeyLight->SetRelativeToCamera(true);
+//	KeyLight->SetRelativeToCamera(true);
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
@@ -421,17 +421,17 @@ void CreateClippingObjects(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErClippingObject> ClippingObject[10];
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
 
 		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
 		ClippingObject[i]->SetElevation(i * 36);
-		ClippingObject[i]->SetSize(100, 100, 100);
-		ClippingObject[i]->SetOffset(0.2f);
+		ClippingObject[i]->SetSize(1000, 1000, 100);
+		ClippingObject[i]->SetOffset(-0.2f);
 		ClippingObject[i]->SetPosition(0, -0.01, 0);
 		ClippingObject[i]->SetAutoFlip(true);
-		ClippingObject[i]->SetOneSided(true);
+		ClippingObject[i]->SetOneSided(false);
 
 		Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject[i]->GetOutputPort());
 	}
