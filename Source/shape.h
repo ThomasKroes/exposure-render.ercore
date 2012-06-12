@@ -169,7 +169,7 @@ public:
 	{
 		Ray LocalR = TransformRay(this->Transform.InvTM, R);
 		
-		LocalR.MinT = FLT_MIN;
+		LocalR.MinT = 0.0f;
 		LocalR.MaxT = FLT_MAX;
 
 		Intersection Int;
@@ -185,14 +185,17 @@ public:
 					Int.T	= (Int.P - R.O).Length();
 
 					if (Dot(R.D, Int.N) < 0.0f)
-						CS = ClippingSegment(Vec2f(R.MinT, Int.T), Int.N);
+						CS = ClippingSegment(Vec2f(R.MinT, Int.T), Int.P, Int.N);
 					else
-						CS = ClippingSegment(Vec2f(Int.T, R.MaxT), Int.N);
+						CS = ClippingSegment(Vec2f(Int.T, R.MaxT), Int.P, Int.N);
 				}
 				else
 				{
 					if (LocalR.O[2] > 0.0f && LocalR.D[2] > 0.0f)
-						CS.Range[1] = FLT_MAX;
+					{
+//						CS.Range[0] = R.MinT;
+						//CS.Range[1] = FLT_MAX;
+					}
 				}
 
 				break;
