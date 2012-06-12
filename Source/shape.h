@@ -165,7 +165,7 @@ public:
 	}
 
 	
-	HOST_DEVICE bool GetClippingRange(const Ray& R, float& MinT, float& MaxT) const
+	HOST_DEVICE bool GetClippingRange(const Ray& R, Vec2f& Range) const
 	{
 		const Ray LocalR = TransformRay(this->Transform.InvTM, R);
 		
@@ -185,13 +185,13 @@ public:
 					{
 						if (Dot(R.D, Int.N) < 0.0f)
 						{
-							MinT = R.MinT;
-							MaxT = Int.T;
+							Range[0] = R.MinT;
+							Range[1] = Int.T;
 						}
 						else
 						{
-							MinT = Int.T;
-							MaxT = R.MaxT;
+							Range[0] = Int.T;
+							Range[1] = R.MaxT;
 						}
 
 						return true;
