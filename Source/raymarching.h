@@ -43,8 +43,6 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 
 	const float StepSize = VolumeProperty.StepFactorPrimary * Volume.MinStep;
 
-	R.MinT += RNG.Get1() * StepSize;
-
 	float Intensity = 0.0f;
 
 	Vec2f Range[8];
@@ -54,18 +52,20 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Range[i]);
 	}
 
+	R.MinT += RNG.Get1() * StepSize;
+
 	while (Sum < S)
 	{
-		Ps = R.O + R.MinT * R.D;
-
 		if (R.MinT >= R.MaxT)
 			return;
-		
+
+		Ps = R.O + R.MinT * R.D;
+
 		for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
 		{
 			if (R.MinT > Range[i][0] && R.MinT < Range[i][1])
 			{
-				R.MinT = Range[i][1];
+				R.MinT = Range[i][1] + RNG.Get1() * StepSize;
 				continue;
 			}
 		}
@@ -98,17 +98,28 @@ DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
 
 	const float StepSize = VolumeProperty.StepFactorShadow * Volume.MinStep;
 
+	Vec2f Range[8];
+
+	for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
+		gpClippingObjects[gpTracer->ClippingObjectIDs[i]].Shape.ClipRange(R, Range[i]);
+
 	R.MinT += RNG.Get1() * StepSize;
 
 	while (Sum < S)
 	{
-		Ps = R.O + R.MinT * R.D;
-
 		if (R.MinT > R.MaxT)
 			return false;
 
-//		if (InsideClippingRegion(Ray(Ps, R.D)))
-//			return false;
+		Ps = R.O + R.MinT * R.D;
+
+		for (int i = 0; i < gpTracer->ClippingObjectIDs.Count; i++)
+		{
+			if (R.MinT > Range[i][0] && R.MinT < Range[i][1])
+			{
+				R.MinT = Range[i][1] + RNG.Get1() * StepSize;
+				continue;
+			}
+		}
 		
 		Sum		+= DensityScale * gpTracer->GetOpacity(Volume(Ps, VolumeID)) * StepSize;
 		R.MinT	+= StepSize;
