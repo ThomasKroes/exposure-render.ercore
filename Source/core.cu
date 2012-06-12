@@ -16,10 +16,7 @@
 using namespace std;
 
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume2;
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume3;
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume4;
+surface<unsigned char, 3>	EmptySpace;
 
 #include "color.h"
 
