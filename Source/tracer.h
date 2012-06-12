@@ -15,6 +15,7 @@
 
 #include "ertracer.h"
 #include "framebuffer.h"
+#include "buffer3d.h"
 
 #include <map>
 
@@ -35,7 +36,8 @@ public:
 		ClippingObjectIDs(),
 		FrameBuffer(),
 		NoEstimates(0),
-		NoiseReduction(true)
+		NoiseReduction(true),
+		EmptySpace("Empty space", Enums::Device)
 	{
 	}
 
@@ -48,14 +50,14 @@ public:
 		ClippingObjectIDs(),
 		FrameBuffer(),
 		NoEstimates(0),
-		NoiseReduction(true)
+		NoiseReduction(true),
+		EmptySpace("Empty space", Enums::Device)
 	{
 		*this = Other;
 	}
 
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
-		this->VolumeProperty	= Other.VolumeProperty;
 		this->Camera			= Other.Camera;
 
 		this->VolumeIDs.Count = 0;
@@ -114,6 +116,16 @@ public:
 
 		this->NoiseReduction = Other.NoiseReduction;
 
+		if (this->VolumeProperty.Opacity1D.TimeStamp != Other.VolumeProperty.Opacity1D.TimeStamp)
+		{
+			gVolumes[gVolumesHashMap[this->VolumeIDs[0]]]
+			const Vec3i Resolution();
+
+			this->EmptySpace.Resize();
+		}
+
+		this->VolumeProperty = Other.VolumeProperty;
+
 		return *this;
 	}
 
@@ -124,15 +136,16 @@ public:
 	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)		{	return this->VolumeProperty.IndexOfReflection1D.Evaluate(Intensity);	}
 	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)			{	return this->VolumeProperty.Emission1D.Evaluate(Intensity);				}
 
-	VolumeProperty		VolumeProperty;
-	Camera				Camera;
-	Indices				VolumeIDs;
-	Indices				LightIDs;
-	Indices				ObjectIDs;
-	Indices				ClippingObjectIDs;
-	FrameBuffer			FrameBuffer;
-	int					NoEstimates;
-	bool				NoiseReduction;
+	VolumeProperty				VolumeProperty;
+	Camera						Camera;
+	Indices						VolumeIDs;
+	Indices						LightIDs;
+	Indices						ObjectIDs;
+	Indices						ClippingObjectIDs;
+	FrameBuffer					FrameBuffer;
+	int							NoEstimates;
+	bool						NoiseReduction;
+	Buffer3D<unsigned char>		EmptySpace;
 };
 
 }

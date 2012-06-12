@@ -75,7 +75,6 @@ SET(General
 	matrix.h
 	vector.h
 	boundingbox.h
-	transferfunction.h
 	timing.h
 	exception.h
 	timestamp.h
@@ -97,9 +96,6 @@ SET(General
 	clippingobject.h
 	texture.h
 	bitmap.h
-	pf.h
-	plf.h
-	pcf.h
 	singlescattering.h
 	shadeevent.h
 	alignment.h
@@ -123,6 +119,16 @@ SET(Buffer
 )
 
 SOURCE_GROUP("Buffer" FILES ${Buffer})
+
+SET(TransferFunction
+	pf.h
+	plf.h
+	pcf.h
+	colortransferfunction.h
+	scalartransferfunction.h
+)
+
+SOURCE_GROUP("Transfer Function" FILES ${TransferFunction})
 
 SET(Shapes
 	shape.h
@@ -200,7 +206,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Cuda} SHARED)
 
 IF(ER_VTK)
 

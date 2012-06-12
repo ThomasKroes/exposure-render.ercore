@@ -16,7 +16,6 @@
 using namespace std;
 
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
-surface<unsigned char, 3>	EmptySpace;
 
 #include "color.h"
 
