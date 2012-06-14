@@ -47,7 +47,7 @@ namespace ExposureRender
 	#define DEVICE_NI
 	#define HOST_DEVICE
 	#define HOST_DEVICE_NI
-	#define CD
+	#define CONSTANT_DEVICE
 #endif
 
 #define PI_F						3.141592654f	

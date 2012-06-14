@@ -34,6 +34,10 @@ map<int, int> gClippingObjectsHashMap;
 map<int, int> gTexturesHashMap;
 map<int, int> gBitmapsHashMap;
 
+CONSTANT_DEVICE float gDensityScale			= 0.0f;
+CONSTANT_DEVICE float gStepFactorPrimary	= 0.0f;
+CONSTANT_DEVICE float gStepFactorShadow		= 0.0f;
+
 #include "tracer.h"
 #include "volume.h"
 #include "light.h"
@@ -142,37 +146,47 @@ EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*=
 
 EXPOSURE_RENDER_DLL void Render(int TracerID)
 {
-	if (gTracers[TracerID].NoEstimates == 0)
+	Tracer& Tracer = gTracers[TracerID];
+
+	const float DensityScale		= Tracer.VolumeProperty.DensityScale;
+	const float StepFactorPrimary	= gVolumes[gVolumesHashMap[Tracer.VolumeIDs[0]]].MinStep * Tracer.VolumeProperty.StepFactorPrimary;
+	const float StepFactorShadow	= gVolumes[gVolumesHashMap[Tracer.VolumeIDs[0]]].MinStep * Tracer.VolumeProperty.StepFactorShadow;
+	
+	Cuda::HostToConstantDevice(&DensityScale, "gDensityScale");
+	Cuda::HostToConstantDevice(&StepFactorPrimary, "gStepFactorPrimary");
+	Cuda::HostToConstantDevice(&StepFactorShadow, "gStepFactorShadow");
+
+	if (Tracer.NoEstimates == 0)
 	{
-		if (gTracers[TracerID].Camera.FocusMode == Enums::AutoFocus)
+		if (Tracer.Camera.FocusMode == Enums::AutoFocus)
 		{
 			float AutoFocusDistance = -1.0f;
 
-			const Vec2i FilmUV((int)(gTracers[TracerID].Camera.FocusUV[0] * (float)gTracers[TracerID].FrameBuffer.Resolution[0]), (int)(gTracers[TracerID].Camera.FocusUV[1] * (float)gTracers[TracerID].FrameBuffer.Resolution[1]));
+			const Vec2i FilmUV((int)(Tracer.Camera.FocusUV[0] * (float)Tracer.FrameBuffer.Resolution[0]), (int)(Tracer.Camera.FocusUV[1] * (float)Tracer.FrameBuffer.Resolution[1]));
 			ComputeAutoFocusDistance(FilmUV, AutoFocusDistance);
 
 			if (AutoFocusDistance >= 0.0f)
-				gTracers[TracerID].Camera.FocalDistance = AutoFocusDistance;
+				Tracer.Camera.FocalDistance = AutoFocusDistance;
 		}
 	}
 
 	gTracers.Synchronize(TracerID);
 
-	if (gTracers[TracerID].VolumeIDs[0] >= 0)
-		gVolumes[gTracers[TracerID].VolumeIDs[0]].Voxels.Bind(TexVolume0);
+	if (Tracer.VolumeIDs[0] >= 0)
+		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume0);
 
-	SingleScattering(gTracers[TracerID]);
-	GaussianFilterFrameEstimate(gTracers[TracerID]);
-	ComputeEstimate(gTracers[TracerID]);
-	ToneMap(gTracers[TracerID]);
-	GaussianFilterRunningEstimate(gTracers[TracerID]);
+	SingleScattering(Tracer);
+	GaussianFilterFrameEstimate(Tracer);
+	ComputeEstimate(Tracer);
+	ToneMap(Tracer);
+	GaussianFilterRunningEstimate(Tracer);
 	
-	if (gTracers[TracerID].NoiseReduction)
-		BilateralFilterRunningEstimate(gTracers[TracerID]);
+	if (Tracer.NoiseReduction)
+		BilateralFilterRunningEstimate(Tracer);
 	
-	Composite(gTracers[TracerID]);
+	Composite(Tracer);
 
-	gTracers[TracerID].NoEstimates++;
+	Tracer.NoEstimates++;
 }
 
 EXPOSURE_RENDER_DLL void GetDisplayEstimate(int TracerID, ColorRGBAuc* pData)
