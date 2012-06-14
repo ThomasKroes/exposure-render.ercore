@@ -87,7 +87,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
 	RenderWindow->Render();
-	RenderWindow->SetSize(1024, 768);
+	RenderWindow->SetSize(512, 512);
 
 	ConfigureER(Renderer);
 
@@ -124,7 +124,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 5.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -135,8 +135,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(100, 0);
+	Opacity->AddPoint(150, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);

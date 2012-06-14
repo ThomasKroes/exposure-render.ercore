@@ -56,7 +56,7 @@ public:
 
 		if (ID >= 0)
 		{
-			this->Timings[ID] = Other;
+			this->Timings[ID].AddDuration(Other.Duration);
 		}
 		else
 		{
@@ -69,22 +69,6 @@ public:
 
 		return *this;
 	}
-
-	/*
-	HOST_DEVICE type& operator[](const int& i)
-	{
-		return this->D[i];
-	}
-
-	#define OPERATOR_ASS(classname, size)														\
-	HOST_DEVICE classname& operator = (const classname& Other)									\
-	{																							\
-		for (int i = 0; i < size; i++)															\
-			this->D[i] = Other[i];																\
-																								\
-		return *this;																			\
-	}
-	*/
 
 	Timing		Timings[MAX_NO_TIMINGS];
 	int			Count;

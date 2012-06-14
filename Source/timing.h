@@ -16,6 +16,10 @@
 #include "defines.h"
 #include "enums.h"
 
+#include <vector>
+
+using namespace std;
+
 namespace ExposureRender
 {
 
@@ -23,19 +27,22 @@ class EXPOSURE_RENDER_DLL Timing
 {
 public:
 	HOST Timing() :
-		Duration(0.0f)
+		Duration(0.0f),
+		Durations()
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, "Untitled");
 	}
 
 	HOST Timing(const char* pName, const float& Duration) :
-		Duration(Duration)
+		Duration(Duration),
+		Durations()
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, pName);
 	}
 	
 	HOST Timing(const Timing& Other) :
-		Duration(0.0f)
+		Duration(0.0f),
+		Durations()
 	{
 		*this = Other;
 	}
@@ -43,13 +50,31 @@ public:
 	HOST Timing& operator = (const Timing& Other)
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, Other.Name);
-		this->Duration = Other.Duration;
+		
+		this->Duration		= Other.Duration;
+		this->Durations		= Other.Durations;
 
 		return *this;
 	}
 
-	char	Name[MAX_CHAR_SIZE];
-	float	Duration;
+	HOST void AddDuration(const float& Duration)
+	{
+		if (this->Durations.size() >= MAX_NO_TIMINGS)
+			this->Durations.erase(this->Durations.begin());
+		
+		this->Durations.push_back(Duration);
+		
+		float SumDuration = 0.0f;
+
+		for (vector<float>::iterator It = this->Durations.begin(); It != this->Durations.end(); ++It)
+			SumDuration += *It;
+
+		this->Duration = this->Durations.size() > 0 ? SumDuration / (float)this->Durations.size() : 0.0f;
+	}
+
+	char			Name[MAX_CHAR_SIZE];
+	float			Duration;
+	vector<float>	Durations;
 };
 
 }

@@ -37,11 +37,13 @@ vtkErTracer::vtkErTracer(void)
 	glGenTextures(1, &TextureID);
 
 	this->ImageBuffer				= NULL;
-	this->LastRenderSize				= Vec2i(0);
+	this->LastRenderSize			= Vec2i(0);
 	this->CameraTimeStamp			= 0;
 	this->VolumeProperty			= vtkSmartPointer<vtkErVolumeProperty>::New();
 	this->VolumePropertyTimeStamp	= 0;
-	this->NoiseReduction			= true;
+
+	this->SetNoiseReduction(true);
+	this->SetShowStatistics(true);
 
 	this->Tracer.SetDirty();
 }
@@ -254,31 +256,34 @@ void vtkErTracer::AfterRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->DurationTextActor->GetTextProperty()->SetLineSpacing(1.3);
 	}
 	
-	std::string NameString, DurationString;
-	
-	NameString.append("FPS\n");
-
-	char FPS[256];
-
-	sprintf_s(FPS, 256, "%0.2f\n", this->Statistics.FPS);
-
-	DurationString.append(FPS);
-
-	for (int i = 0; i < this->Statistics.Count; i++)
+	if (this->ShowStatistics)
 	{
-		NameString.append(this->Statistics.Timings[i].Name);
-		NameString.append("\n");
-
-		char Duration[256];
-
-		sprintf_s(Duration, 256, "%0.2f", this->Statistics.Timings[i].Duration);
-
-		DurationString.append(Duration);
-		DurationString.append("\n");
-	}
+		std::string NameString, DurationString;
 	
-	this->NameTextActor->SetInput(NameString.c_str());
-	this->DurationTextActor->SetInput(DurationString.c_str());
+		NameString.append("FPS\n");
+
+		char FPS[256];
+
+		sprintf_s(FPS, 256, "%0.2f\n", this->Statistics.FPS);
+
+		DurationString.append(FPS);
+
+		for (int i = 0; i < this->Statistics.Count; i++)
+		{
+			NameString.append(this->Statistics.Timings[i].Name);
+			NameString.append("\n");
+
+			char Duration[256];
+
+			sprintf_s(Duration, 256, "%0.2f", this->Statistics.Timings[i].Duration);
+
+			DurationString.append(Duration);
+			DurationString.append("\n");
+		}
+		
+		this->NameTextActor->SetInput(NameString.c_str());
+		this->DurationTextActor->SetInput(DurationString.c_str());
+	}
 }
 
 
