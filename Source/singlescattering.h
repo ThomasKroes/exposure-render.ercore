@@ -103,6 +103,29 @@ DEVICE ScatterEvent NearestIntersection(const Ray& R, CRNG& RNG)
 
 DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 {
+	ScatterEvent SE;
+
+	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
+
+	ColorXYZf L = ColorXYZf::Black();
+
+	MetroSample Sample(RNG);
+
+	Ray R;
+
+	SampleCamera(gpTracer->Camera, R, PixelCoord[0], PixelCoord[1], Sample.CameraSample);
+
+	IntersectVolume(R, RNG, SE);
+
+	const float ColorR[3] = { 1.0f, 0.0f, 0.0f };
+	const float ColorG[3] = { 0.0f, 1.0f, 0.0f };
+
+	if (SE.Valid)
+		return ColorXYZAf::FromRGBf(ColorR);
+	else
+		return ColorXYZAf::FromRGBf(ColorG);
+
+	/*
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
 
 	ColorXYZf L = ColorXYZf::Black();
@@ -140,6 +163,7 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 	}
 
 	return ColorXYZAf(L[0], L[1], L[2], SE.T > 0.0f ? 1.0f : 0.0f);
+	*/
 }
 
 }

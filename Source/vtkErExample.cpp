@@ -128,7 +128,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(2 * StepSize);
+	VolumeProperty->SetStepFactorShadow(StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(100000);
 	VolumeProperty->SetGradientFactor(10.0f);
@@ -226,7 +226,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.0f);
+	Camera->SetApertureSize(0.05f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
@@ -422,13 +422,13 @@ void CreateClippingObjects(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErClippingObject> ClippingObject[10];
 
-	for (int i = 0; i < 0; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
 
 		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
 		ClippingObject[i]->SetElevation(0);
-		ClippingObject[i]->SetAzimuth(15*i);
+		ClippingObject[i]->SetAzimuth(45*i);
 		ClippingObject[i]->SetSize(1000, 1000, 100);
 		ClippingObject[i]->SetOffset(0.02f);
 		ClippingObject[i]->SetPosition(0, -0.01, 0);
