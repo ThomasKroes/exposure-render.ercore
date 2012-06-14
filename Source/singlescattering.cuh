@@ -141,15 +141,14 @@ KERNEL void KrnlConnect(int NoSamples)
 
 	SurfaceSample SS;
 
-	
 	Light.Shape.Sample(SS, RNG.Get3());
 
 	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
 	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
 
-	R.O		= SS.P;
-	R.D 	= Sample.P;
+	R.O		= Sample.P;
+	R.D 	= Normalize(SS.P - Sample.P);
 	R.MinT	= 0.0f;
 	R.MaxT	= (Sample.P - SS.P).Length();
 		
@@ -161,6 +160,8 @@ KERNEL void KrnlConnect(int NoSamples)
 	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
 
 	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
+
+	R.MaxT	= (Sample.P - SS.P).Length();
 
 	bool Occluded = true;
 
@@ -184,7 +185,7 @@ KERNEL void KrnlConnect(int NoSamples)
 		}
 
 		if (!Occluded)
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	
 }
@@ -204,7 +205,8 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 
 	if (NoSamples > 0 && Tracer.LightIDs.Count > 0)
 	{
-//		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Connect"); 
+		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample light"); 
+		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample shader"); 
 	}
 }
 

@@ -41,8 +41,8 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
+#define KEY_LIGHT_ON
+//#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -124,13 +124,13 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 5.0f;
+	const float StepSize = 2.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(1000);
+	VolumeProperty->SetDensityScale(100);
 	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 2.0f;
+	const float KeyLightSize = 0.2f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
