@@ -61,6 +61,9 @@ public:
 	vtkGetMacro(NoiseReduction, bool);
 	vtkSetMacro(NoiseReduction, bool);
 
+	vtkGetMacro(ShowStatistics, bool);
+	vtkSetMacro(ShowStatistics, bool);
+
 protected:
 	vtkErTracer();
     virtual ~vtkErTracer();
@@ -81,6 +84,7 @@ private:
 	unsigned long							VolumePropertyTimeStamp;
 	ExposureRender::ErTracer				Tracer;
 	bool									NoiseReduction;
+	bool									ShowStatistics;
 	vtkSmartPointer<vtkTextActor>			NameTextActor;
 	vtkSmartPointer<vtkTextActor>			DurationTextActor;
 	ExposureRender::Statistics				Statistics;

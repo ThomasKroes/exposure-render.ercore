@@ -26,12 +26,12 @@
 namespace ExposureRender
 {
 
-DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& V, CameraSample& CS)
+DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& V, CRNG& RNG)
 {
 	Vec2f ScreenPoint;
 
-	R.ImageUV[0] = U + CS.FilmUV[0];
-	R.ImageUV[1] = V + CS.FilmUV[1];
+	R.ImageUV[0] = U + RNG.Get1();
+	R.ImageUV[1] = V + RNG.Get1();
 
 	ScreenPoint[0] = Camera.Screen[0][0] + (Camera.InvScreen[0] * R.ImageUV[0]);
 	ScreenPoint[1] = Camera.Screen[1][0] + (Camera.InvScreen[1] * R.ImageUV[1]);
@@ -49,16 +49,16 @@ DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& 
 		{
 			case Enums::Circular:
 			{
-				LensUV = Camera.ApertureSize * ConcentricSampleDisk(CS.LensUV);
+				LensUV = Camera.ApertureSize * ConcentricSampleDisk(RNG.Get2());
 				break;
 			}
 
 			case Enums::Polygon:
 			{
-				const float LensY		= CS.LensUV[0] * Camera.NoApertureBlades;
+				const float LensY		= RNG.Get1() * Camera.NoApertureBlades;
 				const float Side		= (int)LensY;
 				const float Offset		= (float) LensY - Side;
-				const float Distance	= (float) sqrtf(CS.LensUV[1]);
+				const float Distance	= (float) sqrtf(RNG.Get1());
 				const float A0 			= (float) (Side * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
 				const float A1 			= (float) ((Side + 1.0f) * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
 				const float EyeX 		= (float) ((cos(A0) * (1.0f - Offset) + cos(A1) * Offset) * Distance);

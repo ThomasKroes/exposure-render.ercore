@@ -25,16 +25,12 @@ KERNEL void KrnlSingleScattering()
 
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
-	ColorXYZf L = ColorXYZf::Black();
-
-	MetroSample Sample(RNG);
-
 	__shared__ Ray R[BLOCK_SIZE];
 	__shared__ Vec3f P[BLOCK_SIZE];
 
 	__syncthreads();
 
-	SampleCamera(gpTracer->Camera, R[IDt], IDx, IDy, Sample.CameraSample);
+	SampleCamera(gpTracer->Camera, R[IDt], IDx, IDy, RNG);
 
 	bool Intersects = false;
 
