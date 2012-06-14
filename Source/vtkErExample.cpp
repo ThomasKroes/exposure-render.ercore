@@ -42,7 +42,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
+#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -273,7 +273,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Plane);
 	RimLight->SetOneSided(true);
-	RimLight->SetVisible(false);
+	RimLight->SetVisible(true);
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(120.0f);
 	RimLight->SetOffset(0.8f);

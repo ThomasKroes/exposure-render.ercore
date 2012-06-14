@@ -57,7 +57,7 @@ HOST_DEVICE_NI bool IntersectLight(const Light& Light, const Ray& R, ScatterEven
 	return false;
 }
 
-HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool RespectVisibility = false)
+HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& SE, bool RespectVisibility = false)
 {
 	float T = FLT_MAX; 
 
@@ -65,17 +65,18 @@ HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& RS, bool Respect
 	{
 		const Light& Light = gpLights[gpTracer->LightIDs[i]];
 		
-		ScatterEvent LocalRS(Enums::Light);
+		ScatterEvent LocalSE(Enums::Light);
 
-		LocalRS.ID = i;
+		LocalSE.ID = i;
 
 		if (RespectVisibility && !Light.Visible)
 			continue;
 
-		if (IntersectLight(Light, R, LocalRS) && LocalRS.T < T)
+		if (IntersectLight(Light, R, LocalSE) && LocalSE.T < T)
 		{
-			RS = LocalRS;
-			T = LocalRS.T;
+			SE.Valid  = true;
+			SE = LocalSE;
+			T = LocalSE.T;
 		}
 	}
 }

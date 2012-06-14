@@ -30,6 +30,8 @@ KERNEL void KrnlSingleScattering()
 
 	__syncthreads();
 
+	ColorXYZAf L = ColorXYZAf::Black();
+
 	SampleCamera(gpTracer->Camera, R[IDt], IDx, IDy, RNG);
 
 	bool Intersects = false;
@@ -63,13 +65,20 @@ KERNEL void KrnlSingleScattering()
 		Intersects = R[IDt].MinT < R[IDt].MaxT;
 	}
 
-	const float ColorR[3] = { 1.0f, 1.0f, 1.0f };
-	const float ColorG[3] = { 0.0f, 0.0f, 0.0f };
+	R[IDt].MinT = 0.0f;
+	R[IDt].MaxT = FLT_MAX;
+
+	ScatterEvent SE;
+
+	IntersectLights(R[IDt], SE);
+
+	if (SE.Valid)
+		L = ColorXYZAf(SE.Le[0], SE.Le[1], SE.Le[2], 1.0f);
 
 	if (Intersects)
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf::FromRGBf(ColorR);
-	else
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf::FromRGBf(ColorG);
+		L = ColorXYZAf(1.0f);
+
+	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = L;
 }
 
 void SingleScattering(Tracer& Tracer, Statistics& Statistics)
