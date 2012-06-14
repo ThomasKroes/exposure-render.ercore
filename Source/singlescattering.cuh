@@ -26,6 +26,7 @@ KERNEL void KrnlSingleScattering()
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
 	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
+	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(0.0f, 0.0f, 0.0f, 1.0f);
 
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
@@ -154,6 +155,7 @@ KERNEL void KrnlConnect(int NoSamples)
 		
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
 
+	/**/
 	Intersection Int;
 		
 	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
@@ -172,7 +174,10 @@ KERNEL void KrnlConnect(int NoSamples)
 		while (Sum < S)
 		{
 			if (R.MinT > R.MaxT)
+			{
 				Occluded = false;
+				break;
+			}
 
 			Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), 0)) * gStepFactorShadow;
 			R.MinT	+= gStepFactorShadow;
@@ -181,6 +186,7 @@ KERNEL void KrnlConnect(int NoSamples)
 		if (!Occluded)
 			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);
 	}
+	
 }
 
 void SingleScattering(Tracer& Tracer, Statistics& Statistics)
@@ -198,7 +204,7 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 
 	if (NoSamples > 0 && Tracer.LightIDs.Count > 0)
 	{
-		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Connect"); 
+//		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Connect"); 
 	}
 }
 
