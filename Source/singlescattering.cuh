@@ -102,7 +102,7 @@ KERNEL void KrnlSingleScattering()
 		if (pLight->EmissionUnit == Enums::Power)
 			Le /= pLight->Shape.Area;
 
-		L = ColorXYZAf(Le[0], Le[1], Le[2], 1.0f);
+		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(Le[0], Le[1], Le[2], 1.0f);
 
 		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
 		gpTracer->FrameBuffer.Samples(IDx, IDy).P = R(T);
@@ -110,8 +110,6 @@ KERNEL void KrnlSingleScattering()
 
 	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
 	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
-
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = L;
 }
 
 struct IsInvalid
@@ -129,22 +127,60 @@ KERNEL void KrnlConnect(int NoSamples)
 	if (IDk >= NoSamples)
 		return;
 
-/*
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
-	Ray R;
-
-	const int LightID = gpTracer->LightIDs[(int)floorf(LS.LightNum * gpTracer->LightIDs.Count)];
+	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
 
 	if (LightID < 0)
-		return Ld;
+		return;
 
 	const Light& Light = gpLights[LightID];
 	
-	Shader Shader;
+	Ray R;
 
-	SE.GetShader(Shader, RNG);
-	*/
+	SurfaceSample SS;
+
+	
+	Light.Shape.Sample(SS, RNG.Get3());
+
+	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+
+	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
+
+	R.O		= SS.P;
+	R.D 	= Sample.P;
+	R.MinT	= 0.0f;
+	R.MaxT	= (Sample.P - SS.P).Length();
+		
+	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
+
+	Intersection Int;
+		
+	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
+
+	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
+
+	bool Occluded = true;
+
+	if (IntersectVolume)
+	{
+		const float S	= -log(RNG.Get1()) / gDensityScale;
+		float Sum		= 0.0f;
+
+		R.MinT += RNG.Get1() * gStepFactorShadow;
+
+		while (Sum < S)
+		{
+			if (R.MinT > R.MaxT)
+				Occluded = false;
+
+			Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), 0)) * gStepFactorShadow;
+			R.MinT	+= gStepFactorShadow;
+		}
+
+		if (!Occluded)
+			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);
+	}
 }
 
 void SingleScattering(Tracer& Tracer, Statistics& Statistics)
