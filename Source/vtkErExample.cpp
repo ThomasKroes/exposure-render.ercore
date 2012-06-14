@@ -87,7 +87,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
 	RenderWindow->Render();
-	RenderWindow->SetSize(512, 512);
+	RenderWindow->SetSize(1024, 768);
 
 	ConfigureER(Renderer);
 
@@ -124,11 +124,11 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 2.0f;
+	const float StepSize = 5.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(StepSize);
+	VolumeProperty->SetStepFactorShadow(2 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(100000);
 	VolumeProperty->SetGradientFactor(10.0f);
@@ -226,7 +226,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.05f);
+	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(6);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);

@@ -25,7 +25,7 @@ KERNEL void KrnlToneMap()
 	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ToneMap(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy));
 }
 
-void ToneMap(Tracer& Tracer)
+void ToneMap(Tracer& Tracer, Statistics& Statistics)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlToneMap<<<GridDim, BlockDim>>>()), "Tone map");

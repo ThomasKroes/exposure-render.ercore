@@ -59,13 +59,13 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV
 		*pAutoFocusDistance = Sum / SumWeight;
 }
 
-void ComputeAutoFocusDistance(const Vec2i& FilmUV, float& AutoFocusDistance)
+void ComputeAutoFocusDistance(const Vec2i& FilmUV, float& AutoFocusDistance, Statistics& Statistics)
 {
 	float* pAutoFocusDistance = NULL;
 
 	Cuda::Allocate(pAutoFocusDistance);
 
-	LAUNCH_CUDA_KERNEL((KrnlComputeAutoFocusDistance<<<1, 1>>>(pAutoFocusDistance, FilmUV, rand(), rand())));
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlComputeAutoFocusDistance<<<1, 1>>>(pAutoFocusDistance, FilmUV, rand(), rand())), "Autofocus");
 	
 	Cuda::MemCopyDeviceToHost(pAutoFocusDistance, &AutoFocusDistance);
 	Cuda::Free(pAutoFocusDistance);

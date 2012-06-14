@@ -110,12 +110,12 @@ public:
 
 			this->NoEstimates = 0;
 			
-			this->FrameBuffer.RunningEstimateXYZ.Reset();
+//			this->FrameBuffer.RunningEstimateXYZ.Reset();
 
-			this->FrameBuffer.RandomSeedsCopy1.Modified();
-			this->FrameBuffer.RandomSeedsCopy2.Modified();
-			this->FrameBuffer.RandomSeeds1 = this->FrameBuffer.RandomSeedsCopy1;
-			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;
+//			this->FrameBuffer.RandomSeedsCopy1.Modified();
+//			this->FrameBuffer.RandomSeedsCopy2.Modified();
+//			this->FrameBuffer.RandomSeeds1 = this->FrameBuffer.RandomSeedsCopy1;
+//			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;
 		}
 
 		this->NoiseReduction = Other.NoiseReduction;

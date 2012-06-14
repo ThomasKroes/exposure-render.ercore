@@ -38,6 +38,7 @@ CONSTANT_DEVICE float gDensityScale			= 0.0f;
 CONSTANT_DEVICE float gStepFactorPrimary	= 0.0f;
 CONSTANT_DEVICE float gStepFactorShadow		= 0.0f;
 
+#include "statistics.h"
 #include "tracer.h"
 #include "volume.h"
 #include "light.h"
@@ -144,8 +145,14 @@ EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*=
 	gBitmapsHashMap = gBitmaps.HashMap;
 }
 
-EXPOSURE_RENDER_DLL void Render(int TracerID)
+EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 {
+	cudaEvent_t EventStart, EventStop;
+
+	Cuda::HandleCudaError(cudaEventCreate(&EventStart));
+	Cuda::HandleCudaError(cudaEventCreate(&EventStop));
+	Cuda::HandleCudaError(cudaEventRecord(EventStart, 0));
+
 	Tracer& Tracer = gTracers[TracerID];
 
 	const float DensityScale		= Tracer.VolumeProperty.DensityScale;
@@ -163,7 +170,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 			float AutoFocusDistance = -1.0f;
 
 			const Vec2i FilmUV((int)(Tracer.Camera.FocusUV[0] * (float)Tracer.FrameBuffer.Resolution[0]), (int)(Tracer.Camera.FocusUV[1] * (float)Tracer.FrameBuffer.Resolution[1]));
-			ComputeAutoFocusDistance(FilmUV, AutoFocusDistance);
+			ComputeAutoFocusDistance(FilmUV, AutoFocusDistance, Statistics);
 
 			if (AutoFocusDistance >= 0.0f)
 				Tracer.Camera.FocalDistance = AutoFocusDistance;
@@ -175,18 +182,31 @@ EXPOSURE_RENDER_DLL void Render(int TracerID)
 	if (Tracer.VolumeIDs[0] >= 0)
 		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume0);
 
-	SingleScattering(Tracer);
-	GaussianFilterFrameEstimate(Tracer);
-	ComputeEstimate(Tracer);
-	ToneMap(Tracer);
-	GaussianFilterRunningEstimate(Tracer);
+	SingleScattering(Tracer, Statistics);
+	GaussianFilterFrameEstimate(Tracer, Statistics);
+	ComputeEstimate(Tracer, Statistics);
+	ToneMap(Tracer, Statistics);
+	GaussianFilterRunningEstimate(Tracer, Statistics);
 	
 	if (Tracer.NoiseReduction)
-		BilateralFilterRunningEstimate(Tracer);
+		BilateralFilterRunningEstimate(Tracer, Statistics);
 	
-	Composite(Tracer);
+	Composite(Tracer, Statistics);
 
 	Tracer.NoEstimates++;
+
+	Cuda::HandleCudaError(cudaEventRecord(EventStop, 0));
+	Cuda::HandleCudaError(cudaEventSynchronize(EventStop));
+																							
+	float TimeDelta = 0.0f;
+																							
+	Cuda::HandleCudaError(cudaEventElapsedTime(&TimeDelta, EventStart, EventStop), "cudaEventElapsedTime");
+	
+	Statistics.FPS = 1000.0f / TimeDelta;
+														
+	Cuda::HandleCudaError(cudaEventDestroy(EventStart));
+	Cuda::HandleCudaError(cudaEventDestroy(EventStop));										
+
 }
 
 EXPOSURE_RENDER_DLL void GetDisplayEstimate(int TracerID, ColorRGBAuc* pData)

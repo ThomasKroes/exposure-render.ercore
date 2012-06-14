@@ -13,43 +13,82 @@
 
 #pragma once
 
-#include "defines.h"
-#include "enums.h"
+#include "timing.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Timing
+class EXPOSURE_RENDER_DLL Statistics
 {
 public:
-	HOST Timing() :
-		Duration(0.0f)
+	HOST Statistics() :
+		Count(0),
+		FPS(0.0f)
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, "Untitled");
 	}
 
-	HOST Timing(const char* pName, const float& Duration) :
-		Duration(Duration)
+	HOST Statistics(const Statistics& Other) :
+		Count(0),
+		FPS(0.0f)
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, pName);
-	}
-	
-	HOST Timing(const Timing& Other) :
-		Duration(0.0f)
-	{
-		*this = Other;
 	}
 
-	HOST Timing& operator = (const Timing& Other)
+	HOST Statistics& operator = (const Statistics& Other)
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, Other.Name);
-		this->Duration = Other.Duration;
+		for (int i = 0; i < MAX_NO_TIMINGS; i++)
+			this->Timings[i] = Other.Timings[i];
+
+		this->Count = Other.Count;
+		this->FPS	= Other.FPS;
 
 		return *this;
 	}
 
-	char	Name[MAX_CHAR_SIZE];
-	float	Duration;
+	HOST Statistics& operator = (const Timing& Other)
+	{
+		int ID = -1;
+
+		for (int i = 0; i < MAX_NO_TIMINGS; i++)
+		{
+			if (strcmp(this->Timings[i].Name, Other.Name) == 0)
+				ID = i;
+		}
+
+		if (ID >= 0)
+		{
+			this->Timings[ID] = Other;
+		}
+		else
+		{
+			if (this->Count < MAX_NO_TIMINGS)
+			{
+				this->Timings[this->Count] = Other;
+				this->Count++;
+			}
+		}
+
+		return *this;
+	}
+
+	/*
+	HOST_DEVICE type& operator[](const int& i)
+	{
+		return this->D[i];
+	}
+
+	#define OPERATOR_ASS(classname, size)														\
+	HOST_DEVICE classname& operator = (const classname& Other)									\
+	{																							\
+		for (int i = 0; i < size; i++)															\
+			this->D[i] = Other[i];																\
+																								\
+		return *this;																			\
+	}
+	*/
+
+	Timing		Timings[MAX_NO_TIMINGS];
+	int			Count;
+	float		FPS;
 };
 
 }

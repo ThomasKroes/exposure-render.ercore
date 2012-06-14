@@ -29,7 +29,7 @@ KERNEL void KrnlComputeEstimate()
 	gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[3] = CumulativeMovingAverage(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy)[3], gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3], gpTracer->NoEstimates + 1);
 }
 
-void ComputeEstimate(Tracer& Tracer)
+void ComputeEstimate(Tracer& Tracer, Statistics& Statistics)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlComputeEstimate<<<GridDim, BlockDim>>>()), "Compute estimate");

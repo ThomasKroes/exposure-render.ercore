@@ -53,7 +53,7 @@ namespace Cuda
 																											\
 	Cuda::HandleCudaError(cudaEventElapsedTime(&TimeDelta, EventStart, EventStop), title);					\
 																											\
-	/*gKernelTimings.Add(ErKernelTiming(title, TimeDelta));*/												\
+	Statistics = Timing(title, TimeDelta);																	\
 																											\
 	Cuda::HandleCudaError(cudaEventDestroy(EventStart));													\
 	Cuda::HandleCudaError(cudaEventDestroy(EventStop));														\

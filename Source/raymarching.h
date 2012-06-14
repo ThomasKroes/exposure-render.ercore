@@ -26,6 +26,7 @@ namespace ExposureRender
 
 DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
 {
+	/*
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 
 	Intersection Int;
@@ -38,7 +39,9 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 	const float S	= -log(RNG.Get1()) / gDensityScale;
 	float Sum		= 0.0f;
 
-	Vec3f Ps;
+	Vec3f P[BLOCK_SIZE];
+
+	__syncthreads();
 
 	float Intensity = 0.0f;
 
@@ -49,13 +52,14 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 		if (R.MinT >= R.MaxT)
 			return;
 
-		Ps			= R.O + R.MinT * R.D;
-		Intensity	= Volume(Ps, VolumeID);
+		P[IDt]		= R.O + R.MinT * R.D;
+		Intensity	= Volume([IDt], VolumeID);
 		Sum			+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
 		R.MinT		+= gStepFactorPrimary;
 	}
 
-	SE.SetVolumeScattering(R.MinT, Ps, Volume.NormalizedGradient(Ps, Enums::CentralDifferences), -R.D, Intensity);
+	SE.SetVolumeScattering(R.MinT, [IDt], Volume.NormalizedGradient([IDt], Enums::CentralDifferences), -R.D, Intensity);
+	*/
 }
 
 DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)

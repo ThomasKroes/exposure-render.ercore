@@ -216,10 +216,69 @@ void vtkErTracer::Render(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	this->BeforeRender(Renderer, Volume);
 
-	ER_CALL(ExposureRender::Render(this->Tracer.ID));
+	ER_CALL(ExposureRender::Render(this->Tracer.ID, this->Statistics));
 	ER_CALL(ExposureRender::GetDisplayEstimate(this->Tracer.ID, this->ImageBuffer));
 
 	glDrawPixels(this->LastRenderSize[0], this->LastRenderSize[1], GL_RGBA, GL_UNSIGNED_BYTE, this->ImageBuffer);
 
+	this->AfterRender(Renderer, Volume);
+
 	this->InvokeEvent(vtkCommand::VolumeMapperRenderEndEvent,0);
 }
+
+void vtkErTracer::AfterRender(vtkRenderer* Renderer, vtkVolume* Volume)
+{
+	if (this->NameTextActor.GetPointer() == NULL)
+	{
+		this->NameTextActor = vtkSmartPointer<vtkTextActor>::New();
+
+		this->NameTextActor->GetTextProperty()->SetFontSize(12);
+		this->NameTextActor->SetPosition(20, 20);
+
+		Renderer->AddActor2D(this->NameTextActor);
+
+		this->NameTextActor->GetTextProperty()->SetColor(0.9, 0.6, 0.2);
+		this->NameTextActor->GetTextProperty()->SetLineSpacing(1.3);
+	}
+	
+	if (this->DurationTextActor.GetPointer() == NULL)
+	{
+		this->DurationTextActor = vtkSmartPointer<vtkTextActor>::New();
+
+		this->DurationTextActor->GetTextProperty()->SetFontSize(12);
+		this->DurationTextActor->SetPosition(250, 20);
+
+		Renderer->AddActor2D(this->DurationTextActor);
+
+		this->DurationTextActor->GetTextProperty()->SetColor(0.9, 0.6, 0.2);
+		this->DurationTextActor->GetTextProperty()->SetLineSpacing(1.3);
+	}
+	
+	std::string NameString, DurationString;
+	
+	NameString.append("FPS\n");
+
+	char FPS[256];
+
+	sprintf_s(FPS, 256, "%0.2f\n", this->Statistics.FPS);
+
+	DurationString.append(FPS);
+
+	for (int i = 0; i < this->Statistics.Count; i++)
+	{
+		NameString.append(this->Statistics.Timings[i].Name);
+		NameString.append("\n");
+
+		char Duration[256];
+
+		sprintf_s(Duration, 256, "%0.2f", this->Statistics.Timings[i].Duration);
+
+		DurationString.append(Duration);
+		DurationString.append("\n");
+	}
+	
+	this->NameTextActor->SetInput(NameString.c_str());
+	this->DurationTextActor->SetInput(DurationString.c_str());
+}
+
+
