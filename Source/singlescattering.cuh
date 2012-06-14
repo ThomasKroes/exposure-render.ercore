@@ -25,14 +25,14 @@ KERNEL void KrnlSingleScattering()
 
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
-	__shared__ Ray R[BLOCK_SIZE];
-	__shared__ Vec3f P[BLOCK_SIZE];
+	Ray R;
+	Vec3f P;
 
 	__syncthreads();
 
 	ColorXYZAf L = ColorXYZAf::Black();
 
-	SampleCamera(gpTracer->Camera, R[IDt], IDx, IDy, RNG);
+	SampleCamera(gpTracer->Camera, R, IDx, IDy, RNG);
 
 	bool Intersects = false;
 
@@ -42,38 +42,66 @@ KERNEL void KrnlSingleScattering()
 
 	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
 
-	if (BoundingBox.Intersect(R[IDt], R[IDt].MinT, R[IDt].MaxT))
+	if (BoundingBox.Intersect(R, R.MinT, R.MaxT))
 	{
 		const float S	= -log(RNG.Get1()) / gDensityScale;
 		float Sum		= 0.0f;
 
 		float Intensity = 0.0f;
 
-		R[IDt].MinT += RNG.Get1() * gStepFactorPrimary;
+		R.MinT += RNG.Get1() * gStepFactorPrimary;
 
 		while (Sum < S)
 		{
-			if (R[IDt].MinT >= R[IDt].MaxT)
+			if (R.MinT >= R.MaxT)
 				break;
 
-			P[IDt]			= R[IDt].O + R[IDt].MinT * R[IDt].D;
-			Intensity		= Volume(P[IDt], 0);
+			P			= R.O + R.MinT * R.D;
+			Intensity		= Volume(P, 0);
 			Sum				+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
-			R[IDt].MinT		+= gStepFactorPrimary;
+			R.MinT		+= gStepFactorPrimary;
 		}
 
-		Intersects = R[IDt].MinT < R[IDt].MaxT;
+		Intersects = R.MinT < R.MaxT;
 	}
 
-	R[IDt].MinT = 0.0f;
-	R[IDt].MaxT = FLT_MAX;
+	R.MinT = 0.0f;
+	R.MaxT = 50000.0f;
 
+	/*
 	ScatterEvent SE;
 
-	IntersectLights(R[IDt], SE);
+	IntersectLights(R, SE);
+	*/
 
-	if (SE.Valid)
-		L = ColorXYZAf(SE.Le[0], SE.Le[1], SE.Le[2], 1.0f);
+	float T = R.MaxT; 
+	Vec2f UV;
+
+	Light* pLight = NULL;
+
+	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
+	{
+		const Light& Light = gpLights[gpTracer->LightIDs[i]];
+		
+		Intersection Int;
+
+		if (Light.Visible && Light.Shape.Intersect(R, Int) && Int.T < T && Int.Front)
+		{
+			T		= Int.T;
+			UV		= Int.UV;
+			pLight	= &(gpLights[gpTracer->LightIDs[i]]);
+		}
+	}
+
+	if (pLight)
+	{
+		ColorXYZf Le = pLight->Multiplier * EvaluateTexture(pLight->TextureID, UV);
+		
+		if (pLight->EmissionUnit == Enums::Power)
+			Le /= pLight->Shape.Area;
+
+		L = ColorXYZAf(Le[0], Le[1], Le[2], 1.0f);
+	}
 
 	if (Intersects)
 		L = ColorXYZAf(1.0f);

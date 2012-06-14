@@ -74,8 +74,8 @@ HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& SE, bool Respect
 
 		if (IntersectLight(Light, R, LocalSE) && LocalSE.T < T)
 		{
-			SE.Valid  = true;
 			SE = LocalSE;
+			SE.Valid  = true;
 			T = LocalSE.T;
 		}
 	}

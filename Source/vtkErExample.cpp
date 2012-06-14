@@ -41,7 +41,7 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\engine.mhd";
 
 //#define BACK_PLANE_ON
-#define KEY_LIGHT_ON
+//#define KEY_LIGHT_ON
 #define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
@@ -135,7 +135,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(50, 0);
+	Opacity->AddPoint(49, 0);
+	Opacity->AddPoint(50, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
@@ -268,19 +269,20 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float RimLightSize = 1.0f;
+	const float RimLightSize = 0.1f;
 
 	RimLight->SetAlignmentType(Enums::Spherical);
-	RimLight->SetShapeType(Enums::Plane);
+	RimLight->SetShapeType(Enums::Disk);
 	RimLight->SetOneSided(true);
 	RimLight->SetVisible(true);
+	RimLight->SetRadius(0.1);
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(120.0f);
-	RimLight->SetOffset(0.8f);
+	RimLight->SetOffset(2.8f);
 	RimLight->SetMultiplier(3.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
-	RimLight->SetRelativeToCamera(true);
+//	RimLight->SetRelativeToCamera(true);
 	RimLight->SetUseCameraFocalPoint(true);
 	RimLight->SetEnabled(true);
 

@@ -66,10 +66,10 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 		
 	int Range[2][2];
 
-	Range[0][0] = max((int)ceilf(IDx - 2), 0);
-	Range[0][1] = min((int)floorf(IDx + 2), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - 2), 0);
-	Range[1][1] = min((int)floorf(IDy + 2), gpTracer->FrameBuffer.Resolution[1] - 1);
+	Range[0][0] = max((int)ceilf(IDx - 1), 0);
+	Range[0][1] = min((int)floorf(IDx + 1), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - 1), 0);
+	Range[1][1] = min((int)floorf(IDy + 1), gpTracer->FrameBuffer.Resolution[1] - 1);
 
 	ColorRGBAf Sum;
 	float SumWeight = 0.0f;
@@ -78,7 +78,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(2.0f, x - IDx, y - IDy);
+			const float Weight = Gauss2D(1.0f, x - IDx, y - IDy);
 
 			Sum[0]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[0];
 			Sum[1]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[1];
