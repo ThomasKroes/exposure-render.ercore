@@ -23,10 +23,60 @@ KERNEL void KrnlSingleScattering()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = SingleScattering(gpTracer, Vec2i(IDx, IDy));
+	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
+
+	ColorXYZf L = ColorXYZf::Black();
+
+	MetroSample Sample(RNG);
+
+	__shared__ Ray R[BLOCK_SIZE];
+	__shared__ Vec3f P[BLOCK_SIZE];
+
+	__syncthreads();
+
+	SampleCamera(gpTracer->Camera, R[IDt], IDx, IDy, Sample.CameraSample);
+
+	bool Intersects = false;
+
+	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
+
+	Intersection Int;
+
+	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
+
+	if (BoundingBox.Intersect(R[IDt], R[IDt].MinT, R[IDt].MaxT))
+	{
+		const float S	= -log(RNG.Get1()) / gDensityScale;
+		float Sum		= 0.0f;
+
+		float Intensity = 0.0f;
+
+		R[IDt].MinT += RNG.Get1() * gStepFactorPrimary;
+
+		while (Sum < S)
+		{
+			if (R[IDt].MinT >= R[IDt].MaxT)
+				break;
+
+			P[IDt]			= R[IDt].O + R[IDt].MinT * R[IDt].D;
+			Intensity		= Volume(P[IDt], 0);
+			Sum				+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
+			R[IDt].MinT		+= gStepFactorPrimary;
+		}
+
+		Intersects = R[IDt].MinT < R[IDt].MaxT;
+	}
+
+	const float ColorR[3] = { 1.0f, 1.0f, 1.0f };
+	const float ColorG[3] = { 0.0f, 0.0f, 0.0f };
+
+	if (Intersects)
+		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf::FromRGBf(ColorR);
+	else
+		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf::FromRGBf(ColorG);
 }
 
-void SingleScattering(Tracer& Tracer)
+void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlSingleScattering<<<GridDim, BlockDim>>>()), "Single scattering"); 

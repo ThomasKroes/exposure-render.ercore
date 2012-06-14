@@ -73,10 +73,12 @@ namespace ExposureRender
 #define MAX_NO_VOLUMES				8
 #define MAX_NO_INT					4
 #define MAX_NO_CLIPPING_SEGMENTS	8
+#define MAX_NO_TIMINGS				64
 #define UAH							1
 #define TF_TEXTURE_RESOLUTION		1024
 #define BLOCK_W						16
 #define BLOCK_H						8
+#define BLOCK_SIZE					BLOCK_W * BLOCK_H
 
 #ifdef _MSC_VER
 	#define DEBUG_BREAK __debugbreak();

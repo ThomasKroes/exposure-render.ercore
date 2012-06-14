@@ -22,6 +22,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
+#include <vtkTextActor.h>
 
 using namespace ExposureRender;
 
@@ -69,6 +70,7 @@ protected:
 
 	virtual void BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume);
 	virtual void Render(vtkRenderer* Renderer, vtkVolume* Volume);
+	virtual void AfterRender(vtkRenderer* Renderer, vtkVolume* Volume);
 
 private:
 	unsigned int							TextureID;
@@ -79,4 +81,7 @@ private:
 	unsigned long							VolumePropertyTimeStamp;
 	ExposureRender::ErTracer				Tracer;
 	bool									NoiseReduction;
+	vtkSmartPointer<vtkTextActor>			NameTextActor;
+	vtkSmartPointer<vtkTextActor>			DurationTextActor;
+	ExposureRender::Statistics				Statistics;
 };

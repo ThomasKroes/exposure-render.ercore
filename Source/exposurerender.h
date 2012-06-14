@@ -20,6 +20,7 @@
 #include "erclippingobject.h"
 #include "ertexture.h"
 #include "erbitmap.h"
+#include "statistics.h"
 
 namespace ExposureRender
 {
@@ -31,7 +32,7 @@ EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind = t
 EXPOSURE_RENDER_DLL void BindClippingObject(const ErClippingObject& ClippingObject, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void Render(int TracerID);
+EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics);
 EXPOSURE_RENDER_DLL void GetDisplayEstimate(int TracerID, ColorRGBAuc* pData);
 
 }
