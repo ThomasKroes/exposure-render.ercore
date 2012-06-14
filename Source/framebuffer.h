@@ -15,6 +15,7 @@
 
 #include "buffer2d.h"
 #include "randomseedbuffer2d.h"
+#include "sample.h"
 
 namespace ExposureRender
 {
@@ -34,7 +35,9 @@ public:
 		RandomSeeds2("Random Seeds 2", Enums::Device),
 		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
 		RandomSeedsCopy2("Random Seeds 2 Copy", Enums::Device),
-		HostDisplayEstimate("Display Estimate", Enums::Host)
+		HostDisplayEstimate("Display Estimate", Enums::Host),
+		IDs("IDs", Enums::Device),
+		Samples("Samples", Enums::Device)
 	{
 	}
 
@@ -54,6 +57,10 @@ public:
 		this->DisplayEstimate.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
+		
+		this->IDs.Resize(this->Resolution);
+		this->Samples.Resize(this->Resolution);
+
 		this->HostDisplayEstimate.Resize(this->Resolution);
 
 		this->RandomSeedsCopy1 = this->RandomSeeds1;
@@ -72,6 +79,9 @@ public:
 	RandomSeedBuffer2D		RandomSeedsCopy1;
 	RandomSeedBuffer2D		RandomSeedsCopy2;
 	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
+
+	Buffer2D<int>			IDs;
+	Buffer2D<Sample>		Samples;
 };
 
 }
