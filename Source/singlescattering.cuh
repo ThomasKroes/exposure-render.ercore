@@ -16,6 +16,8 @@
 #include "macros.cuh"
 #include "singlescattering.h"
 
+#include <thrust/remove.h>
+
 namespace ExposureRender
 {
 
@@ -23,12 +25,11 @@ KERNEL void KrnlSingleScattering()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
+	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
+
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
 	Ray R;
-	Vec3f P;
-
-	__syncthreads();
 
 	ColorXYZAf L = ColorXYZAf::Black();
 
@@ -42,11 +43,12 @@ KERNEL void KrnlSingleScattering()
 
 	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
 
-	if (BoundingBox.Intersect(R, R.MinT, R.MaxT))
+	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
+
+	if (IntersectVolume)
 	{
 		const float S	= -log(RNG.Get1()) / gDensityScale;
 		float Sum		= 0.0f;
-
 		float Intensity = 0.0f;
 
 		R.MinT += RNG.Get1() * gStepFactorPrimary;
@@ -56,23 +58,23 @@ KERNEL void KrnlSingleScattering()
 			if (R.MinT >= R.MaxT)
 				break;
 
-			P			= R.O + R.MinT * R.D;
-			Intensity		= Volume(P, 0);
-			Sum				+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
+			Intensity	= Volume(R(R.MinT), 0);
+			Sum			+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
 			R.MinT		+= gStepFactorPrimary;
 		}
 
 		Intersects = R.MinT < R.MaxT;
+
+		if (Intersects)
+		{
+			L = ColorXYZAf(1.0f);
+			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
+			gpTracer->FrameBuffer.Samples(IDx, IDy).P = R(R.MinT);
+		}
 	}
 
 	R.MinT = 0.0f;
 	R.MaxT = 50000.0f;
-
-	/*
-	ScatterEvent SE;
-
-	IntersectLights(R, SE);
-	*/
 
 	float T = R.MaxT; 
 	Vec2f UV;
@@ -101,18 +103,67 @@ KERNEL void KrnlSingleScattering()
 			Le /= pLight->Shape.Area;
 
 		L = ColorXYZAf(Le[0], Le[1], Le[2], 1.0f);
+
+		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
+		gpTracer->FrameBuffer.Samples(IDx, IDy).P = R(T);
 	}
 
-	if (Intersects)
-		L = ColorXYZAf(1.0f);
+	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
+	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
 
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = L;
+}
+
+struct IsInvalid
+{
+	HOST_DEVICE bool operator()(const int& Value)
+	{
+		return Value < 0;
+	}
+};
+
+KERNEL void KrnlConnect(int NoSamples)
+{
+	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+
+	if (IDk >= NoSamples)
+		return;
+
+/*
+	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
+
+	Ray R;
+
+	const int LightID = gpTracer->LightIDs[(int)floorf(LS.LightNum * gpTracer->LightIDs.Count)];
+
+	if (LightID < 0)
+		return Ld;
+
+	const Light& Light = gpLights[LightID];
+	
+	Shader Shader;
+
+	SE.GetShader(Shader, RNG);
+	*/
 }
 
 void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlSingleScattering<<<GridDim, BlockDim>>>()), "Single scattering"); 
+
+	thrust::device_ptr<int> DevicePtr(Tracer.FrameBuffer.IDs.GetData()); 
+
+	thrust::device_ptr<int> DevicePtrEnd = thrust::remove_if(DevicePtr, DevicePtr + Tracer.FrameBuffer.IDs.GetNoElements(), IsInvalid());
+
+	const int NoSamples = DevicePtrEnd - DevicePtr;
+
+	Statistics = Timing("No. Samples", NoSamples);
+
+	if (NoSamples > 0 && Tracer.LightIDs.Count > 0)
+	{
+		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Connect"); 
+	}
 }
 
 }

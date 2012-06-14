@@ -269,4 +269,11 @@ public:
 	CameraSample	CameraSample;
 };
 
+class Sample
+{
+public:
+	Vec3f	P;
+	Vec2i	UV;
+};
+
 }

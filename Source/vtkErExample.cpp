@@ -38,7 +38,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\engine.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
@@ -124,7 +124,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 10.0f;
+	const float StepSize = 5.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -227,7 +227,7 @@ void CreateCamera(vtkRenderer* Renderer)
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
 	Camera->SetApertureSize(0.0f);
-	Camera->SetNoApertureBlades(6);
+	Camera->SetNoApertureBlades(3);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
 	
@@ -251,7 +251,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetMultiplier(50.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
-	KeyLight->SetRelativeToCamera(true);
+//	KeyLight->SetRelativeToCamera(true);
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
@@ -269,13 +269,13 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float RimLightSize = 0.1f;
+	const float RimLightSize = 0.01f;
 
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Disk);
 	RimLight->SetOneSided(true);
 	RimLight->SetVisible(true);
-	RimLight->SetRadius(0.1);
+	RimLight->SetRadius(0.05);
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(120.0f);
 	RimLight->SetOffset(2.8f);
