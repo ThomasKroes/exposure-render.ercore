@@ -38,7 +38,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\engine.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
@@ -130,12 +130,12 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(2 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(100000);
+	VolumeProperty->SetDensityScale(1000);
 	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(150, 0);
+	Opacity->AddPoint(50, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
