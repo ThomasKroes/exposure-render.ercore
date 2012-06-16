@@ -122,7 +122,7 @@ public:
 
 		this->UpdateEmptySpace = this->VolumeProperty.Opacity1D != Other.VolumeProperty.Opacity1D;
 
-		this->VolumeProperty.Opacity1D = Other.VolumeProperty.Opacity1D;
+		this->VolumeProperty = Other.VolumeProperty;
 
 		return *this;
 	}
