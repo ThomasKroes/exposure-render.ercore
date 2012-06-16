@@ -79,6 +79,7 @@ public:
 	int						GlossinessTextureID;
 	int						EmissionTextureID;
 	float					IndexOfReflection;
+	bool					Emitter;
 	float					Multiplier;
 	Enums::EmissionUnit		EmissionUnit;
 };
