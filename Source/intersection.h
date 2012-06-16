@@ -24,40 +24,52 @@ class Intersection
 {
 public:
 	HOST_DEVICE Intersection() :
+		Valid(false),
 		Front(true),
-		T(0.0f),
+		T(-1.0f),
 		P(),
 		N(),
-		UV()
+		UV(),
+		Intensity(),
+		ScatterType(Enums::Volume)
 	{
 	}
 
 	HOST_DEVICE Intersection(const Intersection& Other) :
+		Valid(false),
 		Front(true),
-		T(0.0f),
+		T(-1.0f),
 		P(),
 		N(),
-		UV()
+		UV(),
+		Intensity(),
+		ScatterType(Enums::Volume)
 	{
 		*this = Other;
 	}
 
 	HOST_DEVICE Intersection& Intersection::operator = (const Intersection& Other)
 	{
-		this->Front		= Other.Front;
-		this->T			= Other.T;
-		this->P			= Other.P;
-		this->N			= Other.N;
-		this->UV		= Other.UV;
+		this->Valid			= Other.Valid;
+		this->Front			= Other.Front;
+		this->T				= Other.T;
+		this->P				= Other.P;
+		this->N				= Other.N;
+		this->UV			= Other.UV;
+		this->Intensity		= Other.Intensity;
+		this->ScatterType	= Other.ScatterType;
 
 		return *this;
 	}
 
-	bool		Front;
-	float		T;
-	Vec3f		P;
-	Vec3f		N;
-	Vec2f		UV;
+	bool					Valid;
+	bool					Front;
+	float					T;
+	Vec3f					P;
+	Vec3f					N;
+	Vec2f					UV;
+	float					Intensity;
+	Enums::ScatterType		ScatterType;
 };
 
 }

@@ -67,6 +67,28 @@ public:
 		this->InvSize	= 1.0f / Size;
 	}
 
+	HOST_DEVICE bool Intersect(const Ray& R, float& T0, float& T1) const
+	{
+		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
+		const Vec3f BottomT		= InvR * (this->MinP - R.O);
+		const Vec3f TopT		= InvR * (this->MaxP - R.O);
+		const Vec3f MinT		= TopT.Min(BottomT);
+		const Vec3f MaxT		= TopT.Max(BottomT);
+		const float LargestMinT = max(max(MinT[0], MinT[1]), max(MinT[0], MinT[2]));
+		const float LargestMaxT = min(min(MaxT[0], MaxT[1]), min(MaxT[0], MaxT[2]));
+
+		if (LargestMaxT < LargestMinT)
+			return false;
+
+		T0 = LargestMinT > 0.0f ? LargestMinT : 0.0f;
+		T1 = LargestMaxT;
+
+		T0 = max(T0, R.MinT);
+		T1 = min(T1, R.MaxT);
+
+		return true;
+	}
+
 	Vec3f	MinP;
 	Vec3f	MaxP;
 	Vec3f	Size;

@@ -18,38 +18,49 @@
 namespace ExposureRender
 {
 
+DEVICE void IntersectObjects(const Ray& R, Intersection& ObjectIntersection)
+{
+	float NearestT = FLT_MAX;
+
+	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
+	{
+		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
+		
+		if (Object.Visible && Object.Shape.Intersect(R, ObjectIntersection) && ObjectIntersection.T < NearestT && ObjectIntersection.Front)
+			NearestT = ObjectIntersection.T;
+	}
+}
+
 KERNEL void KrnlSampleCamera()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	// Flag the sample initially as invalid
 	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
+	
+	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
+	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
 
-	// Clear the frame estimate
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(0.0f, 0.0f, 0.0f, 1.0f);
 
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 	
-	/*
 	Ray R;
 
-	ColorXYZAf L = ColorXYZAf::Black();
-
-	// Sample camera to get ray
 	gpTracer->Camera.Sample(R, Vec2i(IDx, IDy), RNG);
-
-	bool Intersects = false;
-
+	
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
 
-	Intersection Int;
+	Intersection& Int = gpTracer->FrameBuffer.Samples(IDx, IDy).Intersection;
 
-	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
+	IntersectObjects(R, Int);
 
-	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
+	float MinT = 0.0f, MaxT = 0.0f;
 
-	if (IntersectVolume)
+	if (Volume.BoundingBox.Intersect(R, MinT, MaxT))
 	{
+		R.MinT = MinT;
+		R.MaxT = MaxT;
+
 		const float S	= -log(RNG.Get1()) / gDensityScale;
 		float Sum		= 0.0f;
 		float Intensity = 0.0f;
@@ -68,25 +79,19 @@ KERNEL void KrnlSampleCamera()
 			R.MinT		+= gStepFactorPrimary;
 		}
 
-		Intersects = R.MinT < R.MaxT;
-
-		if (Intersects)
+		if (!Int.Valid || R.MinT < Int.T)
 		{
-			L = ColorXYZAf(1.0f);
-			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
-			gpTracer->FrameBuffer.Samples(IDx, IDy).P = P;
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0] = 1.0f;
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1] = 1.0f;
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2] = 1.0f;
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = 1.0f;
-		}
-		else
-		{
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = 0.0f;
+			Int.T			= R.MinT;
+			Int.P			= P;
+			Int.Intensity	= Intensity;
 		}
 	}
 
-	
+	gpTracer->FrameBuffer.IDs(IDx, IDy) = Int.Valid ? IDk : -1;
+
+	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = Int.Valid ? 1.0f : 0.0f;
+
+	/*
 	R.MinT = 0.0f;
 	R.MaxT = 50000.0f;
 
@@ -99,7 +104,7 @@ KERNEL void KrnlSampleCamera()
 	{
 		const Object& Light = gpObjects[gpTracer->LightIDs[i]];
 		
-		Intersection Int;
+		Int Int;
 
 		if (Light.Visible && Light.Shape.Intersect(R, Int) && Int.T < T && Int.Front)
 		{

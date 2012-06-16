@@ -102,6 +102,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
 	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
+	Intersection& Int = Sample.Intersection;
 
 	gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(0.0f);
 
@@ -125,32 +126,25 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	if (Light.EmissionUnit == Enums::Power)
 		Le /= Light.Shape.Area;
 
-	const float LightPdf = DistanceSquared(Sample.P, SS.P) / (Light.Shape.Area);
+	const float LightPdf = DistanceSquared(Int.P, SS.P) / (Light.Shape.Area);
 
 	Le /= LightPdf;
 
 	const float StepSize = gStepFactorShadow * (1.0f + (expf(-Le.Y())) * 5.0f);
 
-	R.O		= Sample.P;
-	R.D 	= Normalize(SS.P - Sample.P);
+	R.O		= Int.P;
+	R.D 	= Normalize(SS.P - Int.P);
 	R.MinT	= 0.0f;
-	R.MaxT	= (Sample.P - SS.P).Length();
+	R.MaxT	= (Int.P - SS.P).Length();
 		
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
 
-	/**/
-	Intersection Int;
-		
-	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
-
-	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
-
-	R.MaxT	= (Sample.P - SS.P).Length();
-
 	bool Occluded = true;
 
-	if (IntersectVolume)
+	if (Volume.BoundingBox.Intersect(R, R.MinT, R.MaxT))
 	{
+		R.MaxT	= (Int.P - SS.P).Length();
+
 		const float S	= -log(RNG.Get1()) / gDensityScale;
 		float Sum		= 0.0f;
 

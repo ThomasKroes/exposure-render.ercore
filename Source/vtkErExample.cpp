@@ -123,7 +123,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 3.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -225,7 +225,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.05f);
+	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(3);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
