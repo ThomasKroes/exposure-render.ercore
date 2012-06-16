@@ -85,6 +85,7 @@ KERNEL void KrnlSampleCamera()
 		}
 	}
 
+	/*
 	R.MinT = 0.0f;
 	R.MaxT = 50000.0f;
 
@@ -122,6 +123,7 @@ KERNEL void KrnlSampleCamera()
 
 	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
 	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
+	*/
 }
 
 void SampleCamera(Tracer& Tracer, Statistics& Statistics)
