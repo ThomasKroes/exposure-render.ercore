@@ -18,7 +18,7 @@
 namespace ExposureRender
 {
 
-DEVICE void IntersectObjects(const Ray& R, Intersection& ObjectIntersection)
+DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 {
 	float NearestT = FLT_MAX;
 
@@ -26,8 +26,12 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& ObjectIntersection)
 	{
 		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
 		
-		if (Object.Visible && Object.Shape.Intersect(R, ObjectIntersection) && ObjectIntersection.T < NearestT && ObjectIntersection.Front)
-			NearestT = ObjectIntersection.T;
+		if (Object.Visible && Object.Shape.Intersect(R, Int) && Int.T < NearestT && Int.Front)
+		{
+			NearestT		= Int.T;
+			Int.ScatterType	= Object.Emitter ? Enums::Light : Enums::Object;
+			Int.ID			= i;
+		}
 	}
 }
 
@@ -37,8 +41,10 @@ KERNEL void KrnlSampleCamera()
 
 	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
 	
-	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
-	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
+	Sample& Sample = gpTracer->FrameBuffer.Samples(IDx, IDy);
+
+	Sample.UV[0] = IDx;
+	Sample.UV[1] = IDy;
 
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -51,6 +57,8 @@ KERNEL void KrnlSampleCamera()
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
 
 	Intersection& Int = gpTracer->FrameBuffer.Samples(IDx, IDy).Intersection;
+
+	Int.Valid = false;
 
 	IntersectObjects(R, Int);
 
@@ -79,15 +87,29 @@ KERNEL void KrnlSampleCamera()
 			R.MinT		+= gStepFactorPrimary;
 		}
 
-		if (!Int.Valid || R.MinT < Int.T)
+		if (R.MinT < R.MaxT)
 		{
+			Int.Valid		= true;
 			Int.T			= R.MinT;
 			Int.P			= P;
 			Int.Intensity	= Intensity;
 		}
 	}
 
-	gpTracer->FrameBuffer.IDs(IDx, IDy) = Int.Valid ? IDk : -1;
+	if (Int.Valid || Int.ScatterType == Enums::Light)
+		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
+
+	if (Int.ScatterType == Enums::Light)
+	{
+		ColorXYZf Le = gpObjects[Int.ID].Multiplier * EvaluateTexture(gpObjects[Int.ID].EmissionTextureID, Int.UV);
+		
+		if (gpObjects[Int.ID].EmissionUnit == Enums::Power)
+			Le /= gpObjects[Int.ID].Shape.Area;
+
+		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0] = Le[0];
+		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1] = Le[1];
+		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2] = Le[2];
+	}
 
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = Int.Valid ? 1.0f : 0.0f;
 

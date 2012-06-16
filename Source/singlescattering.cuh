@@ -42,14 +42,16 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 {
 	SampleCamera(Tracer, Statistics);
 	
-	
 	int NoSamples = 0;
 
 	RemoveRedundantSamples(Tracer, NoSamples);
 
 	if (NoSamples > 0)
 		SampleLight(Tracer, Statistics, NoSamples);
-/*
+	
+	Statistics = Timing("No. Samples", NoSamples);
+
+	/*
 	if (NoSamples > 0)
 		SampleBrdf(Tracer, Statistics, NoSamples);
 	*/
