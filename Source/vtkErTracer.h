@@ -50,7 +50,6 @@ public:
 	enum Ports
 	{
 		VolumesPort = 0,
-		LightsPort,
 		ObjectsPort,
 		ClippingObjectsPort
 	};

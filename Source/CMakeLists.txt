@@ -64,7 +64,6 @@ SET(General
 	rng.h
 	montecarlo.h
 	ray.h
-	lights.h
 	objects.h
 	clippingobjects.h
 	textures.h
@@ -90,7 +89,6 @@ SET(General
 	statistics.h
 	volume.h
 	extinctionvolume.h
-	light.h
 	scatterevent.h
 	intersection.h
 	object.h

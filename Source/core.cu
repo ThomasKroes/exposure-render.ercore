@@ -40,7 +40,6 @@ CONSTANT_DEVICE float gStepFactorShadow		= 0.0f;
 #include "statistics.h"
 #include "tracer.h"
 #include "volume.h"
-#include "light.h"
 #include "object.h"
 #include "clippingobject.h"
 #include "texture.h"

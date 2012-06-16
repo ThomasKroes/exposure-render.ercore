@@ -17,7 +17,6 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErVolume.h"
-#include "vtkErLight.h"
 #include "vtkErObject.h"
 #include "vtkErClippingObject.h"
 
@@ -60,14 +59,6 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 		case VolumesPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErVolumeData");
-			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
-			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
-			return 1;
-		}
-
-		case LightsPort:
-		{
-			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErLightData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
 			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 			return 1;
@@ -146,28 +137,11 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		}
 	}
 
-	const int NoLights = this->GetNumberOfInputConnections(LightsPort);
-
-	this->Tracer.LightIDs.Count = 0;
-
-	for (int i = 0; i < NoLights; i++)
-	{
-		vtkErLightData* LightData = vtkErLightData::SafeDownCast(this->GetInputDataObject(LightsPort, i));
-
-		if (LightData && LightData->Bindable.Enabled)
-		{
-			this->Tracer.LightIDs[this->Tracer.LightIDs.Count] = LightData->Bindable.ID;
-			this->Tracer.LightIDs.Count++;
-
-			LightData->Light->GetCameraOffset(Camera, LightData->Bindable.Shape.Alignment.OffsetTM);
-			LightData->Bind();
-		}
-	}
-
 	const int NoObjects = this->GetNumberOfInputConnections(ObjectsPort);
 
 	this->Tracer.ObjectIDs.Count = 0;
-	
+	this->Tracer.LightIDs.Count = 0;
+
 	for (int i = 0; i < NoObjects; i++)
 	{
 		vtkErObjectData* ObjectData = vtkErObjectData::SafeDownCast(this->GetInputDataObject(ObjectsPort, i));
@@ -176,6 +150,12 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		{
 			this->Tracer.ObjectIDs[this->Tracer.ObjectIDs.Count] = ObjectData->Bindable.ID;
 			this->Tracer.ObjectIDs.Count++;
+
+			if (ObjectData->Bindable.Emitter)
+			{
+				this->Tracer.LightIDs[this->Tracer.LightIDs.Count] = ObjectData->Bindable.ID;
+				this->Tracer.LightIDs.Count++;
+			}
 
 			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.Alignment.OffsetTM);
 			ObjectData->Bind();

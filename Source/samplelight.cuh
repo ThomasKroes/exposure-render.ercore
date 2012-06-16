@@ -17,7 +17,81 @@
 
 namespace ExposureRender
 {
+/*
+HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSample& SS, ScatterEvent& SE, Vec3f& Wi, ColorXYZf& Le)
+{
+	Light.Shape.Sample(SS, LS.SurfaceUVW);
 
+	Wi = Normalize(SS.P - SE.P);
+
+	Le = Light.Multiplier * EvaluateTexture(Light.TextureID, SS.UV);
+	
+	if (Light.Shape.GetOneSided() && Dot(SE.P - SS.P, SS.N) < 0.0f)
+		Le = ColorXYZf::Black();
+
+	if (Light.EmissionUnit == Enums::Power)
+		Le /= Light.Shape.Area;
+}
+
+HOST_DEVICE_NI bool IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
+{
+	Intersection Int;
+
+	if (Light.Shape.Intersect(R, Int))
+	{
+		SE.T 	= Length(Int.P - R.O);
+		SE.P	= Int.P;
+		SE.N	= Int.N;
+		SE.Wo	= -R.D;
+		SE.UV	= Int.UV;
+		SE.Le	= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
+		
+		if (Light.EmissionUnit == Enums::Power)
+			SE.Le /= Light.Shape.Area;
+
+		return true;
+	}
+
+	return false;
+}
+
+HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& SE, bool RespectVisibility = false)
+{
+	float T = FLT_MAX; 
+
+	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
+	{
+		const Light& Light = gpLights[gpTracer->LightIDs[i]];
+		
+		ScatterEvent LocalSE(Enums::Light);
+
+		LocalSE.ID = i;
+
+		if (RespectVisibility && !Light.Visible)
+			continue;
+
+		if (IntersectLight(Light, R, LocalSE) && LocalSE.T < T)
+		{
+			SE = LocalSE;
+			SE.Valid  = true;
+			T = LocalSE.T;
+		}
+	}
+}
+
+HOST_DEVICE_NI bool IntersectsLight(const Ray& R)
+{
+	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
+	{
+		const Light& Light = gpLights[gpTracer->LightIDs[i]];
+
+		if (Light.Shape.Intersects(R))
+			return true;
+	}
+
+	return false;
+}
+*/
 KERNEL void KrnlSampleLight(int NoSamples)
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
@@ -38,7 +112,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	if (LightID < 0)
 		return;
 
-	const Light& Light = gpLights[LightID];
+	const Object& Light = gpObjects[LightID];
 	
 	Ray R;
 
@@ -46,7 +120,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	Light.Shape.Sample(SS, RNG.Get3());
 
-	ColorXYZf Le = Light.Multiplier * EvaluateTexture(Light.TextureID, SS.UV);
+	ColorXYZf Le = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, SS.UV);
 
 	if (Light.EmissionUnit == Enums::Power)
 		Le /= Light.Shape.Area;
