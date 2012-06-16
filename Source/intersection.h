@@ -26,7 +26,7 @@ public:
 	HOST_DEVICE Intersection() :
 		Valid(false),
 		Front(true),
-		T(-1.0f),
+		T(FLT_MAX),
 		P(),
 		N(),
 		UV(),
@@ -39,7 +39,7 @@ public:
 	HOST_DEVICE Intersection(const Intersection& Other) :
 		Valid(false),
 		Front(true),
-		T(-1.0f),
+		T(FLT_MAX),
 		P(),
 		N(),
 		UV(),

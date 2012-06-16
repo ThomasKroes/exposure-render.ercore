@@ -44,6 +44,11 @@ public:
 	static vtkErTexture* New();
 	vtkTypeRevisionMacro(vtkErTexture, vtkAlgorithm);
 
+	enum Ports
+	{
+		ImageDataPort = 0
+	};
+
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
 	vtkGetMacro(TextureType, Enums::TextureType);

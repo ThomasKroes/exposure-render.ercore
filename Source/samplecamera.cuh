@@ -56,11 +56,9 @@ KERNEL void KrnlSampleCamera()
 	
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
 
-	Intersection& Int = gpTracer->FrameBuffer.Samples(IDx, IDy).Intersection;
+	Intersection Intersections[2];
 
-	Int.Valid = false;
-
-	IntersectObjects(R, Int);
+	IntersectObjects(R, Intersections[0]);
 
 	float MinT = 0.0f, MaxT = 0.0f;
 
@@ -89,17 +87,28 @@ KERNEL void KrnlSampleCamera()
 
 		if (R.MinT < R.MaxT)
 		{
-			Int.Valid		= true;
-			Int.T			= R.MinT;
-			Int.P			= P;
-			Int.Intensity	= Intensity;
+			Intersections[1].Valid		= true;
+			Intersections[1].T			= R.MinT;
+			Intersections[1].P			= P;
+			Intersections[1].Intensity	= Intensity;
 		}
+	}
+
+	Intersection& Int = gpTracer->FrameBuffer.Samples(IDx, IDy).Intersection;
+
+	Int.Valid	= false;
+	Int.T		= FLT_MAX;
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (Intersections[i].Valid && Intersections[i].T < Int.T)
+			Int = Intersections[i];
 	}
 
 	if (Int.Valid && Int.ScatterType != Enums::Light)
 		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
 
-	if (Int.ScatterType == Enums::Light)
+	if (Int.Valid && Int.ScatterType == Enums::Light)
 	{
 		ColorXYZf Le = gpObjects[Int.ID].Multiplier * EvaluateTexture(gpObjects[Int.ID].EmissionTextureID, Int.UV);
 		

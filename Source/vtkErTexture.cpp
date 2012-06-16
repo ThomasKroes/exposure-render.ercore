@@ -49,7 +49,7 @@ vtkErTexture::~vtkErTexture(void)
 
 int vtkErTexture::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	if (Port == 0)
+	if (Port == ImageDataPort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErBitmapData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
