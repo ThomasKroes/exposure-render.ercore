@@ -42,6 +42,7 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 {
 	SampleCamera(Tracer, Statistics);
 	
+	/*
 	int NoSamples = 0;
 
 	RemoveRedundantSamples(Tracer, NoSamples);
@@ -51,6 +52,7 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 
 	if (NoSamples > 0)
 		SampleBrdf(Tracer, Statistics, NoSamples);
+	*/
 }
 
 }

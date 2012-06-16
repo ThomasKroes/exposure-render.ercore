@@ -161,7 +161,6 @@ SET(Bindable
 	erbindable.h
 	ertracer.h
 	ervolume.h
-	erlight.h
 	erobject.h
 	erclippingobject.h
 	ertexture.h
