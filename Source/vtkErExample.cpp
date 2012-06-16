@@ -238,7 +238,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 5.0f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
@@ -334,7 +334,7 @@ void CreateLighting(vtkErTracer* Tracer)
 		Bitmap->SetFilterMode(Enums::Linear);
 		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageGaussianSmooth->GetOutputPort());
 
-		EnvironmentLightTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
+		EnvironmentLightTexture->SetInputConnection(vtkErTexture::ImageDataPort, Bitmap->GetOutputPort());
 	}
 	else
 	{

@@ -108,9 +108,10 @@ public:
 
 		if (Intersects)
 		{
-			Int.P	= TransformPoint(this->Transform.TM, Int.P);
-			Int.N	= TransformVector(this->Transform.TM, Int.N);
-			Int.T	= (Int.P - R.O).Length();
+			Int.Valid	= true;
+			Int.P		= TransformPoint(this->Transform.TM, Int.P);
+			Int.N		= TransformVector(this->Transform.TM, Int.N);
+			Int.T		= (Int.P - R.O).Length();
 		}
 		
 		return Intersects;
