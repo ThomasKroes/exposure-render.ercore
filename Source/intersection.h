@@ -31,7 +31,8 @@ public:
 		N(),
 		UV(),
 		Intensity(),
-		ScatterType(Enums::Volume)
+		ScatterType(Enums::Volume),
+		ID(-1)
 	{
 	}
 
@@ -43,7 +44,8 @@ public:
 		N(),
 		UV(),
 		Intensity(),
-		ScatterType(Enums::Volume)
+		ScatterType(Enums::Volume),
+		ID(-1)
 	{
 		*this = Other;
 	}
@@ -58,6 +60,7 @@ public:
 		this->UV			= Other.UV;
 		this->Intensity		= Other.Intensity;
 		this->ScatterType	= Other.ScatterType;
+		this->ID			= Other.ID;
 
 		return *this;
 	}
@@ -70,6 +73,7 @@ public:
 	Vec2f					UV;
 	float					Intensity;
 	Enums::ScatterType		ScatterType;
+	int						ID;
 };
 
 }
