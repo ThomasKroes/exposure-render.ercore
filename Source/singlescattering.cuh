@@ -49,11 +49,13 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 	if (NoSamples > 0)
 		SampleLight(Tracer, Statistics, NoSamples);
 	
-	Statistics = Timing("No. Samples", NoSamples);
-
-	/*
+	Statistics = Timing("No. Samples (Sample Light)", NoSamples);
+/*
 	if (NoSamples > 0)
 		SampleBrdf(Tracer, Statistics, NoSamples);
+
+	Statistics = Timing("No. Samples (Sample BRDF)", NoSamples);
+
 	*/
 }
 

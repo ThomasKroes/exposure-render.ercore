@@ -170,6 +170,17 @@ HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U)
 	return Vec3f(x, y, z);
 }
 
+HOST_DEVICE_NI inline Vec3f UniformSampleSphere(const Vec2f& UV)
+{
+	const float Z	= 1.0f - 2.0f * UV[0];
+	const float R	= sqrtf(max(0.0f, 1.0f - Z * Z));
+	const float Phi	= 2.0f * PI_F * UV[1];
+	const float X	= R * cosf(Phi);
+	const float Y	= R * sinf(Phi);
+
+	return Vec3f(X, Y, Z);
+}
+
 HOST_DEVICE_NI inline float PowerHeuristic(int nf, float fPdf, int ng, float gPdf)
 {
 	float f = nf * fPdf, g = ng * gPdf;

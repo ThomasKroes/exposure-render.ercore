@@ -64,7 +64,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 		
-	int Range[2][2], Radius = 1;
+	int Range[2][2], Radius = 2;
 
 	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
 	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
