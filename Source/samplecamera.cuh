@@ -91,7 +91,7 @@ KERNEL void KrnlSampleCamera()
 	float T = R.MaxT; 
 	Vec2f UV;
 
-	Light* pLight = NULL;
+	Object* pLight = NULL;
 
 	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
 	{
@@ -109,7 +109,7 @@ KERNEL void KrnlSampleCamera()
 
 	if (pLight)
 	{
-		ColorXYZf Le = pLight->Multiplier * EvaluateTexture(pLight->TextureID, UV);
+		ColorXYZf Le = pLight->Multiplier * EvaluateTexture(pLight->EmissionTextureID, UV);
 		
 		if (pLight->EmissionUnit == Enums::Power)
 			Le /= pLight->Shape.Area;

@@ -78,10 +78,10 @@ public:
 
 		for (int i = 0; i < Other.LightIDs.Count; i++)
 		{
-			if (gLightsHashMap.find(Other.LightIDs[i]) != gLightsHashMap.end())
-				this->LightIDs[this->LightIDs.Count++] = gLightsHashMap[Other.LightIDs[i]];
+			if (gObjectsHashMap.find(Other.LightIDs[i]) != gObjectsHashMap.end())
+				this->LightIDs[this->LightIDs.Count++] = gObjectsHashMap[Other.LightIDs[i]];
 			else
-				throw(Exception(Enums::Fatal, "Light not found!"));
+				throw(Exception(Enums::Fatal, "Emitter object not found!"));
 		}
 		
 		this->ObjectIDs.Count = 0;

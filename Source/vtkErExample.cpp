@@ -28,7 +28,6 @@
 #include <vtkImageGaussianSmooth.h>
 
 #include "vtkErVolume.h"
-#include "vtkErLight.h"
 #include "vtkErTexture.h"
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
@@ -237,7 +236,7 @@ void CreateCamera(vtkRenderer* Renderer)
 void CreateLighting(vtkErTracer* Tracer)
 {
 #ifdef KEY_LIGHT_ON
-	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
+	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
 	const float KeyLightSize = 2.0f;
 
@@ -255,7 +254,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
-	Tracer->AddInputConnection(vtkErTracer::LightsPort, KeyLight->GetOutputPort());
+	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, KeyLight->GetOutputPort());
 
 	vtkSmartPointer<vtkErTexture> KeyLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
@@ -263,11 +262,11 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLightTexture->SetProceduralType(Enums::Uniform);
 	KeyLightTexture->SetUniformColor(3500);
 	
-	KeyLight->SetInputConnection(vtkErLight::TexturePort, KeyLightTexture->GetOutputPort());
+	KeyLight->SetInputConnection(vtkErObject::EmissionTexturePort, KeyLightTexture->GetOutputPort());
 #endif
 
 #ifdef RIM_LIGHT_ON
-	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
+	vtkSmartPointer<vtkErObject> RimLight = vtkSmartPointer<vtkErObject>::New();
 
 	const float RimLightSize = 1.0f;
 
@@ -286,7 +285,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetUseCameraFocalPoint(true);
 	RimLight->SetEnabled(true);
 
-	Tracer->AddInputConnection(vtkErTracer::LightsPort, RimLight->GetOutputPort());
+	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, RimLight->GetOutputPort());
 
 	vtkSmartPointer<vtkErTexture> RimLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
@@ -294,11 +293,11 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLightTexture->SetProceduralType(Enums::Uniform);
 	RimLightTexture->SetUniformColor(15000);
 	
-	RimLight->SetInputConnection(vtkErLight::TexturePort, RimLightTexture->GetOutputPort());
+	RimLight->SetInputConnection(vtkErObject::EmissionTexturePort, RimLightTexture->GetOutputPort());
 #endif
 
 #ifdef ENVIRONMENT_ON
-	vtkSmartPointer<vtkErLight> EnvironmentLight = vtkSmartPointer<vtkErLight>::New();
+	vtkSmartPointer<vtkErObject> EnvironmentLight = vtkSmartPointer<vtkErObject>::New();
 	
 	EnvironmentLight->SetAlignmentType(Enums::AxisAlign);
 	EnvironmentLight->SetAxis(ExposureRender::Enums::Y);
@@ -310,7 +309,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
-	Tracer->AddInputConnection(vtkErTracer::LightsPort, EnvironmentLight->GetOutputPort());
+	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, EnvironmentLight->GetOutputPort());
 
 	vtkSmartPointer<vtkErTexture> EnvironmentLightTexture = vtkSmartPointer<vtkErTexture>::New();
 
@@ -355,7 +354,7 @@ void CreateLighting(vtkErTracer* Tracer)
 		EnvironmentLightTexture->SetGradient(Gradient);
 	}
 
-	EnvironmentLight->SetInputConnection(vtkErLight::TexturePort, EnvironmentLightTexture->GetOutputPort());
+	EnvironmentLight->SetInputConnection(vtkErObject::EmissionTexturePort, EnvironmentLightTexture->GetOutputPort());
 #endif
 }
 
