@@ -124,19 +124,19 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 2.0f;
+	const float StepSize = 3.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(10);
+	VolumeProperty->SetDensityScale(1000000);
 	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(49, 0);
-	Opacity->AddPoint(50, 1);
+	Opacity->AddPoint(99, 0);
+	Opacity->AddPoint(100, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
@@ -226,7 +226,7 @@ void CreateCamera(vtkRenderer* Renderer)
 
 	Camera->SetExposure(1);
 	Camera->SetApertureShape(Enums::Polygon);
-	Camera->SetApertureSize(0.0f);
+	Camera->SetApertureSize(0.05f);
 	Camera->SetNoApertureBlades(3);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErLight> KeyLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float KeyLightSize = 0.2f;
+	const float KeyLightSize = 2.0f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
@@ -248,7 +248,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(5.0f);
 	KeyLight->SetAzimuth(45.0f);
 	KeyLight->SetOffset(2.0f);
-	KeyLight->SetMultiplier(50.0f);
+	KeyLight->SetMultiplier(5.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 //	KeyLight->SetRelativeToCamera(true);
@@ -269,7 +269,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErLight> RimLight = vtkSmartPointer<vtkErLight>::New();
 
-	const float RimLightSize = 0.01f;
+	const float RimLightSize = 1.0f;
 
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Disk);
@@ -305,7 +305,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetPosition(0, 0, 0);
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
-	EnvironmentLight->SetRadius(100.0f);
+	EnvironmentLight->SetRadius(2.0f);
 	EnvironmentLight->SetMultiplier(1.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);

@@ -73,6 +73,11 @@ KERNEL void KrnlSingleScattering()
 			L = ColorXYZAf(1.0f);
 			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
 			gpTracer->FrameBuffer.Samples(IDx, IDy).P = P;
+			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = 1.0f;
+		}
+		else
+		{
+			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = 0.0f;
 		}
 	}
 
@@ -130,6 +135,12 @@ KERNEL void KrnlConnect(int NoSamples)
 	if (IDk >= NoSamples)
 		return;
 
+	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+
+	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
+
+	gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(0.0f);
+
 	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
 	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
@@ -145,9 +156,16 @@ KERNEL void KrnlConnect(int NoSamples)
 
 	Light.Shape.Sample(SS, RNG.Get3());
 
-	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+	ColorXYZf Le = Light.Multiplier * EvaluateTexture(Light.TextureID, SS.UV);
 
-	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
+	if (Light.EmissionUnit == Enums::Power)
+		Le /= Light.Shape.Area;
+
+	const float LightPdf = DistanceSquared(Sample.P, SS.P) / (Light.Shape.Area);
+
+	Le /= LightPdf;
+
+	const float StepSize = gStepFactorShadow * (1.0f + (expf(-Le.Y())) * 5.0f);
 
 	R.O		= Sample.P;
 	R.D 	= Normalize(SS.P - Sample.P);
@@ -172,7 +190,7 @@ KERNEL void KrnlConnect(int NoSamples)
 		const float S	= -log(RNG.Get1()) / gDensityScale;
 		float Sum		= 0.0f;
 
-		R.MinT += RNG.Get1() * gStepFactorShadow;
+		R.MinT += RNG.Get1() * StepSize;
 
 		while (Sum < S)
 		{
@@ -182,15 +200,20 @@ KERNEL void KrnlConnect(int NoSamples)
 				break;
 			}
 
-			Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), 0)) * gStepFactorShadow;
-			R.MinT	+= gStepFactorShadow;
+			Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), 0)) * StepSize;
+			R.MinT	+= StepSize;
 		}
 
 		if (!Occluded)
 		{
-			const float LightPdf = (R.MaxT * R.MaxT) / (AbsDot(R.D, SS.N) * Light.Shape.Area);
-
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);// / LightPdf;
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = Le[0];
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = Le[1];
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = Le[2];
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 1.0f;
+		}
+		else
+		{
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 0.0f;
 		}
 	}
 	
@@ -212,7 +235,7 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 	if (NoSamples > 0 && Tracer.LightIDs.Count > 0)
 	{
 		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample light"); 
-		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample shader"); 
+//		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample shader"); 
 	}
 }
 
