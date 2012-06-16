@@ -28,7 +28,6 @@ texture<float4, 1, cudaReadModeElementType> 		Emission1D;
 
 map<int, int> gTracersHashMap;
 map<int, int> gVolumesHashMap;
-map<int, int> gLightsHashMap;
 map<int, int> gObjectsHashMap;
 map<int, int> gClippingObjectsHashMap;
 map<int, int> gTexturesHashMap;
@@ -49,7 +48,6 @@ CONSTANT_DEVICE float gStepFactorShadow		= 0.0f;
 
 DEVICE ExposureRender::Tracer*			gpTracer			= NULL;
 DEVICE ExposureRender::Volume* 			gpVolumes			= NULL;
-DEVICE ExposureRender::Light*			gpLights			= NULL;
 DEVICE ExposureRender::Object*			gpObjects			= NULL;
 DEVICE ExposureRender::ClippingObject*	gpClippingObjects	= NULL;
 DEVICE ExposureRender::Texture*			gpTextures			= NULL;
@@ -59,7 +57,6 @@ DEVICE ExposureRender::Bitmap*			gpBitmaps			= NULL;
 
 ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::ErTracer>					gTracers("gpTracer");
 ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::ErVolume>					gVolumes("gpVolumes");
-ExposureRender::Cuda::List<ExposureRender::Light, ExposureRender::ErLight>						gLights("gpLights");
 ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::ErObject>					gObjects("gpObjects");
 ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErClippingObject>	gClippingObjects("gpClippingObjects");
 ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
@@ -94,16 +91,6 @@ EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*=
 		gVolumes.Unbind(Volume);
 
 	gVolumesHashMap = gVolumes.HashMap;
-}
-
-EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind /*= true*/)
-{
-	if (Bind)
-		gLights.Bind(Light);
-	else
-		gLights.Unbind(Light);
-
-	gLightsHashMap = gLights.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind /*= true*/)

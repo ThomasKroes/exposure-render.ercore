@@ -23,24 +23,32 @@ class EXPOSURE_RENDER_DLL ErObject : public ErBindable, public TimeStamp
 {
 public:
 	HOST ErObject() :
-		ErBindable(),
+	  	ErBindable(),
 		TimeStamp(),
+		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
 		SpecularTextureID(-1),
 		GlossinessTextureID(-1),
-		Ior(5.0f)
+		EmissionTextureID(-1),
+		Emitter(false),
+		Multiplier(1.0f),
+		EmissionUnit(Enums::Power)
 	{
 	}
 
 	HOST ErObject(const ErObject& Other) :
-		ErBindable(),
+	  	ErBindable(),
 		TimeStamp(),
+		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
 		SpecularTextureID(-1),
 		GlossinessTextureID(-1),
-		Ior(5.0f)
+		EmissionTextureID(-1),
+		Emitter(false),
+		Multiplier(1.0f),
+		EmissionUnit(Enums::Power)
 	{
 		*this = Other;
 	}
@@ -50,22 +58,29 @@ public:
 		ErBindable::operator = (Other);
 		TimeStamp::operator = (Other);
 
+		this->Visible				= Other.Visible;
 		this->Shape					= Other.Shape;
 		this->DiffuseTextureID		= Other.DiffuseTextureID;
 		this->SpecularTextureID		= Other.SpecularTextureID;
 		this->GlossinessTextureID	= Other.GlossinessTextureID;
-		this->Ior					= Other.Ior;
+		this->EmissionTextureID		= Other.EmissionTextureID;
+		this->Multiplier			= Other.Multiplier;
+		this->EmissionUnit			= Other.EmissionUnit;
 
 		this->Shape.Update();
 
 		return *this;
 	}
 
-	Shape		Shape;
-	int			DiffuseTextureID;
-	int			SpecularTextureID;
-	int			GlossinessTextureID;
-	float		Ior;
+	bool					Visible;
+	Shape					Shape;
+	int						DiffuseTextureID;
+	int						SpecularTextureID;
+	int						GlossinessTextureID;
+	int						EmissionTextureID;
+	float					IndexOfReflection;
+	float					Multiplier;
+	Enums::EmissionUnit		EmissionUnit;
 };
 
 }

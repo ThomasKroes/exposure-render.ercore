@@ -29,6 +29,10 @@ vtkErObject::vtkErObject(void)
 	this->SetNumberOfOutputPorts(1);
 
 	this->SetEnabled(true);
+	this->SetVisible(true);
+	this->SetEmitter(true);
+	this->SetMultiplier(100.0f);
+	this->SetEmissionUnit(Enums::Power);
 }
 
 vtkErObject::~vtkErObject(void)
@@ -52,6 +56,13 @@ int vtkErObject::FillInputPortInformation(int Port, vtkInformation* Info)
 	}
 
 	if (Port == GlossinessTexturePort)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+	}
+
+	if (Port == EmissionTexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
@@ -124,8 +135,17 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 
 	if (Glossiness)
 		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;
+
+	vtkErTextureData* Emission = vtkErTextureData::SafeDownCast(this->GetInputDataObject(EmissionTexturePort, 0));
+
+	if (Emission)
+		ObjectDataOut->Bindable.EmissionTextureID = Emission->Bindable.ID;
 	
-	ObjectDataOut->Bindable.Enabled = this->GetEnabled();
+	ObjectDataOut->Bindable.Enabled			= this->GetEnabled();
+	ObjectDataOut->Bindable.Visible			= this->GetVisible();
+	ObjectDataOut->Bindable.Emitter			= this->GetEmitter();
+	ObjectDataOut->Bindable.Multiplier		= this->GetMultiplier();
+	ObjectDataOut->Bindable.EmissionUnit	= this->GetEmissionUnit();
 
 	ObjectDataOut->Bind();
 

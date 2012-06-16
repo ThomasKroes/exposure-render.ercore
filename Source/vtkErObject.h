@@ -49,13 +49,26 @@ public:
 	{
 		DiffuseTexturePort = 0,
 		SpecularTexturePort,
-		GlossinessTexturePort
+		GlossinessTexturePort,
+		EmissionTexturePort
 	};
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
 	vtkGetMacro(Enabled, bool);
 	vtkSetMacro(Enabled, bool);
+
+	vtkGetMacro(Visible, bool);
+	vtkSetMacro(Visible, bool);
+
+	vtkGetMacro(Emitter, bool);
+	vtkSetMacro(Emitter, bool);
+
+	vtkGetMacro(Multiplier, float);
+	vtkSetMacro(Multiplier, float);
+
+	vtkGetMacro(EmissionUnit, Enums::EmissionUnit);
+	vtkSetMacro(EmissionUnit, Enums::EmissionUnit);
 
 protected:
 	vtkErObject();
@@ -74,4 +87,8 @@ private:
     void operator = (const vtkErObject& Other);		// Not implemented
 
 	bool					Enabled;
+	bool					Visible;
+	bool					Emitter;
+	float					Multiplier;
+	Enums::EmissionUnit		EmissionUnit;
 };

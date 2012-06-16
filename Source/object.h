@@ -23,21 +23,29 @@ class Object : public TimeStamp
 public:
 	HOST Object() :
 		TimeStamp(),
+		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
 		SpecularTextureID(-1),
 		GlossinessTextureID(-1),
-		Ior(5.0f)
+		EmissionTextureID(-1),
+		Emitter(false),
+		Multiplier(1.0f),
+		EmissionUnit(Enums::Power)
 	{
 	}
 
 	HOST Object(const ErObject& Other) :
 		TimeStamp(),
+		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
 		SpecularTextureID(-1),
 		GlossinessTextureID(-1),
-		Ior(5.0f)
+		EmissionTextureID(-1),
+		Emitter(false),
+		Multiplier(1.0f),
+		EmissionUnit(Enums::Power)
 	{
 		*this = Other;
 	}
@@ -46,14 +54,15 @@ public:
 	{
 		TimeStamp::operator = (Other);
 
-		this->Shape	= Other.Shape;
+		this->Visible	= Other.Visible;
+		this->Shape		= Other.Shape;
 
 		if (Other.DiffuseTextureID >= 0)
 		{
 			if (gTexturesHashMap.find(Other.DiffuseTextureID) != gTexturesHashMap.end())
 				this->DiffuseTextureID = gTexturesHashMap[Other.DiffuseTextureID];
 			else
-				throw(Exception(Enums::Fatal, "Texture not found!"));
+				throw(Exception(Enums::Fatal, "Diffuse texture not found!"));
 		}
 		else
 		{
@@ -65,7 +74,7 @@ public:
 			if (gTexturesHashMap.find(Other.SpecularTextureID) != gTexturesHashMap.end())
 				this->SpecularTextureID = gTexturesHashMap[Other.SpecularTextureID];
 			else
-				throw(Exception(Enums::Fatal, "Texture not found!"));
+				throw(Exception(Enums::Fatal, "Specular texture not found!"));
 		}
 		else
 		{
@@ -77,23 +86,41 @@ public:
 			if (gTexturesHashMap.find(Other.GlossinessTextureID) != gTexturesHashMap.end())
 				this->GlossinessTextureID = gTexturesHashMap[Other.GlossinessTextureID];
 			else
-				throw(Exception(Enums::Fatal, "Texture not found!"));
+				throw(Exception(Enums::Fatal, "Glossiness texture not found!"));
 		}
 		else
 		{
 			this->GlossinessTextureID = -1;
 		}
 
-		this->Ior = Other.Ior;
+		if (Other.EmissionTextureID >= 0)
+		{
+			if (gTexturesHashMap.find(Other.EmissionTextureID ) != gTexturesHashMap.end())
+				this->EmissionTextureID  = gTexturesHashMap[Other.EmissionTextureID ];
+			else
+				throw(Exception(Enums::Fatal, "Emission texture not found!"));
+		}
+		else
+		{
+			this->EmissionTextureID = -1;
+		}
+
+		this->Emitter		= Other.Emitter;
+		this->Multiplier	= Other.Multiplier;
+		this->EmissionUnit	= Other.EmissionUnit;
 
 		return *this;
 	}
 
-	Shape	Shape;
-	int		DiffuseTextureID;
-	int		SpecularTextureID;
-	int		GlossinessTextureID;
-	float	Ior;
+	bool					Visible;
+	Shape					Shape;
+	int						DiffuseTextureID;
+	int						SpecularTextureID;
+	int						GlossinessTextureID;
+	int						EmissionTextureID;
+	bool					Emitter;
+	float					Multiplier;
+	Enums::EmissionUnit		EmissionUnit;
 };
 
 }
