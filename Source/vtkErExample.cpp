@@ -212,7 +212,7 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
 
-	Volume->SetInputConnection(0, ImageCast->GetOutputPort());
+	Volume->SetInputConnection(vtkErVolume::ImageDataPort, ImageCast->GetOutputPort());
 	Volume->SetFilterMode(Enums::Linear);
 	Volume->SetAcceleratorType(Enums::NoAcceleration);
 

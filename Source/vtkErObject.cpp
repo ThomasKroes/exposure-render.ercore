@@ -25,7 +25,7 @@ vtkCxxRevisionMacro(vtkErObject, "$Revision: 1.0 $");
 
 vtkErObject::vtkErObject(void)
 {
-	this->SetNumberOfInputPorts(3);
+	this->SetNumberOfInputPorts(4);
 	this->SetNumberOfOutputPorts(1);
 
 	this->SetEnabled(true);
@@ -108,10 +108,9 @@ int vtkErObject::RequestInformation(vtkInformation* Request, vtkInformationVecto
 
 int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
-	vtkInformation* InInfo = InputVector[0]->GetInformationObject(0);
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 
-	if (!InInfo || !OutInfo)
+	if (!OutInfo)
 		return 0;
 	
 	vtkErObjectData* ObjectDataOut = vtkErObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));

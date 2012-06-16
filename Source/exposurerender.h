@@ -15,7 +15,6 @@
 
 #include "ertracer.h"
 #include "ervolume.h"
-#include "erlight.h"
 #include "erobject.h"
 #include "erclippingobject.h"
 #include "ertexture.h"

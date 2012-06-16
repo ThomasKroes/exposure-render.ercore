@@ -39,6 +39,11 @@ class VTK_ER_EXPORT vtkErVolume : public vtkErAlignment
 public:
 	vtkTypeMacro(vtkErVolume, vtkAlgorithm);
     static vtkErVolume* New();
+	
+	enum Ports
+	{
+		ImageDataPort = 0
+	};
 
 	vtkGetMacro(FilterMode, Enums::FilterMode);
 	vtkSetMacro(FilterMode, Enums::FilterMode);
