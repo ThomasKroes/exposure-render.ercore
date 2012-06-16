@@ -51,6 +51,7 @@ KERNEL void KrnlSingleScattering()
 		const float S	= -log(RNG.Get1()) / gDensityScale;
 		float Sum		= 0.0f;
 		float Intensity = 0.0f;
+		Vec3f P;
 
 		R.MinT += RNG.Get1() * gStepFactorPrimary;
 
@@ -59,7 +60,8 @@ KERNEL void KrnlSingleScattering()
 			if (R.MinT >= R.MaxT)
 				break;
 
-			Intensity	= Volume(R(R.MinT), 0);
+			P			= R(R.MinT);
+			Intensity	= Volume(P, 0);
 			Sum			+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
 			R.MinT		+= gStepFactorPrimary;
 		}
@@ -70,7 +72,7 @@ KERNEL void KrnlSingleScattering()
 		{
 			L = ColorXYZAf(1.0f);
 			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
-			gpTracer->FrameBuffer.Samples(IDx, IDy).P = R(R.MinT);
+			gpTracer->FrameBuffer.Samples(IDx, IDy).P = P;
 		}
 	}
 
@@ -185,7 +187,11 @@ KERNEL void KrnlConnect(int NoSamples)
 		}
 
 		if (!Occluded)
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);
+		{
+			const float LightPdf = (R.MaxT * R.MaxT) / (AbsDot(R.D, SS.N) * Light.Shape.Area);
+
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(1.0f, 1.0f, 1.0f, 1.0f);// / LightPdf;
+		}
 	}
 	
 }
