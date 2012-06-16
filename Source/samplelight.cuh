@@ -17,81 +17,7 @@
 
 namespace ExposureRender
 {
-/*
-HOST_DEVICE_NI void SampleLight(const Light& Light, LightSample& LS, SurfaceSample& SS, ScatterEvent& SE, Vec3f& Wi, ColorXYZf& Le)
-{
-	Light.Shape.Sample(SS, LS.SurfaceUVW);
 
-	Wi = Normalize(SS.P - SE.P);
-
-	Le = Light.Multiplier * EvaluateTexture(Light.TextureID, SS.UV);
-	
-	if (Light.Shape.GetOneSided() && Dot(SE.P - SS.P, SS.N) < 0.0f)
-		Le = ColorXYZf::Black();
-
-	if (Light.EmissionUnit == Enums::Power)
-		Le /= Light.Shape.Area;
-}
-
-HOST_DEVICE_NI bool IntersectLight(const Light& Light, const Ray& R, ScatterEvent& SE)
-{
-	Intersection Int;
-
-	if (Light.Shape.Intersect(R, Int))
-	{
-		SE.T 	= Length(Int.P - R.O);
-		SE.P	= Int.P;
-		SE.N	= Int.N;
-		SE.Wo	= -R.D;
-		SE.UV	= Int.UV;
-		SE.Le	= Int.Front ? Light.Multiplier * EvaluateTexture(Light.TextureID, SE.UV) : ColorXYZf::Black();
-		
-		if (Light.EmissionUnit == Enums::Power)
-			SE.Le /= Light.Shape.Area;
-
-		return true;
-	}
-
-	return false;
-}
-
-HOST_DEVICE_NI void IntersectLights(const Ray& R, ScatterEvent& SE, bool RespectVisibility = false)
-{
-	float T = FLT_MAX; 
-
-	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
-	{
-		const Light& Light = gpLights[gpTracer->LightIDs[i]];
-		
-		ScatterEvent LocalSE(Enums::Light);
-
-		LocalSE.ID = i;
-
-		if (RespectVisibility && !Light.Visible)
-			continue;
-
-		if (IntersectLight(Light, R, LocalSE) && LocalSE.T < T)
-		{
-			SE = LocalSE;
-			SE.Valid  = true;
-			T = LocalSE.T;
-		}
-	}
-}
-
-HOST_DEVICE_NI bool IntersectsLight(const Ray& R)
-{
-	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
-	{
-		const Light& Light = gpLights[gpTracer->LightIDs[i]];
-
-		if (Light.Shape.Intersects(R))
-			return true;
-	}
-
-	return false;
-}
-*/
 KERNEL void KrnlSampleLight(int NoSamples)
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
@@ -115,8 +41,6 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	const Object& Light = gpObjects[LightID];
 	
-	Ray R;
-
 	SurfaceSample SS;
 
 	Light.Shape.Sample(SS, RNG.Get3());
@@ -130,40 +54,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	Le /= LightPdf;
 
-	const float StepSize = gStepFactorShadow * (1.0f + (expf(-Le.Y())) * 5.0f);
-
-	R.O		= SS.P;
-	R.D 	= Normalize(Int.P - SS.P);
-	R.MinT	= 0.0f;
-	R.MaxT	= (Int.P - SS.P).Length();
-		
-	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
-
-	bool Occluded = true;
-
-	if (Volume.BoundingBox.Intersect(R, R.MinT, R.MaxT))
-	{
-		R.MaxT	= (Int.P - SS.P).Length();
-
-		const float S	= -log(RNG.Get1()) / gDensityScale;
-		float Sum		= 0.0f;
-
-		R.MinT += RNG.Get1() * StepSize;
-
-		while (Sum < S)
-		{
-			if (R.MinT > R.MaxT)
-			{
-				Occluded = false;
-				break;
-			}
-
-			Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), 0)) * StepSize;
-			R.MinT	+= StepSize;
-		}
-	}
-
-	if (!Occluded)
+	if (!ScatterEventInVolume(Ray(SS.P, Normalize(Int.P - SS.P), 0.0f, (Int.P - SS.P).Length()), RNG))
 	{
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = Le[0];
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = Le[1];
@@ -177,6 +68,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = 0.0f;
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 0.0f;
 	}
+	/**/
 }
 
 void SampleLight(Tracer& Tracer, Statistics& Statistics, int NoSamples)

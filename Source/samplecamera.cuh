@@ -14,26 +14,10 @@
 #pragma once
 
 #include "macros.cuh"
+#include "samplebrdf.cuh"
 
 namespace ExposureRender
 {
-
-DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
-{
-	float NearestT = FLT_MAX;
-
-	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
-	{
-		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
-		
-		if (Object.Visible && Object.Shape.Intersect(R, Int) && Int.T < NearestT && Int.Front)
-		{
-			NearestT		= Int.T;
-			Int.ScatterType	= Object.Emitter ? Enums::Light : Enums::Object;
-			Int.ID			= i;
-		}
-	}
-}
 
 KERNEL void KrnlSampleCamera()
 {
@@ -56,9 +40,9 @@ KERNEL void KrnlSampleCamera()
 	
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
 
-	Intersection Intersections[2];
+	Intersection Ints[2];
 
-	IntersectObjects(R, Intersections[0]);
+	IntersectObjects(R, Ints[0]);
 
 	float MinT = 0.0f, MaxT = 0.0f;
 
@@ -87,10 +71,10 @@ KERNEL void KrnlSampleCamera()
 
 		if (R.MinT < R.MaxT)
 		{
-			Intersections[1].Valid		= true;
-			Intersections[1].T			= R.MinT;
-			Intersections[1].P			= P;
-			Intersections[1].Intensity	= Intensity;
+			Ints[1].Valid		= true;
+			Ints[1].T			= R.MinT;
+			Ints[1].P			= P;
+			Ints[1].Intensity	= Intensity;
 		}
 	}
 
@@ -101,8 +85,8 @@ KERNEL void KrnlSampleCamera()
 
 	for (int i = 0; i < 2; i++)
 	{
-		if (Intersections[i].Valid && Intersections[i].T < Int.T)
-			Int = Intersections[i];
+		if (Ints[i].Valid && Ints[i].T < Int.T)
+			Int = Ints[i];
 	}
 
 	if (Int.Valid && Int.ScatterType != Enums::Light)

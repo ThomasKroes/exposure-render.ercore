@@ -21,12 +21,21 @@ namespace ExposureRender
 class Ray
 {	
 public:
-	HOST_DEVICE Ray(Vec3f O = Vec3f(), Vec3f D = Vec3f(0.0f, 0.0f, 1.0f), float MinT = 0.0f, float MaxT = 1000000.0f)
+	HOST_DEVICE Ray(Vec3f O = Vec3f(), Vec3f D = Vec3f(0.0f, 0.0f, 1.0f), float MinT = 0.0f, float MaxT = 1000000.0f) :
+		O(O),
+		D(D),
+		MinT(MinT),
+		MaxT(MaxT)
 	{
-		this->O		= O;
-		this->D		= D;
-		this->MinT	= MinT;
-		this->MaxT	= MaxT;
+	}
+
+	HOST_DEVICE Ray(const Ray& Other) :
+		O(),
+		D(),
+		MinT(),
+		MaxT()
+	{
+		*this = Other;
 	}
 
 	HOST_DEVICE Ray& operator = (const Ray& Other)

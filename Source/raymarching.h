@@ -64,33 +64,28 @@ DEVICE void IntersectVolume(Ray R, RNG& RNG, ScatterEvent& SE, const int& Volume
 
 DEVICE bool ScatterEventInVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 {
-	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
-	VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
-
-	Vec3f Ps;
-
-	Intersection Int;
-		
-	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
-
-	if (!BoundingBox.Intersect(R, R.MinT, R.MaxT))
+	if (!gpTracer->VolumeProperty.Shadows)
 		return false;
 
-	const float S				= -log(RNG.Get1());
-	float Sum					= 0.0f;
+	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 
-	const float StepSize = VolumeProperty.StepFactorShadow * Volume.MinStep;
+	float MaxT = 0.0f;
 
-	R.MinT += RNG.Get1() * StepSize;
+	if (!Volume.BoundingBox.Intersect(R, R.MinT, MaxT))
+		return false;
+
+	const float S	= -log(RNG.Get1()) / gDensityScale;
+	float Sum		= 0.0f;
+	
+	R.MinT += RNG.Get1() * gStepFactorShadow;
 
 	while (Sum < S)
 	{
 		if (R.MinT > R.MaxT)
 			return false;
 
-		Ps		= R.O + R.MinT * R.D;
-		Sum		+= 1000.0f * gpTracer->GetOpacity(Volume(Ps, VolumeID)) * StepSize;
-		R.MinT	+= StepSize;
+		Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), VolumeID)) * gStepFactorShadow;
+		R.MinT	+= gStepFactorShadow;
 	}
 
 	return true;
