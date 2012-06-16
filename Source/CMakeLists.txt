@@ -236,8 +236,6 @@ IF(ER_VTK)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 
 	SET(General
-		vtkErLight.h
-		vtkErLight.cpp
 		vtkErObject.h
 		vtkErObject.cpp
 		vtkErClippingObject.h

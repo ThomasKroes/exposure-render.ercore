@@ -95,7 +95,7 @@ KERNEL void KrnlSampleCamera()
 
 	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
 	{
-		const Light& Light = gpLights[gpTracer->LightIDs[i]];
+		const Object& Light = gpObjects[gpTracer->LightIDs[i]];
 		
 		Intersection Int;
 
@@ -103,7 +103,7 @@ KERNEL void KrnlSampleCamera()
 		{
 			T		= Int.T;
 			UV		= Int.UV;
-			pLight	= &(gpLights[gpTracer->LightIDs[i]]);
+			pLight	= &(gpObjects[gpTracer->LightIDs[i]]);
 		}
 	}
 

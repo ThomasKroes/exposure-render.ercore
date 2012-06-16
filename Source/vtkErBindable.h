@@ -51,7 +51,6 @@ public:																		\
 
 ER_BINDABLE(Tracer)
 ER_BINDABLE(Volume)
-ER_BINDABLE(Light)
 ER_BINDABLE(Object)
 ER_BINDABLE(ClippingObject)
 ER_BINDABLE(Texture)
