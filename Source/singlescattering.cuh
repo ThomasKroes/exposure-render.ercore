@@ -13,112 +13,14 @@
 
 #pragma once
 
-#include "macros.cuh"
-#include "singlescattering.h"
+#include "samplecamera.cuh"
+#include "samplelight.cuh"
+#include "samplebrdf.cuh"
 
 #include <thrust/remove.h>
 
 namespace ExposureRender
 {
-
-KERNEL void KrnlSingleScattering()
-{
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
-
-	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(0.0f, 0.0f, 0.0f, 1.0f);
-
-	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
-
-	Ray R;
-
-	ColorXYZAf L = ColorXYZAf::Black();
-
-	SampleCamera(gpTracer->Camera, R, IDx, IDy, RNG);
-
-	bool Intersects = false;
-
-	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
-
-	Intersection Int;
-
-	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
-
-	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
-
-	if (IntersectVolume)
-	{
-		const float S	= -log(RNG.Get1()) / gDensityScale;
-		float Sum		= 0.0f;
-		float Intensity = 0.0f;
-		Vec3f P;
-
-		R.MinT += RNG.Get1() * gStepFactorPrimary;
-
-		while (Sum < S)
-		{
-			if (R.MinT >= R.MaxT)
-				break;
-
-			P			= R(R.MinT);
-			Intensity	= Volume(P, 0);
-			Sum			+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
-			R.MinT		+= gStepFactorPrimary;
-		}
-
-		Intersects = R.MinT < R.MaxT;
-
-		if (Intersects)
-		{
-			L = ColorXYZAf(1.0f);
-			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
-			gpTracer->FrameBuffer.Samples(IDx, IDy).P = P;
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = 1.0f;
-		}
-		else
-		{
-			gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = 0.0f;
-		}
-	}
-
-	R.MinT = 0.0f;
-	R.MaxT = 50000.0f;
-
-	float T = R.MaxT; 
-	Vec2f UV;
-
-	Light* pLight = NULL;
-
-	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
-	{
-		const Light& Light = gpLights[gpTracer->LightIDs[i]];
-		
-		Intersection Int;
-
-		if (Light.Visible && Light.Shape.Intersect(R, Int) && Int.T < T && Int.Front)
-		{
-			T		= Int.T;
-			UV		= Int.UV;
-			pLight	= &(gpLights[gpTracer->LightIDs[i]]);
-		}
-	}
-
-	if (pLight)
-	{
-		ColorXYZf Le = pLight->Multiplier * EvaluateTexture(pLight->TextureID, UV);
-		
-		if (pLight->EmissionUnit == Enums::Power)
-			Le /= pLight->Shape.Area;
-
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(Le[0], Le[1], Le[2], 1.0f);
-
-		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
-		gpTracer->FrameBuffer.Samples(IDx, IDy).P = R(T);
-	}
-
-	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
-	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
-}
 
 struct IsInvalid
 {
@@ -128,115 +30,27 @@ struct IsInvalid
 	}
 };
 
-KERNEL void KrnlConnect(int NoSamples)
+void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
 {
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+	thrust::device_ptr<int> DevicePtr(Tracer.FrameBuffer.IDs.GetData()); 
+	thrust::device_ptr<int> DevicePtrEnd = thrust::remove_if(DevicePtr, DevicePtr + Tracer.FrameBuffer.IDs.GetNoElements(), IsInvalid());
 
-	if (IDk >= NoSamples)
-		return;
-
-	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
-
-	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
-
-	gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(0.0f);
-
-	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
-
-	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
-
-	if (LightID < 0)
-		return;
-
-	const Light& Light = gpLights[LightID];
-	
-	Ray R;
-
-	SurfaceSample SS;
-
-	Light.Shape.Sample(SS, RNG.Get3());
-
-	ColorXYZf Le = Light.Multiplier * EvaluateTexture(Light.TextureID, SS.UV);
-
-	if (Light.EmissionUnit == Enums::Power)
-		Le /= Light.Shape.Area;
-
-	const float LightPdf = DistanceSquared(Sample.P, SS.P) / (Light.Shape.Area);
-
-	Le /= LightPdf;
-
-	const float StepSize = gStepFactorShadow * (1.0f + (expf(-Le.Y())) * 5.0f);
-
-	R.O		= Sample.P;
-	R.D 	= Normalize(SS.P - Sample.P);
-	R.MinT	= 0.0f;
-	R.MaxT	= (Sample.P - SS.P).Length();
-		
-	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
-
-	/**/
-	Intersection Int;
-		
-	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
-
-	const bool IntersectVolume = BoundingBox.Intersect(R, R.MinT, R.MaxT);
-
-	R.MaxT	= (Sample.P - SS.P).Length();
-
-	bool Occluded = true;
-
-	if (IntersectVolume)
-	{
-		const float S	= -log(RNG.Get1()) / gDensityScale;
-		float Sum		= 0.0f;
-
-		R.MinT += RNG.Get1() * StepSize;
-
-		while (Sum < S)
-		{
-			if (R.MinT > R.MaxT)
-			{
-				Occluded = false;
-				break;
-			}
-
-			Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), 0)) * StepSize;
-			R.MinT	+= StepSize;
-		}
-
-		if (!Occluded)
-		{
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = Le[0];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = Le[1];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = Le[2];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 1.0f;
-		}
-		else
-		{
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 0.0f;
-		}
-	}
-	
+	NoSamples = DevicePtrEnd - DevicePtr;
 }
 
 void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlSingleScattering<<<GridDim, BlockDim>>>()), "Single scattering"); 
+	SampleCamera(Tracer, Statistics);
+	
+	int NoSamples = 0;
 
-	thrust::device_ptr<int> DevicePtr(Tracer.FrameBuffer.IDs.GetData()); 
+	RemoveRedundantSamples(Tracer, NoSamples);
 
-	thrust::device_ptr<int> DevicePtrEnd = thrust::remove_if(DevicePtr, DevicePtr + Tracer.FrameBuffer.IDs.GetNoElements(), IsInvalid());
+	if (NoSamples > 0)
+		SampleLight(Tracer, Statistics, NoSamples);
 
-	const int NoSamples = DevicePtrEnd - DevicePtr;
-
-	Statistics = Timing("No. Samples", NoSamples);
-
-	if (NoSamples > 0 && Tracer.LightIDs.Count > 0)
-	{
-		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample light"); 
-//		LAUNCH_CUDA_KERNEL_TIMED((KrnlConnect<<<GridDim, BlockDim>>>(NoSamples)), "Sample shader"); 
-	}
+	if (NoSamples > 0)
+		SampleBrdf(Tracer, Statistics, NoSamples);
 }
 
 }

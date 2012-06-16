@@ -13,51 +13,19 @@
 
 #pragma once
 
-#include "geometry.h"
+#include "macros.cuh"
 
 namespace ExposureRender
 {
 
-class RNG
+KERNEL void KrnlSampleBrdf(int NoSamples)
 {
-public:
-	HOST_DEVICE RNG(unsigned int* pSeed0, unsigned int* pSeed1)
-	{
-		this->pSeed0 = pSeed0;
-		this->pSeed1 = pSeed1;
-	}
+}
 
-	HOST_DEVICE float Get1(void)
-	{
-		*this->pSeed0 = 36969 * ((*pSeed0) & 65535) + ((*pSeed0) >> 16);
-		*this->pSeed1 = 18000 * ((*pSeed1) & 65535) + ((*pSeed1) >> 16);
-
-		unsigned int ires = ((*pSeed0) << 16) + (*pSeed1);
-
-		union
-		{
-			float f;
-			unsigned int ui;
-		} res;
-
-		res.ui = (ires & 0x007fffff) | 0x40000000;
-
-		return (res.f - 2.f) / 2.f;
-	}
-
-	HOST_DEVICE Vec2f Get2(void)
-	{
-		return Vec2f(Get1(), Get1());
-	}
-
-	HOST_DEVICE Vec3f Get3(void)
-	{
-		return Vec3f(Get1(), Get1(), Get1());
-	}
-
-private:
-	unsigned int*	pSeed0;
-	unsigned int*	pSeed1;
-};
+void SampleBrdf(Tracer& Tracer, Statistics& Statistics, int NoSamples)
+{
+	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleBrdf<<<GridDim, BlockDim>>>(NoSamples)), "Sample BRDF"); 
+}
 
 }

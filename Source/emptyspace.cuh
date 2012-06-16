@@ -27,14 +27,16 @@ KERNEL void KrnlEmptySpace()
 
 	int Range[3][2];
 
-	Range[0][0] = IDx;
-	Range[0][1] = min(IDx, Volume.Voxels.GetResolution()[0] - 1);
-	Range[1][0] = IDy;
-	Range[1][1] = min(IDy, Volume.Voxels.GetResolution()[1] - 1);
-	Range[2][0] = IDz;
-	Range[2][1] = min(IDz, Volume.Voxels.GetResolution()[2] - 1);
+	const Vec3i Offset(IDx * 8, IDy * 8, IDz * 8);
 
-	gpTracer->EmptySpace(IDx, IDy, IDz) = 1;
+	Range[0][0] = Offset[0];
+	Range[0][1] = min(Offset[0] + 8, Volume.Voxels.GetResolution()[0] - 1);
+	Range[1][0] = Offset[1];
+	Range[1][1] = min(Offset[1] + 8, Volume.Voxels.GetResolution()[1] - 1);
+	Range[2][0] = Offset[2];
+	Range[2][1] = min(Offset[2] + 8, Volume.Voxels.GetResolution()[2] - 1);
+
+	gpTracer->EmptySpace(IDx, IDy, IDz) = 0;
 
 	for (int x = Range[0][0]; x <= Range[0][1]; x++)
 	{
@@ -43,7 +45,7 @@ KERNEL void KrnlEmptySpace()
 			for (int z = Range[2][0]; z <= Range[2][1]; z++)
 			{
 				if (gpTracer->GetOpacity(Volume(x, y, z)) > 0.0f)
-					gpTracer->EmptySpace(IDx, IDy, IDz) = 0;
+					gpTracer->EmptySpace(IDx, IDy, IDz) = 1;
 			}
 		}
 	}

@@ -24,7 +24,7 @@
 namespace ExposureRender
 {
 
-DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
+DEVICE void IntersectVolume(Ray R, RNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
 {
 	/*
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
@@ -62,7 +62,7 @@ DEVICE void IntersectVolume(Ray R, CRNG& RNG, ScatterEvent& SE, const int& Volum
 	*/
 }
 
-DEVICE bool ScatterEventInVolume(Ray R, CRNG& RNG, const int& VolumeID = 0)
+DEVICE bool ScatterEventInVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 {
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 	VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;

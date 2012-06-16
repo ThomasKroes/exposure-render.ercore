@@ -183,12 +183,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 	if (Tracer.VolumeIDs[0] >= 0)
 		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume0);
 
-	if (Tracer.UpdateEmptySpace)
-	{
-		EmptySpace(Tracer, Statistics);
-		Tracer.UpdateEmptySpace = false;
-	}
-
 	SingleScattering(Tracer, Statistics);
 	GaussianFilterFrameEstimate(Tracer, Statistics);
 	ComputeEstimate(Tracer, Statistics);
