@@ -96,7 +96,7 @@ KERNEL void KrnlSampleCamera()
 		}
 	}
 
-	if (Int.Valid || Int.ScatterType == Enums::Light)
+	if (Int.Valid && Int.ScatterType != Enums::Light)
 		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
 
 	if (Int.ScatterType == Enums::Light)
@@ -112,46 +112,6 @@ KERNEL void KrnlSampleCamera()
 	}
 
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = Int.Valid ? 1.0f : 0.0f;
-
-	/*
-	R.MinT = 0.0f;
-	R.MaxT = 50000.0f;
-
-	float T = R.MaxT; 
-	Vec2f UV;
-
-	Object* pLight = NULL;
-
-	for (int i = 0; i < gpTracer->LightIDs.Count; i++)
-	{
-		const Object& Light = gpObjects[gpTracer->LightIDs[i]];
-		
-		Int Int;
-
-		if (Light.Visible && Light.Shape.Intersect(R, Int) && Int.T < T && Int.Front)
-		{
-			T		= Int.T;
-			UV		= Int.UV;
-			pLight	= &(gpObjects[gpTracer->LightIDs[i]]);
-		}
-	}
-
-	if (pLight)
-	{
-		ColorXYZf Le = pLight->Multiplier * EvaluateTexture(pLight->EmissionTextureID, UV);
-		
-		if (pLight->EmissionUnit == Enums::Power)
-			Le /= pLight->Shape.Area;
-
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(Le[0], Le[1], Le[2], 1.0f);
-
-		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
-		gpTracer->FrameBuffer.Samples(IDx, IDy).P = R(T);
-	}
-
-	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[0] = IDx;
-	gpTracer->FrameBuffer.Samples(IDx, IDy).UV[1] = IDy;
-	*/
 }
 
 void SampleCamera(Tracer& Tracer, Statistics& Statistics)
