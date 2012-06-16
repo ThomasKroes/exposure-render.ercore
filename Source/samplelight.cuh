@@ -132,8 +132,8 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	const float StepSize = gStepFactorShadow * (1.0f + (expf(-Le.Y())) * 5.0f);
 
-	R.O		= Int.P;
-	R.D 	= Normalize(SS.P - Int.P);
+	R.O		= SS.P;
+	R.D 	= Normalize(Int.P - SS.P);
 	R.MinT	= 0.0f;
 	R.MaxT	= (Int.P - SS.P).Length();
 		
