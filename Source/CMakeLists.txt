@@ -200,6 +200,7 @@ SET(Cuda
 	tonemap.cuh
 	autofocus.cuh
 	composite.cuh
+	emptyspace.cuh
 	list.cuh
 	wrapper.cuh
 	macros.cuh

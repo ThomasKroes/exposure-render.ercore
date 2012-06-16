@@ -120,17 +120,9 @@ public:
 
 		this->NoiseReduction = Other.NoiseReduction;
 
-		if (this->VolumeProperty.Opacity1D != Other.VolumeProperty.Opacity1D)
-		{
-			/*
-			gVolumes[gVolumesHashMap[this->VolumeIDs[0]]]
-			const Vec3i Resolution();
+		this->UpdateEmptySpace = this->VolumeProperty.Opacity1D != Other.VolumeProperty.Opacity1D;
 
-			this->EmptySpace.Resize();
-			*/
-		}
-
-		this->VolumeProperty = Other.VolumeProperty;
+		this->VolumeProperty.Opacity1D = Other.VolumeProperty.Opacity1D;
 
 		return *this;
 	}
@@ -152,6 +144,7 @@ public:
 	int							NoEstimates;
 	bool						NoiseReduction;
 	Buffer3D<unsigned char>		EmptySpace;
+	bool						UpdateEmptySpace;
 };
 
 }

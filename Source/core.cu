@@ -71,6 +71,7 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 #include "estimate.cuh"
 #include "tonemap.cuh"
 #include "composite.cuh"
+#include "emptyspace.cuh"
 
 namespace ExposureRender
 {
@@ -181,6 +182,12 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 
 	if (Tracer.VolumeIDs[0] >= 0)
 		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume0);
+
+	if (Tracer.UpdateEmptySpace)
+	{
+		EmptySpace(Tracer, Statistics);
+		Tracer.UpdateEmptySpace = false;
+	}
 
 	SingleScattering(Tracer, Statistics);
 	GaussianFilterFrameEstimate(Tracer, Statistics);
