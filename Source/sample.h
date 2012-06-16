@@ -16,6 +16,7 @@
 #include "geometry.h"
 #include "color.h"
 #include "rng.h"
+#include "intersection.h"
 
 namespace ExposureRender
 {
@@ -272,8 +273,8 @@ public:
 class Sample
 {
 public:
-	Vec3f	P;
-	Vec2i	UV;
+	Intersection	Intersection;
+	Vec2i			UV;
 };
 
 }

@@ -160,6 +160,12 @@ namespace Enums
 		Right,
 		Exact
 	};
+
+	enum GradientType
+	{
+		Ramp = 0,
+		Radial
+	};
 }
 
 }
