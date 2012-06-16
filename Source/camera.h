@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "geometry.h"
+#include "montecarlo.h"
 
 namespace ExposureRender
 {
@@ -131,6 +131,57 @@ public:
 
 		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->FilmSize[0];
 		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->FilmSize[1];
+	}
+
+	DEVICE void Sample(Ray& R, const Vec2i& UV, RNG& RNG)
+	{
+		Vec2f ScreenPoint;
+
+		R.ImageUV[0] = UV[0] + RNG.Get1();
+		R.ImageUV[1] = UV[1] + RNG.Get1();
+
+		ScreenPoint[0] = this->Screen[0][0] + (this->InvScreen[0] * R.ImageUV[0]);
+		ScreenPoint[1] = this->Screen[1][0] + (this->InvScreen[1] * R.ImageUV[1]);
+
+		R.O		= this->Pos;
+		R.D		= Normalize(this->N + (ScreenPoint[0] * this->U) - (ScreenPoint[1] * this->V));
+		R.MinT	= this->ClipNear;
+		R.MaxT	= this->ClipFar;
+		
+		if (this->ApertureSize != 0.0f)
+		{
+			Vec2f LensUV;
+
+			switch (this->ApertureShape)
+			{
+				case Enums::Circular:
+				{
+					LensUV = this->ApertureSize * ConcentricSampleDisk(RNG.Get2());
+					break;
+				}
+
+				case Enums::Polygon:
+				{
+					const float LensY		= RNG.Get1() * this->NoApertureBlades;
+					const float Side		= (int)LensY;
+					const float Offset		= (float) LensY - Side;
+					const float Distance	= (float) sqrtf(RNG.Get1());
+					const float A0 			= (float) (Side * PI_F * 2.0f / this->NoApertureBlades + this->ApertureAngle);
+					const float A1 			= (float) ((Side + 1.0f) * PI_F * 2.0f / this->NoApertureBlades + this->ApertureAngle);
+					const float EyeX 		= (float) ((cos(A0) * (1.0f - Offset) + cos(A1) * Offset) * Distance);
+					const float EyeY 		= (float) ((sin(A0) * (1.0f - Offset) + sin(A1) * Offset) * Distance);
+					
+					LensUV[0] = EyeX * this->ApertureSize;
+					LensUV[1] = EyeY * this->ApertureSize;
+					break;
+				}
+			}
+			
+			const Vec3f LI = this->U * LensUV[0] + this->V * LensUV[1];
+
+			R.O += LI;
+			R.D = Normalize(R.D * this->FocalDistance - LI);
+		}
 	}
 
 	Vec2i					FilmSize;

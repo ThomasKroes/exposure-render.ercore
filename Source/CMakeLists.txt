@@ -201,6 +201,9 @@ SET(Cuda
 	autofocus.cuh
 	composite.cuh
 	emptyspace.cuh
+	samplecamera.cuh
+	samplelight.cuh
+	samplebrdf.cuh
 	list.cuh
 	wrapper.cuh
 	macros.cuh

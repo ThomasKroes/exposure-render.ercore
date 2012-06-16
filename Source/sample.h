@@ -20,7 +20,7 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE inline void Mutate1(float& X, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
+HOST_DEVICE inline void Mutate1(float& X, RNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
 {
 	float dx = S2 * exp(-log(S2 / S1) * RNG.Get1());
 
@@ -36,13 +36,13 @@ HOST_DEVICE inline void Mutate1(float& X, CRNG& RNG, const float& S1 = 0.0009765
 	}
 }
 
-HOST_DEVICE inline void Mutate2(Vec2f& V, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
+HOST_DEVICE inline void Mutate2(Vec2f& V, RNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
 {
 	Mutate1(V[0], RNG, S1, S2);
 	Mutate1(V[1], RNG, S1, S2);
 }
 
-HOST_DEVICE inline void Mutate3(Vec3f& V, CRNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
+HOST_DEVICE inline void Mutate3(Vec3f& V, RNG& RNG, const float& S1 = 0.0009765625f, const float& S2 = 0.015625f)
 {
 	Mutate1(V[0], RNG, S1, S2);
 	Mutate1(V[1], RNG, S1, S2);
@@ -81,7 +81,7 @@ public:
 		this->SurfaceUVW = Vec3f();
 	}
 
-	HOST_DEVICE LightSample(CRNG& RNG)
+	HOST_DEVICE LightSample(RNG& RNG)
 	{
 		this->LargeStep(RNG);
 	}
@@ -93,12 +93,12 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void LargeStep(CRNG& RNG)
+	HOST_DEVICE void LargeStep(RNG& RNG)
 	{
 		this->SurfaceUVW = RNG.Get3();
 	}
 
-	HOST_DEVICE void Mutate(CRNG& RNG)
+	HOST_DEVICE void Mutate(RNG& RNG)
 	{
 		Mutate3(this->SurfaceUVW, RNG);
 	}
@@ -115,7 +115,7 @@ public:
 		this->Dir 		= Vec2f(0.0f);
 	}
 
-	HOST_DEVICE BrdfSample(CRNG& RNG)
+	HOST_DEVICE BrdfSample(RNG& RNG)
 	{
 		this->LargeStep(RNG);
 	}
@@ -134,13 +134,13 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void LargeStep(CRNG& RNG)
+	HOST_DEVICE void LargeStep(RNG& RNG)
 	{
 		this->Component	= RNG.Get1();
 		this->Dir		= RNG.Get2();
 	}
 
-	HOST_DEVICE void Mutate(CRNG& RNG)
+	HOST_DEVICE void Mutate(RNG& RNG)
 	{
 		Mutate1(this->Component, RNG);
 		Mutate2(this->Dir, RNG);
@@ -158,7 +158,7 @@ public:
 		this->LightNum = 0.0f;
 	}
 
-	HOST_DEVICE LightingSample(CRNG& RNG)
+	HOST_DEVICE LightingSample(RNG& RNG)
 	{
 		this->LargeStep(RNG);
 	}
@@ -172,14 +172,14 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void LargeStep(CRNG& RNG)
+	HOST_DEVICE void LargeStep(RNG& RNG)
 	{
 		this->BrdfSample.LargeStep(RNG);
 		this->LightSample.LargeStep(RNG);
 		this->LightNum = RNG.Get1();
 	}
 
-	HOST_DEVICE void Mutate(CRNG& RNG)
+	HOST_DEVICE void Mutate(RNG& RNG)
 	{
 		this->BrdfSample.Mutate(RNG);
 		this->LightSample.Mutate(RNG);
@@ -200,7 +200,7 @@ public:
 		this->LensUV	= Vec2f();
 	}
 
-	HOST_DEVICE CameraSample(CRNG& RNG)
+	HOST_DEVICE CameraSample(RNG& RNG)
 	{
 		this->LargeStep(RNG);
 	}
@@ -213,13 +213,13 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void LargeStep(CRNG& RNG)
+	HOST_DEVICE void LargeStep(RNG& RNG)
 	{
 		this->FilmUV	= RNG.Get2();
 		this->LensUV	= RNG.Get2();
 	}
 
-	HOST_DEVICE void Mutate(CRNG& RNG)
+	HOST_DEVICE void Mutate(RNG& RNG)
 	{
 		Mutate2(this->FilmUV, RNG, 0.001953125f, 0.0625f);
 		Mutate2(this->LensUV, RNG);
@@ -236,7 +236,7 @@ public:
 	{
 	}
 
-	HOST_DEVICE MetroSample(CRNG& RNG)
+	HOST_DEVICE MetroSample(RNG& RNG)
 	{
 		this->LargeStep(RNG);
 	}
@@ -249,13 +249,13 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE void LargeStep(CRNG& RNG)
+	HOST_DEVICE void LargeStep(RNG& RNG)
 	{
 		this->LightingSample.LargeStep(RNG);
 		this->CameraSample.LargeStep(RNG);
 	}
 
-	HOST_DEVICE MetroSample Mutate(CRNG& RNG)
+	HOST_DEVICE MetroSample Mutate(RNG& RNG)
 	{
 		MetroSample Result = *this;
 

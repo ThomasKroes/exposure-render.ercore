@@ -26,58 +26,7 @@
 namespace ExposureRender
 {
 
-DEVICE void SampleCamera(const Camera& Camera, Ray& R, const int& U, const int& V, CRNG& RNG)
-{
-	Vec2f ScreenPoint;
-
-	R.ImageUV[0] = U + RNG.Get1();
-	R.ImageUV[1] = V + RNG.Get1();
-
-	ScreenPoint[0] = Camera.Screen[0][0] + (Camera.InvScreen[0] * R.ImageUV[0]);
-	ScreenPoint[1] = Camera.Screen[1][0] + (Camera.InvScreen[1] * R.ImageUV[1]);
-
-	R.O		= Camera.Pos;
-	R.D		= Normalize(Camera.N + (ScreenPoint[0] * Camera.U) - (ScreenPoint[1] * Camera.V));
-	R.MinT	= Camera.ClipNear;
-	R.MaxT	= Camera.ClipFar;
-	
-	if (Camera.ApertureSize != 0.0f)
-	{
-		Vec2f LensUV;
-
-		switch (Camera.ApertureShape)
-		{
-			case Enums::Circular:
-			{
-				LensUV = Camera.ApertureSize * ConcentricSampleDisk(RNG.Get2());
-				break;
-			}
-
-			case Enums::Polygon:
-			{
-				const float LensY		= RNG.Get1() * Camera.NoApertureBlades;
-				const float Side		= (int)LensY;
-				const float Offset		= (float) LensY - Side;
-				const float Distance	= (float) sqrtf(RNG.Get1());
-				const float A0 			= (float) (Side * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
-				const float A1 			= (float) ((Side + 1.0f) * PI_F * 2.0f / Camera.NoApertureBlades + Camera.ApertureAngle);
-				const float EyeX 		= (float) ((cos(A0) * (1.0f - Offset) + cos(A1) * Offset) * Distance);
-				const float EyeY 		= (float) ((sin(A0) * (1.0f - Offset) + sin(A1) * Offset) * Distance);
-				
-				LensUV[0] = EyeX * gpTracer->Camera.ApertureSize;
-				LensUV[1] = EyeY * gpTracer->Camera.ApertureSize;
-				break;
-			}
-		}
-		
-		const Vec3f LI = Camera.U * LensUV[0] + Camera.V * LensUV[1];
-
-		R.O += LI;
-		R.D = Normalize(R.D * Camera.FocalDistance - LI);
-	}
-}
-
-DEVICE ScatterEvent NearestIntersection(const Ray& R, CRNG& RNG)
+DEVICE ScatterEvent NearestIntersection(const Ray& R, RNG& RNG)
 {
 	ScatterEvent SE[3] = { ScatterEvent(Enums::Volume), ScatterEvent(Enums::Light), ScatterEvent(Enums::Object) };
 	
@@ -106,7 +55,7 @@ DEVICE ColorXYZAf SingleScattering(Tracer* pTracer, const Vec2i& PixelCoord)
 	
 
 	/*
-	CRNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
+	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(PixelCoord[0], PixelCoord[1]), &gpTracer->FrameBuffer.RandomSeeds2(PixelCoord[0], PixelCoord[1]));
 
 	ColorXYZf L = ColorXYZf::Black();
 

@@ -22,7 +22,7 @@ namespace ExposureRender
 
 KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV, unsigned int Seed1, unsigned int Seed2)
 {
-	CRNG RNG(&Seed1, &Seed2);
+	RNG RNG(&Seed1, &Seed2);
 
 	Ray Rc;
 

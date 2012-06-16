@@ -77,7 +77,7 @@ public:
 		return *this;
 	}
 
-	DEVICE void GetShader(Shader& Shader, CRNG& RNG, const int& VolumeID = 0)
+	DEVICE void GetShader(Shader& Shader, RNG& RNG, const int& VolumeID = 0)
 	{
 		switch (this->Type)
 		{
