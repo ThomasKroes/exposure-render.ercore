@@ -27,7 +27,6 @@ namespace ExposureRender
 
 EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind = true);
-EXPOSURE_RENDER_DLL void BindLight(const ErLight& Light, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindClippingObject(const ErClippingObject& ClippingObject, const bool& Bind = true);
 EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind = true);
