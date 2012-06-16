@@ -99,8 +99,12 @@ public:
 	{
 		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;
 		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
+	}
 
-		return 0; 
+	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)
+	{
+		const Vec3f NormalizedXYZ((float)X / (float)Voxels.GetResolution()[0], (float)X / (float)Voxels.GetResolution()[1], (float)X / (float)Voxels.GetResolution()[2]);
+		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
 
 	DEVICE float GetIntensity(const Vec3f& P)
