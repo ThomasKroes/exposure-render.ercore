@@ -30,7 +30,7 @@ vtkCxxRevisionMacro(vtkErTracer, "$Revision: 1.0 $");
 
 vtkErTracer::vtkErTracer(void)
 {
-	this->SetNumberOfInputPorts(4);
+	this->SetNumberOfInputPorts(3);
 	this->SetNumberOfOutputPorts(0);
 
 	glGenTextures(1, &TextureID);

@@ -29,7 +29,8 @@ KERNEL void KrnlSampleCamera()
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf(0.0f, 0.0f, 0.0f, 1.0f);
 
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
-
+	
+	/*
 	Ray R;
 
 	ColorXYZAf L = ColorXYZAf::Black();
@@ -85,7 +86,7 @@ KERNEL void KrnlSampleCamera()
 		}
 	}
 
-	/*
+	
 	R.MinT = 0.0f;
 	R.MaxT = 50000.0f;
 

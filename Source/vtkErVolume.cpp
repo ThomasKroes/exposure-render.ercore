@@ -36,9 +36,12 @@ vtkErVolume::~vtkErVolume(void)
 
 int vtkErVolume::FillInputPortInformation(int Port, vtkInformation* Info)
 {
-	Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
-	Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
-	Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+	if (Port == ImageDataPort)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
+	}
 
 	return 1;
 }
