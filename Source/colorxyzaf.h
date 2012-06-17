@@ -82,7 +82,7 @@ public:
 		return Result;
 	}
 
-	HOST_DEVICE bool IsBlack()
+	HOST_DEVICE bool IsBlack() const
 	{
 		for (int i = 0; i < 3; i++)
 			if (this->D[i] != 0)

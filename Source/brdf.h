@@ -15,6 +15,7 @@
 
 #include "lambert.h"
 #include "microfacet.h"
+#include "fresnelblend.h"
 #include "sample.h"
 
 namespace ExposureRender
@@ -28,24 +29,24 @@ public:
 	}
 
 	HOST_DEVICE Brdf(const Vec3f& N, const Vec3f& Wo, const ColorXYZf& Kd, const ColorXYZf& Ks, const float& Ior, const float& Exponent) :
-		Lambert(Kd),
-		Microfacet(Ks, Ior, Exponent),
 		Nn(Normalize(N)),
 		Nu(Normalize(Cross(N, Wo))),
-		Nv(Normalize(Cross(N, Nu)))
+		Nv(Normalize(Cross(N, Nu))),
+		Lambert(Kd),
+		Microfacet(Ks, Ior, Exponent)
 	{
 	}
 
 	HOST_DEVICE Vec3f WorldToLocal(const Vec3f& W)
 	{
-		return Vec3f(Dot(W, this->Nu), Dot(W, this->Nv), Dot(W, this->Nn));
+		return Normalize(Vec3f(Dot(W, this->Nu), Dot(W, this->Nv), Dot(W, this->Nn)));
 	}
 
 	HOST_DEVICE Vec3f LocalToWorld(const Vec3f& W)
 	{
-		return Vec3f(	this->Nu[0] * W[0] + this->Nv[0] * W[1] + this->Nn[0] * W[2],
-						this->Nu[1] * W[0] + this->Nv[1] * W[1] + this->Nn[1] * W[2],
-						this->Nu[2] * W[0] + this->Nv[2] * W[1] + this->Nn[2] * W[2]);
+		return Normalize(Vec3f(	this->Nu[0] * W[0] + this->Nv[0] * W[1] + this->Nn[0] * W[2],
+								this->Nu[1] * W[0] + this->Nv[1] * W[1] + this->Nn[1] * W[2],
+								this->Nu[2] * W[0] + this->Nv[2] * W[1] + this->Nn[2] * W[2]));
 	}
 
 	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
@@ -53,39 +54,31 @@ public:
 		const Vec3f Wol = WorldToLocal(Wo);
 		const Vec3f Wil = WorldToLocal(Wi);
 
-		ColorXYZf R;
-
-		R += this->Lambert.F(Wol, Wil);
-		R += this->Microfacet.F(Wol, Wil);
-
-		return R;
+		return this->Lambert.F(Wol, Wil) + this->Microfacet.F(Wol, Wil);
 	}
 
-	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const BrdfSample& S)
+	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, RNG& RNG)
 	{
 		const Vec3f Wol = WorldToLocal(Wo);
 		Vec3f Wil;
 
 		ColorXYZf R;
 
-		if (S.Component <= 0.5f)
+		if (RNG.Get1() <= 0.5f)
 		{
-			this->Lambert.SampleF(Wol, Wil, Pdf, S.Dir);
+			this->Lambert.SampleF(Wol, Wil, Pdf, RNG.Get2());
 		}
 		else
 		{
-			this->Microfacet.SampleF(Wol, Wil, Pdf, S.Dir);
+			this->Microfacet.SampleF(Wol, Wil, Pdf, RNG.Get2());
 		}
 
 		Pdf += this->Lambert.Pdf(Wol, Wil);
 		Pdf += this->Microfacet.Pdf(Wol, Wil);
 
-		R += this->Lambert.F(Wol, Wil);
-		R += this->Microfacet.F(Wol, Wil);
-
 		Wi = LocalToWorld(Wil);
 
-		return R;
+		return this->Lambert.F(Wol, Wil) + this->Microfacet.F(Wol, Wil);
 	}
 
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
@@ -97,7 +90,7 @@ public:
 
 		Pdf += this->Lambert.Pdf(Wol, Wil);
 		Pdf += this->Microfacet.Pdf(Wol, Wil);
-
+		
 		return Pdf;
 	}
 

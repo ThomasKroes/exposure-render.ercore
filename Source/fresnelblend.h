@@ -18,67 +18,51 @@
 namespace ExposureRender
 {
 
-class Blinn
+class FresnelBlend
 {
 public:
-	HOST_DEVICE Blinn(void)
+	HOST_DEVICE FresnelBlend(const ColorXYZf& Rd = ColorXYZf(0.0f), const ColorXYZf& Rs = ColorXYZf(0.0f)) :
+		Rd(Rd),
+		Rs(Rs)
 	{
 	}
 
-	HOST_DEVICE Blinn(const float& Exponent) :
-		Exponent(Exponent)
+	HOST_DEVICE FresnelBlend& operator = (const FresnelBlend& Other)
 	{
-	}
-
-	HOST_DEVICE void SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
-	{
-		const float CosTheta	= powf(U[0], 1.0f / (this->Exponent + 1));
-		const float SinTheta	= sqrtf(max(0.0f, 1.0f - CosTheta * CosTheta));
-		const float Phi			= U[1] * 2.0f * PI_F;
-
-		Vec3f Wh = SphericalDirection(SinTheta, CosTheta, Phi);
-
-		if (!SameHemisphere(Wo, Wh))
-			Wh *= -1.0f;
-
-		Wi = -Wo + 2.0f * Dot(Wo, Wh) * Wh;
-
-		float BlinnPdf = ((Exponent + 1.0f) * powf(CosTheta, this->Exponent)) / (2.0f * PI_F * 4.0f * Dot(Wo, Wh));
-
-		if (Dot(Wo, Wh) <= 0.0f)
-			BlinnPdf = 0.0f;
-
-		Pdf = BlinnPdf;
-	}
-
-	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
-	{
-		const Vec3f Wh = Normalize(Wo + Wi);
-
-		const float CosTheta = AbsCosTheta(Wh);
-
-		float Pdf = ((this->Exponent + 1.0f) * powf(CosTheta, this->Exponent)) / (2.0f * PI_F * 4.0f * Dot(Wo, Wh));
-
-		if (Dot(Wo, Wh) <= 0.0f)
-			Pdf = 0.0f;
-
-		return Pdf;
-	}
-
-	HOST_DEVICE float D(const Vec3f& Wh) const
-	{
-		float CosThetaH = AbsCosTheta(Wh);
-		return (this->Exponent + 2) * INV_TWO_PI_F * powf(max(0.0f, CosThetaH), this->Exponent);
-	}
-
-	HOST_DEVICE Blinn& operator = (const Blinn& Other)
-	{
-		this->Exponent = Other.Exponent;
+		this->Rd 			= Other.Rd;
+		this->Rs 			= Other.Rs;
 
 		return *this;
 	}
 
-	float	Exponent;
+	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi) const
+	{
+		ColorXYZf diffuse = (28.f/(23.f * PI_F)) * Rd * (ColorXYZf(1.0f) - Rs) * (1 - powf(1 - .5f * fabsf(CosTheta(Wi)), 5)) * (1 - powf(1 - .5f * fabsf(CosTheta(Wo)), 5));
+		
+		Vec3f H = Normalize(Wi + Wo);
+
+		ColorXYZf specular = Blinn.D(H) / (8.f * PI_F * AbsDot(Wi, H) * max(fabsf(CosTheta(Wi)), fabsf(CosTheta(Wo)))) * SchlickFresnel(Dot(Wi, H));
+
+		return diffuse + specular;
+	}
+
+	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
+	{
+		
+	}
+
+	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi) const
+	{
+	}
+
+	HOST_DEVICE ColorXYZf SchlickFresnel(float costheta) const
+	{
+		return Rs + powf(1 - costheta, 5.f) * (ColorXYZf(1.0f) - Rs);
+	}
+
+	ColorXYZf 	Rd;
+	ColorXYZf 	Rs;
+	Blinn		Blinn;
 };
 
 
