@@ -26,7 +26,7 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV
 
 	Ray Rc;
 
-	ScatterEvent SE(Enums::Volume);
+	Intersection Int;
 
 	float Sum = 0.0f, SumWeight = 0.0f;
 
@@ -44,17 +44,17 @@ KERNEL void KrnlComputeAutoFocusDistance(float* pAutoFocusDistance, Vec2i FilmUV
 		Rc.MinT	= gpTracer->Camera.ClipNear;
 		Rc.MaxT	= gpTracer->Camera.ClipFar;
 
-		IntersectVolume(Rc, RNG, SE);
+		IntersectVolume(Rc, RNG, Int);
 
-		if (SE.T > 0.0f)
+		if (Int.Valid && Int.T > 0.0f)
 		{
-			Sum += (SE.P - Rc.O).Length();
+			Sum += (Int.P - Rc.O).Length();
 			SumWeight += 1.0f;
 		}
 	}
 
 	if (Sum <= 0.0f)
-		*pAutoFocusDistance = (SE.P - Rc.O).Length();
+		*pAutoFocusDistance = (Int.P - Rc.O).Length();
 	else
 		*pAutoFocusDistance = Sum / SumWeight;
 }

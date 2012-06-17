@@ -43,42 +43,8 @@ KERNEL void KrnlSampleCamera()
 	Intersection Ints[2];
 
 	IntersectObjects(R, Ints[0]);
-
-	float MinT = 0.0f, MaxT = 0.0f;
-
-	if (Volume.BoundingBox.Intersect(R, MinT, MaxT))
-	{
-		R.MinT = MinT;
-		R.MaxT = MaxT;
-
-		const float S	= -log(RNG.Get1()) / gDensityScale;
-		float Sum		= 0.0f;
-		float Intensity = 0.0f;
-		Vec3f P;
-
-		R.MinT += RNG.Get1() * gStepFactorPrimary;
-
-		while (Sum < S)
-		{
-			if (R.MinT >= R.MaxT)
-				break;
-
-			P			= R(R.MinT);
-			Intensity	= Volume(P, 0);
-			Sum			+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
-			R.MinT		+= gStepFactorPrimary;
-		}
-
-		if (R.MinT < R.MaxT)
-		{
-			Ints[1].Valid		= true;
-			Ints[1].T			= R.MinT;
-			Ints[1].P			= P;
-			Ints[1].Intensity	= Intensity;
-			Ints[1].ScatterType	= Enums::Volume;
-		}
-	}
-
+	IntersectVolume(R, RNG, Ints[1]);
+	
 	Intersection& Int = gpTracer->FrameBuffer.Samples(IDx, IDy).Intersection;
 
 	Int.Valid	= false;

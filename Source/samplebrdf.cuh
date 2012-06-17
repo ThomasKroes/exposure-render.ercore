@@ -14,6 +14,7 @@
 #pragma once
 
 #include "macros.cuh"
+#include "textures.h"
 
 namespace ExposureRender
 {
@@ -76,7 +77,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 		Le /= LightPdf;
 
-		if (!ScatterEventInVolume(R, RNG))
+		if (!IntersectsVolume(R, RNG))
 		{
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Le[0];
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Le[1];
