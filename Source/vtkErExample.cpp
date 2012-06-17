@@ -42,7 +42,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
 #define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 0.02f;
+	const float KeyLightSize = 0.1f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
@@ -247,8 +247,8 @@ void CreateLighting(vtkErTracer* Tracer)
 //	KeyLight->SetVisible(false);
 	KeyLight->SetElevation(5.0f);
 	KeyLight->SetAzimuth(45.0f);
-	KeyLight->SetOffset(1.6f);
-	KeyLight->SetMultiplier(1.0f);
+	KeyLight->SetOffset(1.5f);
+	KeyLight->SetMultiplier(5.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 	KeyLight->SetRelativeToCamera(true);
@@ -269,7 +269,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErObject> RimLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float RimLightSize = 0.01f;
+	const float RimLightSize = 0.1f;
 
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Plane);
@@ -277,8 +277,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetVisible(true);
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(-20.0f);
-	RimLight->SetOffset(2.8f);
-	RimLight->SetMultiplier(1.0f);
+	RimLight->SetOffset(1.5f);
+	RimLight->SetMultiplier(5.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
 	RimLight->SetRelativeToCamera(true);
