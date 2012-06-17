@@ -17,52 +17,41 @@
 #include "geometry.h"
 #include "volume.h"
 #include "transferfunction.h"
-#include "shapes.h"
-#include "scatterevent.h"
-#include "segment.h"
 
 namespace ExposureRender
 {
 
-DEVICE void IntersectVolume(Ray R, RNG& RNG, ScatterEvent& SE, const int& VolumeID = 0)
+DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& VolumeID = 0)
 {
-	/*
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
 
-	Intersection Int;
-
-	Box BoundingBox(Volume.BoundingBox.MinP, Volume.BoundingBox.MaxP);
-
-	if (!BoundingBox.Intersect(R, R.MinT, R.MaxT))
+	if (!Volume.BoundingBox.Intersect(R, R.MinT, R.MaxT))
 		return;
 
 	const float S	= -log(RNG.Get1()) / gDensityScale;
 	float Sum		= 0.0f;
 
-	Vec3f P[BLOCK_SIZE];
-
-	__syncthreads();
-
-	float Intensity = 0.0f;
-
 	R.MinT += RNG.Get1() * gStepFactorPrimary;
 
 	while (Sum < S)
 	{
-		if (R.MinT >= R.MaxT)
+		if (R.MinT + gStepFactorPrimary >= R.MaxT)
 			return;
+		
+		Int.P			= R(R.MinT);
+		Int.Intensity	= Volume(Int.P, VolumeID);
 
-		P[IDt]		= R.O + R.MinT * R.D;
-		Intensity	= Volume([IDt], VolumeID);
-		Sum			+= gDensityScale * gpTracer->GetOpacity(Intensity) * gStepFactorPrimary;
-		R.MinT		+= gStepFactorPrimary;
+		Sum				+= gDensityScale * gpTracer->GetOpacity(Int.Intensity) * gStepFactorPrimary;
+		R.MinT			+= gStepFactorPrimary;
 	}
 
-	SE.SetVolumeScattering(R.MinT, [IDt], Volume.NormalizedGradient([IDt], Enums::CentralDifferences), -R.D, Intensity);
-	*/
+	Int.Valid			= true;
+	Int.N				= Volume.NormalizedGradient(Int.P, Enums::CentralDifferences);
+	Int.T				= R.MinT;
+	Int.ScatterType		= Enums::Volume;
 }
 
-DEVICE bool ScatterEventInVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
+DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 {
 	if (!gpTracer->VolumeProperty.Shadows)
 		return false;
@@ -81,7 +70,7 @@ DEVICE bool ScatterEventInVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 
 	while (Sum < S)
 	{
-		if (R.MinT > R.MaxT)
+		if (R.MinT + gStepFactorShadow > R.MaxT)
 			return false;
 
 		Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), VolumeID)) * gStepFactorShadow;

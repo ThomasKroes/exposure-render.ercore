@@ -62,7 +62,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	const Ray R(SS.P, Normalize(Wi), 0.0f, Wi.Length());
 
-	if (!ScatterEventInVolume(R, RNG))
+	if (!IntersectsVolume(R, RNG))
 	{
 		//const ColorXYZf F = Shader.F(R.D, Wi);
 
