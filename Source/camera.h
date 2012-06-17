@@ -163,7 +163,7 @@ public:
 				case Enums::Polygon:
 				{
 					const float LensY		= RNG.Get1() * this->NoApertureBlades;
-					const float Side		= (int)LensY;
+					const int Side			= (int)LensY;
 					const float Offset		= (float) LensY - Side;
 					const float Distance	= (float) sqrtf(RNG.Get1());
 					const float A0 			= (float) (Side * PI_F * 2.0f / this->NoApertureBlades + this->ApertureAngle);

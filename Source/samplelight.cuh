@@ -54,8 +54,20 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	Le /= LightPdf;
 
-	if (!ScatterEventInVolume(Ray(SS.P, Normalize(Int.P - SS.P), 0.0f, (Int.P - SS.P).Length()), RNG))
+//	Shader Shader;
+
+//	Int.GetShader(Shader, RNG);
+
+	const Vec3f Wi = Int.P - SS.P;
+
+	const Ray R(SS.P, Normalize(Wi), 0.0f, Wi.Length());
+
+	if (!ScatterEventInVolume(R, RNG))
 	{
+		//const ColorXYZf F = Shader.F(R.D, Wi);
+
+		//Le *= F;
+
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = Le[0];
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = Le[1];
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = Le[2];
