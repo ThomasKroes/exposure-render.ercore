@@ -48,15 +48,15 @@ public:
 		return 1.0f;
 	}
 
-	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const BrdfSample& S)
+	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, RNG& RNG)
 	{
 		switch (this->Type)
 		{
 			case Enums::Brdf:
-				return this->Brdf.SampleF(Wo, Wi, Pdf, S);
+				return this->Brdf.SampleF(Wo, Wi, Pdf, RNG);
 
 			case Enums::PhaseFunction:
-				return this->IsotropicPhase.SampleF(Wo, Wi, Pdf, S.Dir);
+				return this->IsotropicPhase.SampleF(Wo, Wi, Pdf, RNG.Get2());
 		}
 
 		return ColorXYZf(0.0f);
@@ -108,7 +108,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 				case Enums::BrdfOnly:
 				{
 					Shader.Type	= Enums::Brdf;			
-					Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+					Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, Glossiness);
 
 					break;
 				}
@@ -137,7 +137,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 					if (RNG.Get1() < PdfBrdf)
 					{
 						Shader.Type	= Enums::Brdf;			
-						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, Glossiness);
 					}
 					else
 					{
@@ -161,7 +161,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 					if (RNG.Get1() < PdfBrdf)
 					{
 						Shader.Type	= Enums::Brdf;			
-						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, Glossiness);
 					}
 					else
 					{

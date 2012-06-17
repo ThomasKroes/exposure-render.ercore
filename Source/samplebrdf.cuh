@@ -15,6 +15,7 @@
 
 #include "macros.cuh"
 #include "textures.h"
+#include "shader.h"
 
 namespace ExposureRender
 {
@@ -31,7 +32,7 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 		
 		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT && LocalInt.Front)
 		{
-			NearestT			= Int.T;
+			NearestT			= LocalInt.T;
 			Int					= LocalInt;
 			Int.Valid			= true;
 			Int.ScatterType		= Object.Emitter ? Enums::Light : Enums::Object;
@@ -53,30 +54,55 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
-	Ray R(Sample.Intersection.P, UniformSampleSphere(RNG.Get2()), gStepFactorShadow, FLT_MAX);
+	Ray R;
+	
+	R.O		= Sample.Intersection.P;
+	R.MinT	= gStepFactorShadow;
+	R.MaxT	= 1000.0f;
+
+	Shader Shader;
+
+	GetShader(Sample.Intersection, Shader, RNG);
+
+	float ShaderPdf = 0.0f;
+
+	const ColorXYZf F = Shader.SampleF(Sample.Intersection.Wo, R.D, ShaderPdf, RNG);
+
+	if (F.IsBlack() || F.IsBlack() || ShaderPdf <= 0.0f)
+		return;
 
 	Intersection Int;
 
 	IntersectObjects(R, Int);
 
+	if (!Int.ID != Sample.Intersection.ID)
+		return;
+	
 	if (Int.Valid && Int.ScatterType == Enums::Light)
 	{
 		Object& Light = gpObjects[Int.ID];
 
-		ColorXYZf Le = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
+		ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
 
 		if (Light.EmissionUnit == Enums::Power)
-			Le /= Light.Shape.Area;
+			Li /= Light.Shape.Area;
 
 		const float LightPdf = DistanceSquared(Int.P, Sample.Intersection.P) / (Light.Shape.Area);
 
-		Le /= LightPdf;
+		const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
+
+		ColorXYZf Ld;
+
+		if (Shader.Type == Enums::Brdf)
+			Ld = F * Li * (AbsDot(R.D, Sample.Intersection.N) * Weight / ShaderPdf);
+		else
+			Ld = F * ((Li * Weight) / ShaderPdf);
 
 		if (!IntersectsVolume(R, RNG))
 		{
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Le[0];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Le[1];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Le[2];
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Ld[0];
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Ld[1];
+			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Ld[2];
 		}
 	}
 }

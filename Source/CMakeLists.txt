@@ -152,6 +152,7 @@ SET(Shading
 	lambert.h
 	microfacet.h
 	phasefunction.h
+	fresnelblend.h
 	blinn.h
 )
 

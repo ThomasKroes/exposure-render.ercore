@@ -35,24 +35,19 @@ public:
 
 	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
 	{
-		const float cosThetaO = AbsCosTheta(Wo);
-		const float cosThetaI = AbsCosTheta(Wi);
+		const float CosThetaO = AbsCosTheta(Wo);
+		const float CosThetaI = AbsCosTheta(Wi);
 
-		if (cosThetaI == 0.0f || cosThetaO == 0.0f)
+		if (CosThetaO == 0.0f || CosThetaI == 0.0f)
 			return ColorXYZf(0.0f);
 
-		Vec3f Wh = Wi + Wo;
+		const Vec3f Wh = Normalize(Wi + Wo);
 
-		if (Wh[0] == 0.0f && Wh[1] == 0.0f && Wh[2] == 0.0f)
-			return ColorXYZf(0.0f);
+		const float CosThetaH = Dot(Wi, Wh);
 
-		Wh = Normalize(Wh);
-		
-		float cosThetaH = Dot(Wi, Wh);
+		const ColorXYZf Fr = this->Fresnel.Evaluate(CosThetaH);
 
-		ColorXYZf F = this->Fresnel.Evaluate(cosThetaH);
-
-		return this->R * this->Blinn.D(Wh) * G(Wo, Wi, Wh) * F / (4.0f * cosThetaI * cosThetaO);
+		return this->R * this->Blinn.D(Wh) * G(Wo, Wi, Wh) * Fr / (4.0f * CosThetaI * CosThetaO);
 	}
 
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
