@@ -30,7 +30,7 @@ vtkErObject::vtkErObject(void)
 
 	this->SetEnabled(true);
 	this->SetVisible(true);
-	this->SetEmitter(true);
+	this->SetEmitter(false);
 	this->SetMultiplier(100.0f);
 	this->SetEmissionUnit(Enums::Power);
 }

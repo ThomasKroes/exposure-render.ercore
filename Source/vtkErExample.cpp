@@ -37,12 +37,13 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
+char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+#define RIM_LIGHT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -124,47 +125,47 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 5.0f;
+	const float StepSize = 3.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(3*StepSize);
-	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(600000);
-	VolumeProperty->SetGradientFactor(10.0f);
+	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetDensityScale(25);
+	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(10, 0);
-	Opacity->AddPoint(11, 1);
+	Opacity->AddPoint(0, 0);
+	Opacity->AddPoint(1, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	/*
-	for (int i = 0; i < 1; i++)
+	
+	for (int i = 0; i < 36; i++)
 	{
-		Diffuse->AddHSVPoint(i * 300, rand() / (float)RAND_MAX, 1.0f, 1.0f);
+		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	*/
+	/**/
 
-	const float DiffuseLevel = 0.0f;
+	const float DiffuseLevel = 1.0f;
 /*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-*/	
+	
 	
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	
+	*/
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float SpecularLevel = 0.5f;
+	const float SpecularLevel = 1.0f;
 
 	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
 	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
@@ -214,10 +215,40 @@ void LoadVolume(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
 
 	Volume->SetInputConnection(vtkErVolume::ImageDataPort, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(Enums::Linear);
+	Volume->SetFilterMode(Enums::NearestNeighbour);
 	Volume->SetAcceleratorType(Enums::NoAcceleration);
 
-	Tracer->SetInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
+	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
+}
+
+void LoadDistanceField(vtkErTracer* Tracer)
+{
+	vtkSmartPointer<vtkMetaImageReader> Reader = vtkSmartPointer<vtkMetaImageReader>::New();
+	
+	Reader->SetFileName(gDistanceField);
+	
+	if (Reader->CanReadFile(gDistanceField) == 0)
+	{
+		printf("Can't read %s, aborting!\n", gDistanceField);
+		exit(EXIT_FAILURE);
+	}
+
+	Reader->Update();
+
+	vtkSmartPointer<vtkImageCast> ImageCast = vtkSmartPointer<vtkImageCast>::New();
+	
+	ImageCast->SetOutputScalarTypeToUnsignedShort();
+	ImageCast->SetClampOverflow(1);
+	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
+	ImageCast->Update();
+
+	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
+
+	Volume->SetInputConnection(vtkErVolume::ImageDataPort, ImageCast->GetOutputPort());
+	Volume->SetFilterMode(Enums::NearestNeighbour);
+	Volume->SetAcceleratorType(Enums::NoAcceleration);
+
+	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
 }
 
 void CreateCamera(vtkRenderer* Renderer)
@@ -241,17 +272,18 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	const float KeyLightSize = 0.1f;
 
+	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetVisible(true);
 	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(45.0f);
+	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(1.0f);
 	KeyLight->SetMultiplier(5.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
-//	KeyLight->SetRelativeToCamera(true);
+	KeyLight->SetRelativeToCamera(true);
 	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
@@ -269,8 +301,9 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErObject> RimLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float RimLightSize = 0.1f;
+	const float RimLightSize = 0.01f;
 
+	RimLight->SetEmitter(true);
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Plane);
 	RimLight->SetOneSided(true);
@@ -299,13 +332,14 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef ENVIRONMENT_ON
 	vtkSmartPointer<vtkErObject> EnvironmentLight = vtkSmartPointer<vtkErObject>::New();
 	
+	EnvironmentLight->SetEmitter(true);
 	EnvironmentLight->SetAlignmentType(Enums::AxisAlign);
 	EnvironmentLight->SetAxis(ExposureRender::Enums::Y);
 	EnvironmentLight->SetPosition(0, 0, 0);
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(5.0f);
-	EnvironmentLight->SetMultiplier(1.0f);
+	EnvironmentLight->SetMultiplier(2.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -341,7 +375,7 @@ void CreateLighting(vtkErTracer* Tracer)
 		printf("%s cannot be loaded, reverting to gradient background.", gEnvironmentBitmap);
 
 		EnvironmentLightTexture->SetTextureType(Enums::Procedural);
-		EnvironmentLightTexture->SetProceduralType(Enums::Uniform);
+		EnvironmentLightTexture->SetProceduralType(Enums::Gradient);
 
 		vtkSmartPointer<vtkColorTransferFunction> Gradient = vtkSmartPointer<vtkColorTransferFunction>::New();
 		

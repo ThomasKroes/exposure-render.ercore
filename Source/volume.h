@@ -98,12 +98,18 @@ public:
 	DEVICE unsigned short operator()(const Vec3f& XYZ, const int& TextureID = 0)
 	{
 		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.MinP) * this->InvSize;
-		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
+		
+		switch (TextureID)
+		{
+			case 0: return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
+			case 1: return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
+		}
 	}
 
 	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)
 	{
 		const Vec3f NormalizedXYZ((float)X / (float)Voxels.GetResolution()[0], (float)X / (float)Voxels.GetResolution()[1], (float)X / (float)Voxels.GetResolution()[2]);
+		
 		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
 
@@ -113,7 +119,7 @@ public:
 		{
 			case Enums::NoAcceleration:
 			{
-				return (*this)(P);
+				return (*this)(P, 1);
 			}
 
 			case Enums::Octree:

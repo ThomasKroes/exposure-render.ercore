@@ -16,6 +16,7 @@
 using namespace std;
 
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
 
 #include "color.h"
 
@@ -168,6 +169,9 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 
 	if (Tracer.VolumeIDs[0] >= 0)
 		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume0);
+
+	if (Tracer.VolumeIDs[1] >= 0)
+		gVolumes[Tracer.VolumeIDs[1]].Voxels.Bind(TexVolume1);
 
 	SingleScattering(Tracer, Statistics);
 	GaussianFilterFrameEstimate(Tracer, Statistics);
