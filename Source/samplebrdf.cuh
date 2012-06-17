@@ -75,7 +75,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	IntersectObjects(R, Int);
 
-	if (!Int.ID != Sample.Intersection.ID)
+	if (Int.ID != Sample.Intersection.ID)
 		return;
 	
 	if (Int.Valid && Int.ScatterType == Enums::Light)
