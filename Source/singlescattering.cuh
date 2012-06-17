@@ -19,6 +19,9 @@
 
 #include <thrust/remove.h>
 
+//#define SAMPLE_LIGHT
+#define SAMPLE_BRDF
+
 namespace ExposureRender
 {
 
@@ -45,18 +48,22 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 	int NoSamples = 0;
 
 	RemoveRedundantSamples(Tracer, NoSamples);
-
-	if (NoSamples > 0)
-		SampleLight(Tracer, Statistics, NoSamples);
 	
-	Statistics = Timing("No. Samples (Sample Light)", NoSamples);
-/*
+#ifdef SAMPLE_LIGHT
 	if (NoSamples > 0)
+	{
+		SampleLight(Tracer, Statistics, NoSamples);
+		Statistics = Timing("No. Samples (Sample Light)", NoSamples);
+	}
+#endif
+
+#ifdef SAMPLE_BRDF
+	if (NoSamples > 0)
+	{
 		SampleBrdf(Tracer, Statistics, NoSamples);
-
-	Statistics = Timing("No. Samples (Sample BRDF)", NoSamples);
-
-	*/
+		Statistics = Timing("No. Samples (Sample BRDF)", NoSamples);
+	}
+#endif
 }
 
 }

@@ -63,6 +63,8 @@ DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 	if (!Volume.BoundingBox.Intersect(R, R.MinT, MaxT))
 		return false;
 
+	R.MaxT = min(R.MaxT, MaxT);
+
 	const float S	= -log(RNG.Get1()) / gDensityScale;
 	float Sum		= 0.0f;
 	
@@ -70,7 +72,7 @@ DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 
 	while (Sum < S)
 	{
-		if (R.MinT + gStepFactorShadow > R.MaxT)
+		if (R.MinT > R.MaxT)
 			return false;
 
 		Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), VolumeID)) * gStepFactorShadow;
