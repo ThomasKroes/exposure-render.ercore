@@ -46,6 +46,7 @@ DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& Volum
 	}
 
 	Int.Valid			= true;
+	Int.Wo				= -R.D;
 	Int.N				= Volume.NormalizedGradient(Int.P, Enums::CentralDifferences);
 	Int.T				= R.MinT;
 	Int.ScatterType		= Enums::Volume;
