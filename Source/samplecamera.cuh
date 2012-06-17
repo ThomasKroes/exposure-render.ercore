@@ -75,6 +75,7 @@ KERNEL void KrnlSampleCamera()
 			Ints[1].T			= R.MinT;
 			Ints[1].P			= P;
 			Ints[1].Intensity	= Intensity;
+			Ints[1].ScatterType	= Enums::Volume;
 		}
 	}
 

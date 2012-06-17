@@ -135,11 +135,6 @@ HOST_DEVICE_NI inline Vec3f CosineWeightedHemisphere(const Vec2f& U, const Vec3f
 						u[2] * Wl[0] + v[2] * Wl[1] + N[2] * Wl[2]);
 }
 
-HOST_DEVICE_NI inline float CosineWeightedHemispherePdf(const float& CosTheta, const float& Phi)
-{
-	return CosTheta * INV_PI_F;
-}
-
 HOST_DEVICE_NI inline Vec3f SphericalDirection(const float& SinTheta, const float& CosTheta, const float& Phi)
 {
 	return Vec3f(SinTheta * cosf(Phi), SinTheta * sinf(Phi), CosTheta);

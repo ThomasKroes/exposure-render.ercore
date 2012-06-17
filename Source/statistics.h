@@ -31,6 +31,7 @@ public:
 		Count(0),
 		FPS(0.0f)
 	{
+		*this = Other;
 	}
 
 	HOST Statistics& operator = (const Statistics& Other)
