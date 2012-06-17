@@ -53,12 +53,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
-	Ray R;
-
-	R.O		= Sample.Intersection.P;
-	R.D 	= UniformSampleSphere(RNG.Get2());
-	R.MinT	= gStepFactorShadow;
-	R.MaxT	= FLT_MAX;
+	Ray R(Sample.Intersection.P, UniformSampleSphere(RNG.Get2()), gStepFactorShadow, FLT_MAX);
 
 	Intersection Int;
 
