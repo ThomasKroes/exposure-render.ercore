@@ -57,7 +57,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	R.O		= Sample.Intersection.P;
 	R.D 	= UniformSampleSphere(RNG.Get2());
-	R.MinT	= 0.0f;
+	R.MinT	= gStepFactorShadow;
 	R.MaxT	= 2000.0f;
 
 	Intersection Int;
@@ -82,14 +82,12 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Le[0];
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Le[1];
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Le[2];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] += 1.0f;
 		}
 		else
 		{
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = 0.0f;
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = 0.0f;
 			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = 0.0f;
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 0.0f;
 		}
 	}
 }
