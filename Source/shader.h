@@ -90,4 +90,114 @@ public:
 	IsotropicPhase				IsotropicPhase;
 };
 
+DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const int& VolumeID = 0)
+{
+	switch (Int.ScatterType)
+	{
+		case Enums::Volume:
+		{
+			VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
+
+			const ColorXYZf Diffuse			= gpTracer->GetDiffuse(Int.Intensity);
+			const ColorXYZf Specular		= gpTracer->GetSpecular(Int.Intensity);
+			const float Glossiness			= gpTracer->GetGlossiness(Int.Intensity);
+			const float IndexOfReflection	= gpTracer->GetIndexOfReflection(Int.Intensity);
+
+			switch (VolumeProperty.ShadingType)
+			{
+				case Enums::BrdfOnly:
+				{
+					Shader.Type	= Enums::Brdf;			
+					Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+
+					break;
+				}
+
+				case Enums::PhaseFunctionOnly:
+				{
+					Shader.Type				= Enums::PhaseFunction;
+					Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
+
+					break;
+				}
+
+				case Enums::Hybrid:
+				{
+					Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+
+					const float GradientMagnitude			= Volume.GradientMagnitude(Int.P);
+					const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
+
+					const float Sensitivity	= 25;
+					const float ExpGF		= 3;
+					const float Exponent	= Sensitivity * powf(VolumeProperty.GradientFactor, ExpGF) * NormalizedGradientMagnitude;
+					
+					const float PdfBrdf = gpTracer->VolumeProperty.OpacityModulated ? gpTracer->GetOpacity(Int.Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
+					
+					if (RNG.Get1() < PdfBrdf)
+					{
+						Shader.Type	= Enums::Brdf;			
+						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+					}
+					else
+					{
+						Shader.Type				= Enums::PhaseFunction;
+						Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
+					}
+
+					break;
+				}
+				
+				case Enums::Modulation:
+				{
+					Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+
+					const float GradientMagnitude = Volume.GradientMagnitude(Int.P);
+
+					const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
+	
+					const float PdfBrdf = 1.0f - powf(1.0f - NormalizedGradientMagnitude, 2.0f);
+					
+					if (RNG.Get1() < PdfBrdf)
+					{
+						Shader.Type	= Enums::Brdf;			
+						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
+					}
+					else
+					{
+						Shader.Type				= Enums::PhaseFunction;
+						Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
+					}
+
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case Enums::Light:
+		{
+			break;
+		}
+
+		case Enums::Object:
+		{
+			const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[Int.ID].DiffuseTextureID, Int.UV);
+			const ColorXYZf Specular	= EvaluateTexture(gpObjects[Int.ID].SpecularTextureID, Int.UV);
+			const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[Int.ID].GlossinessTextureID, Int.UV);
+
+			Shader.Type	= Enums::Brdf;			
+			Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, 15, 500);
+
+			break;
+		}
+
+		case Enums::SlicePlane:
+		{
+			break;
+		}
+	}
+}
+
 }

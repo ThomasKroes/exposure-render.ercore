@@ -14,6 +14,7 @@
 #pragma once
 
 #include "macros.cuh"
+#include "shader.h"
 
 namespace ExposureRender
 {
@@ -52,9 +53,9 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	Le /= LightPdf;
 
-//	Shader Shader;
+	Shader Shader;
 
-//	Int.GetShader(Shader, RNG);
+	GetShader(Int, Shader, RNG);
 
 	const Vec3f Wi = SS.P - Int.P;
 
@@ -62,9 +63,9 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	if (!IntersectsVolume(R, RNG))
 	{
-		//const ColorXYZf F = Shader.F(R.D, Wi);
+		const ColorXYZf F = Shader.F(R.D, Wi);
 
-		//Le *= F;
+		Le *= F;
 
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Le[0];
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Le[1];

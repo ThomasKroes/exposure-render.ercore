@@ -26,6 +26,7 @@ public:
 	HOST_DEVICE Intersection() :
 		Valid(false),
 		Front(true),
+		Wo(),
 		T(FLT_MAX),
 		P(),
 		N(),
@@ -39,6 +40,7 @@ public:
 	HOST_DEVICE Intersection(const Intersection& Other) :
 		Valid(false),
 		Front(true),
+		Wo(),
 		T(FLT_MAX),
 		P(),
 		N(),
@@ -54,6 +56,7 @@ public:
 	{
 		this->Valid			= Other.Valid;
 		this->Front			= Other.Front;
+		this->Wo			= Other.Wo;
 		this->T				= Other.T;
 		this->P				= Other.P;
 		this->N				= Other.N;
@@ -64,122 +67,10 @@ public:
 
 		return *this;
 	}
-/*
-#ifdef __CUDACC__
-	DEVICE void GetShader(Shader& Shader, RNG& RNG, const int& VolumeID = 0)
-	{
-		switch (this->ScatterType)
-		{
-			case Enums::Volume:
-			{
-				VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
-
-				const ColorXYZf Diffuse			= gpTracer->GetDiffuse(this->Intensity);//VolumeProperty.Diffuse1D.Evaluate(this->Intensity);
-				const ColorXYZf Specular		= gpTracer->GetSpecular(this->Intensity);//VolumeProperty.Specular1D.Evaluate(this->Intensity);
-				const float Glossiness			= gpTracer->GetGlossiness(this->Intensity);//VolumeProperty.Glossiness1D.Evaluate(this->Intensity);
-				const float IndexOfReflection	= gpTracer->GetIndexOfReflection(this->Intensity);//VolumeProperty.IndexOfReflection1D.Evaluate(this->Intensity);
-
-				switch (VolumeProperty.ShadingType)
-				{
-					case Enums::BrdfOnly:
-					{
-						Shader.Type	= Enums::Brdf;			
-						Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
-
-						break;
-					}
-
-					case Enums::PhaseFunctionOnly:
-					{
-						Shader.Type				= Enums::PhaseFunction;
-						Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
-
-						break;
-					}
-
-					case Enums::Hybrid:
-					{
-						Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
-
-						const float GradientMagnitude			= Volume.GradientMagnitude(this->P);
-						const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
-
-						const float Sensitivity	= 25;
-						const float ExpGF		= 3;
-						const float Exponent	= Sensitivity * powf(VolumeProperty.GradientFactor, ExpGF) * NormalizedGradientMagnitude;
-						
-						const float PdfBrdf = gpTracer->VolumeProperty.OpacityModulated ? gpTracer->GetOpacity(this->Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
-						
-						if (RNG.Get1() < PdfBrdf)
-						{
-							Shader.Type	= Enums::Brdf;			
-							Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
-						}
-						else
-						{
-							Shader.Type				= Enums::PhaseFunction;
-							Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
-						}
-
-						break;
-					}
-					
-					case Enums::Modulation:
-					{
-						Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
-
-						const float GradientMagnitude = Volume.GradientMagnitude(this->P);
-
-						const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
-		
-						const float PdfBrdf = 1.0f - powf(1.0f - NormalizedGradientMagnitude, 2.0f);
-						
-						if (RNG.Get1() < PdfBrdf)
-						{
-							Shader.Type	= Enums::Brdf;			
-							Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, IndexOfReflection, GlossinessExponent(Glossiness));
-						}
-						else
-						{
-							Shader.Type				= Enums::PhaseFunction;
-							Shader.IsotropicPhase	= IsotropicPhase(Diffuse);
-						}
-
-						break;
-					}
-				}
-
-				break;
-			}
-
-			case Enums::Light:
-			{
-				break;
-			}
-
-			case Enums::Object:
-			{
-				const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[this->ID].DiffuseTextureID, this->UV);
-				const ColorXYZf Specular	= EvaluateTexture(gpObjects[this->ID].SpecularTextureID, this->UV);
-				const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[this->ID].GlossinessTextureID, this->UV);
-
-				Shader.Type	= Enums::Brdf;			
-				Shader.Brdf	= Brdf(this->N, this->Wo, Diffuse, Specular, 15, 500);
-
-				break;
-			}
-
-			case Enums::SlicePlane:
-			{
-				break;
-			}
-		}
-	}
-#endif
-*/
 
 	bool					Valid;
 	bool					Front;
+	Vec3f					Wo;
 	float					T;
 	Vec3f					P;
 	Vec3f					N;
