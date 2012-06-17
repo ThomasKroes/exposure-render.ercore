@@ -41,15 +41,15 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
-//#define ENVIRONMENT_ON
+#define RIM_LIGHT_ON
+#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environmentd.png";
+	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environment.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -128,15 +128,15 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(StepSize);
+	VolumeProperty->SetStepFactorShadow(3*StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(3000);
 	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(100, 0);
-	Opacity->AddPoint(101, 1);
+	Opacity->AddPoint(10, 0);
+	Opacity->AddPoint(11, 1);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
@@ -224,7 +224,7 @@ void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
-	Camera->SetExposure(1);
+	Camera->SetExposure(10);
 	Camera->SetApertureShape(Enums::Polygon);
 	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(3);
@@ -239,7 +239,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 2.01f;
+	const float KeyLightSize = 0.02f;
 
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
@@ -269,7 +269,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErObject> RimLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float RimLightSize = 2.0f;
+	const float RimLightSize = 0.01f;
 
 	RimLight->SetAlignmentType(Enums::Spherical);
 	RimLight->SetShapeType(Enums::Plane);
@@ -278,7 +278,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetElevation(15.0f);
 	RimLight->SetAzimuth(-20.0f);
 	RimLight->SetOffset(2.8f);
-	RimLight->SetMultiplier(3.0f);
+	RimLight->SetMultiplier(1.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
 	RimLight->SetRelativeToCamera(true);
@@ -305,7 +305,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(2.0f);
-	EnvironmentLight->SetMultiplier(0.1f);
+	EnvironmentLight->SetMultiplier(1.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 

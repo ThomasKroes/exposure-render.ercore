@@ -30,8 +30,6 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
 	Intersection& Int = Sample.Intersection;
 
-	gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(0.0f);
-
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 
 	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
@@ -58,9 +56,9 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 //	Int.GetShader(Shader, RNG);
 
-	const Vec3f Wi = Int.P - SS.P;
+	const Vec3f Wi = SS.P - Int.P;
 
-	const Ray R(SS.P, Normalize(Wi), 0.0f, Wi.Length());
+	const Ray R(Int.P, Normalize(Wi), 0.0f, Wi.Length());
 
 	if (!IntersectsVolume(R, RNG))
 	{
@@ -68,19 +66,10 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 		//Le *= F;
 
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = Le[0];
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = Le[1];
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = Le[2];
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 1.0f;
+		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Le[0];
+		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Le[1];
+		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Le[2];
 	}
-	else
-	{
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] = 0.0f;
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] = 0.0f;
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] = 0.0f;
-		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[3] = 0.0f;
-	}
-	/**/
 }
 
 void SampleLight(Tracer& Tracer, Statistics& Statistics, int NoSamples)

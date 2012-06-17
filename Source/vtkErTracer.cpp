@@ -214,7 +214,7 @@ void vtkErTracer::AfterRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	{
 		this->NameTextActor = vtkSmartPointer<vtkTextActor>::New();
 
-		this->NameTextActor->GetTextProperty()->SetFontSize(12);
+		this->NameTextActor->GetTextProperty()->SetFontSize(10);
 		this->NameTextActor->SetPosition(20, 20);
 
 		Renderer->AddActor2D(this->NameTextActor);
@@ -227,7 +227,7 @@ void vtkErTracer::AfterRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	{
 		this->DurationTextActor = vtkSmartPointer<vtkTextActor>::New();
 
-		this->DurationTextActor->GetTextProperty()->SetFontSize(12);
+		this->DurationTextActor->GetTextProperty()->SetFontSize(10);
 		this->DurationTextActor->SetPosition(250, 20);
 
 		Renderer->AddActor2D(this->DurationTextActor);

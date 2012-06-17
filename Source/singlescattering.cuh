@@ -19,7 +19,7 @@
 
 #include <thrust/remove.h>
 
-//#define SAMPLE_LIGHT
+#define SAMPLE_LIGHT
 #define SAMPLE_BRDF
 
 namespace ExposureRender
