@@ -1,0 +1,5 @@
+syntax: glob
+Build/**
+build
+CMakeFiles
+CMakeCache.txt
