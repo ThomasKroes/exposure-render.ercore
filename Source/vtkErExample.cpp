@@ -40,7 +40,7 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
 char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
 
-//#define BACK_PLANE_ON
+#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
 #define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
