@@ -36,8 +36,7 @@
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
-char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
@@ -126,7 +125,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(3*StepSize);
+	VolumeProperty->SetStepFactorShadow(3 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(25);
 	VolumeProperty->SetGradientFactor(1.0f);
@@ -134,29 +133,29 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(1, 1);
+	Opacity->AddPoint(1, 0);
 	Opacity->AddPoint(1024, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	
+	/*
 	for (int i = 0; i < 36; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	/**/
+	*/
 
 	const float DiffuseLevel = 1.0f;
 /*
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	
-	
+	*/
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
-	*/
+	
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
@@ -197,36 +196,6 @@ void LoadVolume(vtkErTracer* Tracer)
 	if (Reader->CanReadFile(gVolumeFile) == 0)
 	{
 		printf("Can't read %s, aborting!\n", gVolumeFile);
-		exit(EXIT_FAILURE);
-	}
-
-	Reader->Update();
-
-	vtkSmartPointer<vtkImageCast> ImageCast = vtkSmartPointer<vtkImageCast>::New();
-	
-	ImageCast->SetOutputScalarTypeToUnsignedShort();
-	ImageCast->SetClampOverflow(1);
-	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
-	ImageCast->Update();
-
-	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
-
-	Volume->SetInputConnection(vtkErVolume::ImageDataPort, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(Enums::NearestNeighbour);
-	Volume->SetAcceleratorType(Enums::NoAcceleration);
-
-	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
-}
-
-void LoadDistanceField(vtkErTracer* Tracer)
-{
-	vtkSmartPointer<vtkMetaImageReader> Reader = vtkSmartPointer<vtkMetaImageReader>::New();
-	
-	Reader->SetFileName(gDistanceField);
-	
-	if (Reader->CanReadFile(gDistanceField) == 0)
-	{
-		printf("Can't read %s, aborting!\n", gDistanceField);
 		exit(EXIT_FAILURE);
 	}
 
