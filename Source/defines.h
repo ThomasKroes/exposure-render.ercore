@@ -51,35 +51,24 @@ namespace ExposureRender
 #endif
 
 #define PI_F						3.141592654f	
-#define HALF_PI_F					0.5f * PI_F
-#define QUARTER_PI_F				0.25f * PI_F
-#define TWO_PI_F					2.0f * PI_F
-#define INV_PI_F					0.31830988618379067154f
-#define INV_TWO_PI_F				0.15915494309189533577f
-#define FOUR_PI_F					4.0f * PI_F
-#define INV_FOUR_PI_F				1.0f / FOUR_PI_F
-#define	EULER_F						2.718281828f
-#define RAD_F						57.29577951308232f
-#define TWO_RAD_F					2.0f * RAD_F
-#define DEG_TO_RAD					1.0f / RAD_F
-#define METRO_SIZE					256
+#define HALF_PI_F					1.570796326f
+#define QUARTER_PI_F				0.785398163f
+#define TWO_PI_F					6.283185307f
+#define INV_PI_F					0.318309886f
+#define INV_TWO_PI_F				0.159154943f
+#define FOUR_PI_F					12,56637061f
+#define INV_FOUR_PI_F				0.079577471f
+#define RAD_F						57.29577951f
 #define	RAY_EPS						0.0001f
-#define RAY_EPS_2					2.0f * RAY_EPS
-#define ONE_OVER_6					1.0f / 2.0f
-#define ONE_OVER_255				1.0f / 255.0f
+#define RAY_EPS_2					0.0002f
+#define ONE_OVER_255				0.003921568f
 #define	MAX_CHAR_SIZE				256
 #define MAX_NO_TF_NODES				128
-#define NO_COLOR_COMPONENTS			4
 #define MAX_NO_VOLUMES				8
-#define MAX_NO_INT					4
-#define MAX_NO_CLIPPING_SEGMENTS	8
 #define MAX_NO_TIMINGS				64
-#define MAX_NO_TIMING_SAMPLES		64
-#define UAH							1
-#define TF_TEXTURE_RESOLUTION		1024
 #define BLOCK_W						16
 #define BLOCK_H						8
-#define BLOCK_SIZE					BLOCK_W * BLOCK_H
+#define BLOCK_SIZE					128
 
 #ifdef _MSC_VER
 	#define DEBUG_BREAK __debugbreak();
