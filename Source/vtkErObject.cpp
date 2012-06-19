@@ -120,7 +120,7 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (!ObjectDataOut)
 		return 0;
 
-	ExposureRender::ErObject& Object = Object;
+	ExposureRender::ErObject& Object = ObjectDataOut->Bindable;
 
 	vtkErShape::RequestData(Object.Shape);
 

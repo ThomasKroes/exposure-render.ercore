@@ -41,8 +41,8 @@ char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd
 
 //#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+#define RIM_LIGHT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -127,7 +127,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(3*StepSize);
-	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(25);
 	VolumeProperty->SetGradientFactor(1.0f);
 
