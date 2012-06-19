@@ -98,8 +98,8 @@ public:
 
 		for (int i = 0; i < Other.ClippingObjectIDs.Count; i++)
 		{
-			if (gClippingObjectsHashMap.find(Other.ClippingObjectIDs[i]) != gClippingObjectsHashMap.end())
-				this->ClippingObjectIDs[this->ClippingObjectIDs.Count++] = gClippingObjectsHashMap[Other.ClippingObjectIDs[i]];
+			if (gObjectsHashMap.find(Other.ClippingObjectIDs[i]) != gObjectsHashMap.end())
+				this->ClippingObjectIDs[this->ClippingObjectIDs.Count++] = gObjectsHashMap[Other.ClippingObjectIDs[i]];
 			else
 				throw(Exception(Enums::Fatal, "Clipping object not found!"));
 		}

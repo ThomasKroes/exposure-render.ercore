@@ -15,7 +15,6 @@
 
 #include "lambert.h"
 #include "microfacet.h"
-#include "fresnelblend.h"
 #include "sample.h"
 
 namespace ExposureRender

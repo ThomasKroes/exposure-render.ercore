@@ -33,6 +33,8 @@ vtkErObject::vtkErObject(void)
 	this->SetEmitter(false);
 	this->SetMultiplier(100.0f);
 	this->SetEmissionUnit(Enums::Power);
+	this->SetClip(false);
+	this->SetInvert(false);
 }
 
 vtkErObject::~vtkErObject(void)
@@ -118,33 +120,37 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (!ObjectDataOut)
 		return 0;
 
-	vtkErShape::RequestData(ObjectDataOut->Bindable.Shape);
+	ExposureRender::ErObject& Object = Object;
+
+	vtkErShape::RequestData(Object.Shape);
 
 	vtkErTextureData* Diffuse = vtkErTextureData::SafeDownCast(this->GetInputDataObject(DiffuseTexturePort, 0));
 
 	if (Diffuse)
-		ObjectDataOut->Bindable.DiffuseTextureID = Diffuse->Bindable.ID;
+		Object.DiffuseTextureID = Diffuse->Bindable.ID;
 
 	vtkErTextureData* Specular = vtkErTextureData::SafeDownCast(this->GetInputDataObject(SpecularTexturePort, 0));
 
 	if (Specular)
-		ObjectDataOut->Bindable.SpecularTextureID = Specular->Bindable.ID;
+		Object.SpecularTextureID = Specular->Bindable.ID;
 
 	vtkErTextureData* Glossiness = vtkErTextureData::SafeDownCast(this->GetInputDataObject(GlossinessTexturePort, 0));
 
 	if (Glossiness)
-		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;
+		Object.GlossinessTextureID = Glossiness->Bindable.ID;
 
 	vtkErTextureData* Emission = vtkErTextureData::SafeDownCast(this->GetInputDataObject(EmissionTexturePort, 0));
 
 	if (Emission)
-		ObjectDataOut->Bindable.EmissionTextureID = Emission->Bindable.ID;
+		Object.EmissionTextureID = Emission->Bindable.ID;
 	
-	ObjectDataOut->Bindable.Enabled			= this->GetEnabled();
-	ObjectDataOut->Bindable.Visible			= this->GetVisible();
-	ObjectDataOut->Bindable.Emitter			= this->GetEmitter();
-	ObjectDataOut->Bindable.Multiplier		= this->GetMultiplier();
-	ObjectDataOut->Bindable.EmissionUnit	= this->GetEmissionUnit();
+	Object.Enabled			= this->GetEnabled();
+	Object.Visible			= this->GetVisible();
+	Object.Emitter			= this->GetEmitter();
+	Object.Multiplier		= this->GetMultiplier();
+	Object.EmissionUnit		= this->GetEmissionUnit();
+	Object.Clip				= this->GetClip();
+	Object.Invert			= this->GetInvert();
 
 	ObjectDataOut->Bind();
 

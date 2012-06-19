@@ -70,6 +70,12 @@ public:
 	vtkGetMacro(EmissionUnit, Enums::EmissionUnit);
 	vtkSetMacro(EmissionUnit, Enums::EmissionUnit);
 
+	vtkGetMacro(Clip, bool);
+	vtkSetMacro(Clip, bool);
+
+	vtkGetMacro(Invert, bool);
+	vtkSetMacro(Invert, bool);
+
 protected:
 	vtkErObject();
 	virtual ~vtkErObject();
@@ -91,4 +97,6 @@ private:
 	bool					Emitter;
 	float					Multiplier;
 	Enums::EmissionUnit		EmissionUnit;
+	bool					Clip;
+	bool					Invert;
 };
