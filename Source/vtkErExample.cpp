@@ -40,8 +40,8 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 //#define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
-//#define ENVIRONMENT_ON
+//#define RIM_LIGHT_ON
+#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -128,7 +128,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetStepFactorShadow(3 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(25);
-	VolumeProperty->SetGradientFactor(1.0f);
+	VolumeProperty->SetGradientFactor(10.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
@@ -170,7 +170,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 100.0f;
+	const float GlossinessLevel = 10000.0f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -325,8 +325,8 @@ void CreateLighting(vtkErTracer* Tracer)
 		vtkSmartPointer<vtkImageGaussianSmooth> ImageGaussianSmooth = vtkSmartPointer<vtkImageGaussianSmooth>::New();
 		
 		ImageGaussianSmooth->SetInputConnection(ImageReader->GetOutputPort());
-		ImageGaussianSmooth->SetRadiusFactor(2);
-		ImageGaussianSmooth->SetStandardDeviation(2);
+		ImageGaussianSmooth->SetRadiusFactor(1);
+		ImageGaussianSmooth->SetStandardDeviation(1);
 		ImageGaussianSmooth->Update();
 
 		vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
