@@ -62,6 +62,17 @@ public:
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
 	}
 
+	HOST_DEVICE void BlendWithForeGround(const ColorRGBAuc& Foreground)
+	{
+		// http://forums.codeguru.com/showthread.php?497515-Math-to-merge-two-RGBA-bitmaps
+		const float Alpha = this->D[3] * Foreground[3];
+
+		this->D[0] = this->D[0] * Alpha + Foreground[0] * Foreground[3] + Alpha * Foreground[3] * Foreground[0];
+		this->D[1] = this->D[1] * Alpha + Foreground[1] * Foreground[3] + Alpha * Foreground[3] * Foreground[1];
+		this->D[2] = this->D[2] * Alpha + Foreground[2] * Foreground[3] + Alpha * Foreground[3] * Foreground[2];
+		this->D[3] = Foreground[3] + Alpha - Foreground[3] * Alpha;
+	}
+
 	DATA(unsigned char, 4)
 };
 
