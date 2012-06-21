@@ -62,15 +62,54 @@ public:
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
 	}
 
-	HOST_DEVICE void BlendWithForeGround(const ColorRGBAuc& Foreground)
+	static HOST_DEVICE ColorRGBAuc Blend(const ColorRGBAuc& Background, const ColorRGBAuc& Foreground)
 	{
-		// http://forums.codeguru.com/showthread.php?497515-Math-to-merge-two-RGBA-bitmaps
-		const float Alpha = this->D[3] * Foreground[3];
+		// http://paulbourke.net/oldstuff/composite/
+		
+		ColorRGBAuc Blend;
 
-		this->D[0] = this->D[0] * Alpha + Foreground[0] * Foreground[3] + Alpha * Foreground[3] * Foreground[0];
-		this->D[1] = this->D[1] * Alpha + Foreground[1] * Foreground[3] + Alpha * Foreground[3] * Foreground[1];
-		this->D[2] = this->D[2] * Alpha + Foreground[2] * Foreground[3] + Alpha * Foreground[3] * Foreground[2];
-		this->D[3] = Foreground[3] + Alpha - Foreground[3] * Alpha;
+		const float NormBackgroundRGBAf[4] =
+		{
+			(float)Background[0] / 255.0f,
+			(float)Background[1] / 255.0f,
+			(float)Background[2] / 255.0f,
+			(float)Background[3] / 255.0f
+		};
+
+		const float NormForegroundRGBAf[4] =
+		{
+			(float)Foreground[0] / 255.0f,
+			(float)Foreground[1] / 255.0f,
+			(float)Foreground[2] / 255.0f,
+			(float)Foreground[3] / 255.0f
+		};
+
+		const float Alpha = NormBackgroundRGBAf[3] * NormForegroundRGBAf[3];
+
+		const float NormBlendRGBAf[4] =
+		{
+			NormBackgroundRGBAf[0] * NormBackgroundRGBAf[3] * (1.0f - NormForegroundRGBAf[3]) + NormForegroundRGBAf[0] * NormForegroundRGBAf[3],
+			NormBackgroundRGBAf[1] * NormBackgroundRGBAf[3] * (1.0f - NormForegroundRGBAf[3]) + NormForegroundRGBAf[1] * NormForegroundRGBAf[3],
+			NormBackgroundRGBAf[2] * NormBackgroundRGBAf[3] * (1.0f - NormForegroundRGBAf[3]) + NormForegroundRGBAf[2] * NormForegroundRGBAf[3],
+			NormBackgroundRGBAf[3] * (1.0f - NormForegroundRGBAf[3]) + NormForegroundRGBAf[3],
+		};
+
+		Blend[0] = (unsigned char)(NormBlendRGBAf[0] * 255.0f);
+		Blend[1] = (unsigned char)(NormBlendRGBAf[1] * 255.0f);
+		Blend[2] = (unsigned char)(NormBlendRGBAf[2] * 255.0f);
+		Blend[3] = (unsigned char)(NormBlendRGBAf[3] * 255.0f);
+
+		return Blend;
+	}
+
+	HOST_DEVICE void BlendWithForeground(const ColorRGBAuc& Foreground)
+	{
+		*this = ColorRGBAuc::Blend(*this, Foreground);
+	}
+
+	HOST_DEVICE void BlendWithBackground(const ColorRGBAuc& Background)
+	{
+		*this = ColorRGBAuc::Blend(Background, *this);
 	}
 
 	DATA(unsigned char, 4)
