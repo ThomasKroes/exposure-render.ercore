@@ -20,8 +20,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkMetaImageReader.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkInteractorStyleTrackball.h>
+#include <vtkErInteractorStyleTrackballCamera.h>
 #include <vtkPNGReader.h>
 #include <vtkImageCast.h>
 #include <vtkCommand.h>
@@ -78,7 +77,7 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
 	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
 	
-	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+	vtkSmartPointer<vtkErInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkErInteractorStyleTrackballCamera>::New();
 	InteractorStyle->SetMotionFactor(10);
 		
 	RenderWindowInteractor->Initialize();
