@@ -258,6 +258,8 @@ IF(ER_VTK)
 		vtkErTimerCallback.cpp
 		vtkErVolumeProperty.h
 		vtkErVolumeProperty.cpp
+		vtkErInteractorStyleTrackballCamera.h
+		vtkErInteractorStyleTrackballCamera.cpp
 		vtkErStable.h
 		vtkErStable.cpp
 		vtkErConfigure.h
@@ -287,6 +289,8 @@ IF(ER_VTK)
 		vtkErCamera.cpp
 		vtkErBitmap.h
 		vtkErBitmap.cpp
+		vtkErInteractorStyleTrackballCamera.h
+		vtkErInteractorStyleTrackballCamera.cpp
 	)
 
 	ADD_LIBRARY(vtkEr ${General})
