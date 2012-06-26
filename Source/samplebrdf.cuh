@@ -37,6 +37,7 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 			Int.Valid			= true;
 			Int.ScatterType		= Object.Emitter ? Enums::Light : Enums::Object;
 			Int.ID				= i;
+			Int.Wo				= -R.D;
 		}
 	}
 }
