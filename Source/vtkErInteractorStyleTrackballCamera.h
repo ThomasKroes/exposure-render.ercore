@@ -27,17 +27,6 @@ public:
 	{
 	}
 
-	virtual void Pan()
-	{
-	}
-
-	virtual void Rotate()
-	{
-		vtkInteractorStyleTrackballCamera::Rotate();
-		this->ReleaseFocus();
-		this->InvokeEvent(vtkCommand::EndInteractionEvent, NULL);
-	}
-
 protected:
 	vtkErInteractorStyleTrackballCamera() { this->UseTimersOff(); };
 	~vtkErInteractorStyleTrackballCamera() {};
