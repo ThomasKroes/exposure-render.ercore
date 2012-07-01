@@ -37,7 +37,7 @@
 #include "vtkErVolumeProperty.h"
 #include "vtkErInteractorStyleTrackballCamera.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_skin.mhd";
 char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
 
 #define BACK_PLANE_ON
