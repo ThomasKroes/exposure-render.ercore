@@ -30,7 +30,7 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 	{
 		const Object& Object = gpObjects[i];
 		
-		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT && LocalInt.Front)
+		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT)
 		{
 			NearestT			= LocalInt.T;
 			Int					= LocalInt;
@@ -59,7 +59,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	R.O		= Sample.Intersection.P;
 	R.MinT	= gStepFactorShadow;
-	R.MaxT	= FLT_MAX;
+	R.MaxT	= 1000.0f;
 
 	Shader Shader;
 
