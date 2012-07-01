@@ -25,7 +25,7 @@ vtkCxxRevisionMacro(vtkErObject, "$Revision: 1.0 $");
 
 vtkErObject::vtkErObject(void)
 {
-	this->SetNumberOfInputPorts(4);
+	this->SetNumberOfInputPorts(5);
 	this->SetNumberOfOutputPorts(1);
 
 	this->SetEnabled(true);
@@ -33,6 +33,7 @@ vtkErObject::vtkErObject(void)
 	this->SetEmitter(false);
 	this->SetMultiplier(100.0f);
 	this->SetEmissionUnit(Enums::Power);
+	this->SetClip(false);
 }
 
 vtkErObject::~vtkErObject(void)
@@ -63,6 +64,13 @@ int vtkErObject::FillInputPortInformation(int Port, vtkInformation* Info)
 	}
 
 	if (Port == EmissionTexturePort)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+	}
+
+	if (Port == ClippingTexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
@@ -145,6 +153,7 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	ObjectDataOut->Bindable.Emitter			= this->GetEmitter();
 	ObjectDataOut->Bindable.Multiplier		= this->GetMultiplier();
 	ObjectDataOut->Bindable.EmissionUnit	= this->GetEmissionUnit();
+	ObjectDataOut->Bindable.Clip			= this->GetClip();
 
 	ObjectDataOut->Bind();
 

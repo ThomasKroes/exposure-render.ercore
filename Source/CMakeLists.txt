@@ -236,8 +236,6 @@ IF(ER_VTK)
 	SET(General
 		vtkErObject.h
 		vtkErObject.cpp
-		vtkErClippingObject.h
-		vtkErClippingObject.cpp
 		vtkErVolume.h
 		vtkErVolume.cpp
 		vtkErTracer.h
