@@ -18,7 +18,6 @@
 #include "vtkErCamera.h"
 #include "vtkErVolume.h"
 #include "vtkErObject.h"
-#include "vtkErClippingObject.h"
 
 #include "vtkgl.h"
 
@@ -30,7 +29,7 @@ vtkCxxRevisionMacro(vtkErTracer, "$Revision: 1.0 $");
 
 vtkErTracer::vtkErTracer(void)
 {
-	this->SetNumberOfInputPorts(3);
+	this->SetNumberOfInputPorts(2);
 	this->SetNumberOfOutputPorts(0);
 
 	glGenTextures(1, &TextureID);
@@ -67,14 +66,6 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 		case ObjectsPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErObjectData");
-			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
-			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
-			return 1;
-		}
-
-		case ClippingObjectsPort:
-		{
-			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErClippingObjectData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
 			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 			return 1;
@@ -139,8 +130,9 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 	const int NoObjects = this->GetNumberOfInputConnections(ObjectsPort);
 
-	this->Tracer.ObjectIDs.Count = 0;
-	this->Tracer.LightIDs.Count = 0;
+	this->Tracer.ObjectIDs.Count			= 0;
+	this->Tracer.LightIDs.Count				= 0;
+	this->Tracer.ClippingObjectIDs.Count	= 0;
 
 	for (int i = 0; i < NoObjects; i++)
 	{
@@ -157,26 +149,14 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 				this->Tracer.LightIDs.Count++;
 			}
 
+			if (ObjectData->Bindable.Clip)
+			{
+				this->Tracer.ClippingObjectIDs[this->Tracer.ClippingObjectIDs.Count] = ObjectData->Bindable.ID;
+				this->Tracer.ClippingObjectIDs.Count++;
+			}
+
 			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.Alignment.OffsetTM);
 			ObjectData->Bind();
-		}
-	}
-
-	const int NoClippingObjects = this->GetNumberOfInputConnections(ClippingObjectsPort);
-
-	this->Tracer.ClippingObjectIDs.Count = 0;
-	
-	for (int i = 0; i < NoClippingObjects; i++)
-	{
-		vtkErClippingObjectData* ClippingObjectData = vtkErClippingObjectData::SafeDownCast(this->GetInputDataObject(ClippingObjectsPort, i));
-
-		if (ClippingObjectData && ClippingObjectData->Bindable.Enabled)
-		{
-			this->Tracer.ClippingObjectIDs[this->Tracer.ClippingObjectIDs.Count] = ClippingObjectData->Bindable.ID;
-			this->Tracer.ClippingObjectIDs.Count++;
-
-			ClippingObjectData->ClippingObject->GetCameraOffset(Camera, ClippingObjectData->Bindable.Shape.Alignment.OffsetTM);
-			ClippingObjectData->Bind();
 		}
 	}
 

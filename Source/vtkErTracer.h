@@ -50,8 +50,7 @@ public:
 	enum Ports
 	{
 		VolumesPort = 0,
-		ObjectsPort,
-		ClippingObjectsPort
+		ObjectsPort
 	};
 
 	vtkErVolumeProperty* GetVolumeProperty()						{	return this->VolumeProperty.GetPointer();										};

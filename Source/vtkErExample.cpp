@@ -32,7 +32,6 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErObject.h"
-#include "vtkErClippingObject.h"
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
@@ -41,10 +40,10 @@
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
 char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
 
-//#define BACK_PLANE_ON
-#define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
-//#define ENVIRONMENT_ON
+#define BACK_PLANE_ON
+//#define KEY_LIGHT_ON
+//#define RIM_LIGHT_ON
+#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -60,7 +59,6 @@ void CreateCamera(vtkRenderer* Renderer);
 void CreateVolumeProperty(vtkErTracer* Tracer);
 void CreateLighting(vtkErTracer* Tracer);
 void CreateObjects(vtkErTracer* Tracer);
-void CreateClippingObjects(vtkErTracer* Tracer);
 
 using namespace ExposureRender;
 
@@ -108,7 +106,6 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateVolumeProperty(Tracer);
 	CreateLighting(Tracer);
 	CreateObjects(Tracer);
-	CreateClippingObjects(Tracer);
 	CreateCamera(Renderer);
 
 	Tracer->SetNoiseReduction(false);
@@ -432,7 +429,7 @@ void CreateObjects(vtkErTracer* Tracer)
 		Bitmap->SetFilterMode(Enums::Linear);
 		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
 
-		DiffuseTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
+		DiffuseTexture->SetInputConnection(vtkErObject::DiffuseTexturePort, Bitmap->GetOutputPort());
 	}
 	else
 	{
@@ -451,25 +448,4 @@ void CreateObjects(vtkErTracer* Tracer)
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
 #endif
-}
-
-void CreateClippingObjects(vtkErTracer* Tracer)
-{
-	vtkSmartPointer<vtkErClippingObject> ClippingObject[10];
-
-	for (int i = 0; i < 3; i++)
-	{
-		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
-
-		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
-		ClippingObject[i]->SetElevation(0);
-		ClippingObject[i]->SetAzimuth(45*i);
-		ClippingObject[i]->SetSize(1000, 1000, 100);
-		ClippingObject[i]->SetOffset(0.02f);
-		ClippingObject[i]->SetPosition(0, -0.01, 0);
-		ClippingObject[i]->SetAutoFlip(true);
-		ClippingObject[i]->SetOneSided(false);
-
-		Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject[i]->GetOutputPort());
-	}
 }
