@@ -219,36 +219,6 @@ void LoadVolume(vtkErTracer* Tracer)
 	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
 }
 
-void LoadDistanceField(vtkErTracer* Tracer)
-{
-	vtkSmartPointer<vtkMetaImageReader> Reader = vtkSmartPointer<vtkMetaImageReader>::New();
-	
-	Reader->SetFileName(gDistanceField);
-	
-	if (Reader->CanReadFile(gDistanceField) == 0)
-	{
-		printf("Can't read %s, aborting!\n", gDistanceField);
-		exit(EXIT_FAILURE);
-	}
-
-	Reader->Update();
-
-	vtkSmartPointer<vtkImageCast> ImageCast = vtkSmartPointer<vtkImageCast>::New();
-	
-	ImageCast->SetOutputScalarTypeToUnsignedShort();
-	ImageCast->SetClampOverflow(1);
-	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
-	ImageCast->Update();
-
-	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
-
-	Volume->SetInputConnection(vtkErVolume::ImageDataPort, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(Enums::NearestNeighbour);
-	Volume->SetAcceleratorType(Enums::NoAcceleration);
-
-	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
-}
-
 void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
