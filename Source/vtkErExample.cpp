@@ -36,6 +36,7 @@
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
+#include "vtkErInteractorStyleTrackballCamera.h"
 
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
 char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
@@ -78,7 +79,7 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
 	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
 	
-	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+	vtkSmartPointer<vtkErInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkErInteractorStyleTrackballCamera>::New();
 	InteractorStyle->SetMotionFactor(10);
 		
 	RenderWindowInteractor->Initialize();
