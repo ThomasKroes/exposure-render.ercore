@@ -28,7 +28,7 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 
 	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
 	{
-		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
+		const Object& Object = gpObjects[i];
 		
 		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT && LocalInt.Front)
 		{
@@ -59,7 +59,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	R.O		= Sample.Intersection.P;
 	R.MinT	= gStepFactorShadow;
-	R.MaxT	= 1000.0f;
+	R.MaxT	= FLT_MAX;
 
 	Shader Shader;
 
@@ -76,7 +76,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	IntersectObjects(R, Int);
 
-	if (Int.ID != Sample.Intersection.ID)
+	if (Int.ID != Sample.LightID)
 		return;
 	
 	if (Int.Valid && Int.ScatterType == Enums::Light)
