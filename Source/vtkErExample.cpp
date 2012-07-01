@@ -37,13 +37,12 @@
 #include "vtkErVolumeProperty.h"
 #include "vtkErInteractorStyleTrackballCamera.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_skin.mhd";
-char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
 
-#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+//#define BACK_PLANE_ON
+#define KEY_LIGHT_ON
+#define RIM_LIGHT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -125,10 +124,10 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	const float StepSize = 3.0f;
 
-	VolumeProperty->SetShadows(true);
+	VolumeProperty->SetShadows(false);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(3*StepSize);
-	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetStepFactorShadow(3 * StepSize);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(25);
 	VolumeProperty->SetGradientFactor(1.0f);
 
@@ -142,18 +141,18 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	
+	/*
 	for (int i = 0; i < 36; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	/**/
+	*/
 
 	const float DiffuseLevel = 1.0f;
-/*
+
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-	
+	/*
 	
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
@@ -305,9 +304,9 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetAxis(ExposureRender::Enums::Y);
 	EnvironmentLight->SetPosition(0, 0, 0);
 	EnvironmentLight->SetShapeType(Enums::Sphere);
-	EnvironmentLight->SetOneSided(false);
+	EnvironmentLight->SetOneSided(true);
 	EnvironmentLight->SetRadius(5.0f);
-	EnvironmentLight->SetMultiplier(2.0f);
+	EnvironmentLight->SetMultiplier(10.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -407,13 +406,13 @@ void CreateObjects(vtkErTracer* Tracer)
 
 		DiffuseTexture->SetTextureType(Enums::Procedural);
 		DiffuseTexture->SetProceduralType(Enums::Uniform);
-		DiffuseTexture->SetUniformColor(1, 1, 1);
+		DiffuseTexture->SetUniformColor(0.2, 0.2, 0.2);
 		DiffuseTexture->SetRepeat(10, 10);
-		DiffuseTexture->SetOutputLevel(5.00f);
+		DiffuseTexture->SetOutputLevel(1.00f);
 	}
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
-//	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
+	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
 	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
