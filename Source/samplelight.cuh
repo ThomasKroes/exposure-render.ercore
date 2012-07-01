@@ -39,7 +39,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	if (LightID < 0)
 		return;
 	
-	Int.ID = LightID;
+	Sample.LightID = LightID;
 
 	const Object& Light = gpObjects[LightID];
 	
