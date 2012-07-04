@@ -39,9 +39,9 @@
 
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
-//#define BACK_PLANE_ON
-//#define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
+#define BACK_PLANE_ON
+#define KEY_LIGHT_ON
+#define RIM_LIGHT_ON
 #define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -80,7 +80,7 @@ int main(int, char *[])
 	InteractorStyle->SetMotionFactor(10);
 		
 	RenderWindowInteractor->Initialize();
-	RenderWindowInteractor->CreateRepeatingTimer(10);
+	RenderWindowInteractor->CreateRepeatingTimer(1);
 	RenderWindowInteractor->AddObserver(vtkCommand::TimerEvent, TimerCallback);
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
@@ -128,14 +128,14 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(3 * StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(25);
+	VolumeProperty->SetDensityScale(1000);
 	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(1, 1);
-	Opacity->AddPoint(1024, 1);
+	Opacity->AddPoint(10, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
@@ -162,7 +162,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float SpecularLevel = 1.0f;
+	const float SpecularLevel = 0.3f;
 
 	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
 	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
@@ -171,7 +171,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 10000.0f;
+	const float GlossinessLevel = 10.0f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -237,7 +237,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 1.1f;
 
 	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);

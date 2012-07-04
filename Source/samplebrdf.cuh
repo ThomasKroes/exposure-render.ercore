@@ -59,7 +59,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	R.O		= Sample.Intersection.P;
 	R.MinT	= gStepFactorShadow;
-	R.MaxT	= 1000.0f;
+	R.MaxT	= FLT_MAX;
 
 	Shader Shader;
 
@@ -98,6 +98,8 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 			Ld = F * Li * (AbsDot(R.D, Sample.Intersection.N) * Weight / ShaderPdf);
 		else
 			Ld = F * ((Li * Weight) / ShaderPdf);
+
+		Ld *= (float)gpTracer->LightIDs.Count;
 
 		if (!IntersectsVolume(R, RNG))
 		{

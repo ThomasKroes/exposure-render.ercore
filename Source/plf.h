@@ -81,7 +81,7 @@ public:
 			float P1 = this->Position[i - 1];
 			float P2 = this->Position[i];
 			float DeltaP = P2 - P1;
-			float LerpT = (Position - P1) / DeltaP;
+			float LerpT = DeltaP <= 0.0f ? 0.5f : (Position - P1) / DeltaP;
 
 			if (Position >= P1 && Position < P2)
 				return this->Value[i - 1] + LerpT * (this->Value[i] - this->Value[i - 1]);
