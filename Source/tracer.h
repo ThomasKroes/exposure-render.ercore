@@ -16,6 +16,7 @@
 #include "ertracer.h"
 #include "framebuffer.h"
 #include "buffer3d.h"
+#include "gaussian.h"
 
 #include <map>
 
@@ -38,7 +39,8 @@ public:
 		FrameBuffer(),
 		NoEstimates(0),
 		NoiseReduction(true),
-		EmptySpace("Empty space", Enums::Device)
+		EmptySpace("Empty space", Enums::Device),
+		GaussianFilterTables()
 	{
 	}
 
@@ -53,7 +55,8 @@ public:
 		FrameBuffer(),
 		NoEstimates(0),
 		NoiseReduction(true),
-		EmptySpace("Empty space", Enums::Device)
+		EmptySpace("Empty space", Enums::Device),
+		GaussianFilterTables()
 	{
 		*this = Other;
 	}
@@ -145,6 +148,7 @@ public:
 	bool						NoiseReduction;
 	Buffer3D<unsigned char>		EmptySpace;
 	bool						UpdateEmptySpace;
+	GaussianFilterTables		GaussianFilterTables;
 };
 
 }
