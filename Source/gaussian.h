@@ -119,6 +119,8 @@ public:
 	GaussianFilterTable<1> Gaussian3x3;
 	GaussianFilterTable<2> Gaussian5x5;
 	GaussianFilterTable<3> Gaussian7x7;
+	GaussianFilterTable<3> Gaussian9x9;
+	GaussianFilterTable<3> Gaussian11x11;
 };
 
 }
