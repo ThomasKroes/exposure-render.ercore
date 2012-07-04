@@ -50,7 +50,8 @@ public:
 		DiffuseTexturePort = 0,
 		SpecularTexturePort,
 		GlossinessTexturePort,
-		EmissionTexturePort
+		EmissionTexturePort,
+		ClippingTexturePort
 	};
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
@@ -72,9 +73,6 @@ public:
 
 	vtkGetMacro(Clip, bool);
 	vtkSetMacro(Clip, bool);
-
-	vtkGetMacro(Invert, bool);
-	vtkSetMacro(Invert, bool);
 
 protected:
 	vtkErObject();
@@ -98,5 +96,4 @@ private:
 	float					Multiplier;
 	Enums::EmissionUnit		EmissionUnit;
 	bool					Clip;
-	bool					Invert;
 };

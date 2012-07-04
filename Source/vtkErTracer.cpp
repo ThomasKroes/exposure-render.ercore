@@ -29,7 +29,7 @@ vtkCxxRevisionMacro(vtkErTracer, "$Revision: 1.0 $");
 
 vtkErTracer::vtkErTracer(void)
 {
-	this->SetNumberOfInputPorts(3);
+	this->SetNumberOfInputPorts(2);
 	this->SetNumberOfOutputPorts(0);
 
 	glGenTextures(1, &TextureID);
@@ -66,14 +66,6 @@ int vtkErTracer::FillInputPortInformation(int Port, vtkInformation* Info)
 		case ObjectsPort:
 		{
 			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErObjectData");
-			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
-			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
-			return 1;
-		}
-
-		case ClippingObjectsPort:
-		{
-			Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErClippingObjectData");
 			Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
 			Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 			return 1;

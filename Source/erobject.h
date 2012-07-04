@@ -34,8 +34,7 @@ public:
 		Emitter(false),
 		Multiplier(1.0f),
 		EmissionUnit(Enums::Power),
-		Clip(false),
-		Invert(false)
+		Clip(false)
 	{
 	}
 
@@ -51,8 +50,7 @@ public:
 		Emitter(false),
 		Multiplier(1.0f),
 		EmissionUnit(Enums::Power),
-		Clip(false),
-		Invert(false)
+		Clip(false)
 	{
 		*this = Other;
 	}
@@ -71,7 +69,6 @@ public:
 		this->Multiplier			= Other.Multiplier;
 		this->EmissionUnit			= Other.EmissionUnit;
 		this->Clip					= Other.Clip;
-		this->Invert				= Other.Invert;
 
 		this->Shape.Update();
 
@@ -89,7 +86,6 @@ public:
 	float					Multiplier;
 	Enums::EmissionUnit		EmissionUnit;
 	bool					Clip;
-	int						Invert;
 };
 
 }
