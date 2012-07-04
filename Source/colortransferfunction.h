@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "piecewiselinearfunction.h"
+#include "plf.h"
 #include "color.h"
 #include "timestamp.h"
 

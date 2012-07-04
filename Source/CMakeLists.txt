@@ -65,7 +65,6 @@ SET(General
 	montecarlo.h
 	ray.h
 	objects.h
-	clippingobjects.h
 	textures.h
 	log.h
 	defines.h
@@ -79,8 +78,6 @@ SET(General
 	timestamp.h
 	kelvin.h
 	enums.h
-	segment.h
-	clippingsegments.h
 	color.h
 	exposurerender.h
 	exposurerender.cpp
@@ -88,21 +85,15 @@ SET(General
 	tracer.h
 	statistics.h
 	volume.h
-	extinctionvolume.h
-	scatterevent.h
 	intersection.h
 	object.h
-	clippingobject.h
 	texture.h
 	bitmap.h
-	singlescattering.h
-	shadeevent.h
 	alignment.h
 	transform.h
 	octree.h
 	volumeproperty.h
 	tonemap.h
-	reference.h
 )
 
 SOURCE_GROUP("General" FILES ${General})
@@ -152,7 +143,6 @@ SET(Shading
 	lambert.h
 	microfacet.h
 	phasefunction.h
-	fresnelblend.h
 	blinn.h
 )
 
@@ -163,7 +153,6 @@ SET(Bindable
 	ertracer.h
 	ervolume.h
 	erobject.h
-	erclippingobject.h
 	ertexture.h
 	erbitmap.h
 )
