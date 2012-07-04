@@ -276,6 +276,7 @@ public:
 	Intersection	Intersection;
 	Vec2i			UV;
 	int				LightID;
+	ColorXYZf		Throughput;
 };
 
 }

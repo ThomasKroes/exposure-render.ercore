@@ -51,6 +51,9 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
+	if (ID < 0)
+		return;
+
 	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
 	
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
@@ -76,44 +79,72 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	IntersectObjects(R, Int);
 
-	if (Int.ID != Sample.LightID)
-		return;
-	
-	if (Int.Valid && Int.ScatterType == Enums::Light)
+	if (Int.Valid)
 	{
-		Object& Light = gpObjects[Int.ID];
-
-		ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
-
-		if (Light.EmissionUnit == Enums::Power)
-			Li /= Light.Shape.Area;
-
-		const float LightPdf = DistanceSquared(Int.P, Sample.Intersection.P) / (AbsDot(-R.D, Int.N) * Light.Shape.Area);
-
-		const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
-
-		ColorXYZf Ld;
-
-		if (Shader.Type == Enums::Brdf)
-			Ld = F * Li * (AbsDot(R.D, Sample.Intersection.N) * Weight / ShaderPdf);
-		else
-			Ld = F * ((Li * Weight) / ShaderPdf);
-
-		Ld *= (float)gpTracer->LightIDs.Count;
-
-		if (!IntersectsVolume(R, RNG))
+		switch (Int.ScatterType)
 		{
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Ld[0];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Ld[1];
-			gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Ld[2];
+			case Enums::Light:
+			{
+				if (Int.ID == Sample.LightID)
+				{
+					Object& Light = gpObjects[Int.ID];
+
+					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
+
+					if (Light.EmissionUnit == Enums::Power)
+						Li /= Light.Shape.Area;
+
+					const float LightPdf = DistanceSquared(Int.P, Sample.Intersection.P) / (AbsDot(-R.D, Int.N) * Light.Shape.Area);
+
+					const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
+
+					ColorXYZf Ld;
+
+					if (Shader.Type == Enums::Brdf)
+						Ld = F * Li * (AbsDot(R.D, Sample.Intersection.N) * Weight / ShaderPdf);
+					else
+						Ld = F * ((Li * Weight) / ShaderPdf);
+
+					Ld *= (float)gpTracer->LightIDs.Count;
+
+					if (!IntersectsVolume(R, RNG))
+					{
+						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Ld[0];
+						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Ld[1];
+						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Ld[2];
+					}
+
+					gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
+				}
+
+				break;
+			}
+
+			case Enums::Object:
+			{
+				Sample.Intersection = Int;
+
+				break;
+			}
 		}
 	}
+	else
+	{
+		gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
+	}
+
+	Sample.Throughput *= F;
 }
 
-void SampleBrdf(Tracer& Tracer, Statistics& Statistics, int NoSamples)
+void SampleBrdf(Tracer& Tracer, Statistics& Statistics, int Bounce, int NoSamples)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleBrdf<<<GridDim, BlockDim>>>(NoSamples)), "Sample BRDF"); 
+
+	char Message[MAX_CHAR_SIZE];
+
+	sprintf_s(Message, MAX_CHAR_SIZE, "Sample shader (%d bounces)", Bounce);
+
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleBrdf<<<GridDim, BlockDim>>>(NoSamples)), Message); 
 }
 
 }

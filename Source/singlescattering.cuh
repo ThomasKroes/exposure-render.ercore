@@ -48,22 +48,27 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 	int NoSamples = 0;
 
 	RemoveRedundantSamples(Tracer, NoSamples);
-	
-#ifdef SAMPLE_LIGHT
-	if (NoSamples > 0)
+
+	for (int i = 0; i < 3; i++)
 	{
-		SampleLight(Tracer, Statistics, NoSamples);
-		Statistics = Timing("No. Samples (Sample Light)", NoSamples);
-	}
+#ifdef SAMPLE_LIGHT
+		if (NoSamples > 0)
+		{
+			SampleLight(Tracer, Statistics, i + 1, NoSamples);
+		}
+
+		RemoveRedundantSamples(Tracer, NoSamples);
 #endif
 
 #ifdef SAMPLE_BRDF
-	if (NoSamples > 0)
-	{
-		SampleBrdf(Tracer, Statistics, NoSamples);
-		Statistics = Timing("No. Samples (Sample BRDF)", NoSamples);
-	}
+		if (NoSamples > 0)
+		{
+			SampleBrdf(Tracer, Statistics, i + 1, NoSamples);
+		}
+
+		RemoveRedundantSamples(Tracer, NoSamples);
 #endif
+	}
 }
 
 }

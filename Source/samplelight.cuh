@@ -28,11 +28,14 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
+	if (ID < 0)
+		return;
+
 	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
 	
 	Intersection& Int = Sample.Intersection;
 
-	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
+	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
 	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
 
@@ -88,10 +91,15 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	}
 }
 
-void SampleLight(Tracer& Tracer, Statistics& Statistics, int NoSamples)
+void SampleLight(Tracer& Tracer, Statistics& Statistics, int Bounce, int NoSamples)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleLight<<<GridDim, BlockDim>>>(NoSamples)), "Sample light"); 
+
+	char Message[MAX_CHAR_SIZE];
+
+	sprintf_s(Message, MAX_CHAR_SIZE, "Sample light (%d bounces)", Bounce);
+
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleLight<<<GridDim, BlockDim>>>(NoSamples)), Message); 
 }
 
 }
