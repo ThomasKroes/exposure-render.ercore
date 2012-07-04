@@ -13,57 +13,25 @@
 
 #pragma once
 
-#include "montecarlo.h"
+#include "vtkErDll.h"
 
-namespace ExposureRender
-{
+#include <vtkInteractorStyleTrackballCamera.h>
 
-class FresnelBlend
+class VTK_ER_EXPORT vtkErInteractorStyleTrackballCamera : public vtkInteractorStyleTrackballCamera
 {
 public:
-	HOST_DEVICE FresnelBlend(const ColorXYZf& Rd = ColorXYZf(0.0f), const ColorXYZf& Rs = ColorXYZf(0.0f)) :
-		Rd(Rd),
-		Rs(Rs)
+	static vtkErInteractorStyleTrackballCamera* New();
+	vtkTypeMacro(vtkErInteractorStyleTrackballCamera, vtkInteractorStyleTrackballCamera);
+
+	virtual void OnTimer()
 	{
 	}
 
-	HOST_DEVICE FresnelBlend& operator = (const FresnelBlend& Other)
-	{
-		this->Rd 			= Other.Rd;
-		this->Rs 			= Other.Rs;
+protected:
+	vtkErInteractorStyleTrackballCamera() { this->UseTimersOff(); };
+	~vtkErInteractorStyleTrackballCamera() {};
 
-		return *this;
-	}
-
-	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi) const
-	{
-		ColorXYZf diffuse = (28.f/(23.f * PI_F)) * Rd * (ColorXYZf(1.0f) - Rs) * (1 - powf(1 - .5f * fabsf(CosTheta(Wi)), 5)) * (1 - powf(1 - .5f * fabsf(CosTheta(Wo)), 5));
-		
-		Vec3f H = Normalize(Wi + Wo);
-
-		ColorXYZf specular = Blinn.D(H) / (8.f * PI_F * AbsDot(Wi, H) * max(fabsf(CosTheta(Wi)), fabsf(CosTheta(Wo)))) * SchlickFresnel(Dot(Wi, H));
-
-		return diffuse + specular;
-	}
-
-	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
-	{
-		
-	}
-
-	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi) const
-	{
-	}
-
-	HOST_DEVICE ColorXYZf SchlickFresnel(float costheta) const
-	{
-		return Rs + powf(1 - costheta, 5.f) * (ColorXYZf(1.0f) - Rs);
-	}
-
-	ColorXYZf 	Rd;
-	ColorXYZf 	Rs;
-	Blinn		Blinn;
+private:
+	vtkErInteractorStyleTrackballCamera(const vtkErInteractorStyleTrackballCamera&);		// Not implemented.
+	void operator = (const vtkErInteractorStyleTrackballCamera&);							// Not implemented.
 };
-
-
-}

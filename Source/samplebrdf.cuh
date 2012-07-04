@@ -28,15 +28,16 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 
 	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
 	{
-		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
+		const Object& Object = gpObjects[i];
 		
-		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT && LocalInt.Front)
+		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT)
 		{
 			NearestT			= LocalInt.T;
 			Int					= LocalInt;
 			Int.Valid			= true;
 			Int.ScatterType		= Object.Emitter ? Enums::Light : Enums::Object;
 			Int.ID				= i;
+			Int.Wo				= -R.D;
 		}
 	}
 }
@@ -75,7 +76,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	IntersectObjects(R, Int);
 
-	if (Int.ID != Sample.Intersection.ID)
+	if (Int.ID != Sample.LightID)
 		return;
 	
 	if (Int.Valid && Int.ScatterType == Enums::Light)

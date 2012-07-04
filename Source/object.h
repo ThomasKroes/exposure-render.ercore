@@ -31,7 +31,8 @@ public:
 		EmissionTextureID(-1),
 		Emitter(false),
 		Multiplier(1.0f),
-		EmissionUnit(Enums::Power)
+		EmissionUnit(Enums::Power),
+		Clip(false)
 	{
 	}
 
@@ -45,7 +46,8 @@ public:
 		EmissionTextureID(-1),
 		Emitter(false),
 		Multiplier(1.0f),
-		EmissionUnit(Enums::Power)
+		EmissionUnit(Enums::Power),
+		Clip(false)
 	{
 		*this = Other;
 	}
@@ -108,6 +110,7 @@ public:
 		this->Emitter		= Other.Emitter;
 		this->Multiplier	= Other.Multiplier;
 		this->EmissionUnit	= Other.EmissionUnit;
+		this->Clip			= Other.Clip;
 
 		return *this;
 	}
@@ -121,6 +124,7 @@ public:
 	bool					Emitter;
 	float					Multiplier;
 	Enums::EmissionUnit		EmissionUnit;
+	bool					Clip;
 };
 
 }

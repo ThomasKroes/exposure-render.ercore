@@ -275,6 +275,7 @@ class Sample
 public:
 	Intersection	Intersection;
 	Vec2i			UV;
+	int				LightID;
 };
 
 }

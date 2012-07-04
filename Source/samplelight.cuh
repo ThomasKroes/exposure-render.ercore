@@ -39,7 +39,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	if (LightID < 0)
 		return;
 	
-	Int.ID = LightID;
+	Sample.LightID = LightID;
 
 	const Object& Light = gpObjects[LightID];
 	
@@ -64,8 +64,11 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	const float ShaderPdf = Shader.Pdf(Int.Wo, Wi);
 
-	if (Li.IsBlack() || F.IsBlack() || ShaderPdf <= 0.0f)
+	if (Li.IsBlack() || F.IsBlack())
+	{
+		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]) = ColorXYZAf(0.0f, 1.0f, 0.0f, 1.0f);
 		return;
+	}
 
 	if (!IntersectsVolume(R, RNG))
 	{

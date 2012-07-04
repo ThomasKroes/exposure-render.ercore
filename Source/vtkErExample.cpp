@@ -32,15 +32,14 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErObject.h"
-#include "vtkErClippingObject.h"
 #include "vtkErBitmap.h"
 #include "vtkErTimerCallback.h"
 #include "vtkErVolumeProperty.h"
+#include "vtkErInteractorStyleTrackballCamera.h"
 
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_segmentation.mhd";
-char gDistanceField[] = "C:\\Dropbox\\Work\\Data\\Volumes\\uah_risk_arteries.mhd";
 
-#define BACK_PLANE_ON
+//#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
 #define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
@@ -59,7 +58,6 @@ void CreateCamera(vtkRenderer* Renderer);
 void CreateVolumeProperty(vtkErTracer* Tracer);
 void CreateLighting(vtkErTracer* Tracer);
 void CreateObjects(vtkErTracer* Tracer);
-void CreateClippingObjects(vtkErTracer* Tracer);
 
 using namespace ExposureRender;
 
@@ -78,7 +76,7 @@ int main(int, char *[])
 	vtkSmartPointer<vtkErTimerCallback> TimerCallback = vtkSmartPointer<vtkErTimerCallback>::New();
 	TimerCallback->SetRenderWindowInteractor(RenderWindowInteractor);
 	
-	vtkSmartPointer<vtkInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+	vtkSmartPointer<vtkErInteractorStyleTrackballCamera> InteractorStyle = vtkSmartPointer<vtkErInteractorStyleTrackballCamera>::New();
 	InteractorStyle->SetMotionFactor(10);
 		
 	RenderWindowInteractor->Initialize();
@@ -107,7 +105,6 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateVolumeProperty(Tracer);
 	CreateLighting(Tracer);
 	CreateObjects(Tracer);
-	CreateClippingObjects(Tracer);
 	CreateCamera(Renderer);
 
 	Tracer->SetNoiseReduction(false);
@@ -127,10 +124,10 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	const float StepSize = 3.0f;
 
-	VolumeProperty->SetShadows(true);
+	VolumeProperty->SetShadows(false);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(3*StepSize);
-	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetStepFactorShadow(3 * StepSize);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(25);
 	VolumeProperty->SetGradientFactor(1.0f);
 
@@ -144,18 +141,18 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Diffuse = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	
+	/*
 	for (int i = 0; i < 36; i++)
 	{
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
-	/**/
+	*/
 
 	const float DiffuseLevel = 1.0f;
-/*
+
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-	
+	/*
 	
 	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
 	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
@@ -221,36 +218,6 @@ void LoadVolume(vtkErTracer* Tracer)
 	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
 }
 
-void LoadDistanceField(vtkErTracer* Tracer)
-{
-	vtkSmartPointer<vtkMetaImageReader> Reader = vtkSmartPointer<vtkMetaImageReader>::New();
-	
-	Reader->SetFileName(gDistanceField);
-	
-	if (Reader->CanReadFile(gDistanceField) == 0)
-	{
-		printf("Can't read %s, aborting!\n", gDistanceField);
-		exit(EXIT_FAILURE);
-	}
-
-	Reader->Update();
-
-	vtkSmartPointer<vtkImageCast> ImageCast = vtkSmartPointer<vtkImageCast>::New();
-	
-	ImageCast->SetOutputScalarTypeToUnsignedShort();
-	ImageCast->SetClampOverflow(1);
-	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
-	ImageCast->Update();
-
-	vtkSmartPointer<vtkErVolume> Volume	= vtkSmartPointer<vtkErVolume>::New();
-
-	Volume->SetInputConnection(vtkErVolume::ImageDataPort, ImageCast->GetOutputPort());
-	Volume->SetFilterMode(Enums::NearestNeighbour);
-	Volume->SetAcceleratorType(Enums::NoAcceleration);
-
-	Tracer->AddInputConnection(vtkErTracer::VolumesPort, Volume->GetOutputPort());
-}
-
 void CreateCamera(vtkRenderer* Renderer)
 {
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
@@ -280,7 +247,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(45.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(1.0f);
-	KeyLight->SetMultiplier(5.0f);
+	KeyLight->SetMultiplier(1.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 	KeyLight->SetRelativeToCamera(true);
@@ -337,9 +304,9 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetAxis(ExposureRender::Enums::Y);
 	EnvironmentLight->SetPosition(0, 0, 0);
 	EnvironmentLight->SetShapeType(Enums::Sphere);
-	EnvironmentLight->SetOneSided(false);
+	EnvironmentLight->SetOneSided(true);
 	EnvironmentLight->SetRadius(5.0f);
-	EnvironmentLight->SetMultiplier(2.0f);
+	EnvironmentLight->SetMultiplier(10.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -431,7 +398,7 @@ void CreateObjects(vtkErTracer* Tracer)
 		Bitmap->SetFilterMode(Enums::Linear);
 		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
 
-		DiffuseTexture->SetInputConnection(vtkErLight::TexturePort, Bitmap->GetOutputPort());
+		DiffuseTexture->SetInputConnection(vtkErObject::DiffuseTexturePort, Bitmap->GetOutputPort());
 	}
 	else
 	{
@@ -439,36 +406,15 @@ void CreateObjects(vtkErTracer* Tracer)
 
 		DiffuseTexture->SetTextureType(Enums::Procedural);
 		DiffuseTexture->SetProceduralType(Enums::Uniform);
-		DiffuseTexture->SetUniformColor(1, 1, 1);
+		DiffuseTexture->SetUniformColor(0.2, 0.2, 0.2);
 		DiffuseTexture->SetRepeat(10, 10);
-		DiffuseTexture->SetOutputLevel(5.00f);
+		DiffuseTexture->SetOutputLevel(1.00f);
 	}
 
 	Object->SetInputConnection(vtkErObject::DiffuseTexturePort, DiffuseTexture->GetOutputPort());
-//	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
+	Object->SetInputConnection(vtkErObject::SpecularTexturePort, DiffuseTexture->GetOutputPort());
 	Object->SetInputConnection(vtkErObject::GlossinessTexturePort, DiffuseTexture->GetOutputPort());
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, Object->GetOutputPort());
 #endif
-}
-
-void CreateClippingObjects(vtkErTracer* Tracer)
-{
-	vtkSmartPointer<vtkErClippingObject> ClippingObject[10];
-
-	for (int i = 0; i < 3; i++)
-	{
-		ClippingObject[i] = vtkSmartPointer<vtkErClippingObject>::New();
-
-		ClippingObject[i]->SetAlignmentType(Enums::Spherical);
-		ClippingObject[i]->SetElevation(0);
-		ClippingObject[i]->SetAzimuth(45*i);
-		ClippingObject[i]->SetSize(1000, 1000, 100);
-		ClippingObject[i]->SetOffset(0.02f);
-		ClippingObject[i]->SetPosition(0, -0.01, 0);
-		ClippingObject[i]->SetAutoFlip(true);
-		ClippingObject[i]->SetOneSided(false);
-
-		Tracer->AddInputConnection(vtkErTracer::ClippingObjectsPort, ClippingObject[i]->GetOutputPort());
-	}
 }
