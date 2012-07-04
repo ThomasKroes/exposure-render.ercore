@@ -59,7 +59,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	R.O		= Sample.Intersection.P;
 	R.MinT	= gStepFactorShadow;
-	R.MaxT	= FLT_MAX;
+	R.MaxT	= 1000.0f;
 
 	Shader Shader;
 
@@ -88,7 +88,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 		if (Light.EmissionUnit == Enums::Power)
 			Li /= Light.Shape.Area;
 
-		const float LightPdf = DistanceSquared(Int.P, Sample.Intersection.P) / (Light.Shape.Area);
+		const float LightPdf = DistanceSquared(Int.P, Sample.Intersection.P) / (AbsDot(-R.D, Int.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
 

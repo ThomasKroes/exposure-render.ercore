@@ -41,8 +41,8 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 #define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+//#define RIM_LIGHT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -244,14 +244,14 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetVisible(true);
-	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(145.0f);
+	KeyLight->SetElevation(0.0f);
+	KeyLight->SetAzimuth(90.0f);
 	KeyLight->SetOffset(1.0f);
 	KeyLight->SetMultiplier(1.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
-	KeyLight->SetRelativeToCamera(true);
-	KeyLight->SetUseCameraFocalPoint(true);
+//	KeyLight->SetRelativeToCamera(true);
+//	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, KeyLight->GetOutputPort());
@@ -281,8 +281,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetMultiplier(5.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
-	RimLight->SetRelativeToCamera(true);
-	RimLight->SetUseCameraFocalPoint(true);
+//	RimLight->SetRelativeToCamera(true);
+//	RimLight->SetUseCameraFocalPoint(true);
 	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, RimLight->GetOutputPort());
