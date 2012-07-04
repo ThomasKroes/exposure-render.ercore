@@ -127,7 +127,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(3 * StepSize);
-	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
 	VolumeProperty->SetDensityScale(1000);
 	VolumeProperty->SetGradientFactor(1.0f);
 
@@ -368,7 +368,7 @@ void CreateObjects(vtkErTracer* Tracer)
 
 	Object->SetAlignmentType(Enums::AxisAlign);
 	Object->SetAxis(Enums::Z);
-	Object->SetPosition(0.0f, 0.0f, -0.5f);
+	Object->SetPosition(0.0f, 0.0f, -0.6f);
 	Object->SetShapeType(Enums::Plane);
 	Object->SetSize(BackPlaneSize, BackPlaneSize, BackPlaneSize);
 //	Object->SetRelativeToCamera(true);

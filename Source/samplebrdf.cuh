@@ -61,8 +61,8 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	Ray R;
 	
 	R.O		= Sample.Intersection.P;
-	R.MinT	= gStepFactorShadow;
-	R.MaxT	= 1000.0f;
+	R.MinT	= 0.001f;
+	R.MaxT	= 1.0f;
 
 	Shader Shader;
 
@@ -75,10 +75,26 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	if (F.IsBlack() || F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
 
-	Intersection Int;
+	Intersection Ints[2];
 
-	IntersectObjects(R, Int);
-	IntersectVolume(R, Int);
+	IntersectObjects(R, Ints[0]);
+
+//	R.D = Vec3f(1.0f);
+
+	IntersectVolume(R, RNG, Ints[1]);
+	
+	return;
+
+	Intersection& Int = gpTracer->FrameBuffer.Samples(Sample.UV[0], Sample.UV[1]).Intersection;
+
+	Int.Valid	= false;
+	Int.T		= FLT_MAX;
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (Ints[i].Valid && Ints[i].T < Int.T)
+			Int = Ints[i];
+	}
 
 	if (Int.Valid)
 	{
@@ -122,6 +138,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 			}
 
 			case Enums::Object:
+			case Enums::Volume:
 			{
 				Sample.Intersection = Int;
 
@@ -133,8 +150,6 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	{
 		gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
 	}
-
-	Sample.Throughput *= F;
 }
 
 void SampleBrdf(Tracer& Tracer, Statistics& Statistics, int Bounce, int NoSamples)
