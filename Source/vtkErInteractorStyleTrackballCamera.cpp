@@ -13,41 +13,16 @@
 
 #pragma once
 
-#include "defines.h"
-#include "enums.h"
+#include "vtkErStable.h"
 
-namespace ExposureRender
-{
+#include "vtkErInteractorStyleTrackballCamera.h"
 
-class EXPOSURE_RENDER_DLL ShadeEvent
-{
-public:
-	HOST ShadeEvent()
-	{
-	}
-	
-	HOST ShadeEvent(const ShadeEvent& Other)
-	{
-		*this = Other;
-	}
+#include "vtkCamera.h"
+#include "vtkCallbackCommand.h"
+#include "vtkMath.h"
+#include "vtkObjectFactory.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
+#include "vtkRenderer.h"
 
-	HOST ShadeEvent& operator = (const ShadeEvent& Other)
-	{
-		return *this;
-	}
-
-	Vec3f			Ps;					// Position of the scatter event
-	Vec3f			Ns;					// Normal at scatter event
-
-	unsigned short	LightID;			// ID of the sampled light
-	Vec3f			Pl;					// Light sample point
-	ColorXYZf		Le;					// Light emission
-	ColorXYZf		LightF;				// Light reflection
-	float			MisWeightLight;		// MIS weight for the light
-
-	Vec3f			Wi;					// Ray direction, sampled from BRDF
-	ColorXYZf		BrdfF;				// BRDF Reflection
-	float			PdfBrdf;			// Probability density for sampling the BRDF
-};
-
-}
+vtkStandardNewMacro(vtkErInteractorStyleTrackballCamera);
