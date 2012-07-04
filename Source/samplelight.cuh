@@ -80,6 +80,8 @@ KERNEL void KrnlSampleLight(int NoSamples)
 		else
 			Ld += F * ((Li * Weight) / LightPdf);
 
+		Ld *= (float)gpTracer->LightIDs.Count;
+
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Ld[0];
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Ld[1];
 		gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Ld[2];
