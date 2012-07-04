@@ -13,44 +13,61 @@
 
 #pragma once
 
-#include "vtkErDll.h"
-#include "vtkErUtilities.h"
+#include "object.h"
 
-#include "exposurerender.h"
+namespace ExposureRender
+{
 
-using namespace ExposureRender;
+HOST_DEVICE_NI bool IntersectObject(const Object& Object, const Ray& R, ScatterEvent& SE)
+{
+	Intersection Int;
 
-#define ER_BINDABLE(type, name)												\
-																			\
-class VTK_ER_EXPORT vtkErBindable##type##									\
-{																			\
-public:																		\
-	vtkErBindable##type##()													\
-	{																		\
-		ER_CALL(this->Bind());												\
-	}																		\
-																			\
-	virtual ~vtkErBindable##type##()										\
-	{																		\
-		ER_CALL(this->Unbind());											\
-	}																		\
-																			\
-	void Bind()																\
-	{																		\
-		ExposureRender::Bind##type##(this->Bindable, true);					\
-	}																		\
-																			\
-	void Unbind()															\
-	{																		\
-		ExposureRender::Bind##type##(this->Bindable, false);				\
-	}																		\
-																			\
-	ExposureRender::Er##type	Bindable;									\
-																			\
-};
+	if (Object.Shape.Intersect(R, Int))
+	{
+		SE.N 	= Int.N;
+		SE.P 	= Int.P;
+		SE.T 	= Length(SE.P - R.O);
+		SE.Wo	= -R.D;
+		SE.Le	= ColorXYZf(0.0f);
+		SE.UV	= Int.UV;
 
-ER_BINDABLE(Tracer)
-ER_BINDABLE(Volume)
-ER_BINDABLE(Object)
-ER_BINDABLE(Texture)
-ER_BINDABLE(Bitmap)
+		return true;
+	}
+
+	return false;
+}
+
+HOST_DEVICE_NI void IntersectObjects(const Ray& R, ScatterEvent& RS)
+{
+	float T = FLT_MAX;
+
+	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
+	{
+		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
+
+		ScatterEvent LocalRS(Enums::Object);
+
+		LocalRS.ID = i;
+
+		if (IntersectObject(Object, R, LocalRS) && LocalRS.T < T)
+		{
+			RS = LocalRS;
+			T = LocalRS.T;
+		}
+	}
+}
+
+HOST_DEVICE_NI bool IntersectsObject(const Ray& R)
+{
+	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
+	{
+		const Object& Object = gpObjects[gpTracer->ObjectIDs[i]];
+
+		if (Object.Shape.Intersects(R))
+			return true;
+	}
+	
+	return false;
+}
+
+}

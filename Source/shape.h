@@ -15,7 +15,6 @@
 
 #include "shapes.h"
 #include "alignment.h"
-#include "clippingsegments.h"
 
 namespace ExposureRender
 {
@@ -163,51 +162,6 @@ public:
 		}
 
 		return false;
-	}
-
-	
-	HOST_DEVICE void ClipRange(const Ray& R, ClippingSegment& CS) const
-	{
-		Ray LocalR = TransformRay(this->Transform.InvTM, R);
-		
-		LocalR.MinT = 0.0f;
-		LocalR.MaxT = 1000;
-
-		Intersection Int;
-
-		switch (this->Type)
-		{
-			case Enums::Plane:
-			{
-				if (this->Plane.Intersect(LocalR, Int))
-				{
-					Int.P	= TransformPoint(this->Transform.TM, Int.P);
-					Int.N	= TransformVector(this->Transform.TM, Int.N);
-					Int.T	= (Int.P - R.O).Length();
-
-					if (Dot(R.D, Int.N) < 0.0f)
-						CS = ClippingSegment(Vec2f(R.MinT, Int.T), Int.P, Int.N);
-					else
-						CS = ClippingSegment(Vec2f(Int.T, R.MaxT), Int.P, Int.N);
-				}
-				else
-				{
-					if (LocalR.O[2] > 0.0f && LocalR.D[2] > 0.0f)
-					{
-//						CS.Range[0] = R.MinT;
-						CS.Range[1] = FLT_MAX;
-					}
-				}
-
-				break;
-			}
-			
-			/*
-			case Enums::Box:		return this->Box.Inside(LocalP, LocalD, T);
-			case Enums::Sphere:		return this->Sphere.Inside(LocalP, LocalD, T);
-//			case Enums::Cylinder:	return this->Cylinder.Inside(LocalP, LocalD, T);
-			*/
-		}
 	}
 
 	Enums::ShapeType	Type;
