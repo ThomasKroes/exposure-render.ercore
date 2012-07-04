@@ -247,7 +247,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetElevation(45.0f);
 	KeyLight->SetAzimuth(145.0f);
 	KeyLight->SetOffset(1.0f);
-	KeyLight->SetMultiplier(5.0f);
+	KeyLight->SetMultiplier(1.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 	KeyLight->SetRelativeToCamera(true);
