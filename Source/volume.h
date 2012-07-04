@@ -104,26 +104,6 @@ public:
 			case 0: return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
 			case 1: return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
 		}
-
-		/*
-		switch (this->AcceleratorType)
-		{
-			case Enums::NoAcceleration:
-			{
-				return (*this)(P);
-			}
-
-			case Enums::Octree:
-			{
-				return this->Octree.(*this)(P);
-			}
-
-			default:
-			{
-				return (*this)(P);
-			}
-		}
-		*/
 	}
 
 	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)
@@ -133,13 +113,34 @@ public:
 		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
 
+	DEVICE float GetIntensity(const Vec3f& P)
+	{
+		switch (this->AcceleratorType)
+		{
+			case Enums::NoAcceleration:
+			{
+				return (*this)(P, 1);
+			}
+
+			case Enums::Octree:
+			{
+				return this->Octree.GetIntensity(P);
+			}
+
+			default:
+			{
+				return (*this)(P);
+			}
+		}
+	}
+
 	DEVICE Vec3f GradientCD(const Vec3f& P)
 	{
 		const float Intensity[3][2] = 
 		{
-			{ (*this)(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), (*this)(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
-			{ (*this)(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), (*this)(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
-			{ (*this)(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), (*this)(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
+			{ GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)), GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f)) },
+			{ GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)), GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f)) },
+			{ GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])), GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2])) }
 		};
 
 		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
@@ -149,10 +150,10 @@ public:
 	{
 		const float Intensity[4] = 
 		{
-			(*this)(P),
-			(*this)(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
-			(*this)(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
-			(*this)(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
+			GetIntensity(P),
+			GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)),
+			GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)),
+			GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2]))
 		};
 
 		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
@@ -201,13 +202,13 @@ public:
 
 		float D = 0.0f, Sum = 0.0f;
 
-		D = ((*this)(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - (*this)(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
+		D = (GetIntensity(P + Vec3f(this->Spacing[0], 0.0f, 0.0f)) - GetIntensity(P - Vec3f(this->Spacing[0], 0.0f, 0.0f))) * 0.5f;
 		Sum += D * D;
 
-		D = ((*this)(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - (*this)(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
+		D = (GetIntensity(P + Vec3f(0.0f, this->Spacing[1], 0.0f)) - GetIntensity(P - Vec3f(0.0f, this->Spacing[1], 0.0f))) * 0.5f;
 		Sum += D * D;
 
-		D = ((*this)(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - (*this)(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
+		D = (GetIntensity(P + Vec3f(0.0f, 0.0f, this->Spacing[2])) - GetIntensity(P - Vec3f(0.0f, 0.0f, this->Spacing[2]))) * 0.5f;
 		Sum += D * D;
 
 		return sqrtf(Sum);

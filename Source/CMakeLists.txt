@@ -64,6 +64,8 @@ SET(General
 	rng.h
 	montecarlo.h
 	ray.h
+	objects.h
+	clippingobjects.h
 	textures.h
 	log.h
 	defines.h
@@ -77,6 +79,8 @@ SET(General
 	timestamp.h
 	kelvin.h
 	enums.h
+	segment.h
+	clippingsegments.h
 	color.h
 	exposurerender.h
 	exposurerender.cpp
@@ -84,15 +88,21 @@ SET(General
 	tracer.h
 	statistics.h
 	volume.h
+	extinctionvolume.h
+	scatterevent.h
 	intersection.h
 	object.h
+	clippingobject.h
 	texture.h
 	bitmap.h
+	singlescattering.h
+	shadeevent.h
 	alignment.h
 	transform.h
 	octree.h
 	volumeproperty.h
 	tonemap.h
+	reference.h
 )
 
 SOURCE_GROUP("General" FILES ${General})
@@ -111,8 +121,9 @@ SET(Buffer
 SOURCE_GROUP("Buffer" FILES ${Buffer})
 
 SET(TransferFunction
-	piecewisefunction.h
-	piecewiselinearfunction.h
+	pf.h
+	plf.h
+	pcf.h
 	colortransferfunction.h
 	scalartransferfunction.h
 	transferfunction.h
@@ -141,6 +152,7 @@ SET(Shading
 	lambert.h
 	microfacet.h
 	phasefunction.h
+	fresnelblend.h
 	blinn.h
 )
 
@@ -151,6 +163,7 @@ SET(Bindable
 	ertracer.h
 	ervolume.h
 	erobject.h
+	erclippingobject.h
 	ertexture.h
 	erbitmap.h
 )
@@ -243,6 +256,8 @@ IF(ER_VTK)
 		vtkErTimerCallback.cpp
 		vtkErVolumeProperty.h
 		vtkErVolumeProperty.cpp
+		vtkErInteractorStyleTrackballCamera.h
+		vtkErInteractorStyleTrackballCamera.cpp
 		vtkErStable.h
 		vtkErStable.cpp
 		vtkErConfigure.h
@@ -258,6 +273,8 @@ IF(ER_VTK)
 		vtkErShape.cpp
 		vtkErAlignment.h
 		vtkErAlignment.cpp
+		vtkErLight.h
+		vtkErLight.cpp
 		vtkErObject.h
 		vtkErObject.cpp
 		vtkErVolume.h
@@ -270,6 +287,8 @@ IF(ER_VTK)
 		vtkErCamera.cpp
 		vtkErBitmap.h
 		vtkErBitmap.cpp
+		vtkErInteractorStyleTrackballCamera.h
+		vtkErInteractorStyleTrackballCamera.cpp
 	)
 
 	ADD_LIBRARY(vtkEr ${General})

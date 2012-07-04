@@ -15,6 +15,7 @@
 
 #include "shapes.h"
 #include "alignment.h"
+#include "clippingsegments.h"
 
 namespace ExposureRender
 {
@@ -164,7 +165,7 @@ public:
 		return false;
 	}
 
-	/*
+	
 	HOST_DEVICE void ClipRange(const Ray& R, ClippingSegment& CS) const
 	{
 		Ray LocalR = TransformRay(this->Transform.InvTM, R);
@@ -201,10 +202,13 @@ public:
 				break;
 			}
 			
-
+			/*
+			case Enums::Box:		return this->Box.Inside(LocalP, LocalD, T);
+			case Enums::Sphere:		return this->Sphere.Inside(LocalP, LocalD, T);
+//			case Enums::Cylinder:	return this->Cylinder.Inside(LocalP, LocalD, T);
+			*/
 		}
 	}
-	*/
 
 	Enums::ShapeType	Type;
 	Plane				Plane;

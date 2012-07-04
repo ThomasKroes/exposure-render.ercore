@@ -13,57 +13,16 @@
 
 #pragma once
 
-#include "samplecamera.cuh"
-#include "samplelight.cuh"
-#include "samplebrdf.cuh"
+#include "vtkErStable.h"
 
-#include <thrust/remove.h>
+#include "vtkErInteractorStyleTrackballCamera.h"
 
-#define SAMPLE_LIGHT
-//#define SAMPLE_BRDF
+#include "vtkCamera.h"
+#include "vtkCallbackCommand.h"
+#include "vtkMath.h"
+#include "vtkObjectFactory.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
+#include "vtkRenderer.h"
 
-namespace ExposureRender
-{
-
-struct IsInvalid
-{
-	HOST_DEVICE bool operator()(const int& Value)
-	{
-		return Value < 0;
-	}
-};
-
-void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
-{
-	thrust::device_ptr<int> DevicePtr(Tracer.FrameBuffer.IDs.GetData()); 
-	thrust::device_ptr<int> DevicePtrEnd = thrust::remove_if(DevicePtr, DevicePtr + Tracer.FrameBuffer.IDs.GetNoElements(), IsInvalid());
-
-	NoSamples = DevicePtrEnd - DevicePtr;
-}
-
-void SingleScattering(Tracer& Tracer, Statistics& Statistics)
-{
-	SampleCamera(Tracer, Statistics);
-	
-	int NoSamples = 0;
-
-	RemoveRedundantSamples(Tracer, NoSamples);
-	
-#ifdef SAMPLE_LIGHT
-	if (NoSamples > 0)
-	{
-		SampleLight(Tracer, Statistics, NoSamples);
-		Statistics = Timing("No. Samples (Sample Light)", NoSamples);
-	}
-#endif
-
-#ifdef SAMPLE_BRDF
-	if (NoSamples > 0)
-	{
-		SampleBrdf(Tracer, Statistics, NoSamples);
-		Statistics = Timing("No. Samples (Sample BRDF)", NoSamples);
-	}
-#endif
-}
-
-}
+vtkStandardNewMacro(vtkErInteractorStyleTrackballCamera);

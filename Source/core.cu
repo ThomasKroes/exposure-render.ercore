@@ -30,6 +30,7 @@ texture<float4, 1, cudaReadModeElementType> 		Emission1D;
 map<int, int> gTracersHashMap;
 map<int, int> gVolumesHashMap;
 map<int, int> gObjectsHashMap;
+map<int, int> gClippingObjectsHashMap;
 map<int, int> gTexturesHashMap;
 map<int, int> gBitmapsHashMap;
 
@@ -41,22 +42,25 @@ CONSTANT_DEVICE float gStepFactorShadow		= 0.0f;
 #include "tracer.h"
 #include "volume.h"
 #include "object.h"
+#include "clippingobject.h"
 #include "texture.h"
 #include "bitmap.h"
 
 DEVICE ExposureRender::Tracer*			gpTracer			= NULL;
 DEVICE ExposureRender::Volume* 			gpVolumes			= NULL;
 DEVICE ExposureRender::Object*			gpObjects			= NULL;
+DEVICE ExposureRender::ClippingObject*	gpClippingObjects	= NULL;
 DEVICE ExposureRender::Texture*			gpTextures			= NULL;
 DEVICE ExposureRender::Bitmap*			gpBitmaps			= NULL;
 
 #include "list.cuh"
 
-ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::ErTracer>		gTracers("gpTracer");
-ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::ErVolume>		gVolumes("gpVolumes");
-ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::ErObject>		gObjects("gpObjects");
-ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>		gTextures("gpTextures");
-ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>		gBitmaps("gpBitmaps");
+ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::ErTracer>					gTracers("gpTracer");
+ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::ErVolume>					gVolumes("gpVolumes");
+ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::ErObject>					gObjects("gpObjects");
+ExposureRender::Cuda::List<ExposureRender::ClippingObject, ExposureRender::ErClippingObject>	gClippingObjects("gpClippingObjects");
+ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
+ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
 
 #include "autofocus.cuh"
 #include "singlescattering.cuh"
@@ -97,6 +101,16 @@ EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind /*=
 		gObjects.Unbind(Object);
 
 	gObjectsHashMap = gObjects.HashMap;
+}
+
+EXPOSURE_RENDER_DLL void BindClippingObject(const ErClippingObject& ClippingObject, const bool& Bind /*= true*/)
+{
+	if (Bind)
+		gClippingObjects.Bind(ClippingObject);
+	else
+		gClippingObjects.Unbind(ClippingObject);
+
+	gClippingObjectsHashMap = gClippingObjects.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind /*= true*/)

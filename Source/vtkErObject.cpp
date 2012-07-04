@@ -25,7 +25,7 @@ vtkCxxRevisionMacro(vtkErObject, "$Revision: 1.0 $");
 
 vtkErObject::vtkErObject(void)
 {
-	this->SetNumberOfInputPorts(4);
+	this->SetNumberOfInputPorts(5);
 	this->SetNumberOfOutputPorts(1);
 
 	this->SetEnabled(true);
@@ -34,7 +34,6 @@ vtkErObject::vtkErObject(void)
 	this->SetMultiplier(100.0f);
 	this->SetEmissionUnit(Enums::Power);
 	this->SetClip(false);
-	this->SetInvert(false);
 }
 
 vtkErObject::~vtkErObject(void)
@@ -65,6 +64,13 @@ int vtkErObject::FillInputPortInformation(int Port, vtkInformation* Info)
 	}
 
 	if (Port == EmissionTexturePort)
+	{
+		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
+		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
+		Info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+	}
+
+	if (Port == ClippingTexturePort)
 	{
 		Info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkErTextureData");
 		Info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 0);
@@ -120,37 +126,34 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (!ObjectDataOut)
 		return 0;
 
-	ExposureRender::ErObject& Object = ObjectDataOut->Bindable;
-
-	vtkErShape::RequestData(Object.Shape);
+	vtkErShape::RequestData(ObjectDataOut->Bindable.Shape);
 
 	vtkErTextureData* Diffuse = vtkErTextureData::SafeDownCast(this->GetInputDataObject(DiffuseTexturePort, 0));
 
 	if (Diffuse)
-		Object.DiffuseTextureID = Diffuse->Bindable.ID;
+		ObjectDataOut->Bindable.DiffuseTextureID = Diffuse->Bindable.ID;
 
 	vtkErTextureData* Specular = vtkErTextureData::SafeDownCast(this->GetInputDataObject(SpecularTexturePort, 0));
 
 	if (Specular)
-		Object.SpecularTextureID = Specular->Bindable.ID;
+		ObjectDataOut->Bindable.SpecularTextureID = Specular->Bindable.ID;
 
 	vtkErTextureData* Glossiness = vtkErTextureData::SafeDownCast(this->GetInputDataObject(GlossinessTexturePort, 0));
 
 	if (Glossiness)
-		Object.GlossinessTextureID = Glossiness->Bindable.ID;
+		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;
 
 	vtkErTextureData* Emission = vtkErTextureData::SafeDownCast(this->GetInputDataObject(EmissionTexturePort, 0));
 
 	if (Emission)
-		Object.EmissionTextureID = Emission->Bindable.ID;
+		ObjectDataOut->Bindable.EmissionTextureID = Emission->Bindable.ID;
 	
-	Object.Enabled			= this->GetEnabled();
-	Object.Visible			= this->GetVisible();
-	Object.Emitter			= this->GetEmitter();
-	Object.Multiplier		= this->GetMultiplier();
-	Object.EmissionUnit		= this->GetEmissionUnit();
-	Object.Clip				= this->GetClip();
-	Object.Invert			= this->GetInvert();
+	ObjectDataOut->Bindable.Enabled			= this->GetEnabled();
+	ObjectDataOut->Bindable.Visible			= this->GetVisible();
+	ObjectDataOut->Bindable.Emitter			= this->GetEmitter();
+	ObjectDataOut->Bindable.Multiplier		= this->GetMultiplier();
+	ObjectDataOut->Bindable.EmissionUnit	= this->GetEmissionUnit();
+	ObjectDataOut->Bindable.Clip			= this->GetClip();
 
 	ObjectDataOut->Bind();
 
