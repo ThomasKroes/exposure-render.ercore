@@ -127,7 +127,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(3 * StepSize);
-	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
+	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
 	VolumeProperty->SetDensityScale(1000);
 	VolumeProperty->SetGradientFactor(1.0f);
 
@@ -135,7 +135,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(1, 1);
-	Opacity->AddPoint(10, 1);
+	Opacity->AddPoint(10000, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
@@ -237,7 +237,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 1.1f;
+	const float KeyLightSize = 0.1f;
 
 	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);
@@ -245,7 +245,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetOneSided(false);
 	KeyLight->SetVisible(true);
 	KeyLight->SetElevation(0.0f);
-	KeyLight->SetAzimuth(90.0f);
+	KeyLight->SetAzimuth(45.0f);
 	KeyLight->SetOffset(1.0f);
 	KeyLight->SetMultiplier(1.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
@@ -405,9 +405,11 @@ void CreateObjects(vtkErTracer* Tracer)
 		printf("%s cannot be loaded, reverting to unform texture\n", gBackPlaneBitmap);
 
 		DiffuseTexture->SetTextureType(Enums::Procedural);
-		DiffuseTexture->SetProceduralType(Enums::Uniform);
-		DiffuseTexture->SetUniformColor(0.2, 0.2, 0.2);
-		DiffuseTexture->SetRepeat(10, 10);
+		DiffuseTexture->SetProceduralType(Enums::Checker);
+		DiffuseTexture->SetUniformColor(1.0, 1.0, 1.0);
+		DiffuseTexture->SetCheckerColor1(1.0f, 0.2f, 0.2f);
+		DiffuseTexture->SetCheckerColor2(0.2f, 1.0f, 0.2f);
+		DiffuseTexture->SetRepeat(3, 3);
 		DiffuseTexture->SetOutputLevel(1.00f);
 	}
 

@@ -29,6 +29,8 @@ KERNEL void KrnlSampleCamera()
 
 	Sample.UV[0] = IDx;
 	Sample.UV[1] = IDy;
+	
+	Sample.Throughput = ColorXYZf(1.0f);
 
 	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf::Black();
 
