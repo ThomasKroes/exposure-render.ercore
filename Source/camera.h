@@ -184,6 +184,35 @@ public:
 		}
 	}
 
+	HOST_DEVICE bool ProjectPointToFilmPlane(const Vec3f& P, Vec2f& FilmUV) const
+	{
+		const Vec3f D = P - this->Pos;
+		const Vec3f Dn = Normalize(P - this->Pos);
+
+		const float L = Dot(Dn, this->N);
+
+		const Vec3f FilmP = this->Pos + Dn * (1.0f * L);
+
+		const Vec2f CamUV(Dot(FilmP, this->U), -Dot(FilmP, this->V));
+
+		if (CamUV[0] < this->Screen[0][0] || CamUV[0] > this->Screen[0][1])
+			return false;
+
+		if (CamUV[1] < this->Screen[1][0] || CamUV[1] > this->Screen[1][1])
+			return false;
+
+		const Vec2f ScreenSize(this->Screen[0][1] - this->Screen[0][0], this->Screen[1][1] - this->Screen[1][0]);
+
+		Vec2f Offset = CamUV - Vec2f(this->Screen[0][0], this->Screen[1][0]);
+		
+		Offset /= ScreenSize;
+		
+		FilmUV[0] = (float)this->FilmSize[0] * Offset[0];
+		FilmUV[1] = (float)this->FilmSize[1] * Offset[1];
+
+		return true;
+	}
+
 	Vec2i					FilmSize;
 	Vec3f					Pos;
 	Vec3f					Target;
