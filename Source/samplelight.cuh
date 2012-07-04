@@ -69,16 +69,16 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	if (!IntersectsVolume(R, RNG))
 	{
-		const float LightPdf = DistanceSquared(Int.P, SS.P) / (Light.Shape.Area);
+		const float LightPdf = DistanceSquared(Int.P, SS.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 
 		ColorXYZf Ld;
 
 		if (Shader.Type == Enums::Brdf)
-			Ld += F * Li * (AbsDot(Wi, Int.N) * Weight / LightPdf);
+			Ld = F * Li * (AbsDot(Wi, Int.N) * Weight / LightPdf);
 		else
-			Ld += F * ((Li * Weight) / LightPdf);
+			Ld = F * ((Li * Weight) / LightPdf);
 
 		Ld *= (float)gpTracer->LightIDs.Count;
 
