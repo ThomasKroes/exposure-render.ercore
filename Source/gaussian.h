@@ -45,4 +45,80 @@ private:
 	}
 };
 
+template<int FilterRadius>
+class GaussianFilterTable
+{	
+public:
+	HOST GaussianFilterTable()
+	{
+		this->Generate();
+	}
+
+	HOST GaussianFilterTable(const GaussianFilterTable& Other)
+	{
+		*this = Other;
+	}
+
+	HOST GaussianFilterTable& operator = (const GaussianFilterTable& Other)
+	{
+		for (int i = 0; i < FilterRadius * 2 + 1; i++)
+			for (int j = 0; j < FilterRadius * 2 + 1; j++)
+				this->Weights[i][j] = Other.Weights[i][j];
+
+		return *this;
+	}
+
+	HOST void Generate()
+	{
+		Vec2f UV;
+
+		for (int i = 0; i < FilterRadius * 2 + 1; i++)
+		{
+			for (int j = 0; j < FilterRadius * 2 + 1; j++)
+			{
+				UV[0] = -(FilterRadius + 0.5f) + (float)i + 0.5f;
+				UV[1] = -(FilterRadius + 0.5f) + (float)j + 0.5f;
+
+				this->Weights[i][j] = Gauss2D(0.75f * FilterRadius, UV[0], UV[1]);
+			}
+		}
+
+		this->PrintSelf();
+	}
+
+	HOST void PrintSelf()
+	{
+		std::string Message;
+
+		for (int j = 0; j < FilterRadius * 2 + 1; j++)
+		{
+			for (int i = 0; i < FilterRadius * 2 + 1; i++)
+			{
+				char Weight[MAX_CHAR_SIZE];
+
+				if (i == FilterRadius * 2)
+					sprintf_s(Weight, MAX_CHAR_SIZE, "%0.2f\n", this->Weights[i][j]);
+				else
+					sprintf_s(Weight, MAX_CHAR_SIZE, "%0.2f, ", this->Weights[i][j]);
+
+				Message.append(Weight);
+			}
+		}
+
+		Message.append("\n");
+
+		printf(Message.c_str());
+	}
+
+	float	Weights[FilterRadius * 2 + 1][FilterRadius * 2 + 1];
+};
+
+class GaussianFilterTables
+{
+public:
+	GaussianFilterTable<1> Gaussian3x3;
+	GaussianFilterTable<2> Gaussian5x5;
+	GaussianFilterTable<3> Gaussian7x7;
+};
+
 }

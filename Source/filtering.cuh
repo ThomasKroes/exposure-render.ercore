@@ -17,6 +17,8 @@
 #include "geometry.h"
 #include "filter.h"
 
+#include <string>
+
 namespace ExposureRender
 {
 
