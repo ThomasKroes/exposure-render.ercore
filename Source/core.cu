@@ -137,7 +137,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 	Cuda::HostToConstantDevice(&DensityScale, "gDensityScale");
 	Cuda::HostToConstantDevice(&StepFactorPrimary, "gStepFactorPrimary");
 	Cuda::HostToConstantDevice(&StepFactorShadow, "gStepFactorShadow");
-
+	
+	/*
 	if (Tracer.NoEstimates == 0)
 	{
 		if (Tracer.Camera.FocusMode == Enums::AutoFocus)
@@ -151,6 +152,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 				Tracer.Camera.FocalDistance = AutoFocusDistance;
 		}
 	}
+	*/
 
 	gTracers.Synchronize(TracerID);
 

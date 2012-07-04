@@ -78,6 +78,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	Intersection Int;
 
 	IntersectObjects(R, Int);
+	IntersectVolume(R, Int);
 
 	if (Int.Valid)
 	{
