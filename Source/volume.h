@@ -119,7 +119,7 @@ public:
 		{
 			case Enums::NoAcceleration:
 			{
-				return (*this)(P, 1);
+				return (*this)(P);
 			}
 
 			case Enums::Octree:
