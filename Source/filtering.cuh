@@ -28,10 +28,12 @@ KERNEL void KrnlGaussianFilterFrameEstimate()
 
 	int Range[2][2];
 
-	Range[0][0] = max((int)ceilf(IDx - 1), 0);
-	Range[0][1] = min((int)floorf(IDx + 1), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - 1), 0);
-	Range[1][1] = min((int)floorf(IDy + 1), gpTracer->FrameBuffer.Resolution[1] - 1);
+	const int Radius = 1;
+
+	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
+	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
+	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
+	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
 
 	ColorXYZAf Sum;
 	float SumWeight	= 0.0f;
@@ -40,7 +42,7 @@ KERNEL void KrnlGaussianFilterFrameEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(1.0f, x - IDx, y - IDy);
+			const float Weight = gpTracer->GaussianFilterTables.Gaussian3x3.Weights[Radius + (IDx - x)][Radius + (IDy - y)];
 
 			Sum			+= Weight * gpTracer->FrameBuffer.FrameEstimate(x, y);
 			SumWeight	+= Weight;
@@ -80,7 +82,7 @@ KERNEL void KrnlGaussianFilterRunningEstimate()
 	{
 		for (int x = Range[0][0]; x <= Range[0][1]; x++)
 		{
-			const float Weight = Gauss2D(Radius, x - IDx, y - IDy);
+			const float Weight = gpTracer->GaussianFilterTables.Gaussian5x5.Weights[Radius + (IDx - x)][Radius + (IDy - y)];
 
 			Sum[0]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[0];
 			Sum[1]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[1];
