@@ -105,9 +105,11 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 					if (!IntersectsVolume(R, RNG))
 					{
-						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[0] += Ld[0];
-						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Ld[1];
-						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Ld[2];
+						ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
+
+						FrameEstimate[0] += Ld[0];
+						FrameEstimate[1] += Ld[1];
+						FrameEstimate[2] += Ld[2];
 					}
 */
 					gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
