@@ -84,8 +84,6 @@ public:
 			(float)Foreground[3] / 255.0f
 		};
 
-		const float Alpha = NormBackgroundRGBAf[3] * NormForegroundRGBAf[3];
-
 		const float NormBlendRGBAf[4] =
 		{
 			NormBackgroundRGBAf[0] * NormBackgroundRGBAf[3] * (1.0f - NormForegroundRGBAf[3]) + NormForegroundRGBAf[0] * NormForegroundRGBAf[3],

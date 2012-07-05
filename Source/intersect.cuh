@@ -13,62 +13,76 @@
 
 #pragma once
 
-#include "samplecamera.cuh"
-#include "samplelight.cuh"
-#include "samplebrdf.cuh"
-
-#include <thrust/remove.h>
-
-#define SAMPLE_LIGHT
-#define SAMPLE_BRDF
+#include "macros.cuh"
+#include "intersection.h"
 
 namespace ExposureRender
 {
 
-struct IsInvalid
+DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
 {
-	HOST_DEVICE bool operator()(const int& Value)
+	float NearestT = FLT_MAX;
+
+	Intersection LocalInt;
+
+	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
 	{
-		return Value < 0;
+		const Object& Object = gpObjects[i];
+		
+		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT)
+		{
+			NearestT			= LocalInt.T;
+			Int					= LocalInt;
+			Int.Valid			= true;
+			Int.ScatterType		= Object.Emitter ? Enums::Light : Enums::Object;
+			Int.ID				= i;
+			Int.Wo				= -R.D;
+		}
 	}
-};
-
-void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
-{
-	thrust::device_ptr<int> DevicePtr(Tracer.FrameBuffer.IDs.GetData()); 
-	thrust::device_ptr<int> DevicePtrEnd = thrust::remove_if(DevicePtr, DevicePtr + Tracer.FrameBuffer.IDs.GetNoElements(), IsInvalid());
-
-	NoSamples = DevicePtrEnd - DevicePtr;
 }
 
-void SingleScattering(Tracer& Tracer, Statistics& Statistics)
+DEVICE bool IntersectsObjects(Ray R)
 {
-	SampleCamera(Tracer, Statistics);
-	
-	int NoSamples = 0;
-
-	RemoveRedundantSamples(Tracer, NoSamples);
-
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
 	{
-#ifdef SAMPLE_LIGHT
-		if (NoSamples > 0)
-		{
-			SampleLight(Tracer, Statistics, i + 1, NoSamples);
-		}
-
-		RemoveRedundantSamples(Tracer, NoSamples);
-#endif
-
-#ifdef SAMPLE_BRDF
-		if (NoSamples > 0)
-		{
-			SampleBrdf(Tracer, Statistics, i + 1, NoSamples);
-		}
-
-		RemoveRedundantSamples(Tracer, NoSamples);
-#endif
+		if (gpObjects[i].Shape.Intersects(R))
+			return true;
 	}
+
+	return false;
+}
+
+DEVICE bool Intersect(Ray R, RNG& RNG, Intersection& Int)
+{
+	Intersection Ints[2];
+	
+	// Intersect
+	IntersectObjects(R, Ints[0]);
+	IntersectVolume(R, RNG, Ints[1]);
+	
+	float HitT = FLT_MAX;
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (Ints[i].Valid && Ints[i].T < HitT)
+		{
+			Int		= Ints[i];
+			HitT	= Ints[i].T;
+		}
+	}
+
+	return Int.Valid;
+}
+
+DEVICE bool Intersects(Ray R, RNG& RNG)
+{
+	if (IntersectsObjects(R))
+		return true;
+
+	if (IntersectsVolume(R, RNG))
+		return true;
+
+	return false;
 }
 
 }

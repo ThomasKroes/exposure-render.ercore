@@ -191,6 +191,7 @@ SET(Cuda
 	samplecamera.cuh
 	samplelight.cuh
 	samplebrdf.cuh
+	intersect.cuh
 	list.cuh
 	wrapper.cuh
 	macros.cuh
