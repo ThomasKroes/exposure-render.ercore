@@ -28,7 +28,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 		return;
 
 	// Get sample ID
-	const int SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+	int& SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
 	if (SampleID < 0)
 		return;
@@ -39,50 +39,33 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	// Get random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
-	Ray R;
-	
-	R.O		= Sample.Intersection.P;
-	R.MinT	= 0.0f;
-	R.MaxT	= 1000.0f;
-
 	Shader Shader;
 
 	GetShader(Sample.Intersection, Shader, RNG);
 
 	float ShaderPdf = 0.0f;
 
+	Ray R;
+	
+	R.O		= Sample.Intersection.P;
+	R.MinT	= gStepFactorShadow;
+	R.MaxT	= 1000.0f;
+
 	const ColorXYZf F = Shader.SampleF(Sample.Intersection.Wo, R.D, ShaderPdf, RNG);
 
 	if (F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
-
-	Intersection Ints[2];
-
-	IntersectObjects(R, Ints[0]);
-
-//	R.D = UniformSampleSphere(RNG.Get2());
-
-//	IntersectVolume(R, RNG, Ints[1]);
 	
-	Intersection& Int = Sample.Intersection;
+	Intersection Int;
 
-	Int = Intersection();
-
-	for (int i = 0; i < 2; i++)
-	{
-		if (Ints[i].Valid && Ints[i].T < Int.T)
-			Int = Ints[i];
-	}
-
-	if (Int.Valid)
+	if (Intersect(R, RNG, Int))
 	{
 		switch (Int.ScatterType)
 		{
 			case Enums::Light:
 			{
-				
 				if (Int.ID == Sample.LightID)
-				{/*
+				{
 					Object& Light = gpObjects[Int.ID];
 
 					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
@@ -103,7 +86,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 					Ld *= (float)gpTracer->LightIDs.Count;
 
-					if (!IntersectsVolume(R, RNG))
+					if (!Intersects(R, RNG))
 					{
 						ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
 
@@ -111,10 +94,9 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 						FrameEstimate[1] += Ld[1];
 						FrameEstimate[2] += Ld[2];
 					}
-*/
-					gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
 				}
-				
+
+				SampleID = -1;
 
 				break;
 			}
@@ -130,7 +112,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	}
 	else
 	{
-		gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
+		SampleID = -1;
 	}
 }
 

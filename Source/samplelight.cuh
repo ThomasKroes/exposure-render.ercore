@@ -27,7 +27,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 		return;
 
 	// Get sample ID
-	const int SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+	int& SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
 	if (SampleID < 0)
 		return;
@@ -78,7 +78,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	if (Li.IsBlack() || F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
 
-	if (!IntersectsVolume(R, RNG))
+	if (!Intersects(R, RNG))
 	{
 		const float LightPdf = DistanceSquared(Int.P, SS.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
