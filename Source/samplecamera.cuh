@@ -38,7 +38,7 @@ KERNEL void KrnlSampleCamera()
 	Sample.Throughput = ColorXYZf(1.0f);
 	
 	// Initalize the associated pixel with black
-	ColorRGBAuc& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy);
+	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy);
 	
 	FrameEstimate = ColorXYZAf::Black();
 
