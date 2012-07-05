@@ -237,12 +237,12 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 1.0f;
 
 	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
-	KeyLight->SetOneSided(false);
+	KeyLight->SetOneSided(true);
 	KeyLight->SetVisible(true);
 	KeyLight->SetElevation(0.0f);
 	KeyLight->SetAzimuth(45.0f);

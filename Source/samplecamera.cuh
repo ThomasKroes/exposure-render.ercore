@@ -25,17 +25,17 @@ KERNEL void KrnlSampleCamera()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	// Flag sample ID as invalid initially
-	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
-	
 	// Get current sample
 	Sample& Sample = gpTracer->FrameBuffer.Samples(IDx, IDy);
+
+	// Sample ID reference
+	int& SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+
+	SampleID = -1;
 
 	// Set the associated film plane UV coordinates
 	Sample.UV[0] = IDx;
 	Sample.UV[1] = IDy;
-	
-	Sample.Throughput = ColorXYZf(1.0f);
 	
 	// Initalize the associated pixel with black
 	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy);
@@ -51,6 +51,9 @@ KERNEL void KrnlSampleCamera()
 	// Generate
 	gpTracer->Camera.Sample(R, Vec2i(IDx, IDy), RNG);
 	
+	// Reset the sample intersection
+	Sample.Intersection.Reset();
+
 	// Intersections
 	if (Intersect(R, RNG, Sample.Intersection))
 	{
@@ -64,10 +67,12 @@ KERNEL void KrnlSampleCamera()
 			FrameEstimate[0] = Le[0];
 			FrameEstimate[1] = Le[1];
 			FrameEstimate[2] = Le[2];
+
+			SampleID = -1;
 		}
 		else
 		{
-			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
+			SampleID = IDk;
 		}
 	}
 
