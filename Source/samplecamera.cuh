@@ -14,7 +14,9 @@
 #pragma once
 
 #include "macros.cuh"
-#include "samplebrdf.cuh"
+#include "intersect.cuh"
+
+#include "textures.h"
 
 namespace ExposureRender
 {
@@ -23,57 +25,54 @@ KERNEL void KrnlSampleCamera()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
+	// Flag sample ID as invalid initially
 	gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
 	
+	// Get current sample
 	Sample& Sample = gpTracer->FrameBuffer.Samples(IDx, IDy);
 
+	// Set the associated film plane UV coordinates
 	Sample.UV[0] = IDx;
 	Sample.UV[1] = IDy;
 	
 	Sample.Throughput = ColorXYZf(1.0f);
+	
+	// Initalize the associated pixel with black
+	ColorRGBAuc& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy);
+	
+	FrameEstimate = ColorXYZAf::Black();
 
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy) = ColorXYZAf::Black();
-
+	// Initialize the random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 	
+	// Camera ray
 	Ray R;
 
+	// Generate
 	gpTracer->Camera.Sample(R, Vec2i(IDx, IDy), RNG);
 	
-	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[0]];
-
-	Intersection Ints[2];
-
-	IntersectObjects(R, Ints[0]);
-	IntersectVolume(R, RNG, Ints[1]);
-	
-	Intersection& Int = gpTracer->FrameBuffer.Samples(IDx, IDy).Intersection;
-
-	Int.Valid	= false;
-	Int.T		= FLT_MAX;
-
-	for (int i = 0; i < 2; i++)
+	// Intersections
+	if (Intersect(R, RNG, Sample.Intersection))
 	{
-		if (Ints[i].Valid && Ints[i].T < Int.T)
-			Int = Ints[i];
-	}
-
-	if (Int.Valid && Int.ScatterType != Enums::Light)
-		gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
-
-	if (Int.Valid && Int.ScatterType == Enums::Light)
-	{
-		ColorXYZf Le = gpObjects[Int.ID].Multiplier * EvaluateTexture(gpObjects[Int.ID].EmissionTextureID, Int.UV);
+		if (Sample.Intersection.ScatterType == Enums::Light)
+		{
+			ColorXYZf Le = gpObjects[Sample.Intersection.ID].Multiplier * EvaluateTexture(gpObjects[Sample.Intersection.ID].EmissionTextureID, Sample.Intersection.UV);
 		
-		if (gpObjects[Int.ID].EmissionUnit == Enums::Power)
-			Le /= gpObjects[Int.ID].Shape.Area;
+			if (gpObjects[Sample.Intersection.ID].EmissionUnit == Enums::Power)
+				Le /= gpObjects[Sample.Intersection.ID].Shape.Area;
 
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[0] = Le[0];
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[1] = Le[1];
-		gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[2] = Le[2];
+			FrameEstimate[0] = Le[0];
+			FrameEstimate[1] = Le[1];
+			FrameEstimate[2] = Le[2];
+		}
+		else
+		{
+			gpTracer->FrameBuffer.IDs(IDx, IDy) = IDk;
+		}
 	}
 
-	gpTracer->FrameBuffer.FrameEstimate(IDx, IDy)[3] = Int.Valid ? 1.0f : 0.0f;
+	// Adjust alpha
+	FrameEstimate[3] = Sample.Intersection.Valid ? 1.0f : 0.0f;
 }
 
 void SampleCamera(Tracer& Tracer, Statistics& Statistics)

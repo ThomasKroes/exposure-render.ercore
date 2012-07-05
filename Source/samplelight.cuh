@@ -26,17 +26,22 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	if (IDk >= NoSamples)
 		return;
 
-	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+	// Get sample ID
+	const int SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
-	if (ID < 0)
+	if (SampleID < 0)
 		return;
 
-	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
+	// Get sample
+	Sample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
 	
+	// Sample intersection
 	Intersection& Int = Sample.Intersection;
 
+	// Get random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
+	// Choose light to sample
 	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
 
 	if (LightID < 0)
@@ -44,10 +49,12 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	
 	Sample.LightID = LightID;
 
+	// Get the light
 	const Object& Light = gpObjects[LightID];
 	
 	SurfaceSample SS;
 
+	// Sample light and determine exitant radiance
 	Light.Shape.Sample(SS, RNG.Get3());
 
 	ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, SS.UV);
@@ -57,6 +64,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	Shader Shader;
 
+	// Obtain shader from intersection
 	GetShader(Int, Shader, RNG);
 
 	const Vec3f Wi = Normalize(SS.P - Int.P);

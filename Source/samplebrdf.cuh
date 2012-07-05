@@ -20,28 +20,6 @@
 namespace ExposureRender
 {
 
-DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
-{
-	float NearestT = FLT_MAX;
-
-	Intersection LocalInt;
-
-	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
-	{
-		const Object& Object = gpObjects[i];
-		
-		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT)
-		{
-			NearestT			= LocalInt.T;
-			Int					= LocalInt;
-			Int.Valid			= true;
-			Int.ScatterType		= Object.Emitter ? Enums::Light : Enums::Object;
-			Int.ID				= i;
-			Int.Wo				= -R.D;
-		}
-	}
-}
-
 KERNEL void KrnlSampleBrdf(int NoSamples)
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
@@ -49,20 +27,23 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	if (IDk >= NoSamples)
 		return;
 
-	const int ID = gpTracer->FrameBuffer.IDs(IDx, IDy);
+	// Get sample ID
+	const int SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);
 
-	if (ID < 0)
+	if (SampleID < 0)
 		return;
 
-	Sample& Sample = gpTracer->FrameBuffer.Samples[ID];
+	// Get sample
+	Sample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
 	
+	// Get random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
 	Ray R;
 	
 	R.O		= Sample.Intersection.P;
-	R.MinT	= 0.001f;
-	R.MaxT	= 1.0f;
+	R.MinT	= 0.0f;
+	R.MaxT	= 1000.0f;
 
 	Shader Shader;
 
@@ -72,23 +53,20 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	const ColorXYZf F = Shader.SampleF(Sample.Intersection.Wo, R.D, ShaderPdf, RNG);
 
-	if (F.IsBlack() || F.IsBlack() || ShaderPdf <= 0.0f)
+	if (F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
 
 	Intersection Ints[2];
 
 	IntersectObjects(R, Ints[0]);
 
-//	R.D = Vec3f(1.0f);
+//	R.D = UniformSampleSphere(RNG.Get2());
 
-	IntersectVolume(R, RNG, Ints[1]);
+//	IntersectVolume(R, RNG, Ints[1]);
 	
-	return;
+	Intersection& Int = Sample.Intersection;
 
-	Intersection& Int = gpTracer->FrameBuffer.Samples(Sample.UV[0], Sample.UV[1]).Intersection;
-
-	Int.Valid	= false;
-	Int.T		= FLT_MAX;
+	Int = Intersection();
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -102,8 +80,9 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 		{
 			case Enums::Light:
 			{
+				
 				if (Int.ID == Sample.LightID)
-				{
+				{/*
 					Object& Light = gpObjects[Int.ID];
 
 					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
@@ -130,9 +109,10 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[1] += Ld[1];
 						gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1])[2] += Ld[2];
 					}
-
+*/
 					gpTracer->FrameBuffer.IDs(IDx, IDy) = -1;
 				}
+				
 
 				break;
 			}
