@@ -52,7 +52,7 @@ KERNEL void KrnlSampleCamera()
 	gpTracer->Camera.Sample(R, Vec2i(IDx, IDy), RNG);
 	
 	// Reset the sample intersection
-	Sample.Intersection.Reset();
+	Sample.Intersection = Intersection();
 
 	// Intersections
 	if (Intersect(R, RNG, Sample.Intersection))

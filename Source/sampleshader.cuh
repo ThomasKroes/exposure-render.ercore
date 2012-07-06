@@ -58,14 +58,14 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	Intersection Int;
 
-	if (Intersect(R, RNG, Int))
+	if (Intersect(R, RNG, Int, Enums::Light))
 	{
 		switch (Int.ScatterType)
 		{
 			case Enums::Light:
 			{
-				if (Int.ID == Sample.LightID)
-				{
+//				if (Int.ID == Sample.LightID)
+//				{
 					Object& Light = gpObjects[Int.ID];
 
 					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
@@ -94,7 +94,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 						FrameEstimate[1] += Ld[1];
 						FrameEstimate[2] += Ld[2];
 					}
-				}
+//				}
 
 				SampleID = -1;
 

@@ -19,7 +19,7 @@
 namespace ExposureRender
 {
 
-DEVICE void IntersectObjects(const Ray& R, Intersection& Int)
+DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& ScatterTypes = Enums::Object | Enums::Light)
 {
 	float NearestT = FLT_MAX;
 
@@ -52,13 +52,15 @@ DEVICE bool IntersectsObjects(Ray R)
 	return false;
 }
 
-DEVICE bool Intersect(Ray R, RNG& RNG, Intersection& Int)
+DEVICE bool Intersect(Ray R, RNG& RNG, Intersection& Int, const int& ScatterTypes = Enums::Volume | Enums::Object | Enums::Light)
 {
 	Intersection Ints[2];
 	
-	// Intersect
-	IntersectObjects(R, Ints[0]);
-	IntersectVolume(R, RNG, Ints[1]);
+	if (ScatterTypes & Enums::Object || ScatterTypes & Enums::Light)
+		IntersectObjects(R, Ints[0], ScatterTypes);
+
+	if (ScatterTypes & Enums::Volume)
+		IntersectVolume(R, RNG, Ints[1]);
 	
 	float HitT = FLT_MAX;
 

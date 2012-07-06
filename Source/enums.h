@@ -92,12 +92,9 @@ namespace Enums
 
 	enum ScatterType
 	{
-		NoScattering = 0,
-		Volume,
-		Light,
-		Object,
-		ClippingObject,
-		SlicePlane
+		Volume			= 0x001,
+		Light			= 0x002,
+		Object			= 0x004
 	};
 
 	enum AlignmentType
