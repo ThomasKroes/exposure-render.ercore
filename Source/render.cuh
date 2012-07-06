@@ -56,8 +56,6 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 		{
 			SampleLight(Tracer, Statistics, i + 1, NoSamples);
 		}
-
-		RemoveRedundantSamples(Tracer, NoSamples);
 #endif
 
 #ifdef SAMPLE_SHADER

@@ -35,7 +35,9 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	// Get sample
 	Sample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
-	
+
+	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
+
 	// Get random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
@@ -57,8 +59,6 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 		return;
 	
 	Intersection Int;
-
-	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
 
 	if (Intersect(R, RNG, Int, Enums::Light))
 	{
