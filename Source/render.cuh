@@ -16,6 +16,7 @@
 #include "samplecamera.cuh"
 #include "samplelight.cuh"
 #include "sampleshader.cuh"
+#include "dvr.cuh"
 
 #include <thrust/remove.h>
 
@@ -41,10 +42,13 @@ void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
 	NoSamples = DevicePtrEnd - DevicePtr;
 }
 
-void SingleScattering(Tracer& Tracer, Statistics& Statistics)
+void Render(Tracer& Tracer, Statistics& Statistics)
 {
-	SampleCamera(Tracer, Statistics);
+	Dvr(Tracer, Statistics);
+	return;
 	
+	SampleCamera(Tracer, Statistics);
+
 	int NoSamples = 0;
 
 	RemoveRedundantSamples(Tracer, NoSamples);
