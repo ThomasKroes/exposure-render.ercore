@@ -192,11 +192,6 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 
 			break;
 		}
-
-		case Enums::SlicePlane:
-		{
-			break;
-		}
 	}
 }
 

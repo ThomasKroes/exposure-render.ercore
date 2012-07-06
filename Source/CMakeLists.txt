@@ -181,7 +181,6 @@ SET(Color
 SOURCE_GROUP("Color" FILES ${Color})
 
 SET(Cuda
-	singlescattering.cuh
 	estimate.cuh
 	filtering.cuh
 	tonemap.cuh
@@ -189,8 +188,9 @@ SET(Cuda
 	composite.cuh
 	emptyspace.cuh
 	samplecamera.cuh
+	singlescattering.cuh
 	samplelight.cuh
-	samplebrdf.cuh
+	sampleshader.cuh
 	intersect.cuh
 	list.cuh
 	wrapper.cuh
