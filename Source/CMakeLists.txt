@@ -186,6 +186,7 @@ SET(Cuda
 	tonemap.cuh
 	autofocus.cuh
 	composite.cuh
+	dvr.cuh
 	render.cuh
 	samplecamera.cuh
 	samplelight.cuh

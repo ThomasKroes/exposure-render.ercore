@@ -122,7 +122,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 20.0f;
+	const float StepSize = 5.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
@@ -134,8 +134,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(1, 1);
-	Opacity->AddPoint(10000, 1);
+	Opacity->AddPoint(50, 0);
+	Opacity->AddPoint(51, 0.1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
@@ -147,16 +147,16 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 		Diffuse->AddHSVPoint(i, rand() / (float)RAND_MAX, 1.0f, 1.0f);
 	}
 	*/
-
+/*
 	const float DiffuseLevel = 1.0f;
 
 	Diffuse->AddRGBPoint(0, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
-	/*
-	
-	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
-	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
 	*/
+	
+	Diffuse->AddRGBPoint(50, .8f, 0.1f, 0.1f);
+	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
+	
 
 	VolumeProperty->SetDiffuse(Diffuse);
 
