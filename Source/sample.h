@@ -277,6 +277,7 @@ public:
 	Vec2i			UV;
 	int				LightID;
 	ColorXYZf		Throughput;
+	Ray				Ray;
 };
 
 }

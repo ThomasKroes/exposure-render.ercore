@@ -21,14 +21,30 @@
 namespace ExposureRender
 {
 
+inline DEVICE ColorXYZf Phong(Vec3f sample, ColorXYZf color, Vec3f gradient, Vec3f lightPos, Vec3f cameraPos)
+{
+    Vec3f N = Normalize(gradient);
+    Vec3f L = Normalize(lightPos - sample);
+    Vec3f V = Normalize(cameraPos - sample);
+
+//         float3 shadedColor = getAmbientTerm(color);
+//         shadedColor += getDiffuseTerm(color, N, L);
+//        shadedColor += getSpecularTerm(color, N, L, V);
+
+    float shade = 0.3f;
+    float NdotL = max(Dot(N, L), 0.0f);
+    shade += NdotL * 0.4f;
+
+    Vec3f H = Normalize(V + L);                           //opt: nearly 50%!
+    float NdotH = __powf(max(Dot(N, H), 0.0f), 60.f);
+    shade += NdotH * 0.5f;
+
+    return color * shade;
+}
+
 KERNEL void KrnlDvr()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
-
-	// Initalize the associated pixel with black
-	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy);
-	
-	FrameEstimate = ColorXYZAf::Black();
 
 	// Initialize the random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
@@ -48,38 +64,48 @@ KERNEL void KrnlDvr()
 
 	R.MinT += RNG.Get1() * gStepFactorPrimary;
 
-	Vec3f Gradient;
+	int NoSamples = 0;
 
-	unsigned short Intensity;
-
-	ColorXYZf Diffuse;
-
-	float Opacity = 0.0f;
-
-	Vec3f P;
-
-	const int NoSamplesAO = 2;
-
-    while (R.MinT <= R.MaxT)
+    while (R.MinT <= R.MaxT && NoSamples < 300)
 	{
 		// Get sample point
-        P = R(R.MinT);
+        const Vec3f P = R(R.MinT);
 
 		// Obtain gradient with central differences
-		Gradient = Volume.GradientCD(P);
-
+//		const Vec3f N = Volume.GradientCD(P);
+		
 		// Obtain intensity
-        Intensity = Volume(P);
-
-		// Get diffuse color
-		Diffuse = gpTracer->GetDiffuse(Intensity);
-
-		// Obtain opacity
-		Opacity = gpTracer->GetOpacity(Intensity);
+        const float Intensity = Volume(P);
 
 		// Move along ray
 		R.MinT += gStepFactorPrimary;
+		
+		ColorXYZf Diffuse = gpTracer->GetDiffuse(Intensity);
 
+//		if (NoSamples % 10 == 0)
+//		{
+//			for (int i = 0; i < gpTracer->LightIDs.Count; i++)
+//			{
+//				Object& Light = gpObjects[gpTracer->LightIDs[i]];
+
+//				const Vec3f LightP(1.0f);// = Light.Shape.Transform.GetTranslation();
+
+//				Diffuse += Phong(P, gpTracer->GetDiffuse(Intensity), N, LightP, R.O);
+				
+				/*
+				const Vec3f LightDir = LightP - Intersection.P;
+
+				ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Vec2f(0.0f, 0.0f));
+
+				if (Light.EmissionUnit == Enums::Power)
+					Li /= Light.Shape.Area;
+
+				Diffuse += S.F(Intersection.Wo, Normalize(LightDir)) * Li;
+				*/
+//			}
+//		}
+
+/**/
 		/*
 		float ao = 0.f;
         int aocount = 0;
@@ -100,13 +126,15 @@ KERNEL void KrnlDvr()
 		Diffuse * (1.0f - ao);
 		*/
 
-        Opacity *= gStepFactorPrimary * 200.f;
+		const float Opacity = gpTracer->GetOpacity(Intensity)  * (gStepFactorPrimary * 200.0f);
 
 		// Compositing
         result[0] = result[0] + (1.0f - result[3]) * Opacity * Diffuse[0];
         result[1] = result[1] + (1.0f - result[3]) * Opacity * Diffuse[1];
         result[2] = result[2] + (1.0f - result[3]) * Opacity * Diffuse[2];
         result[3] = result[3] + (1.0f - result[3]) * Opacity;
+
+		NoSamples++;
 
 		// Early ray termination
         if (result[3] >= 1.0f)
@@ -116,7 +144,10 @@ KERNEL void KrnlDvr()
         }
     }
 
-    FrameEstimate = result;
+	gpTracer->FrameBuffer.DVR(IDx, IDy)[0] = Clamp((int)(result[0] * 255.0f), 0, 255);
+	gpTracer->FrameBuffer.DVR(IDx, IDy)[1] = Clamp((int)(result[1] * 255.0f), 0, 255);
+	gpTracer->FrameBuffer.DVR(IDx, IDy)[2] = Clamp((int)(result[2] * 255.0f), 0, 255);
+	gpTracer->FrameBuffer.DVR(IDx, IDy)[3] = Clamp((int)(result[3] * 255.0f), 0, 255);
 }
 
 void Dvr(Tracer& Tracer, Statistics& Statistics)
