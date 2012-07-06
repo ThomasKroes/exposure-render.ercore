@@ -35,22 +35,17 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	// Get sample
 	Sample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
 	
-	// Sample intersection
-	Intersection& Int = Sample.Intersection;
-
 	// Get random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
 	// Choose light to sample
-	const int LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
+	Sample.LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
 
-	if (LightID < 0)
+	if (Sample.LightID < 0)
 		return;
 	
-	Sample.LightID = LightID;
-
 	// Get the light
-	const Object& Light = gpObjects[LightID];
+	const Object& Light = gpObjects[Sample.LightID];
 	
 	SurfaceSample SS;
 
@@ -65,29 +60,36 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	Shader Shader;
 
 	// Obtain shader from intersection
-	GetShader(Int, Shader, RNG);
+	GetShader(Sample.Intersection, Shader, RNG);
 
-	const Vec3f Wi = Normalize(SS.P - Int.P);
+	// Construct shadow ray
+	Ray R;
+	
+	R.O		= SS.P;
+	R.D		= Normalize(Sample.Intersection.P - SS.P);
+	R.MinT	= RAY_EPS;
+	R.MaxT	= (Sample.Intersection.P - SS.P).Length();
 
-	const Ray R(Int.P, Wi, 0.0f, (SS.P - Int.P).Length());
+	const Vec3f Wi = Normalize(SS.P - Sample.Intersection.P);
 
-	const ColorXYZf F = Shader.F(Int.Wo, Wi);
+	// Reflected radiance
+	const ColorXYZf F = Shader.F(Sample.Intersection.Wo, Wi);
 
-	const float ShaderPdf = Shader.Pdf(Int.Wo, Wi);
+	const float ShaderPdf = Shader.Pdf(Sample.Intersection.Wo, Wi);
 
 	if (Li.IsBlack() || F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
 
 	if (!Intersects(R, RNG))
 	{
-		const float LightPdf = DistanceSquared(Int.P, SS.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
+		const float LightPdf = DistanceSquared(SS.P, Sample.Intersection.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 
 		ColorXYZf Ld;
 
 		if (Shader.Type == Enums::Brdf)
-			Ld = F * Li * (AbsDot(Wi, Int.N) * Weight / LightPdf);
+			Ld = F * Li * (AbsDot(Wi, Sample.Intersection.N) * Weight / LightPdf);
 		else
 			Ld = F * ((Li * Weight) / LightPdf);
 

@@ -186,9 +186,8 @@ SET(Cuda
 	tonemap.cuh
 	autofocus.cuh
 	composite.cuh
-	emptyspace.cuh
+	render.cuh
 	samplecamera.cuh
-	singlescattering.cuh
 	samplelight.cuh
 	sampleshader.cuh
 	intersect.cuh

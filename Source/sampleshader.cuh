@@ -58,14 +58,16 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	
 	Intersection Int;
 
+	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
+
 	if (Intersect(R, RNG, Int, Enums::Light))
 	{
 		switch (Int.ScatterType)
 		{
 			case Enums::Light:
 			{
-//				if (Int.ID == Sample.LightID)
-//				{
+				if (Int.ID == Sample.LightID)
+				{
 					Object& Light = gpObjects[Int.ID];
 
 					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
@@ -85,16 +87,19 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 						Ld = F * ((Li * Weight) / ShaderPdf);
 
 					Ld *= (float)gpTracer->LightIDs.Count;
+					
+					R.O		= Int.P;
+					R.D		= Normalize(Sample.Intersection.P - R.O);
+					R.MinT	= RAY_EPS;
+					R.MaxT	= (Sample.Intersection.P - R.O).Length();
 
 					if (!Intersects(R, RNG))
 					{
-						ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
-
 						FrameEstimate[0] += Ld[0];
 						FrameEstimate[1] += Ld[1];
 						FrameEstimate[2] += Ld[2];
 					}
-//				}
+				}
 
 				SampleID = -1;
 
@@ -116,7 +121,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	}
 }
 
-void SampleBrdf(Tracer& Tracer, Statistics& Statistics, int Bounce, int NoSamples)
+void SampleShader(Tracer& Tracer, Statistics& Statistics, int Bounce, int NoSamples)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 

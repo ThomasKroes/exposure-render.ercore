@@ -15,12 +15,12 @@
 
 #include "samplecamera.cuh"
 #include "samplelight.cuh"
-#include "samplebrdf.cuh"
+#include "sampleshader.cuh"
 
 #include <thrust/remove.h>
 
-//#define SAMPLE_LIGHT
-#define SAMPLE_BRDF
+#define SAMPLE_LIGHT
+#define SAMPLE_SHADER
 
 namespace ExposureRender
 {
@@ -60,10 +60,10 @@ void SingleScattering(Tracer& Tracer, Statistics& Statistics)
 		RemoveRedundantSamples(Tracer, NoSamples);
 #endif
 
-#ifdef SAMPLE_BRDF
+#ifdef SAMPLE_SHADER
 		if (NoSamples > 0)
 		{
-			SampleBrdf(Tracer, Statistics, i + 1, NoSamples);
+			SampleShader(Tracer, Statistics, i + 1, NoSamples);
 		}
 
 		RemoveRedundantSamples(Tracer, NoSamples);

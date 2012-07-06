@@ -60,12 +60,11 @@ ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>		
 ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
 
 #include "autofocus.cuh"
-#include "singlescattering.cuh"
+#include "render.cuh"
 #include "filtering.cuh"
 #include "estimate.cuh"
 #include "tonemap.cuh"
 #include "composite.cuh"
-#include "emptyspace.cuh"
 
 namespace ExposureRender
 {
