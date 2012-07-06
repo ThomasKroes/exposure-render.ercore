@@ -31,6 +31,7 @@ public:
 		RunningEstimateRGB("Running estimate RGB", Enums::Device),
 		TempRunningEstimateRGB("Temp running estimate RGB", Enums::Device),
 		DisplayEstimate("Display Estimate", Enums::Device),
+		DVR("DVR", Enums::Device),
 		RandomSeeds1("Random Seeds 1", Enums::Device),
 		RandomSeeds2("Random Seeds 2", Enums::Device),
 		RandomSeedsCopy1("Random Seeds 1 Copy", Enums::Device),
@@ -55,6 +56,7 @@ public:
 		this->TempRunningEstimateRGB.Resize(this->Resolution);
 		this->TempRunningEstimateRGB.Resize(this->Resolution);
 		this->DisplayEstimate.Resize(this->Resolution);
+		this->DVR.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
 		
@@ -74,6 +76,7 @@ public:
 	Buffer2D<ColorRGBAuc>	RunningEstimateRGB;
 	Buffer2D<ColorRGBAuc>	TempRunningEstimateRGB;
 	Buffer2D<ColorRGBAuc>	DisplayEstimate;
+	Buffer2D<ColorRGBAuc>	DVR;
 	RandomSeedBuffer2D		RandomSeeds1;
 	RandomSeedBuffer2D		RandomSeeds2;
 	RandomSeedBuffer2D		RandomSeedsCopy1;

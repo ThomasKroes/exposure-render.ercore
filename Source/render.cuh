@@ -21,7 +21,7 @@
 #include <thrust/remove.h>
 
 #define SAMPLE_LIGHT
-#define SAMPLE_SHADER
+//#define SAMPLE_SHADER
 
 namespace ExposureRender
 {
@@ -44,9 +44,9 @@ void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
 
 void Render(Tracer& Tracer, Statistics& Statistics)
 {
-	Dvr(Tracer, Statistics);
-	return;
-	
+//	if (Tracer.NoEstimates == 0)
+//		Dvr(Tracer, Statistics);
+
 	SampleCamera(Tracer, Statistics);
 
 	int NoSamples = 0;

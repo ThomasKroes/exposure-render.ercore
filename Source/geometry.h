@@ -85,11 +85,6 @@ HOST_DEVICE inline T Lerp(const float& X, const T& A, const T& B)
 	return (1.0f - X) * A + X * B;
 }
 
-HOST_DEVICE inline unsigned short Lerp(const float& X, const unsigned short& A, const unsigned short& B)
-{
-	return (unsigned short)((1.0f - X) * (float)A + X * (float)B);
-}
-
 HOST_DEVICE inline void swap(int& a, int& b)
 {
 	int t = a; a = b; b = t;

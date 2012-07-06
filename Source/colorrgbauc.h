@@ -129,4 +129,14 @@ static inline HOST_DEVICE ColorRGBAuc operator * (const float& F, const ColorRGB
 						(unsigned char)((float)RGBA[3] * F));
 };
 
+static inline HOST_DEVICE ColorRGBAuc Lerp(const ColorRGBAuc& A, const ColorRGBAuc& B, const float& LerpC)
+{
+	ColorRGBAuc Result;
+
+	for (int i = 0; i < 4; i++)
+		Result[i] = (1.0f - LerpC) * A[i] + LerpC * B[i];
+
+	return Result;
+};
+
 }

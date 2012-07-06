@@ -122,20 +122,20 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 5.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
 	VolumeProperty->SetStepFactorShadow(StepSize);
 	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
-	VolumeProperty->SetDensityScale(1000);
+	VolumeProperty->SetDensityScale(5);
 	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(50, 0);
-	Opacity->AddPoint(51, 0.1);
+	Opacity->AddPoint(51, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
@@ -246,7 +246,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetVisible(true);
 	KeyLight->SetElevation(0.0f);
 	KeyLight->SetAzimuth(45.0f);
-	KeyLight->SetOffset(2.0f);
+	KeyLight->SetOffset(0.6f);
 	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);

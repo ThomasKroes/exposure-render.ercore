@@ -45,17 +45,14 @@ KERNEL void KrnlSampleCamera()
 	// Initialize the random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 	
-	// Camera ray
-	Ray R;
-
 	// Generate
-	gpTracer->Camera.Sample(R, Vec2i(IDx, IDy), RNG);
+	gpTracer->Camera.Sample(Sample.Ray, Vec2i(IDx, IDy), RNG);
 	
 	// Reset the sample intersection
 	Sample.Intersection = Intersection();
 
 	// Intersections
-	if (Intersect(R, RNG, Sample.Intersection))
+	if (Intersect(Sample.Ray, RNG, Sample.Intersection))
 	{
 		if (Sample.Intersection.ScatterType == Enums::Light)
 		{
