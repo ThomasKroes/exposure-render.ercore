@@ -30,6 +30,7 @@ class EXPOSURE_RENDER_DLL ErTracer : public ErBindable, public TimeStamp
 public:
 	HOST ErTracer() :
 		ErBindable(),
+		RenderMode(Enums::StochasticRayCasting),
 		TimeStamp(),
 		VolumeProperty(),
 		Camera(),
@@ -43,6 +44,7 @@ public:
 
 	HOST ErTracer(const ErTracer& Other) :
 		ErBindable(),
+		RenderMode(Enums::StochasticRayCasting),
 		TimeStamp(),
 		VolumeProperty(),
 		Camera(),
@@ -60,6 +62,7 @@ public:
 		ErBindable::operator = (Other);
 		TimeStamp::operator = (Other);
 
+		this->RenderMode			= Other.RenderMode;
 		this->VolumeProperty		= Other.VolumeProperty;
 		this->Camera				= Other.Camera;
 		this->VolumeIDs				= Other.VolumeIDs;
@@ -71,13 +74,14 @@ public:
 		return *this;
 	}
 
-	VolumeProperty	VolumeProperty;
-	Camera			Camera;
-	Indices			VolumeIDs;
-	Indices			LightIDs;
-	Indices			ObjectIDs;
-	Indices			ClippingObjectIDs;
-	bool			NoiseReduction;
+	Enums::RenderMode	RenderMode;
+	VolumeProperty		VolumeProperty;
+	Camera				Camera;
+	Indices				VolumeIDs;
+	Indices				LightIDs;
+	Indices				ObjectIDs;
+	Indices				ClippingObjectIDs;
+	bool				NoiseReduction;
 };
 
 }

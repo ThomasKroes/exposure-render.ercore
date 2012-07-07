@@ -55,6 +55,9 @@ public:
 
 	vtkErVolumeProperty* GetVolumeProperty()						{	return this->VolumeProperty.GetPointer();										};
 	void SetVolumeProperty(vtkErVolumeProperty* VolumeProperty)		{	this->VolumeProperty = VolumeProperty; this->VolumeProperty->Modified();		};
+	
+	vtkGetMacro(RenderMode, Enums::RenderMode);
+	vtkSetMacro(RenderMode, Enums::RenderMode);
 
 	vtkGetMacro(NoiseReduction, bool);
 	vtkSetMacro(NoiseReduction, bool);
@@ -78,12 +81,13 @@ private:
 	ExposureRender::ColorRGBAuc*			ImageBuffer;
 	Vec2i									LastRenderSize;
 	unsigned long							CameraTimeStamp;
+	Enums::RenderMode						RenderMode;
 	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperty;
 	unsigned long							VolumePropertyTimeStamp;
-	ExposureRender::ErTracer				Tracer;
+	ErTracer								Tracer;
 	bool									NoiseReduction;
 	bool									ShowStatistics;
 	vtkSmartPointer<vtkTextActor>			NameTextActor;
 	vtkSmartPointer<vtkTextActor>			DurationTextActor;
-	ExposureRender::Statistics				Statistics;
+	Statistics								Statistics;
 };

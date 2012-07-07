@@ -163,6 +163,12 @@ namespace Enums
 		Ramp = 0,
 		Radial
 	};
+
+	enum RenderMode
+	{
+		StandardRayCasting,
+		StochasticRayCasting
+	};
 }
 
 }

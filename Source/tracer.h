@@ -30,6 +30,7 @@ class Tracer : public TimeStamp
 public:
 	HOST Tracer() :
 		TimeStamp(),
+		RenderMode(Enums::StochasticRayCasting),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -46,6 +47,7 @@ public:
 
 	HOST Tracer(const ErTracer& Other) :
 		TimeStamp(),
+		RenderMode(Enums::StochasticRayCasting),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -65,6 +67,7 @@ public:
 	{
 		TimeStamp::operator = (Other);
 
+		this->RenderMode		= Other.RenderMode;
 		this->Camera			= Other.Camera;
 
 		this->VolumeIDs.Count = 0;
@@ -137,6 +140,7 @@ public:
 	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)		{	return this->VolumeProperty.IndexOfReflection1D.Evaluate(Intensity);	}
 	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)			{	return this->VolumeProperty.Emission1D.Evaluate(Intensity);				}
 
+	Enums::RenderMode			RenderMode;
 	VolumeProperty				VolumeProperty;
 	Camera						Camera;
 	Indices						VolumeIDs;
