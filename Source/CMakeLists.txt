@@ -185,7 +185,6 @@ SET(Cuda
 	filtering.cuh
 	tonemap.cuh
 	autofocus.cuh
-	compositing.cuh
 	dvr.cuh
 	render.cuh
 	samplecamera.cuh
@@ -193,6 +192,7 @@ SET(Cuda
 	sampleshader.cuh
 	intersect.cuh
 	gaussianfilterrgbauc.cuh
+	blendrgbauc.cuh
 	list.cuh
 	wrapper.cuh
 	macros.cuh

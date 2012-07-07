@@ -20,7 +20,8 @@
 #include "filtering.cuh"
 #include "estimate.cuh"
 #include "tonemap.cuh"
-#include "compositing.cuh"
+#include "blendrgbauc.cuh"
+#include "gaussianfilterrgbauc.cuh"
 
 #include <thrust/remove.h>
 
@@ -54,9 +55,12 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 		{
 			if (Tracer.NoEstimates > 0)
 				return;
+			
+			Tracer.FrameBuffer.DisplayEstimate.Reset();
 
 			Dvr(Tracer, Statistics);
-			GaussianFilterRGBAuc(Tracer, Statistics, 1, Tracer.FrameBuffer.DVR);
+			GaussianFilterRGBAuc(Statistics, 1, Tracer.FrameBuffer.DVR);
+			BlendRGBAuc(Statistics, Tracer.FrameBuffer.DisplayEstimate, Tracer.FrameBuffer.DVR);
 
 			break;
 		}

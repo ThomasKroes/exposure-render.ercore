@@ -70,18 +70,18 @@ public:
 
 		const float NormBackgroundRGBAf[4] =
 		{
-			(float)Background[0] / 255.0f,
-			(float)Background[1] / 255.0f,
-			(float)Background[2] / 255.0f,
-			(float)Background[3] / 255.0f
+			ONE_OVER_255 * (float)Background[0],
+			ONE_OVER_255 * (float)Background[1],
+			ONE_OVER_255 * (float)Background[2],
+			ONE_OVER_255 * (float)Background[3]
 		};
 
 		const float NormForegroundRGBAf[4] =
 		{
-			(float)Foreground[0] / 255.0f,
-			(float)Foreground[1] / 255.0f,
-			(float)Foreground[2] / 255.0f,
-			(float)Foreground[3] / 255.0f
+			ONE_OVER_255 * (float)Foreground[0],
+			ONE_OVER_255 * (float)Foreground[1],
+			ONE_OVER_255 * (float)Foreground[2],
+			ONE_OVER_255 * (float)Foreground[3]
 		};
 
 		const float NormBlendRGBAf[4] =

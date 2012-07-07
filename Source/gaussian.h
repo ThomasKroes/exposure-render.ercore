@@ -121,11 +121,11 @@ public:
 		switch (Radius)
 		{
 			case 0:		return 0.0f;
-			case 1:		this->Gaussian3x3.Weights[X][Y];
-			case 2:		this->Gaussian5x5.Weights[X][Y];
-			case 3:		this->Gaussian7x7.Weights[X][Y];
-			case 4:		this->Gaussian9x9.Weights[X][Y];
-			case 5:		this->Gaussian11x11.Weights[X][Y];
+			case 1:		return this->Gaussian3x3.Weights[X][Y];
+			case 2:		return this->Gaussian5x5.Weights[X][Y];
+			case 3:		return this->Gaussian7x7.Weights[X][Y];
+			case 4:		return this->Gaussian9x9.Weights[X][Y];
+			case 5:		return this->Gaussian11x11.Weights[X][Y];
 		}
 
 		return 0.0f;
