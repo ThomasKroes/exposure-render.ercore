@@ -116,6 +116,21 @@ public:
 class GaussianFilterTables
 {
 public:
+	HOST_DEVICE float Weight(const int& Radius, const int& X, const int& Y)
+	{
+		switch (Radius)
+		{
+			case 0:		return 0.0f;
+			case 1:		this->Gaussian3x3.Weights[X][Y];
+			case 2:		this->Gaussian5x5.Weights[X][Y];
+			case 3:		this->Gaussian7x7.Weights[X][Y];
+			case 4:		this->Gaussian9x9.Weights[X][Y];
+			case 5:		this->Gaussian11x11.Weights[X][Y];
+		}
+
+		return 0.0f;
+	}
+
 	GaussianFilterTable<1> Gaussian3x3;
 	GaussianFilterTable<2> Gaussian5x5;
 	GaussianFilterTable<3> Gaussian7x7;

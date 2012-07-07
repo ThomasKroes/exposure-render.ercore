@@ -64,53 +64,6 @@ void GaussianFilterFrameEstimate(Tracer& Tracer, Statistics& Statistics)
 	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.TempFrameEstimate;
 }
 
-KERNEL void KrnlGaussianFilterRunningEstimate()
-{
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
-		
-	int Range[2][2], Radius = 2;
-
-	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
-	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
-	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
-
-	ColorRGBAf Sum;
-	float SumWeight = 0.0f;
-
-	for (int y = Range[1][0]; y <= Range[1][1]; y++)
-	{
-		for (int x = Range[0][0]; x <= Range[0][1]; x++)
-		{
-			const float Weight = gpTracer->GaussianFilterTables.Gaussian5x5.Weights[Radius + (IDx - x)][Radius + (IDy - y)];
-
-			Sum[0]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[0];
-			Sum[1]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[1];
-			Sum[2]		+= Weight * gpTracer->FrameBuffer.RunningEstimateRGB(x, y)[2];
-			SumWeight	+= Weight;
-		}
-	}
-	
-	if (SumWeight > 0.0f)
-	{
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[0] = Sum[0] / SumWeight;
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[1] = Sum[1] / SumWeight;
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[2] = Sum[2] / SumWeight;
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy)[3] = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy)[3];
-	}
-	else
-		gpTracer->FrameBuffer.TempRunningEstimateRGB(IDx, IDy) = gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy);
-}
-
-void GaussianFilterRunningEstimate(Tracer& Tracer, Statistics& Statistics)
-{
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterRunningEstimate<<<GridDim, BlockDim>>>()), "Gaussian filter running estimate");
-	
-	Tracer.FrameBuffer.TempRunningEstimateRGB.Modified();
-	Tracer.FrameBuffer.RunningEstimateRGB = Tracer.FrameBuffer.TempRunningEstimateRGB;
-}
-
 DEVICE inline float NormalizedColorDistance(const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
 	return ONE_OVER_255 * sqrtf(powf(A[0] - B[0], 2.0f) + powf(A[1] - B[1], 2.0f) + powf(A[2] - B[2], 2.0f));
