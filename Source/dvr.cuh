@@ -50,6 +50,10 @@ KERNEL void KrnlDvr()
 	// Initialize the random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(IDx, IDy), &gpTracer->FrameBuffer.RandomSeeds2(IDx, IDy));
 	
+	ColorRGBAuc& DVR = gpTracer->FrameBuffer.DVR(IDx, IDy);
+
+	DVR = ColorRGBAuc::Black();
+
 	// Camera ray
 	Ray R;
 
@@ -145,18 +149,16 @@ KERNEL void KrnlDvr()
         }
     }
 
-	gpTracer->FrameBuffer.DVR(IDx, IDy)[0] = Clamp((int)(result[0] * 255.0f), 0, 255);
-	gpTracer->FrameBuffer.DVR(IDx, IDy)[1] = Clamp((int)(result[1] * 255.0f), 0, 255);
-	gpTracer->FrameBuffer.DVR(IDx, IDy)[2] = Clamp((int)(result[2] * 255.0f), 0, 255);
-	gpTracer->FrameBuffer.DVR(IDx, IDy)[3] = Clamp((int)(result[3] * 255.0f), 0, 255);
+	DVR[0] = Clamp((int)(result[0] * 255.0f), 0, 255);
+	DVR[1] = Clamp((int)(result[1] * 255.0f), 0, 255);
+	DVR[2] = Clamp((int)(result[2] * 255.0f), 0, 255);
+	DVR[3] = Clamp((int)(result[3] * 255.0f), 0, 255);
 }
 
 void Dvr(Tracer& Tracer, Statistics& Statistics)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
 	LAUNCH_CUDA_KERNEL_TIMED((KrnlDvr<<<GridDim, BlockDim>>>()), "DVR");
-
-	BlendRGBAuc(Tracer, Statistics, Tracer.FrameBuffer.DisplayEstimate, Tracer.FrameBuffer.DVR);
 }
 
 }

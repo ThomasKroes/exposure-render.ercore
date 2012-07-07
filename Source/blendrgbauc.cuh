@@ -28,9 +28,9 @@ KERNEL void KrnlBlendRGBAuc(Buffer2D<ColorRGBAuc>* pInputA, Buffer2D<ColorRGBAuc
 	(*pInputA)(IDx, IDy).BlendWithForeground((*pInputB)(NormalizedUV, true));
 }
 
-void BlendRGBAuc(Tracer& Tracer, Statistics& Statistics, Buffer2D<ColorRGBAuc>& InputA, Buffer2D<ColorRGBAuc>& InputB)
+void BlendRGBAuc(Statistics& Statistics, Buffer2D<ColorRGBAuc>& InputA, Buffer2D<ColorRGBAuc>& InputB)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
+	LAUNCH_DIMENSIONS(InputA.GetResolution()[0], InputA.GetResolution()[1], 1, BLOCK_W, BLOCK_H, 1)
 	
 	Buffer2D<ColorRGBAuc>* pInputA = NULL;
 	Buffer2D<ColorRGBAuc>* pInputB = NULL;

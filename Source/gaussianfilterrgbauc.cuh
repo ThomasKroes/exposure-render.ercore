@@ -36,7 +36,7 @@ KERNEL void KrnlGaussianFilterHorizontalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>
 
 	for (int x = Range[0]; x <= Range[1]; x++)
 	{
-		const float Weight = gpTracer->GaussianFilterTables.Weight(Radius, Radius + (IDx - x), Radius + (IDy - y));
+		const float Weight = gpTracer->GaussianFilterTables.Weight(Radius, Radius + (IDx - x), Radius);
 
 		Sum[0]		+= Weight * (*Input)(x, IDy)[0];
 		Sum[1]		+= Weight * (*Input)(x, IDy)[1];
@@ -72,7 +72,7 @@ KERNEL void KrnlGaussianFilterVerticalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>* 
 
 	for (int y = Range[0]; y <= Range[1]; y++)
 	{
-		const float Weight = gpTracer->GaussianFilterTables.Weight(Radius, Radius + (IDx - x), Radius + (IDy - y));
+		const float Weight = gpTracer->GaussianFilterTables.Weight(Radius, Radius, Radius + (IDy - y));
 
 		Sum[0]		+= Weight * (*Input)(IDx, y)[0];
 		Sum[1]		+= Weight * (*Input)(IDx, y)[1];
@@ -92,13 +92,13 @@ KERNEL void KrnlGaussianFilterVerticalRGBAuc(int Radius, Buffer2D<ColorRGBAuc>* 
 		(*Output)(IDx, IDy) = (*Input)(IDx, IDy);
 }
 
-void GaussianFilterRGBAuc(Tracer& Tracer, Statistics& Statistics, int Radius, Buffer2D<ColorRGBAuc>& Input)
+void GaussianFilterRGBAuc(Statistics& Statistics, int Radius, Buffer2D<ColorRGBAuc>& Input)
 {
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
+	LAUNCH_DIMENSIONS(Input.GetResolution()[0], Input.GetResolution()[1], 1, BLOCK_W, BLOCK_H, 1)
 	
 	Buffer2D<ColorRGBAuc> Output("Output", Enums::Device);
 
-	Output.Resize(Vec2i(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1]));
+	Output.Resize(Vec2i(Input.GetResolution()[0], Input.GetResolution()[1]));
 
 	Buffer2D<ColorRGBAuc>* pInput = NULL;
 	Buffer2D<ColorRGBAuc>* pOutput = NULL;
