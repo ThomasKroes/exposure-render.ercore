@@ -15,6 +15,7 @@
 
 #include "macros.cuh"
 #include "intersect.cuh"
+#include "filtering.cuh"
 
 #include "textures.h"
 
@@ -153,7 +154,9 @@ KERNEL void KrnlDvr()
 void Dvr(Tracer& Tracer, Statistics& Statistics)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlDvr<<<GridDim, BlockDim>>>()), "DVR"); 
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlDvr<<<GridDim, BlockDim>>>()), "DVR");
+
+	BlendRGBAuc(Tracer, Statistics, Tracer.FrameBuffer.DisplayEstimate, Tracer.FrameBuffer.DVR);
 }
 
 }

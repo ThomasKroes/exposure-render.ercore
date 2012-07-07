@@ -17,6 +17,10 @@
 #include "samplelight.cuh"
 #include "sampleshader.cuh"
 #include "dvr.cuh"
+#include "filtering.cuh"
+#include "estimate.cuh"
+#include "tonemap.cuh"
+#include "compositing.cuh"
 
 #include <thrust/remove.h>
 
@@ -48,12 +52,16 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 	{
 		case Enums::StandardRayCasting:
 		{
-			if (Tracer.NoEstimates == 0)
-				Dvr(Tracer, Statistics);
+			if (Tracer.NoEstimates > 0)
+				return;
+
+			Dvr(Tracer, Statistics);
+			GaussianFilterRGBAuc(Tracer, Statistics, 1, Tracer.FrameBuffer.DVR);
 
 			break;
 		}
-
+		
+		/*
 		case Enums::StochasticRayCasting:
 		{
 			SampleCamera(Tracer, Statistics);
@@ -80,8 +88,15 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 				RemoveRedundantSamples(Tracer, NoSamples);
 #endif
 			}
+
+			GaussianFilterFrameEstimate(Tracer, Statistics);
+			ComputeEstimate(Tracer, Statistics);
+			ToneMap(Tracer, Statistics);
+			GaussianFilterRunningEstimate(Tracer, Statistics);
+
 			break;
 		}
+		*/
 	}
 }
 

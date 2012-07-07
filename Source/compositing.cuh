@@ -19,19 +19,32 @@
 namespace ExposureRender
 {
 
-KERNEL void KrnlComposite()
+KERNEL void KrnlBlendRGBAuc(Buffer2D<ColorRGBAuc>* pInputA, Buffer2D<ColorRGBAuc>* pInputB)
 {
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
+	KERNEL_2D(pInputA->GetResolution()[0], pInputA->GetResolution()[1])
+	
+	const Vec2f NormalizedUV((float)IDx / (float)pInputB->GetResolution()[0], (float)IDy / (float)pInputB->GetResolution()[1]);
 
-	const float LerpT = 1.0f;//1.0f - expf(-0.05f * gpTracer->NoEstimates);
-
-	gpTracer->FrameBuffer.DisplayEstimate(IDx, IDy) = Lerp(gpTracer->FrameBuffer.DVR(IDx, IDy), gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy), LerpT);
+	(*pInputA)(IDx, IDy).BlendWithForeground((*pInputB)(NormalizedUV, true));
 }
 
-void Composite(Tracer& Tracer, Statistics& Statistics)
+void BlendRGBAuc(Tracer& Tracer, Statistics& Statistics, Buffer2D<ColorRGBAuc>& InputA, Buffer2D<ColorRGBAuc>& InputB)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlComposite<<<GridDim, BlockDim>>>()), "Composite");
+	
+	Buffer2D<ColorRGBAuc>* pInputA = NULL;
+	Buffer2D<ColorRGBAuc>* pInputB = NULL;
+
+	Cuda::Allocate(pInputA);
+	Cuda::Allocate(pInputB);
+	
+	Cuda::MemCopyHostToDevice(&InputA, pInputA);
+	Cuda::MemCopyHostToDevice(&InputB, pInputB);
+
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlBlendRGBAuc<<<GridDim, BlockDim>>>(pInputA, pInputB)), "Blend RGBAuc");
+
+	Cuda::Free(pInputA);
+	Cuda::Free(pInputB);
 }
 
 }

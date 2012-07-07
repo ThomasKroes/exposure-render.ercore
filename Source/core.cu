@@ -61,10 +61,6 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 
 #include "autofocus.cuh"
 #include "render.cuh"
-#include "filtering.cuh"
-#include "estimate.cuh"
-#include "tonemap.cuh"
-#include "composite.cuh"
 
 namespace ExposureRender
 {
@@ -162,16 +158,10 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 		gVolumes[Tracer.VolumeIDs[1]].Voxels.Bind(TexVolume1);
 
 	Render(Tracer, Statistics);
-	GaussianFilterFrameEstimate(Tracer, Statistics);
-	ComputeEstimate(Tracer, Statistics);
-	ToneMap(Tracer, Statistics);
-	GaussianFilterRunningEstimate(Tracer, Statistics);
-	
+		
 	if (Tracer.NoiseReduction)
 		BilateralFilterRunningEstimate(Tracer, Statistics);
 	
-	Composite(Tracer, Statistics);
-
 	Tracer.NoEstimates++;
 
 	Cuda::HandleCudaError(cudaEventRecord(EventStop, 0));

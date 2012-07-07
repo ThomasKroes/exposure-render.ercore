@@ -83,6 +83,8 @@ int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 
 void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
+	this->Tracer.RenderMode	= this->GetRenderMode();
+
 	if (this->VolumePropertyTimeStamp < this->VolumeProperty->GetMTime())
 	{
 		this->VolumeProperty->RequestData(this->Tracer.VolumeProperty);
