@@ -44,32 +44,44 @@ void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
 
 void Render(Tracer& Tracer, Statistics& Statistics)
 {
-//	if (Tracer.NoEstimates == 0)
-//		Dvr(Tracer, Statistics);
-
-	SampleCamera(Tracer, Statistics);
-
-	int NoSamples = 0;
-
-	RemoveRedundantSamples(Tracer, NoSamples);
-
-	for (int i = 0; i < 1; i++)
+	switch (Tracer.RenderMode)
 	{
-#ifdef SAMPLE_LIGHT
-		if (NoSamples > 0)
+		case Enums::StandardRayCasting:
 		{
-			SampleLight(Tracer, Statistics, i + 1, NoSamples);
+			if (Tracer.NoEstimates == 0)
+				Dvr(Tracer, Statistics);
+
+			break;
 		}
+
+		case Enums::StochasticRayCasting:
+		{
+			SampleCamera(Tracer, Statistics);
+
+			int NoSamples = 0;
+
+			RemoveRedundantSamples(Tracer, NoSamples);
+
+			for (int i = 0; i < 1; i++)
+			{
+#ifdef SAMPLE_LIGHT
+				if (NoSamples > 0)
+				{
+					SampleLight(Tracer, Statistics, i + 1, NoSamples);
+				}
 #endif
 
 #ifdef SAMPLE_SHADER
-		if (NoSamples > 0)
-		{
-			SampleShader(Tracer, Statistics, i + 1, NoSamples);
-		}
+				if (NoSamples > 0)
+				{
+					SampleShader(Tracer, Statistics, i + 1, NoSamples);
+				}
 
-		RemoveRedundantSamples(Tracer, NoSamples);
+				RemoveRedundantSamples(Tracer, NoSamples);
 #endif
+			}
+			break;
+		}
 	}
 }
 
