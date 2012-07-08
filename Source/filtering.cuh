@@ -22,48 +22,6 @@
 namespace ExposureRender
 {
 
-KERNEL void KrnlGaussianFilterFrameEstimate()
-{
-	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
-
-	int Range[2][2];
-
-	const int Radius = 1;
-
-	Range[0][0] = max((int)ceilf(IDx - Radius), 0);
-	Range[0][1] = min((int)floorf(IDx + Radius), gpTracer->FrameBuffer.Resolution[0] - 1);
-	Range[1][0] = max((int)ceilf(IDy - Radius), 0);
-	Range[1][1] = min((int)floorf(IDy + Radius), gpTracer->FrameBuffer.Resolution[1] - 1);
-
-	ColorXYZAf Sum;
-	float SumWeight	= 0.0f;
-
-	for (int y = Range[1][0]; y <= Range[1][1]; y++)
-	{
-		for (int x = Range[0][0]; x <= Range[0][1]; x++)
-		{
-			const float Weight = gpTracer->GaussianFilterTables.Gaussian3x3.Weights[Radius + (IDx - x)][Radius + (IDy - y)];
-
-			Sum			+= Weight * gpTracer->FrameBuffer.FrameEstimate(x, y);
-			SumWeight	+= Weight;
-		}
-	}
-	
-	if (SumWeight > 0.0f)
-		gpTracer->FrameBuffer.TempFrameEstimate(IDx, IDy) = Sum / SumWeight;
-	else
-		gpTracer->FrameBuffer.TempFrameEstimate(IDx, IDy) = gpTracer->FrameBuffer.FrameEstimate(IDx, IDy);
-}
-
-void GaussianFilterFrameEstimate(Tracer& Tracer, Statistics& Statistics)
-{
-	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterFrameEstimate<<<GridDim, BlockDim>>>()), "Gaussian filter frame estimate");
-
-	Tracer.FrameBuffer.TempFrameEstimate.Modified();
-	Tracer.FrameBuffer.FrameEstimate = Tracer.FrameBuffer.TempFrameEstimate;
-}
-
 DEVICE inline float NormalizedColorDistance(const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
 	return ONE_OVER_255 * sqrtf(powf(A[0] - B[0], 2.0f) + powf(A[1] - B[1], 2.0f) + powf(A[2] - B[2], 2.0f));

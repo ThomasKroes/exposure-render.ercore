@@ -37,8 +37,8 @@
 #include "vtkErVolumeProperty.h"
 #include "vtkErInteractorStyleTrackballCamera.h"
 
+// Specify volume file her (*.mhd)
 char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
-
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
@@ -108,7 +108,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateObjects(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetNoiseReduction(false);
+	Tracer->SetNoiseReduction(true);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -126,18 +126,17 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	const float StepSize = 3.0f;
 
 	VolumeProperty->SetShadows(true);
-	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(StepSize);
-	VolumeProperty->SetShadingMode(Enums::PhaseFunctionOnly);
+	VolumeProperty->SetStepFactorPrimary(3.0f * StepSize);
+	VolumeProperty->SetStepFactorShadow(5.0f);
+	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(20);
 	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(0, 0.01);
-	Opacity->AddPoint(49, 0.01);
-	Opacity->AddPoint(50, 1);
-	Opacity->AddPoint(51, 1);
+	Opacity->AddPoint(0, 0);
+	Opacity->AddPoint(150, 0);
+	Opacity->AddPoint(151, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
@@ -173,7 +172,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 1000.0f;
+	const float GlossinessLevel = 10.0f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -225,12 +224,15 @@ void CreateCamera(vtkRenderer* Renderer)
 	vtkSmartPointer<vtkErCamera> Camera = vtkSmartPointer<vtkErCamera>::New();
 
 	Camera->SetExposure(1);
+
+	// Aperture
 	Camera->SetApertureShape(Enums::Polygon);
 	Camera->SetApertureSize(0.0f);
 	Camera->SetNoApertureBlades(3);
 	Camera->SetApertureAngle(0.0f);
 	Camera->SetClippingRange(0, 1000000);
 	
+	// Apply camera to renderer
 	Renderer->SetActiveCamera(Camera);
 }
 
@@ -248,7 +250,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetVisible(true);
 	KeyLight->SetElevation(0.0f);
 	KeyLight->SetAzimuth(45.0f);
-	KeyLight->SetOffset(0.6f);
+	KeyLight->SetOffset(1.5f);
 	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
