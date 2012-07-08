@@ -133,6 +133,32 @@ KERNEL void KrnlDvr()
 
 		const float Opacity = gpTracer->GetOpacity(Intensity)  * (gStepFactorPrimary * 200.0f);
 
+		if (RNG.Get1() < Opacity)
+		{
+			float Sum = 0.0f;
+
+			for (int i = 0; i < 5; i++)
+			{
+				Ray Rao;
+
+				Rao.O		= P;
+				Rao.D		= UniformSampleSphere(RNG.Get2());
+				Rao.MinT	= 0.0f;
+				
+				float Alpha = 1;
+
+				for (int s = 0; s < 5; s++)
+				{
+					Alpha *= gpTracer->GetOpacity(Volume(Rao((float)s * gStepFactorShadow)));
+//					Alpha = Alpha + (1.0f - Alpha) * gpTracer->GetOpacity(Volume(Rao(s * gStepFactorShadow)));
+				}
+
+				Sum += Alpha;
+			}
+
+			Diffuse = ColorXYZf(0.1f * Sum);
+		}
+
 		// Compositing
         result[0] = result[0] + (1.0f - result[3]) * Opacity * Diffuse[0];
         result[1] = result[1] + (1.0f - result[3]) * Opacity * Diffuse[1];

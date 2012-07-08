@@ -192,6 +192,7 @@ SET(Cuda
 	sampleshader.cuh
 	intersect.cuh
 	gaussianfilterrgbauc.cuh
+	gaussianfilterxyzaf.cuh
 	blendrgbauc.cuh
 	list.cuh
 	wrapper.cuh

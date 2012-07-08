@@ -40,7 +40,7 @@ vtkErTracer::vtkErTracer(void)
 	this->VolumeProperty			= vtkSmartPointer<vtkErVolumeProperty>::New();
 	this->VolumePropertyTimeStamp	= 0;
 
-	this->SetRenderMode(Enums::StandardRayCasting);
+	this->SetRenderMode(Enums::StochasticRayCasting);
 	this->SetNoiseReduction(true);
 	this->SetShowStatistics(true);
 

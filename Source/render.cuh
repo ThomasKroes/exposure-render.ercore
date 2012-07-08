@@ -22,6 +22,7 @@
 #include "tonemap.cuh"
 #include "blendrgbauc.cuh"
 #include "gaussianfilterrgbauc.cuh"
+#include "gaussianfilterxyzaf.cuh"
 
 #include <thrust/remove.h>
 
@@ -49,6 +50,8 @@ void RemoveRedundantSamples(Tracer& Tracer, int& NoSamples)
 
 void Render(Tracer& Tracer, Statistics& Statistics)
 {
+	Tracer.FrameBuffer.DisplayEstimate.Reset();
+
 	switch (Tracer.RenderMode)
 	{
 		case Enums::StandardRayCasting:
@@ -56,8 +59,6 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 			if (Tracer.NoEstimates > 0)
 				return;
 			
-			Tracer.FrameBuffer.DisplayEstimate.Reset();
-
 			Dvr(Tracer, Statistics);
 			GaussianFilterRGBAuc(Statistics, 1, Tracer.FrameBuffer.DVR);
 			BlendRGBAuc(Statistics, Tracer.FrameBuffer.DisplayEstimate, Tracer.FrameBuffer.DVR);
@@ -65,7 +66,6 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 			break;
 		}
 		
-		/*
 		case Enums::StochasticRayCasting:
 		{
 			SampleCamera(Tracer, Statistics);
@@ -93,14 +93,14 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 #endif
 			}
 
-			GaussianFilterFrameEstimate(Tracer, Statistics);
+			GaussianFilterXYZAf(Statistics, 1, Tracer.FrameBuffer.FrameEstimate);
 			ComputeEstimate(Tracer, Statistics);
 			ToneMap(Tracer, Statistics);
-			GaussianFilterRunningEstimate(Tracer, Statistics);
+			GaussianFilterRGBAuc(Statistics, 1, Tracer.FrameBuffer.RunningEstimateRGB);
+			BlendRGBAuc(Statistics, Tracer.FrameBuffer.DisplayEstimate, Tracer.FrameBuffer.RunningEstimateRGB);
 
 			break;
 		}
-		*/
 	}
 }
 
