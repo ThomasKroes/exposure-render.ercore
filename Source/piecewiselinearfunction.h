@@ -13,32 +13,32 @@
 
 #pragma once
 
-#include "pf.h"
+#include "piecewisefunction.h"
 
 namespace ExposureRender
 {
 
 template<int Size = 64>
-class EXPOSURE_RENDER_DLL PiecewiseConstantFunction : PiecewiseFunction<Size>
+class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<Size>
 {
 public:
-	HOST PiecewiseConstantFunction() :
-		PiecewiseFunction(),
+	HOST PiecewiseLinearFunction() :
+		PiecewiseFunction<Size>()
 	{
 	}
 
-	HOST ~PiecewiseConstantFunction()
+	HOST ~PiecewiseLinearFunction()
 	{
 	}
 
-	HOST PiecewiseConstantFunction(const PiecewiseConstantFunction& Other)
+	HOST PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
 	{
 		*this = Other;
 	}
 
-	HOST PiecewiseConstantFunction& operator = (const PiecewiseConstantFunction& Other)
+	HOST PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
-		PiecewiseFunction::operator = (Other);
+		PiecewiseFunction<Size>::operator = (Other);
 
 		return *this;
 	}
@@ -58,47 +58,6 @@ public:
 			this->NodeRange[1] = Position;
 
 		this->Count++;
-	}
-
-	HOST void SortNodes()
-	{
-		NodesVector<Size> PositionTemp, ValueTemp;
-		
-		float Max = FLT_MAX;
-		
-		int ID = -1;
-
-		for (int i = 0; i < this->Count; i++)
-		{
-			for (int j = 0; j < this->Count; i++)
-			{
-				if (this->Position[j] <= Max)
-				{
-					Max = this->Position[j];
-					ID = j;
-				}
-			}
-
-			PositionTemp[i] = this->Position[ID];
-			ValueTemp[i]	= this->Value[ID];
-
-			this->Position[ID] = FLT_MAX;
-		}
-
-		this->Position	= PositionTemp;
-		this->Value		= ValueTemp;
-	}
-
-	HOST void CleanUp()
-	{
-		if (this->Count <= 2)
-			return;
-
-		for (int i = 1; i < this->Count - 1; i++)
-		{
-			if (this->Value[i] == this->Value[i - 1] && this->Value[i] == this->Value[i + 1])
-			
-		}
 	}
 
 	HOST void Reset()
@@ -122,7 +81,7 @@ public:
 			float P1 = this->Position[i - 1];
 			float P2 = this->Position[i];
 			float DeltaP = P2 - P1;
-			float LerpT = (Position - P1) / DeltaP;
+			float LerpT = DeltaP <= 0.0f ? 0.5f : (Position - P1) / DeltaP;
 
 			if (Position >= P1 && Position < P2)
 				return this->Value[i - 1] + LerpT * (this->Value[i] - this->Value[i - 1]);

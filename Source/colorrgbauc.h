@@ -25,27 +25,65 @@ public:
 	VEC4_CONSTRUCTOR(ColorRGBAuc, unsigned char)
 	ALL_OPERATORS(ColorRGBAuc, unsigned char, 4)
 
-	static inline HOST_DEVICE ColorRGBAuc Black()
+	static HOST_DEVICE ColorRGBAuc Black()
 	{
 		return ColorRGBAuc();
 	}
 
-	HOST_DEVICE ColorRGBAuc FromXYZf(const float XYZ[3])
+	static HOST_DEVICE ColorRGBAuc FromXYZf(const float XYZ[3])
 	{
 		ColorRGBAuc Result;
 
-		const float RGB[3] = 
+		// Convert to RGB
+		float RGB[3] = 
 		{
-			3.240479f * XYZ[0] - 1.537150f * XYZ[1] - 0.498535f * XYZ[2],
+			 3.240479f * XYZ[0] - 1.537150f * XYZ[1] - 0.498535f * XYZ[2],
 			-0.969256f * XYZ[0] + 1.875991f * XYZ[1] + 0.041556f * XYZ[2],
-			0.055648f * XYZ[0] - 0.204043f * XYZ[1] + 1.057311f * XYZ[2]
+			 0.055648f * XYZ[0] - 0.204043f * XYZ[1] + 1.057311f * XYZ[2]
 		};
+		
+		// Make sure the RBG values are in the (0 - 1) range
+		for (int i = 0; i < 3; i++)
+			RGB[i] = ExposureRender::Clamp(RGB[i], 0.0f, 1.0f);
 
-		Result[0] = (unsigned char)ExposureRender::Clamp((int)(RGB[0] * 255.0f), 0, 255);
-		Result[1] = (unsigned char)ExposureRender::Clamp((int)(RGB[1] * 255.0f), 0, 255);
-		Result[2] = (unsigned char)ExposureRender::Clamp((int)(RGB[2] * 255.0f), 0, 255);
+		// Convert to unsigned char
+		for (int i = 0; i < 4; i++)
+			Result[i] = (unsigned char)(RGB[i] * 255.0f);
 
 		return Result;
+	}
+
+	static HOST_DEVICE ColorRGBAuc FromXYZAf(const float XYZA[4])
+	{
+		ColorRGBAuc Result;
+
+		// Convert to RGB
+		float RGBA[4] = 
+		{
+			 3.240479f * XYZA[0] - 1.537150f * XYZA[1] - 0.498535f * XYZA[2],
+			-0.969256f * XYZA[0] + 1.875991f * XYZA[1] + 0.041556f * XYZA[2],
+			 0.055648f * XYZA[0] - 0.204043f * XYZA[1] + 1.057311f * XYZA[2],
+			 XYZA[3]
+		};
+
+		// Make sure the RBG values are in the (0 - 1) range
+		for (int i = 0; i < 4; i++)
+			RGBA[i] = ExposureRender::Clamp(RGBA[i], 0.0f, 1.0f);
+
+		// Convert to unsigned char
+		for (int i = 0; i < 4; i++)
+			Result[i] = (unsigned char)(RGBA[i] * 255.0f);
+
+		return Result;
+	}
+
+	HOST_DEVICE void GammaCorrect(const float& Gamma)
+	{
+		const float InvGamma = 1.0f / Gamma;
+
+		this->D[0] = (unsigned char)(255.0f * powf((float)this->D[0], InvGamma));
+		this->D[1] = (unsigned char)(255.0f * powf((float)this->D[1], InvGamma));
+		this->D[2] = (unsigned char)(255.0f * powf((float)this->D[2], InvGamma));
 	}
 
 	HOST_DEVICE bool IsBlack()
@@ -134,7 +172,7 @@ static inline HOST_DEVICE ColorRGBAuc Lerp(const ColorRGBAuc& A, const ColorRGBA
 	ColorRGBAuc Result;
 
 	for (int i = 0; i < 4; i++)
-		Result[i] = (1.0f - LerpC) * A[i] + LerpC * B[i];
+		Result[i] = (unsigned char)((1.0f - LerpC) * (float)A[i] + LerpC * (float)B[i]);
 
 	return Result;
 };

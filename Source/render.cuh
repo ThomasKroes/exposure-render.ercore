@@ -27,7 +27,7 @@
 #include <thrust/remove.h>
 
 #define SAMPLE_LIGHT
-//#define SAMPLE_SHADER
+#define SAMPLE_SHADER
 
 namespace ExposureRender
 {
@@ -76,21 +76,16 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 
 			for (int i = 0; i < 1; i++)
 			{
-#ifdef SAMPLE_LIGHT
 				if (NoSamples > 0)
 				{
+#ifdef SAMPLE_LIGHT
 					SampleLight(Tracer, Statistics, i + 1, NoSamples);
-				}
 #endif
 
 #ifdef SAMPLE_SHADER
-				if (NoSamples > 0)
-				{
 					SampleShader(Tracer, Statistics, i + 1, NoSamples);
-				}
-
-				RemoveRedundantSamples(Tracer, NoSamples);
 #endif
+				}
 			}
 
 			GaussianFilterXYZAf(Statistics, 1, Tracer.FrameBuffer.FrameEstimate);

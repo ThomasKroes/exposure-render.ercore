@@ -27,7 +27,7 @@ public:
 	MIN_MAX(ColorRGBAf, float, 4)
 	CLAMP(ColorRGBAf, float, 4)
 
-	static inline HOST_DEVICE ColorRGBAf Black()
+	static HOST_DEVICE ColorRGBAf Black()
 	{
 		return ColorRGBAf(0.0f);
 	}

@@ -82,6 +82,16 @@ public:
 		return Result;
 	}
 
+	HOST_DEVICE void ToneMap(const float& Exposure)
+	{
+		// Compute reciprocal, which is slightly faster
+		const float InvExposure = 1.0f / Exposure;
+
+		// Perform the tone mapping
+		for (int i = 0; i < 3; i++)
+			this->D[i] = ExposureRender::Clamp(1.0f - expf(-this->D[i] * InvExposure), 0.0f, 1.0f);
+	}
+
 	HOST_DEVICE bool IsBlack() const
 	{
 		for (int i = 0; i < 3; i++)
