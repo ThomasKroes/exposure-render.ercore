@@ -58,13 +58,11 @@ SOURCE_GROUP("Core" FILES ${vtkErCoreSources})
 SET(General
 	utilities.h
 	geometry.h
-	transport.h
 	raymarching.h
 	sample.h
 	rng.h
 	montecarlo.h
 	ray.h
-	objects.h
 	textures.h
 	log.h
 	defines.h
@@ -78,7 +76,6 @@ SET(General
 	timestamp.h
 	kelvin.h
 	enums.h
-	color.h
 	exposurerender.h
 	exposurerender.cpp
 	range.h
@@ -93,7 +90,6 @@ SET(General
 	transform.h
 	octree.h
 	volumeproperty.h
-	tonemap.h
 )
 
 SOURCE_GROUP("General" FILES ${General})
@@ -112,9 +108,8 @@ SET(Buffer
 SOURCE_GROUP("Buffer" FILES ${Buffer})
 
 SET(TransferFunction
-	pf.h
-	plf.h
-	pcf.h
+	piecewisefunction.h
+	piecewiselinearfunction.h
 	colortransferfunction.h
 	scalartransferfunction.h
 	transferfunction.h

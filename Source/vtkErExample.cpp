@@ -42,7 +42,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-//#define RIM_LIGHT_ON
+#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -108,7 +108,7 @@ void ConfigureER(vtkRenderer* Renderer)
 	CreateObjects(Tracer);
 	CreateCamera(Renderer);
 
-	Tracer->SetNoiseReduction(true);
+	Tracer->SetNoiseReduction(false);
 	Tracer->Update();
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
@@ -126,10 +126,10 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	const float StepSize = 3.0f;
 
 	VolumeProperty->SetShadows(true);
-	VolumeProperty->SetStepFactorPrimary(3.0f * StepSize);
-	VolumeProperty->SetStepFactorShadow(5.0f);
+	VolumeProperty->SetStepFactorPrimary(StepSize);
+	VolumeProperty->SetStepFactorShadow(5*StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(20);
+	VolumeProperty->SetDensityScale(1000);
 	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
@@ -163,7 +163,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkColorTransferFunction> Specular = vtkSmartPointer<vtkColorTransferFunction>::New();
 	
-	const float SpecularLevel = 0.8f;
+	const float SpecularLevel = 0.1f;
 
 	Specular->AddRGBPoint(0, SpecularLevel, SpecularLevel, SpecularLevel);
 	Specular->AddRGBPoint(2048, SpecularLevel, SpecularLevel, SpecularLevel);
@@ -172,7 +172,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	
 	vtkSmartPointer<vtkPiecewiseFunction> Glossiness = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	const float GlossinessLevel = 10.0f;
+	const float GlossinessLevel = 100.0f;
 
 	Glossiness->AddPoint(0, GlossinessLevel);
 	Glossiness->AddPoint(2048, GlossinessLevel);
@@ -254,8 +254,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
-//	KeyLight->SetRelativeToCamera(true);
-//	KeyLight->SetUseCameraFocalPoint(true);
+	KeyLight->SetRelativeToCamera(true);
+	KeyLight->SetUseCameraFocalPoint(true);
 	KeyLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, KeyLight->GetOutputPort());
@@ -272,7 +272,7 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef RIM_LIGHT_ON
 	vtkSmartPointer<vtkErObject> RimLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float RimLightSize = 0.01f;
+	const float RimLightSize = 0.5f;
 
 	RimLight->SetEmitter(true);
 	RimLight->SetAlignmentType(Enums::Spherical);
@@ -285,8 +285,8 @@ void CreateLighting(vtkErTracer* Tracer)
 	RimLight->SetMultiplier(5.0f);
 	RimLight->SetSize(RimLightSize, RimLightSize, RimLightSize);
 	RimLight->SetEmissionUnit(Enums::Power);
-//	RimLight->SetRelativeToCamera(true);
-//	RimLight->SetUseCameraFocalPoint(true);
+	RimLight->SetRelativeToCamera(true);
+	RimLight->SetUseCameraFocalPoint(true);
 	RimLight->SetEnabled(true);
 
 	Tracer->AddInputConnection(vtkErTracer::ObjectsPort, RimLight->GetOutputPort());
@@ -310,7 +310,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(true);
 	EnvironmentLight->SetRadius(5.0f);
-	EnvironmentLight->SetMultiplier(1.0f);
+	EnvironmentLight->SetMultiplier(5.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 

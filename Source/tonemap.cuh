@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include "tonemap.h"
-
 namespace ExposureRender
 {
 
@@ -22,7 +20,11 @@ KERNEL void KrnlToneMap()
 {
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ToneMap(gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy));
+	ColorXYZAf RunningEstimateXYZ = gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy);
+
+	RunningEstimateXYZ.ToneMap(gpTracer->Camera.Exposure);
+
+	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ColorRGBAuc::FromXYZAf(RunningEstimateXYZ.D);
 }
 
 void ToneMap(Tracer& Tracer, Statistics& Statistics)
