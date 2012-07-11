@@ -19,15 +19,6 @@ namespace ExposureRender
 {
 
 template<int Size>
-class EXPOSURE_RENDER_DLL NodesVector
-{
-public:
-	CONSTRUCTORS(NodesVector, float, Size)
-	ALL_OPERATORS(NodesVector, float, Size)
-	DATA(float, Size)
-};
-
-template<int Size>
 class EXPOSURE_RENDER_DLL PiecewiseFunction
 {
 public:
@@ -66,8 +57,8 @@ public:
 	}
 
 	Vec2f				NodeRange;
-	NodesVector<Size>	Position;
-	NodesVector<Size>	Value;
+	Vec<int, 256>		Position;
+	Vec<int, 256>		Value;
 	int					Count;
 };
 

@@ -143,10 +143,10 @@ public:
 	Enums::RenderMode			RenderMode;
 	VolumeProperty				VolumeProperty;
 	Camera						Camera;
-	Indices						VolumeIDs;
-	Indices						LightIDs;
-	Indices						ObjectIDs;
-	Indices						ClippingObjectIDs;
+	Indices<64>					VolumeIDs;
+	Indices<64>					LightIDs;
+	Indices<64>					ObjectIDs;
+	Indices<64>					ClippingObjectIDs;
 	FrameBuffer					FrameBuffer;
 	int							NoEstimates;
 	bool						NoiseReduction;

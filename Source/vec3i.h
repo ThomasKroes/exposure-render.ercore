@@ -18,9 +18,19 @@
 namespace ExposureRender
 {
 
+/*! \class Vec3i
+ * \brief Three dimensional integer vector
+ */
 class EXPOSURE_RENDER_DLL Vec3i : public Vec<int, 3>
 {
 public:
+	/*! Default constructor */
+	HOST_DEVICE Vec3i()
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = 0;
+	}
+
 	/*! Constructor with initializing values */
 	HOST_DEVICE Vec3i(const int& V1, const int& V2, const int& V3)
 	{
@@ -35,9 +45,80 @@ public:
 		for (int i = 0; i < 3; ++i)
 			this->D[i] = Other[i];
 	}
+
+	/*! Negate operator
+		* \return Negated vector by value
+	*/
+	HOST_DEVICE Vec3i operator - () const
+	{
+		Vec3i Result;
+		
+		for (int i = 0; i < 3; ++i)
+			Result[i] = -this->D[i];
+		
+		return Result;
+	}
 };
 
-static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const int& I)					{ return Vec3i(V[0] * I, V[1] * I, V[2] * I);								};
-static inline HOST_DEVICE Vec3i operator * (const int& I, const Vec3i& V)					{ return Vec3i(V[0] * I, V[1] * I, V[2] * I);								};
+/*! Multiply Vec3i with float
+	* \param V Vector
+	* \param F Float to multiply with
+	* \return V x F
+*/
+static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
+{
+	return Vec3i(V[0] * F, V[1] * F, V[2] * F);
+};
+
+/*! Multiply float with Vec3i
+	* \param V Vector
+	* \param F Float to multiply with
+	* \return F x V
+*/
+static inline HOST_DEVICE Vec3i operator * (const float& F, const Vec3i& V)
+{
+	return Vec3i(V[0] * F, V[1] * F, V[2] * F);
+};
+
+/*! Multiply two Vec3i vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE Vec3i operator * (const Vec3i& A, const Vec3i& B)
+{
+	return Vec3i(A[0] * B[0], A[1] * B[1], A[2] * B[2]);
+};
+
+/*! Subtract two Vec3i vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE Vec3i operator - (const Vec3i& A, const Vec3i& B)
+{
+	return Vec3i(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
+};
+
+/*! Add two Vec3i vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE Vec3i operator + (const Vec3i& A, const Vec3i& B)
+{
+	return Vec3i(A[0] + B[0], A[1] + B[1], A[2] + B[2]);
+};
+
+/*! Linearly interpolate two Vec3i vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline Vec3i Lerp(const float& LerpC, const Vec3i& A, const Vec3i& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

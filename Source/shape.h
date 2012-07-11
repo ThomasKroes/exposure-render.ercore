@@ -110,7 +110,7 @@ public:
 			Int.Valid	= true;
 			Int.P		= TransformPoint(this->Transform.TM, Int.P);
 			Int.N		= TransformVector(this->Transform.TM, Int.N);
-			Int.T		= (Int.P - R.O).Length();
+			Int.T		= Length(Int.P, R.O);
 		}
 		
 		return Intersects;

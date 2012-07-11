@@ -19,6 +19,7 @@
 #include "vec3f.h"
 #include "vec4i.h"
 #include "vec4f.h"
+#include "indices.h"
 
 namespace ExposureRender
 {

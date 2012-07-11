@@ -18,11 +18,11 @@
 namespace ExposureRender
 {
 
-template<int Size>
+template<int Size = 64>
 class EXPOSURE_RENDER_DLL Indices : public Vec<int, Size>
 {
 public:
-	HOST Indices()
+	HOST_DEVICE Indices()
 	{
 		for (int i = 0; i < Size; i++)
 			this->D[i] = -1;
@@ -30,7 +30,7 @@ public:
 		this->Count = 0;
 	}
 
-	HOST Indices& operator = (const Indices& Other)
+	HOST_DEVICE Indices& operator = (const Indices& Other)
 	{
 		for (int i = 0; i < Size; i++)
 			this->D[i] = Other.D[i];

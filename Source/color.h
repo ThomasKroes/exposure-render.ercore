@@ -22,4 +22,9 @@
 namespace ExposureRender
 {
 
+static inline HOST_DEVICE ColorXYZf RGBfToXYZf(ColorRGBf& RGB)
+{
+	return ColorXYZf::FromRGBf(RGB.GetData());
+};
+
 }

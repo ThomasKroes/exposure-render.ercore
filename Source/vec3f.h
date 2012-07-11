@@ -18,9 +18,19 @@
 namespace ExposureRender
 {
 
+/*! \class Vec3f
+ * \brief Three dimensional float vector
+ */
 class EXPOSURE_RENDER_DLL Vec3f : public Vec<float, 3>
 {
 public:
+	/*! Default constructor */
+	HOST_DEVICE Vec3f()
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = 0.0f;
+	}
+
 	/*! Constructor with initializing values */
 	HOST_DEVICE Vec3f(const float& V1, const float& V2, const float& V3)
 	{
@@ -35,54 +45,237 @@ public:
 		for (int i = 0; i < 3; ++i)
 			this->D[i] = Other[i];
 	}
-
+	
+	/*! Length squared
+		* \return Squared length of the vector
+	*/
 	HOST_DEVICE float LengthSquared(void) const
 	{
 		return this->D[0] * this->D[0] + this->D[1] * this->D[1] + this->D[2] * this->D[2];
 	}
-
+	
+	/*! Length
+		* \return Length of the vector
+	*/
 	HOST_DEVICE float Length(void) const
 	{
 		return sqrtf(this->LengthSquared());
 	}
-
+	
+	/*! Normalizes the vector */
 	HOST_DEVICE void Normalize(void)
 	{
-		const float L = this->Length();
-		this->D[0] /= L;
-		this->D[1] /= L;
-		this->D[2] /= L;
+		// Compute length reciprocal
+		const float InvL = 1.0f / this->Length();
+
+		this->D[0] *= InvL;
+		this->D[1] *= InvL;
+		this->D[2] *= InvL;
+	}
+	
+	/*! Normalized
+		* \return Normalized vector
+	*/
+	HOST_DEVICE Vec3f Normalized(void) const
+	{
+		// Compute length reciprocal
+		const float InvL = 1.0f / this->Length();
+
+		return Vec3f(this->D[0] * InvL, this->D[1] * InvL, this->D[2] * InvL);
 	}
 
+	/*! Dot product
+		* \param V Vector
+		* \return Dot product
+	*/
 	HOST_DEVICE float Dot(const Vec3f& V) const
 	{
 		return (this->D[0] * V[0] + this->D[1] * V[1] + this->D[2] * V[2]);
 	}
-
+	
+	/*! Cross product
+		* \param V Vector
+		* \return Cross product
+	*/
 	HOST_DEVICE Vec3f Cross(const Vec3f& V) const
 	{
 		return Vec3f( (this->D[1] * V[2]) - (this->D[2] * V[1]), (this->D[2] * V[0]) - (this->D[0] * V[2]), (this->D[0] * V[1]) - (this->D[1] * V[0]) );
 	}
 
-	HOST_DEVICE void ScaleBy(float F)
+	/*! Negate operator
+		* \return Negated vector by value
+	*/
+	HOST_DEVICE Vec3f operator - () const
 	{
-		this->D[0] *= F;
-		this->D[1] *= F;
-		this->D[2] *= F;
+		Vec3f Result;
+		
+		for (int i = 0; i < 3; ++i)
+			Result[i] = -this->D[i];
+		
+		return Result;
 	}
 };
 
-static inline HOST_DEVICE Vec3f operator * (const float& F, const Vec3f& V)					{ return Vec3f(V[0] * F, V[1] * F, V[2] * F);								};
+/*! Multiply Vec3f with float
+	* \param V Vector
+	* \param F Float to multiply with
+	* \return V x F
+*/
+static inline HOST_DEVICE Vec3f operator * (const Vec3f& V, const float& F)
+{
+	return Vec3f(V[0] * F, V[1] * F, V[2] * F);
+};
 
-static inline HOST_DEVICE Vec3f Normalize(const Vec3f& V)									{ Vec3f R = V; R.Normalize(); return R; 									};
-static inline HOST_DEVICE float Length(const Vec3f& V)										{ return V.Length();														};
-static inline HOST_DEVICE Vec3f Cross(const Vec3f& A, const Vec3f& B)						{ return A.Cross(B);														};
-static inline HOST_DEVICE float Dot(const Vec3f& A, const Vec3f& B)							{ return A.Dot(B);															};
-static inline HOST_DEVICE float AbsDot(const Vec3f& A, const Vec3f& B)						{ return fabs(A.Dot(B));													};
-static inline HOST_DEVICE float ClampedAbsDot(const Vec3f& A, const Vec3f& B)				{ return Clamp(fabs(A.Dot(B)), 0.0f, 1.0f);									};
-static inline HOST_DEVICE float ClampedDot(const Vec3f& A, const Vec3f& B)					{ return Clamp(Dot(A, B), 0.0f, 1.0f);										};
-static inline HOST_DEVICE float Distance(const Vec3f& A, const Vec3f& B)					{ return (A - B).Length();													};
-static inline HOST_DEVICE float DistanceSquared(const Vec3f& A, const Vec3f& B)				{ return (A - B).LengthSquared();											};
-static inline HOST_DEVICE Vec3f Lerp(const Vec3f& A, const Vec3f& B, const float& LerpC)	{ return A + LerpC * (B - A);												};
+/*! Multiply float with Vec3f
+	* \param V Vector
+	* \param F Float to multiply with
+	* \return F x V
+*/
+static inline HOST_DEVICE Vec3f operator * (const float& F, const Vec3f& V)
+{
+	return Vec3f(V[0] * F, V[1] * F, V[2] * F);
+};
+
+/*! Multiply two Vec3f vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE Vec3f operator * (const Vec3f& A, const Vec3f& B)
+{
+	return Vec3f(A[0] * B[0], A[1] * B[1], A[2] * B[2]);
+};
+
+/*! Divide Vec3f vector by float value
+	* \param V Vec3f to divide
+	* \param F Float to divide with
+	* \return F / V
+*/
+static inline HOST_DEVICE Vec3f operator / (const Vec3f& V, const float& F)
+{
+	// Compute F reciprocal, slightly faster
+	const float InvF = (F == 0.0f) ? 0.0f : 1.0f / F;
+
+	return Vec3f((float)V[0] * InvF, (float)V[1] * InvF, (float)V[2] * InvF);
+};
+
+/*! Subtract two Vec3f vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE Vec3f operator - (const Vec3f& A, const Vec3f& B)
+{
+	return Vec3f(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
+};
+
+/*! Add two Vec3f vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE Vec3f operator + (const Vec3f& A, const Vec3f& B)
+{
+	return Vec3f(A[0] + B[0], A[1] + B[1], A[2] + B[2]);
+};
+
+/*! Length squared
+	* \param A Vector A
+	* \param B Vector B
+	* \return Squared length of the vector
+*/
+static inline HOST_DEVICE float LengthSquared(const Vec3f& A, const Vec3f& B)
+{
+	return Vec3f(A - B).LengthSquared();
+};
+
+/*! Length
+	* \param V Vector V
+	* \return Length of the vector
+*/
+static inline HOST_DEVICE float Length(const Vec3f& A, const Vec3f& B)
+{
+	return Vec3f(A - B).Length();
+};
+
+/*! Normalize
+	* \param V Vector V
+	* \return Normalized vector
+*/
+static inline HOST_DEVICE Vec3f Normalize(const Vec3f& V)
+{
+	return V.Normalized();
+};
+
+/*! Dot product
+	* \param A Vector A
+	* \param B Vector B
+	* \return A . B
+*/
+static inline HOST_DEVICE float Dot(const Vec3f& A, const Vec3f& B)
+{
+	return A.Dot(B);
+};
+
+/*! Absolute dot product
+	* \param A Vector A
+	* \param B Vector B
+	* \return A . B
+*/
+static inline HOST_DEVICE float AbsDot(const Vec3f& A, const Vec3f& B)
+{
+	return fabs(A.Dot(B));
+};
+
+/*! Clamped absolute dot product
+	* \param A Vector A
+	* \param B Vector B
+	* \return A . B
+*/
+static inline HOST_DEVICE float ClampedAbsDot(const Vec3f& A, const Vec3f& B)
+{
+	return Clamp(fabs(A.Dot(B)), 0.0f, 1.0f);
+};
+
+/*! Clamped dot product
+	* \param A Vector A
+	* \param B Vector B
+	* \return A . B
+*/
+static inline HOST_DEVICE float ClampedDot(const Vec3f& A, const Vec3f& B)
+{
+	return Clamp(Dot(A, B), 0.0f, 1.0f);
+};
+
+/*! Cross product
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE Vec3f Cross(const Vec3f& A, const Vec3f& B)
+{
+	return A.Cross(B);
+};
+
+/*! Normalized cross product
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE Vec3f NormalizedCross(const Vec3f& A, const Vec3f& B)
+{
+	return Normalize(A.Cross(B));
+};
+
+/*! Linearly interpolate two Vec3f vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline Vec3f Lerp(const float& LerpC, const Vec3f& A, const Vec3f& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

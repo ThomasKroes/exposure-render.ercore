@@ -75,7 +75,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 					if (Light.EmissionUnit == Enums::Power)
 						Li /= Light.Shape.Area;
 
-					const float LightPdf = DistanceSquared(Int.P, Sample.Intersection.P) / (AbsDot(-R.D, Int.N) * Light.Shape.Area);
+					const float LightPdf = LengthSquared(Int.P, Sample.Intersection.P) / (AbsDot(-R.D, Int.N) * Light.Shape.Area);
 
 					const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
 
@@ -91,7 +91,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 					R.O		= Int.P;
 					R.D		= Normalize(Sample.Intersection.P - R.O);
 					R.MinT	= RAY_EPS;
-					R.MaxT	= (Sample.Intersection.P - R.O).Length();
+					R.MaxT	= Length(Sample.Intersection.P, R.O);
 
 					if (!Intersects(R, RNG))
 					{

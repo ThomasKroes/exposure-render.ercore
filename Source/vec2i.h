@@ -18,9 +18,19 @@
 namespace ExposureRender
 {											
 
+/*! \class Vec2i
+ * \brief Two dimensional integer vector
+ */
 class EXPOSURE_RENDER_DLL Vec2i : public Vec<int, 2>
 {
 public:
+	/*! Default constructor */
+	HOST_DEVICE Vec2i()
+	{
+		for (int i = 0; i < 2; ++i)
+			this->D[i] = 0;
+	}
+
 	/*! Constructor with initializing values */
 	HOST_DEVICE Vec2i(const int& V1, const int& V2)
 	{
@@ -34,9 +44,60 @@ public:
 		for (int i = 0; i < 2; ++i)
 			this->D[i] = Other[i];
 	}
+
+	/*! Negate operator
+		* \return Negated vector by value
+	*/
+	HOST_DEVICE Vec2i operator - () const
+	{
+		Vec2i Result;
+		
+		for (int i = 0; i < 2; ++i)
+			Result[i] = -this->D[i];
+		
+		return Result;
+	}
 };
 
-static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const int& I)					{ return Vec2i(V[0] * I, V[1] * I);											};
-static inline HOST_DEVICE Vec2i operator * (const int& I, const Vec2i& V)					{ return Vec2i(V[0] * I, V[1] * I);											};
+/*! Multiply Vec2i with float
+	* \param V Vector
+	* \param F Float to multiply with
+	* \return V x F
+*/
+static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
+{
+	return Vec2i(V[0] * F, V[1] * F);
+};
+
+/*! Multiply float with Vec2i
+	* \param V Vector
+	* \param F Float to multiply with
+	* \return F x V
+*/
+static inline HOST_DEVICE Vec2i operator * (const float& F, const Vec2i& V)
+{
+	return Vec2i(V[0] * F, V[1] * F);
+};
+
+/*! Multiply two Vec2i vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE Vec2i operator * (const Vec2i& A, const Vec2i& B)
+{
+	return Vec2i(A[0] * B[0], A[1] * B[1]);
+};
+
+/*! Linearly interpolate two Vec2i vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline Vec2i Lerp(const float& LerpC, const Vec2i& A, const Vec2i& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

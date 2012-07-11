@@ -39,11 +39,9 @@ HOST_DEVICE inline T Clamp(const T& Value, const T& Min, const T& Max)
 
 //static inline HOST_DEVICE float Lerp(const float& A, const float& B, const float& LerpC)	{ return A + LerpC * (B - A);												};
 
-/*! Move to P(x, y)
-	* \param x The x coördinate
-		* \param y The y coördinate
-		* \return Whether the move was legal */
-
+/*! \class Vec
+ * \brief Base vector template class
+ */
 template<class T, int Size = 1>
 class EXPOSURE_RENDER_DLL Vec
 {
@@ -382,8 +380,14 @@ public:
 		for (int i = 0; i < Size; ++i)
 			this->D[i] = max(Min[i], min(this->D[i], Max[i]));
 	}
+	
+	/*! Get pointer to data array */
+	HOST_DEVICE T* GetData()
+	{
+		return this->D;
+	}
 
-protected:
+// protected: FIXME
 	T	D[Size];	/*! Vector data */
 };
 

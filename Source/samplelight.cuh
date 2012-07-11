@@ -68,7 +68,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	R.O		= SS.P;
 	R.D		= Normalize(Sample.Intersection.P - SS.P);
 	R.MinT	= RAY_EPS;
-	R.MaxT	= (Sample.Intersection.P - SS.P).Length();
+	R.MaxT	= Length(Sample.Intersection.P, SS.P);
 
 	const Vec3f Wi = Normalize(SS.P - Sample.Intersection.P);
 
@@ -82,7 +82,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	if (!Intersects(R, RNG))
 	{
-		const float LightPdf = DistanceSquared(SS.P, Sample.Intersection.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
+		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 

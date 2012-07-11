@@ -73,7 +73,6 @@ SET(General
 	timing.h
 	exception.h
 	timestamp.h
-	kelvin.h
 	enums.h
 	exposurerender.h
 	exposurerender.cpp
@@ -170,6 +169,7 @@ SET(Color
 	colorrgbf.h
 	colorrgbaf.h
 	colorrgbauc.h
+	kelvin.h
 )
 
 SOURCE_GROUP("Color" FILES ${Color})
