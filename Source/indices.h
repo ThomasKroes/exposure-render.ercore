@@ -13,19 +13,34 @@
 
 #pragma once
 
-#include "vec2i.h"
-#include "vec2f.h"
-#include "vec3i.h"
-#include "vec3f.h"
-#include "vec4i.h"
-#include "vec4f.h"
+#include "vec.h"
 
 namespace ExposureRender
 {
 
-static inline HOST_DEVICE Vec2f operator / (const float& f, const Vec2i& v)					{ return Vec2f(f / (float)v[0], f / (float)v[1]);							};
+template<int Size>
+class EXPOSURE_RENDER_DLL Indices : public Vec<int, Size>
+{
+public:
+	HOST Indices()
+	{
+		for (int i = 0; i < Size; i++)
+			this->D[i] = -1;
 
-static inline HOST_DEVICE Vec3f operator / (const float& f, const Vec3i& v)					{ return Vec3f(f / (float)v[0], f / (float)v[1], f / (float)v[2]);			};
-static inline HOST_DEVICE Vec3f operator / (const float& f, const Vec3f& v)					{ return Vec3f(f / v[0], f / v[1], f / v[2]);								};
+		this->Count = 0;
+	}
+
+	HOST Indices& operator = (const Indices& Other)
+	{
+		for (int i = 0; i < Size; i++)
+			this->D[i] = Other.D[i];
+
+		this->Count = Other.Count;
+
+		return *this;
+	}
+
+	int Count;
+};
 
 }

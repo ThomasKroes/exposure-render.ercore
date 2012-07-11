@@ -13,19 +13,29 @@
 
 #pragma once
 
-#include "vec2i.h"
-#include "vec2f.h"
-#include "vec3i.h"
-#include "vec3f.h"
-#include "vec4i.h"
-#include "vec4f.h"
+#include "vec.h"
 
 namespace ExposureRender
 {
 
-static inline HOST_DEVICE Vec2f operator / (const float& f, const Vec2i& v)					{ return Vec2f(f / (float)v[0], f / (float)v[1]);							};
+class EXPOSURE_RENDER_DLL Vec4i : public Vec<int, 4>
+{
+public:
+	/*! Constructor with initializing values */
+	HOST_DEVICE Vec4i(const int& V1, const int& V2, const int& V3, const int& V4)
+	{
+		this->D[0] = V1;
+		this->D[1] = V2;
+		this->D[2] = V3;
+		this->D[3] = V4;
+	}
 
-static inline HOST_DEVICE Vec3f operator / (const float& f, const Vec3i& v)					{ return Vec3f(f / (float)v[0], f / (float)v[1], f / (float)v[2]);			};
-static inline HOST_DEVICE Vec3f operator / (const float& f, const Vec3f& v)					{ return Vec3f(f / v[0], f / v[1], f / v[2]);								};
+	/*! Copy constructor */
+	HOST_DEVICE Vec4i(const Vec<int, 4>& Other)
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = Other[i];
+	}
+};
 
 }

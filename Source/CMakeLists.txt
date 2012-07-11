@@ -69,7 +69,6 @@ SET(General
 	camera.h
 	procedural.h
 	matrix.h
-	vector.h
 	boundingbox.h
 	timing.h
 	exception.h
@@ -175,6 +174,20 @@ SET(Color
 
 SOURCE_GROUP("Color" FILES ${Color})
 
+SET(Vector
+	vec.h
+	vec2i.h
+	vec2f.h
+	vec3i.h
+	vec3f.h
+	vec4i.h
+	vec4f.h
+	indices.h
+	vector.h
+)
+
+SOURCE_GROUP("Vector" FILES ${Vector})
+
 SET(Cuda
 	estimate.cuh
 	filtering.cuh
@@ -197,10 +210,8 @@ SET(Cuda
 
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
-
-
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Vector} ${Cuda} SHARED)
 
 IF(ER_VTK)
 
