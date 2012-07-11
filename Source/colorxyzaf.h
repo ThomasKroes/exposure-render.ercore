@@ -18,18 +18,47 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ColorXYZAf
+/*! \class ColorXYZAf
+ * \brief XYZA float class
+ */
+class EXPOSURE_RENDER_DLL ColorXYZAf : public Vec<float, 4>
 {
 public:
-	CONSTRUCTORS(ColorXYZAf, float, 4)
-	VEC4_CONSTRUCTOR(ColorXYZAf, float)
-	ALL_OPERATORS(ColorXYZAf, float, 4)
-	MIN_MAX(ColorXYZAf, float, 4)
-	CLAMP(ColorXYZAf, float, 4)
+	/*! Default constructor */
+	HOST_DEVICE ColorXYZAf()
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = 0.0f;
+	}
+	
+	/*! Construct and initialize with default value
+		* \param Default The default value
+	*/
+	HOST_DEVICE ColorXYZAf(const float& V)
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = V;
+	}
+
+	/*! Constructor with initializing values */
+	HOST_DEVICE ColorXYZAf(const float& X, const float& Y, const float& Z, const float& A)
+	{
+		this->D[0] = X;
+		this->D[1] = Y;
+		this->D[2] = Z;
+		this->D[3] = A;
+	}
+
+	/*! Copy constructor */
+	HOST_DEVICE ColorXYZAf(const Vec<float, 4>& Other)
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = Other[i];
+	}
 
 	static HOST_DEVICE ColorXYZAf Black()
 	{
-		return ColorXYZAf(0.0f);
+		return ColorXYZAf();
 	}
 
 	static HOST_DEVICE ColorXYZAf FromRGBf(const float RGB[3])
@@ -115,23 +144,80 @@ public:
 		
 		return L;
 	}
-
-	DATA(float, 4)
 };
 
-static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& XYZA, const float& F)
+/*! Multiply ColorXYZAf with float
+	* \param C ColorXYZAf
+	* \param F Float to multiply with
+	* \return C x F
+*/
+static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& C, const float& F)
 {
-	return ColorXYZAf(XYZA[0] * F, XYZA[1] * F, XYZA[2] * F, XYZA[3] * F);
+	return ColorXYZAf(C[0] * F, C[1] * F, C[2] * F, C[3] * F);
 };
 
-static inline HOST_DEVICE ColorXYZAf operator * (const float& F, const ColorXYZAf& XYZA)
+/*! Multiply float with ColorXYZAf
+	* \param C ColorXYZAf
+	* \param F Float to multiply with
+	* \return F x C
+*/
+static inline HOST_DEVICE ColorXYZAf operator * (const float& F, const ColorXYZAf& C)
 {
-	return ColorXYZAf(XYZA[0] * F, XYZA[1] * F, XYZA[2] * F, XYZA[3] * F);
+	return ColorXYZAf(C[0] * F, C[1] * F, C[2] * F, C[3] * F);
 };
 
-static inline HOST_DEVICE ColorXYZAf Lerp(const float& LerpC, const ColorXYZAf& A, const ColorXYZAf& B)
+/*! Multiply two ColorXYZAf vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& A, const ColorXYZAf& B)
 {
-	return LerpC * (B - A);
+	return ColorXYZAf(A[0] * B[0], A[1] * B[1], A[2] * B[2], A[3] * B[3]);
 };
+
+/*! Divide ColorXYZAf vector by float value
+	* \param C ColorXYZAf to divide
+	* \param F Float to divide with
+	* \return F / V
+*/
+static inline HOST_DEVICE ColorXYZAf operator / (const ColorXYZAf& C, const float& F)
+{
+	// Compute F reciprocal, slightly faster
+	const float InvF = (F == 0.0f) ? 0.0f : 1.0f / F;
+
+	return ColorXYZAf((float)C[0] * InvF, (float)C[1] * InvF, (float)C[2] * InvF, (float)C[3] * InvF);
+};
+
+/*! Subtract two ColorXYZAf vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE ColorXYZAf operator - (const ColorXYZAf& A, const ColorXYZAf& B)
+{
+	return ColorXYZAf(A[0] - B[0], A[1] - B[1], A[2] - B[2], A[3] - B[3]);
+};
+
+/*! Add two ColorXYZAf vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE ColorXYZAf operator + (const ColorXYZAf& A, const ColorXYZAf& B)
+{
+	return ColorXYZAf(A[0] + B[0], A[1] + B[1], A[2] + B[2], A[3] + B[3]);
+};
+
+/*! Linearly interpolate two ColorXYZAf vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline ColorXYZAf Lerp(const float& LerpC, const ColorXYZAf& A, const ColorXYZAf& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

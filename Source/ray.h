@@ -49,7 +49,7 @@ public:
 		return *this;
 	}
 
-	HOST_DEVICE Vec3f operator()(float T) const
+	HOST_DEVICE Vec3f operator()(const float& T) const
 	{
 		return this->O + Normalize(this->D) * T;
 	}

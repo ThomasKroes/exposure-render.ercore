@@ -63,7 +63,7 @@ void vtkErShape::RequestData(ExposureRender::Shape& Shape)
 
 		case Enums::Box:
 		{
-			Shape.Box = Box(this->GetSize());
+			Shape.Box = Box(Vec3f(Size[0], Size[1], Size[2]));
 			break;
 		}
 	}

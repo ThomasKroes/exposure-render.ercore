@@ -18,18 +18,46 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ColorRGBf
+/*! \class ColorRGBf
+ * \brief RGB float class
+ */
+class EXPOSURE_RENDER_DLL ColorRGBf : public Vec<float, 3>
 {
 public:
-	CONSTRUCTORS(ColorRGBf, float, 3)
-	VEC3_CONSTRUCTOR(ColorRGBf, float)
-	ALL_OPERATORS(ColorRGBf, float, 3)
-	MIN_MAX(ColorRGBf, float, 3)
-	CLAMP(ColorRGBf, float, 3)
+	/*! Default constructor */
+	HOST_DEVICE ColorRGBf()
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = 0.0f;
+	}
+	
+	/*! Construct and initialize with default value
+		* \param Default The default value
+	*/
+	HOST_DEVICE ColorRGBf(const float& V)
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = V;
+	}
+
+	/*! Constructor with initializing values */
+	HOST_DEVICE ColorRGBf(const float& R, const float& G, const float& B)
+	{
+		this->D[0] = R;
+		this->D[1] = G;
+		this->D[2] = B;
+	}
+	
+	/*! Copy constructor */
+	HOST_DEVICE ColorRGBf(const Vec<float, 3>& Other)
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = Other[i];
+	}
 
 	static HOST_DEVICE ColorRGBf Black()
 	{
-		return ColorRGBf(0.0f);
+		return ColorRGBf();
 	}
 
 	static HOST_DEVICE ColorRGBf FromXYZf(const float XYZ[3])
@@ -67,24 +95,80 @@ public:
 	{
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
 	}
-
-	DATA(float, 3)
 };
 
-
-static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& RGB, const float& F)
+/*! Multiply ColorRGBf with float
+	* \param C Color
+	* \param F Float to multiply with
+	* \return C x F
+*/
+static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& C, const float& F)
 {
-	return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F);
+	return ColorRGBf(C[0] * F, C[1] * F, C[2] * F);
 };
 
-static inline HOST_DEVICE ColorRGBf operator * (const float& F, const ColorRGBf& RGB)
+/*! Multiply float with ColorRGBf
+	* \param C ColorRGBf
+	* \param F Float to multiply with
+	* \return F x C
+*/
+static inline HOST_DEVICE ColorRGBf operator * (const float& F, const ColorRGBf& C)
 {
-	return ColorRGBf(RGB[0] * F, RGB[1] * F, RGB[2] * F);
+	return ColorRGBf(C[0] * F, C[1] * F, C[2] * F);
 };
 
-static inline HOST_DEVICE ColorRGBf Lerp(const float& LerpC, const ColorRGBf& A, const ColorRGBf& B)
+/*! Multiply two ColorRGBf vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& A, const ColorRGBf& B)
 {
-	return LerpC * (B - A);
+	return ColorRGBf(A[0] * B[0], A[1] * B[1], A[2] * B[2]);
 };
+
+/*! Divide ColorRGBf vector by float value
+	* \param C ColorRGBf to divide
+	* \param F Float to divide with
+	* \return F / V
+*/
+static inline HOST_DEVICE ColorRGBf operator / (const ColorRGBf& C, const float& F)
+{
+	// Compute F reciprocal, slightly faster
+	const float InvF = (F == 0.0f) ? 0.0f : 1.0f / F;
+
+	return ColorRGBf((float)C[0] * InvF, (float)C[1] * InvF, (float)C[2] * InvF);
+};
+
+/*! Subtract two ColorRGBf vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE ColorRGBf operator - (const ColorRGBf& A, const ColorRGBf& B)
+{
+	return ColorRGBf(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
+};
+
+/*! Add two ColorRGBf vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE ColorRGBf operator + (const ColorRGBf& A, const ColorRGBf& B)
+{
+	return ColorRGBf(A[0] + B[0], A[1] + B[1], A[2] + B[2]);
+};
+
+/*! Linearly interpolate two ColorRGBf vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline ColorRGBf Lerp(const float& LerpC, const ColorRGBf& A, const ColorRGBf& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

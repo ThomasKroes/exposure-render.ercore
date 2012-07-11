@@ -106,7 +106,7 @@ public:
 		this->V = Normalize(Cross(this->N, this->U));
 
 		if (this->FocalDistance == -1.0f)
-			this->FocalDistance = (this->Target - this->Pos).Length();
+			this->FocalDistance = Length(this->Target, this->Pos);
 
 		float Scale = 0.0f;
 

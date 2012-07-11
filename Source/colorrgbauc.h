@@ -18,12 +18,43 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ColorRGBAuc
+/*! \class ColorRGBAf
+ * \brief RGBA unsigned char class
+ */
+class EXPOSURE_RENDER_DLL ColorRGBAuc : public Vec<unsigned char, 4>
 {
 public:
-	CONSTRUCTORS(ColorRGBAuc, unsigned char, 4)
-	VEC4_CONSTRUCTOR(ColorRGBAuc, unsigned char)
-	ALL_OPERATORS(ColorRGBAuc, unsigned char, 4)
+	/*! Default constructor */
+	HOST_DEVICE ColorRGBAuc()
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = 0;
+	}
+
+	/*! Construct and initialize with default value
+		* \param Default The default value
+	*/
+	HOST_DEVICE ColorRGBAuc(const unsigned char& V)
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = V;
+	}
+
+	/*! Constructor with initializing values */
+	HOST_DEVICE ColorRGBAuc(const unsigned char& R, const unsigned char& G, const unsigned char& B, const unsigned char& A)
+	{
+		this->D[0] = R;
+		this->D[1] = G;
+		this->D[2] = B;
+		this->D[3] = A;
+	}
+
+	/*! Copy constructor */
+	HOST_DEVICE ColorRGBAuc(const Vec<unsigned char, 4>& Other)
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = Other[i];
+	}
 
 	static HOST_DEVICE ColorRGBAuc Black()
 	{
@@ -147,34 +178,86 @@ public:
 	{
 		*this = ColorRGBAuc::Blend(Background, *this);
 	}
-
-	DATA(unsigned char, 4)
 };
 
-static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& RGBA, const float& F)
+/*! Multiply ColorRGBAuc with float
+	* \param C ColorRGBAuc
+	* \param F Float to multiply with
+	* \return C x F
+*/
+static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& C, const float& F)
 {
-	return ColorRGBAuc(	(unsigned char)((float)RGBA[0] * F),
-						(unsigned char)((float)RGBA[1] * F),
-						(unsigned char)((float)RGBA[2] * F),
-						(unsigned char)((float)RGBA[3] * F));
+	return ColorRGBAuc(	(unsigned char)((float)C[0] * F),
+						(unsigned char)((float)C[1] * F),
+						(unsigned char)((float)C[2] * F),
+						(unsigned char)((float)C[3] * F));
 };
 
-static inline HOST_DEVICE ColorRGBAuc operator * (const float& F, const ColorRGBAuc& RGBA)
+/*! Multiply float with ColorRGBAuc
+	* \param C ColorRGBAuc
+	* \param F Float to multiply with
+	* \return F x C
+*/
+static inline HOST_DEVICE ColorRGBAuc operator * (const float& F, const ColorRGBAuc& C)
 {
-	return ColorRGBAuc(	(unsigned char)((float)RGBA[0] * F),
-						(unsigned char)((float)RGBA[1] * F),
-						(unsigned char)((float)RGBA[2] * F),
-						(unsigned char)((float)RGBA[3] * F));
+	return ColorRGBAuc(	(unsigned char)((float)C[0] * F),
+						(unsigned char)((float)C[1] * F),
+						(unsigned char)((float)C[2] * F),
+						(unsigned char)((float)C[3] * F));
 };
 
-static inline HOST_DEVICE ColorRGBAuc Lerp(const ColorRGBAuc& A, const ColorRGBAuc& B, const float& LerpC)
+/*! Multiply two ColorRGBAuc vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
-	ColorRGBAuc Result;
-
-	for (int i = 0; i < 4; i++)
-		Result[i] = (unsigned char)((1.0f - LerpC) * (float)A[i] + LerpC * (float)B[i]);
-
-	return Result;
+	return ColorRGBAuc(A[0] * B[0], A[1] * B[1], A[2] * B[2], A[3] * B[3]);
 };
+
+/*! Divide ColorRGBAuc vector by float value
+	* \param C ColorRGBAuc to divide
+	* \param F Float to divide with
+	* \return F / V
+*/
+static inline HOST_DEVICE ColorRGBAuc operator / (const ColorRGBAuc& C, const float& F)
+{
+	// Compute F reciprocal, slightly faster
+	const float InvF = (F == 0.0f) ? 0.0f : 1.0f / F;
+
+	return ColorRGBAuc((float)C[0] * InvF, (float)C[1] * InvF, (float)C[2] * InvF, (float)C[3] * InvF);
+};
+
+/*! Subtract two ColorRGBAuc vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE ColorRGBAuc operator - (const ColorRGBAuc& A, const ColorRGBAuc& B)
+{
+	return ColorRGBAuc(A[0] - B[0], A[1] - B[1], A[2] - B[2], A[3] - B[3]);
+};
+
+/*! Add two ColorRGBAuc vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE ColorRGBAuc operator + (const ColorRGBAuc& A, const ColorRGBAuc& B)
+{
+	return ColorRGBAuc(A[0] + B[0], A[1] + B[1], A[2] + B[2], A[3] + B[3]);
+};
+
+/*! Linearly interpolate two ColorRGBAuc vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline ColorRGBAuc Lerp(const float& LerpC, const ColorRGBAuc& A, const ColorRGBAuc& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

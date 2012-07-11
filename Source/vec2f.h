@@ -18,9 +18,19 @@
 namespace ExposureRender
 {
 
+/*! \class Vec2f
+ * \brief Two dimensional float vector
+ */
 class EXPOSURE_RENDER_DLL Vec2f : public Vec<float, 2>
 {
 public:
+	/*! Default constructor */
+	HOST_DEVICE Vec2f()
+	{
+		for (int i = 0; i < 2; ++i)
+			this->D[i] = 0.0f;
+	}
+
 	/*! Constructor with initializing values */
 	HOST_DEVICE Vec2f(const float& V1, const float& V2)
 	{
@@ -72,6 +82,18 @@ public:
 		return Vec2f(this->D[0] * InvL, this->D[1] * InvL);
 	}
 
+	/*! Negate operator
+		* \return Negated vector by value
+	*/
+	HOST_DEVICE Vec2f operator - () const
+	{
+		Vec2f Result;
+		
+		for (int i = 0; i < 2; ++i)
+			Result[i] = -this->D[i];
+		
+		return Result;
+	}
 };
 
 /*! Multiply Vec2f with float
@@ -92,6 +114,36 @@ static inline HOST_DEVICE Vec2f operator * (const Vec2f& V, const float& F)
 static inline HOST_DEVICE Vec2f operator * (const float& F, const Vec2f& V)
 {
 	return Vec2f(V[0] * F, V[1] * F);
+};
+
+/*! Multiply two Vec2f vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A x B
+*/
+static inline HOST_DEVICE Vec2f operator * (const Vec2f& A, const Vec2f& B)
+{
+	return Vec2f(A[0] * B[0], A[1] * B[1]);
+};
+
+/*! Subtract two Vec2f vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE Vec2f operator - (const Vec2f& A, const Vec2f& B)
+{
+	return Vec2f(A[0] - B[0], A[1] - B[1]);
+};
+
+/*! Add two Vec2f vectors
+	* \param A Vector A
+	* \param B Vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE Vec2f operator + (const Vec2f& A, const Vec2f& B)
+{
+	return Vec2f(A[0] + B[0], A[1] + B[1]);
 };
 
 /*! Divide float by Vec2f
@@ -131,5 +183,16 @@ static inline HOST_DEVICE Vec2f Normalize(const Vec2f& V)
 {
 	return V.Normalized();
 };
+
+/*! Linearly interpolate two Vec2f vectors
+	* \param LerpC Interpolation coefficient
+	* \param A Vector A
+	* \param B Vector B
+	* \return Interpolated vector
+*/
+HOST_DEVICE inline Vec2f Lerp(const float& LerpC, const Vec2f& A, const Vec2f& B)
+{
+	return (1.0f - LerpC) * A + LerpC * B;
+}
 
 }

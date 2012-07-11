@@ -56,8 +56,8 @@ HOST_DEVICE inline Ray TransformRay(const Matrix44& TM, const Ray& R)
 
 	Rt.O	= P;
 	Rt.D	= Normalize(MaxP - Rt.O);
-	Rt.MinT	= (MinP - Rt.O).Length();
-	Rt.MaxT	= (MaxP - Rt.O).Length();
+	Rt.MinT	= Length(MinP, Rt.O);
+	Rt.MaxT	= Length(MaxP, Rt.O);
 
 	return Rt;
 }

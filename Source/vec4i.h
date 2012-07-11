@@ -18,9 +18,19 @@
 namespace ExposureRender
 {
 
+/*! \class Vec4i
+ * \brief Four dimensional integer vector
+ */
 class EXPOSURE_RENDER_DLL Vec4i : public Vec<int, 4>
 {
 public:
+	/*! Default constructor */
+	HOST_DEVICE Vec4i()
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = 0;
+	}
+
 	/*! Constructor with initializing values */
 	HOST_DEVICE Vec4i(const int& V1, const int& V2, const int& V3, const int& V4)
 	{
@@ -35,6 +45,19 @@ public:
 	{
 		for (int i = 0; i < 4; ++i)
 			this->D[i] = Other[i];
+	}
+
+	/*! Negate operator
+		* \return Negated vector by value
+	*/
+	HOST_DEVICE Vec4i operator - () const
+	{
+		Vec4i Result;
+		
+		for (int i = 0; i < 4; ++i)
+			Result[i] = -this->D[i];
+		
+		return Result;
 	}
 };
 
