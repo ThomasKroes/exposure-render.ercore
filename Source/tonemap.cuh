@@ -23,8 +23,12 @@ KERNEL void KrnlToneMap()
 	ColorXYZAf RunningEstimateXYZ = gpTracer->FrameBuffer.RunningEstimateXYZ(IDx, IDy);
 
 	RunningEstimateXYZ.ToneMap(gpTracer->Camera.Exposure);
+	
+	ColorRGBAuc ToneMapped = ColorRGBAuc::FromXYZAf(RunningEstimateXYZ.D);
 
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ColorRGBAuc::FromXYZAf(RunningEstimateXYZ.D);
+// 	ToneMapped.GammaCorrect(gpTracer->Camera.Gamma);
+
+	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ToneMapped;
 }
 
 void ToneMap(Tracer& Tracer, Statistics& Statistics)
