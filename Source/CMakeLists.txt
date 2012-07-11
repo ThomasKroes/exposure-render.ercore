@@ -197,6 +197,8 @@ SET(Cuda
 
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
+
+
 # Create the ErCore project as a shared library (DLL)
 CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Cuda} SHARED)
 

@@ -81,9 +81,9 @@ public:
 	{
 		const float InvGamma = 1.0f / Gamma;
 
-		this->D[0] = (unsigned char)(255.0f * powf((float)this->D[0], InvGamma));
-		this->D[1] = (unsigned char)(255.0f * powf((float)this->D[1], InvGamma));
-		this->D[2] = (unsigned char)(255.0f * powf((float)this->D[2], InvGamma));
+		this->D[0] = (unsigned char)powf((float)this->D[0], InvGamma);
+		this->D[1] = (unsigned char)powf((float)this->D[1], InvGamma);
+		this->D[2] = (unsigned char)powf((float)this->D[2], InvGamma);
 	}
 
 	HOST_DEVICE bool IsBlack()
