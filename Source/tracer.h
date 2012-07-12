@@ -70,42 +70,42 @@ public:
 		this->RenderMode		= Other.RenderMode;
 		this->Camera			= Other.Camera;
 
-		this->VolumeIDs.Count = 0;
+		this->VolumeIDs.Reset();
 
-		for (int i = 0; i < Other.VolumeIDs.Count; i++)
+		for (int i = 0; i < Other.VolumeIDs.GetNoIndices(); i++)
 		{
 			if (gVolumesHashMap.find(Other.VolumeIDs[i]) != gVolumesHashMap.end())
-				this->VolumeIDs[this->VolumeIDs.Count++] = gVolumesHashMap[Other.VolumeIDs[i]];
+				this->VolumeIDs.Add(gVolumesHashMap[Other.VolumeIDs[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Volume not found!"));
 		}
 		
-		this->LightIDs.Count = 0;
+		this->LightIDs.Reset();
 
-		for (int i = 0; i < Other.LightIDs.Count; i++)
+		for (int i = 0; i < Other.LightIDs.GetNoIndices(); i++)
 		{
 			if (gObjectsHashMap.find(Other.LightIDs[i]) != gObjectsHashMap.end())
-				this->LightIDs[this->LightIDs.Count++] = gObjectsHashMap[Other.LightIDs[i]];
+				this->LightIDs.Add(gObjectsHashMap[Other.LightIDs[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Emitter object not found!"));
 		}
 		
-		this->ObjectIDs.Count = 0;
+		this->ObjectIDs.Reset();
 
-		for (int i = 0; i < Other.ObjectIDs.Count; i++)
+		for (int i = 0; i < Other.ObjectIDs.GetNoIndices(); i++)
 		{
 			if (gObjectsHashMap.find(Other.ObjectIDs[i]) != gObjectsHashMap.end())
-				this->ObjectIDs[this->ObjectIDs.Count++] = gObjectsHashMap[Other.ObjectIDs[i]];
+				this->ObjectIDs.Add(gObjectsHashMap[Other.ObjectIDs[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Object not found!"));
 		}
 
-		this->ClippingObjectIDs.Count = 0;
+		this->ClippingObjectIDs.Reset();
 
-		for (int i = 0; i < Other.ClippingObjectIDs.Count; i++)
+		for (int i = 0; i < Other.ClippingObjectIDs.GetNoIndices(); i++)
 		{
 			if (gClippingObjectsHashMap.find(Other.ClippingObjectIDs[i]) != gClippingObjectsHashMap.end())
-				this->ClippingObjectIDs[this->ClippingObjectIDs.Count++] = gClippingObjectsHashMap[Other.ClippingObjectIDs[i]];
+				this->ClippingObjectIDs.Add(gClippingObjectsHashMap[Other.ClippingObjectIDs[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Clipping object not found!"));
 		}

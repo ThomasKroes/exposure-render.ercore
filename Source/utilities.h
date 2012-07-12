@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include <cuda_runtime.h>
-
-#include "montecarlo.h"
+#include "defines.h"
+#include "enums.h"
+#include "exception.h"
 										
 namespace ExposureRender
 {
@@ -30,16 +30,63 @@ HOST_DEVICE_NI inline float Gauss2D(const float& Sigma, const float& X, const fl
 	return expf(-((X * X + Y * Y) / (2 * Sigma * Sigma)));
 }
 
-HOST_DEVICE inline float G(Vec3f P1, Vec3f N1, Vec3f P2, Vec3f N2)
-{
-	const Vec3f W = Normalize(P2 - P1);
-	return (ClampedDot(W, N1) * ClampedDot(-1.0f * W, N2)) / LengthSquared(P1, P2);
-}
-
+/*! Compute cumulative moving average
+	* \param A Running average
+	* \param Ax New sample
+	* \param N Number of samples
+	* \return Cumulative moving average
+*/
 template<class T>
 HOST_DEVICE inline T CumulativeMovingAverage(const T& A, const T& Ax, const int& N)
 {
 	return A + (Ax - A) / max((float)N, 1.0f);
+}
+
+/*! Swap two values
+	* \param A Value A
+	* \param B Value B
+*/
+template<class T>
+HOST_DEVICE inline void Swap(T& A, T& B)
+{
+	const T Temp = A;
+
+	A = B;
+	B = Temp;
+}
+
+/*! Compute minimum of two values
+	* \param A Value A
+	* \param B Value B
+	* \return Minimum of \a A and \a B
+*/
+template <class T>
+HOST_DEVICE inline T Min(const T& A, const T& B)
+{
+	return A < B ? A : B;
+}
+
+/*! Compute maximum of two values
+	* \param A Value A
+	* \param B Value B
+	* \return Maximum of \a A and \a B
+*/
+template <class T>
+HOST_DEVICE inline T Max(const T& A, const T& B)
+{
+	return A > B ? A : B;
+}
+
+/*! Clamp \a Value between \a Min and \a Max
+	* \param Value Value to clamp
+	* \param Min Minimum value
+	* \param Max Maximum value
+	* \return Clamped \a Value
+*/
+template <class T>
+HOST_DEVICE inline T Clamp(const T& Value, const T& Min, const T& Max)
+{
+	return ExposureRender::Max(Min, ExposureRender::Min(Value, Max));
 }
 
 HOST_DEVICE inline float GetNearestGreaterPowerOfTwo(const float& x)
@@ -54,5 +101,7 @@ HOST_DEVICE inline bool IsPowerOfTwo(const float f) {
 	unsigned __int32  m =  i & 0x7fffff;
 	return !m && e >= 127;
 }
+
+
 
 }

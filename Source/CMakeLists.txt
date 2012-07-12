@@ -87,6 +87,7 @@ SET(General
 	alignment.h
 	transform.h
 	octree.h
+	transport.h
 	volumeproperty.h
 )
 

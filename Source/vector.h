@@ -24,9 +24,4 @@
 namespace ExposureRender
 {
 
-static inline HOST_DEVICE Vec2f operator / (const float& f, const Vec2i& v)					{ return Vec2f(f / (float)v[0], f / (float)v[1]);							};
-
-static inline HOST_DEVICE Vec3f operator / (const float& f, const Vec3i& v)					{ return Vec3f(f / (float)v[0], f / (float)v[1], f / (float)v[2]);			};
-static inline HOST_DEVICE Vec3f operator / (const float& f, const Vec3f& v)					{ return Vec3f(f / v[0], f / v[1], f / v[2]);								};
-
 }

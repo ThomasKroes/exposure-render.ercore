@@ -68,8 +68,8 @@ public:
 };
 
 /*! Multiply Vec3i with float
-	* \param V Vector
-	* \param F Float to multiply with
+	@param[in] V Input vector
+	@param[in] F Input float
 	* \return V x F
 */
 static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
@@ -78,8 +78,8 @@ static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
 };
 
 /*! Multiply float with Vec3i
-	* \param V Vector
-	* \param F Float to multiply with
+	@param[in] V Input vector
+	@param[in] F Input float
 	* \return F x V
 */
 static inline HOST_DEVICE Vec3i operator * (const float& F, const Vec3i& V)
@@ -88,8 +88,8 @@ static inline HOST_DEVICE Vec3i operator * (const float& F, const Vec3i& V)
 };
 
 /*! Multiply two Vec3i vectors
-	* \param A Vector A
-	* \param B Vector B
+	@param[in] A Input vector A
+	@param[in] B Input vector B
 	* \return A x B
 */
 static inline HOST_DEVICE Vec3i operator * (const Vec3i& A, const Vec3i& B)
@@ -98,8 +98,8 @@ static inline HOST_DEVICE Vec3i operator * (const Vec3i& A, const Vec3i& B)
 };
 
 /*! Subtract two Vec3i vectors
-	* \param A Vector A
-	* \param B Vector B
+	@param[in] A Input vector A
+	@param[in] B Input vector B
 	* \return A - B
 */
 static inline HOST_DEVICE Vec3i operator - (const Vec3i& A, const Vec3i& B)
@@ -108,8 +108,8 @@ static inline HOST_DEVICE Vec3i operator - (const Vec3i& A, const Vec3i& B)
 };
 
 /*! Add two Vec3i vectors
-	* \param A Vector A
-	* \param B Vector B
+	@param[in] A Input vector A
+	@param[in] B Input vector B
 	* \return A + B
 */
 static inline HOST_DEVICE Vec3i operator + (const Vec3i& A, const Vec3i& B)
@@ -118,9 +118,9 @@ static inline HOST_DEVICE Vec3i operator + (const Vec3i& A, const Vec3i& B)
 };
 
 /*! Linearly interpolate two Vec3i vectors
-	* \param LerpC Interpolation coefficient
-	* \param A Vector A
-	* \param B Vector B
+	@param[in] LerpC Interpolation coefficient
+	@param[in] A Input vector A
+	@param[in] B Input vector B
 	* \return Interpolated vector
 */
 HOST_DEVICE inline Vec3i Lerp(const float& LerpC, const Vec3i& A, const Vec3i& B)

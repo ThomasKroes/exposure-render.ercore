@@ -118,24 +118,21 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	
 	const int NoVolumes = this->GetNumberOfInputConnections(VolumesPort);
 
-	this->Tracer.VolumeIDs.Count = 0;
+	this->Tracer.VolumeIDs.Reset();
 
 	for (int i = 0; i < NoVolumes; i++)
 	{
 		vtkErVolumeData* VolumeData = vtkErVolumeData::SafeDownCast(this->GetInputDataObject(VolumesPort, i));
 
 		if (VolumeData)
-		{
-			this->Tracer.VolumeIDs[this->Tracer.VolumeIDs.Count] = VolumeData->Bindable.ID;
-			this->Tracer.VolumeIDs.Count++;
-		}
+			this->Tracer.VolumeIDs.Add(VolumeData->Bindable.ID);
 	}
 
 	const int NoObjects = this->GetNumberOfInputConnections(ObjectsPort);
 
-	this->Tracer.ObjectIDs.Count			= 0;
-	this->Tracer.LightIDs.Count				= 0;
-	this->Tracer.ClippingObjectIDs.Count	= 0;
+	this->Tracer.ObjectIDs.Reset();
+	this->Tracer.LightIDs.Reset();
+	this->Tracer.ClippingObjectIDs.Reset();
 
 	for (int i = 0; i < NoObjects; i++)
 	{
@@ -143,20 +140,13 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 		if (ObjectData && ObjectData->Bindable.Enabled)
 		{
-			this->Tracer.ObjectIDs[this->Tracer.ObjectIDs.Count] = ObjectData->Bindable.ID;
-			this->Tracer.ObjectIDs.Count++;
+			this->Tracer.ObjectIDs.Add(ObjectData->Bindable.ID);
 
 			if (ObjectData->Bindable.Emitter)
-			{
-				this->Tracer.LightIDs[this->Tracer.LightIDs.Count] = ObjectData->Bindable.ID;
-				this->Tracer.LightIDs.Count++;
-			}
+				this->Tracer.LightIDs.Add(ObjectData->Bindable.ID);
 
 			if (ObjectData->Bindable.Clip)
-			{
-				this->Tracer.ClippingObjectIDs[this->Tracer.ClippingObjectIDs.Count] = ObjectData->Bindable.ID;
-				this->Tracer.ClippingObjectIDs.Count++;
-			}
+				this->Tracer.ClippingObjectIDs.Add(ObjectData->Bindable.ID);
 
 			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.Alignment.OffsetTM);
 			ObjectData->Bind();

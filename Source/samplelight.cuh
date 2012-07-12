@@ -39,7 +39,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
 
 	// Choose light to sample
-	Sample.LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.Count)];
+	Sample.LightID = gpTracer->LightIDs[(int)floorf(RNG.Get1() * gpTracer->LightIDs.GetNoIndices())];
 
 	if (Sample.LightID < 0)
 		return;
@@ -95,7 +95,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 		else
 			Ld = F * ((Li * Weight) / LightPdf);
 
-		Ld *= (float)gpTracer->LightIDs.Count;
+		Ld *= (float)gpTracer->LightIDs.GetNoIndices();
 
 		FrameEstimate[0] += Ld[0];
 		FrameEstimate[1] += Ld[1];

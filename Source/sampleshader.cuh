@@ -86,7 +86,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 					else
 						Ld = F * ((Li * Weight) / ShaderPdf);
 
-					Ld *= (float)gpTracer->LightIDs.Count;
+					Ld *= (float)gpTracer->LightIDs.GetNoIndices();
 					
 					R.O		= Int.P;
 					R.D		= Normalize(Sample.Intersection.P - R.O);
