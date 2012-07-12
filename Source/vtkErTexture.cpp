@@ -122,7 +122,7 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	{
 		double NodeValue[6];
 		this->Gradient->GetNodeValue(i, NodeValue);
-		Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]).D));
+		Procedural.Gradient.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
 	TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
