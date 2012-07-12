@@ -25,7 +25,7 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& Scatter
 
 	Intersection LocalInt;
 
-	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
+	for (int i = 0; i < gpTracer->ObjectIDs.GetNoIndices(); i++)
 	{
 		const Object& Object = gpObjects[i];
 		
@@ -43,7 +43,7 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& Scatter
 
 DEVICE bool IntersectsObjects(Ray R)
 {
-	for (int i = 0; i < gpTracer->ObjectIDs.Count; i++)
+	for (int i = 0; i < gpTracer->ObjectIDs.GetNoIndices(); i++)
 	{
 		if (gpObjects[i].Shape.Intersects(R))
 			return true;

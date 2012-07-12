@@ -85,49 +85,6 @@ HOST_DEVICE inline T Lerp(const float& X, const T& A, const T& B)
 	return (1.0f - X) * A + X * B;
 }
 
-HOST_DEVICE inline void swap(int& a, int& b)
-{
-	int t = a; a = b; b = t;
-}
-
-HOST_DEVICE inline void swap(float& a, float& b)
-{
-	float t = a; a = b; b = t;
-}
-
-HOST_DEVICE inline void Swap(float* pF1, float* pF2)
-{
-	const float TempFloat = *pF1;
-
-	*pF1 = *pF2;
-	*pF2 = TempFloat;
-}
-
-HOST_DEVICE inline void Swap(float& F1, float& F2)
-{
-	const float TempFloat = F1;
-
-	F1 = F2;
-	F2 = TempFloat;
-}
-
-HOST_DEVICE inline void Swap(int* pI1, int* pI2)
-{
-	const int TempInt = *pI1;
-
-	*pI1 = *pI2;
-	*pI2 = TempInt;
-}
-
-HOST_DEVICE inline void Swap(int& I1, int& I2)
-{
-	const int TempInt = I1;
-
-	I1 = I2;
-	I2 = TempInt;
-
-}
-
 inline float RandomFloat(void)
 {
 	return (float)rand() / RAND_MAX;

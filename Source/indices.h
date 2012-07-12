@@ -18,29 +18,73 @@
 namespace ExposureRender
 {
 
+/*! \class Indices
+ * \brief Vector of shorts 
+ */
 template<int Size = 64>
-class EXPOSURE_RENDER_DLL Indices : public Vec<int, Size>
+class EXPOSURE_RENDER_DLL Indices : public Vec<short, Size>
 {
 public:
-	HOST_DEVICE Indices()
+	/*! Default constructor */
+	HOST_DEVICE Indices() :
+		NoIndices(0)
 	{
-		for (int i = 0; i < Size; i++)
-			this->D[i] = -1;
-
-		this->Count = 0;
+		this->Reset();
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Indices to copy from
+		* \return Copied indices by reference
+	*/
 	HOST_DEVICE Indices& operator = (const Indices& Other)
 	{
-		for (int i = 0; i < Size; i++)
+		for (int i = 0; i < Size; ++i)
 			this->D[i] = Other.D[i];
 
-		this->Count = Other.Count;
+		this->NoIndices = Other.NoIndices;
 
 		return *this;
 	}
+	
+	/*! Obtain number of indices set
+		* \return Number of used indices
+	*/
+	HOST_DEVICE int GetNoIndices() const
+	{
+		return this->NoIndices;
+	}
 
-	int Count;
+	/*! Set number of indices
+		@param[in] Number of indices
+	*/
+	HOST_DEVICE void SetNoIndices(const int& NoIndices)
+	{
+		this->NoIndices = NoIndices;
+	}
+
+	/*! Resets the indices */
+	HOST_DEVICE void Reset()
+	{
+		for (int i = 0; i < Size; ++i)
+			this->D[i] = -1;
+
+		this->NoIndices = 0;
+	}
+
+	/*! Adds an index
+		@param[in] Number of indices
+	*/
+	HOST_DEVICE void Add(const int& Index)
+	{
+		if (this->GetNoIndices() >= Size)
+			return;
+
+		this->D[this->NoIndices] = Index;
+		this->NoIndices++;
+	}
+
+protected:
+	int		NoIndices;	/*! Number of indices */
 };
 
 }

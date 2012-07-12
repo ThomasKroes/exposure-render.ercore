@@ -13,65 +13,15 @@
 
 #pragma once
 
-#include "color.h"
-
+#include "vector.h"
+										
 namespace ExposureRender
 {
 
-class Fresnel
+HOST_DEVICE inline float G(const Vec3f& P1, const Vec3f& N1, const Vec3f& P2, const Vec3f& N2)
 {
-public:
-	HOST_DEVICE Fresnel(void)
-	{
-	}
-
-	HOST_DEVICE Fresnel(const float& EtaI, const float& EtaT) :
-		EtaI(EtaI),
-		EtaT(EtaT)
-	{
-	}
-
-	HOST_DEVICE ColorXYZf Evaluate(float CosI)
-	{
-		CosI = Clamp(CosI, -1.0f, 1.0f);
-
-		const bool Entering = CosI > 0.0f;
-
-		float EtaI = this->EtaI, EtaT = this->EtaT;
-
-		if (!Entering)
-			Swap(EtaI, EtaT);
-
-		const float SinT = EtaI / EtaT * sqrtf(max(0.0f, 1.0f - CosI * CosI));
-
-		if (SinT >= 1.0f)
-		{
-			return 1.0f;
-		}
-		else
-		{
-			const float CosT = sqrtf(max(0.0f, 1.0f - SinT * SinT));
-			return FresnelDielectric(fabsf(CosI), CosT, EtaI, EtaT);
-		}
-	}
-
-	HOST_DEVICE ColorXYZf FresnelDielectric(const float& CosI, const float& CosT, const float& EtaI, const float& EtaT)
-	{
-		const ColorXYZf Rparl = ((EtaT * CosI) - (EtaI * CosT)) / ((EtaT * CosI) + (EtaI * CosT));
-		const ColorXYZf Rperp = ((EtaI * CosI) - (EtaT * CosT)) / ((EtaI * CosI) + (EtaT * CosT));
-		return 0.5f * (Rparl * Rparl + Rperp * Rperp);
-	}
-
-	HOST_DEVICE Fresnel& operator = (const Fresnel& Other)
-	{
-		this->EtaI = Other.EtaI;
-		this->EtaT = Other.EtaT;
-
-		return *this;
-	}
-
-	float	EtaI;
-	float	EtaT;
-};
+	const Vec3f W = Normalize(P2 - P1);
+	return (ClampedDot(W, N1) * ClampedDot(-1.0f * W, N2)) / LengthSquared(P1, P2);
+}
 
 }

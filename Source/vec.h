@@ -13,31 +13,10 @@
 
 #pragma once
 
-#include "defines.h"
-#include "enums.h"
+#include "utilities.h"
 
 namespace ExposureRender
 {
-
-template <class T>
-HOST_DEVICE inline T Min(const T& A, const T& B)
-{
-    return A < B ? A : B;
-}
-
-template <class T>
-HOST_DEVICE inline T Max(const T& A, const T& B)
-{
-    return A > B ? A : B;
-}
-
-template <class T>
-HOST_DEVICE inline T Clamp(const T& Value, const T& Min, const T& Max)
-{
-	return ExposureRender::Max(Min, ExposureRender::Min(Value, Max));
-}
-
-//static inline HOST_DEVICE float Lerp(const float& A, const float& B, const float& LerpC)	{ return A + LerpC * (B - A);												};
 
 /*! \class Vec
  * \brief Base vector template class
@@ -61,7 +40,7 @@ public:
 	}
 	
 	/*! Construct and initialize with default value
-		* \param Default The default value
+		@param[in] Default Default value
 	*/
 	HOST_DEVICE Vec(const T& V)
 	{
@@ -70,7 +49,7 @@ public:
 	}
 	
 	/*! Construct and initialize with array
-		* \param V The array
+		@param[in] V Data array
 	*/
 	HOST_DEVICE Vec(const T V[Size])
 	{
@@ -79,7 +58,7 @@ public:
 	}
 	
 	/*! Subscript operator
-		* \param i Element from array
+		@param[in] i Element from array
 		* \return Return element by value
 	*/
 	HOST_DEVICE T operator[](const int& i) const
@@ -88,7 +67,7 @@ public:
 	}
 
 	/*! Subscript operator
-		* \param i Element from array
+		@param[in] i Array element index
 		* \return Return element by reference
 	*/
 	HOST_DEVICE T& operator[](const int& i)
@@ -97,7 +76,7 @@ public:
 	}
 
 	/*! Assignment operator
-		* \param Vec<T, Size> \a Vec<T, Size> to copy from
+		@param[in] Other Vector to copy from
 		* \return Copied vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator = (const Vec<T, Size>& Other)
@@ -109,7 +88,7 @@ public:
 	}
 	
 	/*! Add operator
-		* \param Vec<T, Size> \a Vec<T, Size> to add
+		@param[in] V Vector to add
 		* \return Added vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator + (const Vec<T, Size>& V) const
@@ -123,7 +102,7 @@ public:
 	}
 	
 	/*! Add + assignment operator
-		* \param Vec<T, Size> \a Vec<T, Size> to add
+		@param[in] V Vector to add
 		* \return Added vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator += (const Vec<T, Size>& V)
@@ -135,7 +114,7 @@ public:
 	}
 		
 	/*! Subtract operator
-		* \param Vec<T, Size> \a Vec<T, Size> to subtract
+		@param[in] V Vector to subtract
 		* \return Subtracted vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator - (const Vec<T, Size>& V) const
@@ -149,7 +128,7 @@ public:
 	}
 
 	/*! Subtract + assignment operator
-		* \param Vec<T, Size> \a Vec<T, Size> to subtract
+		@param[in] V Vector to subtract
 		* \return Subtracted vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator -= (const Vec<T, Size>& V)
@@ -161,7 +140,7 @@ public:
 	}
 
 	/*! Multiply operator
-		* \param Vec<T, Size> \a Vec<T, Size> to multiply with
+		@param[in] V Vector to multiply by
 		* \return Multiplied vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator * (const Vec<T, Size>& V) const
@@ -175,7 +154,7 @@ public:
 	}
 
 	/*! Multiply + assignment operator
-		* \param Vec<T, Size> \a Vec<T, Size> to multiply with
+		@param[in] V Vector to multiply by
 		* \return Multiplied vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator *= (const Vec<T, Size>& V)
@@ -187,7 +166,7 @@ public:
 	}
 
 	/*! Divide operator
-		* \param Vec<T, Size> \a Vec<T, Size> to divide by
+		@param[in] V Vector to divide by
 		* \return Divided vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator / (const Vec<T, Size>& V) const
@@ -201,7 +180,7 @@ public:
 	}
 
 	/*! Divide + assignment operator
-		* \param Vec<T, Size> \a Vec<T, Size> to divide by
+		@param[in] V Vector to divide by
 		* \return Divided vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator /= (const Vec<T, Size>& V)
@@ -226,7 +205,7 @@ public:
 	}
 
 	/*! Less than operator
-		* \param Vec<T, Size> \a Vec<T, Size> to check against
+		@param[in] V Vector to check against
 	*/
 	HOST_DEVICE bool operator < (const Vec<T, Size>& V) const
 	{
@@ -240,7 +219,7 @@ public:
 	}
 	
 	/*! Less than or equal operator
-		* \param Vec<T, Size> \a Vec<T, Size> to check against
+		@param[in] V Vector to check against
 	*/
 	HOST_DEVICE bool operator <= (const Vec<T, Size>& V) const
 	{
@@ -254,7 +233,7 @@ public:
 	}
 	
 	/*! Larger than operator
-		* \param Vec<T, Size> \a Vec<T, Size> to check against
+		@param[in] V Vector to check against
 	*/
 	HOST_DEVICE bool operator > (const Vec<T, Size>& V) const
 	{
@@ -268,7 +247,7 @@ public:
 	}
 
 	/*! Larger than or equal to operator
-		* \param Vec<T, Size> \a Vec<T, Size> to check against
+		@param[in] V Vector to check against
 	*/
 	HOST_DEVICE bool operator >= (const Vec<T, Size>& V) const
 	{
@@ -282,7 +261,7 @@ public:
 	}
 
 	/*! Equality operator
-		* \param Vec<T, Size> \a Vec<T, Size> to check against
+		@param[in] V Vector to check against
 	*/
 	HOST_DEVICE bool operator == (const Vec<T, Size>& V) const
 	{
@@ -296,7 +275,7 @@ public:
 	}
 
 	/*! Inequality operator
-		* \param Vec<T, Size> \a Vec<T, Size> to check against
+		@param[in] V Vector to check against
 	*/
 	HOST_DEVICE bool operator != (const Vec<T, Size>& V) const
 	{

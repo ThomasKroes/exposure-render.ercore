@@ -67,8 +67,8 @@ public:
 };
 
 /*! Multiply Vec2i with float
-	* \param V Vector
-	* \param F Float to multiply with
+	@param[in] V Input vector
+	@param[in] F Input float
 	* \return V x F
 */
 static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
@@ -77,8 +77,8 @@ static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
 };
 
 /*! Multiply float with Vec2i
-	* \param V Vector
-	* \param F Float to multiply with
+	@param[in] F Input float 
+	@param[in] V Input vector
 	* \return F x V
 */
 static inline HOST_DEVICE Vec2i operator * (const float& F, const Vec2i& V)
@@ -87,8 +87,8 @@ static inline HOST_DEVICE Vec2i operator * (const float& F, const Vec2i& V)
 };
 
 /*! Multiply two Vec2i vectors
-	* \param A Vector A
-	* \param B Vector B
+	@param[in] A Input vector A
+	@param[in] B Input vector B
 	* \return A x B
 */
 static inline HOST_DEVICE Vec2i operator * (const Vec2i& A, const Vec2i& B)
@@ -96,10 +96,53 @@ static inline HOST_DEVICE Vec2i operator * (const Vec2i& A, const Vec2i& B)
 	return Vec2i(A[0] * B[0], A[1] * B[1]);
 };
 
+/*! Subtract two Vec2i vectors
+	@param[in] A Input vector A
+	@param[in] B Input vector B
+	* \return A - B
+*/
+static inline HOST_DEVICE Vec2i operator - (const Vec2i& A, const Vec2i& B)
+{
+	return Vec2i(A[0] - B[0], A[1] - B[1]);
+};
+
+/*! Add two Vec2i vectors
+	@param[in] A Input vector A
+	@param[in] B Input vector B
+	* \return A + B
+*/
+static inline HOST_DEVICE Vec2i operator + (const Vec2i& A, const Vec2i& B)
+{
+	return Vec2i(A[0] + B[0], A[1] + B[1]);
+};
+
+/*! Divide Vec2i by float value
+	@param[in] V Input vector
+	@param[in] F Input float
+	* \return V / F
+*/
+static inline HOST_DEVICE Vec2i operator / (const Vec2i& V, const float& F)
+{
+	// Compute F reciprocal, slightly faster
+	const float InvF = (F == 0.0f) ? 0.0f : 1.0f / F;
+
+	return Vec2i((int)((float)V[0] * InvF), (int)((float)V[1] * InvF));
+};
+
+/*! Divide float by Vec2i
+	@param[in] F Input float
+	@param[in] V Input vector
+	* \return F / V
+*/
+static inline HOST_DEVICE Vec2i operator / (const float& F, const Vec2i& V)
+{
+	return Vec2i((int)(F / (float)V[0]), (int)(F / (float)V[1]));
+};
+
 /*! Linearly interpolate two Vec2i vectors
-	* \param LerpC Interpolation coefficient
-	* \param A Vector A
-	* \param B Vector B
+	@param[in] LerpC Interpolation coefficient
+	@param[in] A Input vector A
+	@param[in] B Input vector B
 	* \return Interpolated vector
 */
 HOST_DEVICE inline Vec2i Lerp(const float& LerpC, const Vec2i& A, const Vec2i& B)
