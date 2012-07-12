@@ -38,6 +38,13 @@ public:
 		this->D[1] = V2;
 		this->D[2] = V3;
 	}
+	
+	/*! Copy constructor */
+	HOST_DEVICE Vec3i(const Vec3i& Other)
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = Other[i];
+	}
 
 	/*! Copy constructor */
 	HOST_DEVICE Vec3i(const Vec<int, 3>& Other)
@@ -67,7 +74,7 @@ public:
 */
 static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
 {
-	return Vec3i(V[0] * F, V[1] * F, V[2] * F);
+	return Vec3i((int)((float)V[0] * F), (int)((float)V[1] * F), (int)((float)V[2] * F));
 };
 
 /*! Multiply float with Vec3i
@@ -77,7 +84,7 @@ static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
 */
 static inline HOST_DEVICE Vec3i operator * (const float& F, const Vec3i& V)
 {
-	return Vec3i(V[0] * F, V[1] * F, V[2] * F);
+	return Vec3i((int)((float)V[0] * F), (int)((float)V[1] * F), (int)((float)V[2] * F));
 };
 
 /*! Multiply two Vec3i vectors

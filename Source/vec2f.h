@@ -37,6 +37,13 @@ public:
 		this->D[0] = V1;
 		this->D[1] = V2;
 	}
+	
+	/*! Copy constructor */
+	HOST_DEVICE Vec2f(const Vec2f& Other)
+	{
+		for (int i = 0; i < 2; ++i)
+			this->D[i] = Other[i];
+	}
 
 	/*! Copy constructor */
 	HOST_DEVICE Vec2f(const Vec<float, 2>& Other)

@@ -39,6 +39,13 @@ public:
 		this->D[2] = V3;
 		this->D[3] = V4;
 	}
+	
+	/*! Copy constructor */
+	HOST_DEVICE Vec4f(const Vec4f& Other)
+	{
+		for (int i = 0; i < 4; ++i)
+			this->D[i] = Other[i];
+	}
 
 	/*! Copy constructor */
 	HOST_DEVICE Vec4f(const Vec<float, 4>& Other)

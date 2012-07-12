@@ -40,6 +40,13 @@ public:
 	}
 	
 	/*! Copy constructor */
+	HOST_DEVICE Vec3f(const Vec3f& Other)
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = Other[i];
+	}
+
+	/*! Copy constructor */
 	HOST_DEVICE Vec3f(const Vec<float, 3>& Other)
 	{
 		for (int i = 0; i < 3; ++i)
@@ -186,7 +193,7 @@ static inline HOST_DEVICE Vec3f operator + (const Vec3f& A, const Vec3f& B)
 */
 static inline HOST_DEVICE float LengthSquared(const Vec3f& A, const Vec3f& B)
 {
-	return Vec3f(A - B).LengthSquared();
+	return (A - B).LengthSquared();
 };
 
 /*! Length
@@ -195,7 +202,7 @@ static inline HOST_DEVICE float LengthSquared(const Vec3f& A, const Vec3f& B)
 */
 static inline HOST_DEVICE float Length(const Vec3f& A, const Vec3f& B)
 {
-	return Vec3f(A - B).Length();
+	return (A - B).Length();
 };
 
 /*! Normalize

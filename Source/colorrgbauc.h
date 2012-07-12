@@ -226,7 +226,7 @@ static inline HOST_DEVICE ColorRGBAuc operator / (const ColorRGBAuc& C, const fl
 	// Compute F reciprocal, slightly faster
 	const float InvF = (F == 0.0f) ? 0.0f : 1.0f / F;
 
-	return ColorRGBAuc((float)C[0] * InvF, (float)C[1] * InvF, (float)C[2] * InvF, (float)C[3] * InvF);
+	return ColorRGBAuc((unsigned char)((float)C[0] * InvF), (unsigned char)((float)C[1] * InvF), (unsigned char)((float)C[2] * InvF), (unsigned char)((float)C[3] * InvF));
 };
 
 /*! Subtract two ColorRGBAuc vectors

@@ -37,6 +37,13 @@ public:
 		this->D[0] = V1;
 		this->D[1] = V2;
 	}
+	
+	/*! Copy constructor */
+	HOST_DEVICE Vec2i(const Vec2i& Other)
+	{
+		for (int i = 0; i < 2; ++i)
+			this->D[i] = Other[i];
+	}
 
 	/*! Copy constructor */
 	HOST_DEVICE Vec2i(const Vec<int, 2>& Other)
@@ -66,7 +73,7 @@ public:
 */
 static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
 {
-	return Vec2i(V[0] * F, V[1] * F);
+	return Vec2i((int)((float)V[0] * F), (int)((float)V[1] * F));
 };
 
 /*! Multiply float with Vec2i
@@ -76,7 +83,7 @@ static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
 */
 static inline HOST_DEVICE Vec2i operator * (const float& F, const Vec2i& V)
 {
-	return Vec2i(V[0] * F, V[1] * F);
+	return Vec2i((int)((float)V[0] * F), (int)((float)V[1] * F));
 };
 
 /*! Multiply two Vec2i vectors
