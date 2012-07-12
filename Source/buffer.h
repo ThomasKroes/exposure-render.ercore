@@ -20,6 +20,9 @@
 namespace ExposureRender
 {
 
+/*! \class Buffer
+ * \brief Base buffer class
+ */
 template<class T>
 class EXPOSURE_RENDER_DLL Buffer
 {
@@ -46,6 +49,41 @@ public:
 
 		return *this;
 	}
+
+	HOST void Free(void)
+	{
+		char MemoryString[MAX_CHAR_SIZE];
+
+		this->GetMemoryString(MemoryString, Enums::MegaByte);
+
+		if (this->Data)
+		{
+			if (this->MemoryType == Enums::Host)
+			{
+				free(this->Data);
+				this->Data = NULL;
+			}
+
+#ifdef __CUDACC__
+			if (this->MemoryType == Enums::Device)
+			{
+				Cuda::Free(this->Data);
+			}
+#endif
+		}
+
+		this->Resolution	= 0;
+		this->NoElements	= 0;
+
+		this->TimeStamp.Modified();
+	}
+
+
+
+
+
+
+
 
 	HOST const char* GetName() const
 	{

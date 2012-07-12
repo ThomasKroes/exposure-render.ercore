@@ -59,11 +59,9 @@ public:
 		this->DVR.Resize(this->Resolution);
 		this->RandomSeeds1.Resize(this->Resolution);
 		this->RandomSeeds2.Resize(this->Resolution);
-		
+		this->HostDisplayEstimate.Resize(this->Resolution);
 		this->IDs.Resize(this->Resolution);
 		this->Samples.Resize(this->Resolution);
-
-		this->HostDisplayEstimate.Resize(this->Resolution);
 
 		this->RandomSeedsCopy1 = this->RandomSeeds1;
 		this->RandomSeedsCopy2 = this->RandomSeeds2;
@@ -82,7 +80,6 @@ public:
 	RandomSeedBuffer2D		RandomSeedsCopy1;
 	RandomSeedBuffer2D		RandomSeedsCopy2;
 	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
-
 	Buffer2D<int>			IDs;
 	Buffer2D<Sample>		Samples;
 };

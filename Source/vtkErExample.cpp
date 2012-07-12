@@ -123,11 +123,11 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 {
 	vtkSmartPointer<vtkErVolumeProperty> VolumeProperty = vtkSmartPointer<vtkErVolumeProperty>::New();
 	
-	const float StepSize = 3.0f;
+	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
 	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(5*StepSize);
+	VolumeProperty->SetStepFactorShadow(StepSize);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(1000);
 	VolumeProperty->SetGradientFactor(1.0f);
@@ -264,7 +264,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLightTexture->SetTextureType(Enums::Procedural);
 	KeyLightTexture->SetProceduralType(Enums::Uniform);
-	KeyLightTexture->SetUniformColor(2500);
+	KeyLightTexture->SetUniformColor(5000);
 	
 	KeyLight->SetInputConnection(vtkErObject::EmissionTexturePort, KeyLightTexture->GetOutputPort());
 #endif
