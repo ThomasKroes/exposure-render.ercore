@@ -359,6 +359,19 @@ public:
 		for (int i = 0; i < Size; ++i)
 			this->D[i] = max(Min[i], min(this->D[i], Max[i]));
 	}
+
+	/*! Cumulative product 
+		* \return Cumulative product 
+	*/
+	HOST_DEVICE void CumulativeProduct() const
+	{
+		T Result = this->D[0];
+
+		for (int i = 1; i < Size; ++i)
+			Result *= this->D[i];
+
+		return Result;
+	}
 	
 	/*! Get pointer to data array */
 	HOST_DEVICE T* GetData()
