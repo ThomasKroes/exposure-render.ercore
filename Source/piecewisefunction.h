@@ -57,8 +57,8 @@ public:
 	}
 
 	Vec2f				NodeRange;
-	Vec<int, 256>		Position;
-	Vec<int, 256>		Value;
+	Vec<float, 256>		Position;
+	Vec<float, 256>		Value;
 	int					Count;
 };
 
