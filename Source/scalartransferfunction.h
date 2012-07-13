@@ -19,6 +19,7 @@
 #include "piecewiselinearfunction.h"
 #include "color.h"
 #include "timestamp.h"
+#include "cudatexture1D.h"
 
 namespace ExposureRender
 {
@@ -59,7 +60,9 @@ class EXPOSURE_RENDER_DLL ScalarTransferFunction1D : public TimeStamp
 {
 public:
 	HOST ScalarTransferFunction1D() :
-		TimeStamp()
+		TimeStamp(),
+		PLF(),
+		Texture()
 	{
 	}
 
@@ -69,8 +72,19 @@ public:
 	}
 
 	HOST ScalarTransferFunction1D& operator = (const ScalarTransferFunction1D& Other)
-	{	
-		this->PLF	= Other.PLF;
+	{
+		if (*this != Other)
+		{
+			Buffer1D<float> Samples("Samples", Enums::Device);
+
+			this->Discretize(512, Samples.GetData());
+
+			printf("Rebuilding scalar transfer function\n");
+		}
+
+		TimeStamp::operator = (Other);
+
+		this->PLF = Other.PLF;
 
 		return *this;
 	}
@@ -90,7 +104,22 @@ public:
 		return this->PLF.Evaluate(Intensity);
 	}
 
+	HOST void Discretize(const int& NoSamples, float* Samples)
+	{
+		if (NoSamples <= 0)
+			throw (Exception(Enums::Error, "Can't discretize scalar transfer function with zero samples!"));
+		
+		Samples = new float[NoSamples];
+
+		for (int i = 0; i < NoSamples; ++i)
+		{
+		}
+
+		delete[] Samples;
+	}
+
 	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF;
+	CudaTexture1D<float>						Texture;
 };
 
 }
