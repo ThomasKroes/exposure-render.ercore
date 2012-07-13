@@ -107,6 +107,8 @@ public:
 			case 0: return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
 			case 1: return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
 		}
+
+		return 0;
 	}
 
 	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)

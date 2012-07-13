@@ -103,7 +103,7 @@ public:
 /*! Multiply ColorRGBf with float
 	* \param C Color
 	* \param F Float to multiply with
-	* \return C x F
+	@result C x F
 */
 static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& C, const float& F)
 {
@@ -113,7 +113,7 @@ static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& C, const float&
 /*! Multiply float with ColorRGBf
 	* \param C ColorRGBf
 	* \param F Float to multiply with
-	* \return F x C
+	@result F x C
 */
 static inline HOST_DEVICE ColorRGBf operator * (const float& F, const ColorRGBf& C)
 {
@@ -123,7 +123,7 @@ static inline HOST_DEVICE ColorRGBf operator * (const float& F, const ColorRGBf&
 /*! Multiply two ColorRGBf vectors
 	* \param A Vector A
 	* \param B Vector B
-	* \return A x B
+	@result A x B
 */
 static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& A, const ColorRGBf& B)
 {
@@ -133,7 +133,7 @@ static inline HOST_DEVICE ColorRGBf operator * (const ColorRGBf& A, const ColorR
 /*! Divide ColorRGBf vector by float value
 	* \param C ColorRGBf to divide
 	* \param F Float to divide with
-	* \return F / V
+	@result F / V
 */
 static inline HOST_DEVICE ColorRGBf operator / (const ColorRGBf& C, const float& F)
 {
@@ -146,7 +146,7 @@ static inline HOST_DEVICE ColorRGBf operator / (const ColorRGBf& C, const float&
 /*! Subtract two ColorRGBf vectors
 	* \param A Vector A
 	* \param B Vector B
-	* \return A - B
+	@result A - B
 */
 static inline HOST_DEVICE ColorRGBf operator - (const ColorRGBf& A, const ColorRGBf& B)
 {
@@ -156,7 +156,7 @@ static inline HOST_DEVICE ColorRGBf operator - (const ColorRGBf& A, const ColorR
 /*! Add two ColorRGBf vectors
 	* \param A Vector A
 	* \param B Vector B
-	* \return A + B
+	@result A + B
 */
 static inline HOST_DEVICE ColorRGBf operator + (const ColorRGBf& A, const ColorRGBf& B)
 {
@@ -167,7 +167,7 @@ static inline HOST_DEVICE ColorRGBf operator + (const ColorRGBf& A, const ColorR
 	* \param LerpC Interpolation coefficient
 	* \param A Vector A
 	* \param B Vector B
-	* \return Interpolated vector
+	@result Interpolated vector
 */
 HOST_DEVICE inline ColorRGBf Lerp(const float& LerpC, const ColorRGBf& A, const ColorRGBf& B)
 {

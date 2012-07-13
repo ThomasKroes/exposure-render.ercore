@@ -104,6 +104,7 @@ SET(Buffer
 	randomseedbuffer3d.h
 	randomseedbuffers.h
 	buffers.h
+	cudatexture.h
 	cudatexture1d.h
 	cudatexture2d.h
 	cudatexture3d.h

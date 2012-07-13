@@ -16,42 +16,37 @@
 
 #pragma once
 
-#include "buffer1d.h"
+#include "cudatexture.h"
 
 namespace ExposureRender
 {
 
 template<class T>
-class EXPOSURE_RENDER_DLL CudaTexture1D
+class EXPOSURE_RENDER_DLL CudaTexture1D : public CudaTexture<T, 1>
 {
 public:
+	/*! Constructor
+		@param[in] Normalized Normalized element access
+		@param[in] FilterMode Type of filtering
+		@param[in] AddressMode Type of addressing near edges
+	*/
 	HOST CudaTexture1D(const bool& Normalized = true, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Clamp) :
-		Resolution(0),
-		Array(NULL),
-		Normalized(Normalized),
-		FilterMode(FilterMode),
-		AddressMode(AddressMode)
+		CudaTexture<T, 1>(Normalized, FilterMode, AddressMode)
 	{
 	}
 
-	HOST virtual ~CudaTexture1D(void)
-	{
-		this->Free();
-	}
-
-	HOST CudaTexture1D& operator = (const CudaTexture1D& Other)
-	{
-		throw (Exception(Enums::Error, "Not implemented yet!"));
-	}
-
-	HOST CudaTexture1D<T>& operator = (const Buffer1D<T>& Other)
+	/*! Assignment operator
+		@param[in] Other Buffer to copy from
+		@result Copied cuda texture by reference
+	*/
+	HOST CudaTexture1D& operator = (const Buffer1D<T>& Other)
 	{
 		this->Resize(Other.GetResolution());
 		
 		this->FilterMode	= Other.GetFilterMode();
 		this->AddressMode	= Other.GetAddressMode();
 
-		const int NoElements = this->Resolution;
+		const int NoElements = this->Resolution.CumulativeProduct();
 
 		if (NoElements <= 0)
 			return *this;
@@ -61,12 +56,10 @@ public:
 		return *this;
 	}
 
-	HOST void Free(void)
-	{
-		Cuda::FreeArray(this->Array);
-	}
-
-	HOST void Resize(const int& Resolution)
+	/*! Resize the buffer
+		@param[in] Resolution Resolution of the buffer
+	*/
+	HOST void Resize(const Vec<int, 1>& Resolution)
 	{
 		if (this->Resolution == Resolution)
 			return;
@@ -75,43 +68,13 @@ public:
 		
 		this->Resolution = Resolution;
 		
-		const int NoElements = this->Resolution;
+		const int NoElements = this->Resolution.CumulativeProduct();
 
 		if (NoElements <= 0)
 			throw (Exception(Enums::Error, "No. elements is zero!"));
 
 		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Vec2i(NoElements, 1));
 	}
-
-	HOST void Bind(textureReference& TextureReference)
-	{
-		if (this->Resolution == 0)
-			return;
-
-		if (this->Array == NULL)
-			return;
-
-		TextureReference.normalized		= this->Normalized;
-		TextureReference.filterMode		= cudaFilterModeLinear;//(cudaTextureFilterMode)this->FilterMode;
-		TextureReference.addressMode[0]	= cudaAddressModeClamp;//(cudaTextureAddressMode)this->AddressMode;
-
-		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
-
-		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
-	}
-
-	HOST_DEVICE int GetResolution() const
-	{
-		return this->Resolution;
-	}
-
-protected:
-	int						Resolution;
-	cudaArray*				Array;
-	bool					Normalized;
-	Enums::FilterMode		FilterMode;
-	Enums::AddressMode		AddressMode;
-			
 };
 
 }

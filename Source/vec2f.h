@@ -56,7 +56,7 @@ public:
 	}
 	
 	/*! Length squared
-		* \return Squared length of the vector
+		@result Squared length of the vector
 	*/
 	HOST_DEVICE float LengthSquared(void) const
 	{
@@ -64,7 +64,7 @@ public:
 	}
 	
 	/*! Length
-		* \return Length of the vector
+		@result Length of the vector
 	*/
 	HOST_DEVICE float Length(void) const
 	{
@@ -82,7 +82,7 @@ public:
 	}
 
 	/*! Normalized
-		* \return Normalized vector
+		@result Normalized vector
 	*/
 	HOST_DEVICE Vec2f Normalized(void) const
 	{
@@ -93,7 +93,7 @@ public:
 	}
 
 	/*! Negate operator
-		* \return Negated vector by value
+		@result Negated vector by value
 	*/
 	HOST_DEVICE Vec2f operator - () const
 	{
@@ -109,7 +109,7 @@ public:
 /*! Multiply Vec2f with float
 	@param[in] V Input vector
 	@param[in] F Input float
-	* \return V x F
+	@result V x F
 */
 static inline HOST_DEVICE Vec2f operator * (const Vec2f& V, const float& F)
 {
@@ -119,7 +119,7 @@ static inline HOST_DEVICE Vec2f operator * (const Vec2f& V, const float& F)
 /*! Multiply float with Vec2f
 	@param[in] F Input float
 	@param[in] V Input vector
-	* \return F x V
+	@result F x V
 */
 static inline HOST_DEVICE Vec2f operator * (const float& F, const Vec2f& V)
 {
@@ -129,7 +129,7 @@ static inline HOST_DEVICE Vec2f operator * (const float& F, const Vec2f& V)
 /*! Multiply two Vec2f vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	* \return A x B
+	@result A x B
 */
 static inline HOST_DEVICE Vec2f operator * (const Vec2f& A, const Vec2f& B)
 {
@@ -139,7 +139,7 @@ static inline HOST_DEVICE Vec2f operator * (const Vec2f& A, const Vec2f& B)
 /*! Subtract two Vec2f vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	* \return A - B
+	@result A - B
 */
 static inline HOST_DEVICE Vec2f operator - (const Vec2f& A, const Vec2f& B)
 {
@@ -149,7 +149,7 @@ static inline HOST_DEVICE Vec2f operator - (const Vec2f& A, const Vec2f& B)
 /*! Add two Vec2f vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	* \return A + B
+	@result A + B
 */
 static inline HOST_DEVICE Vec2f operator + (const Vec2f& A, const Vec2f& B)
 {
@@ -159,7 +159,7 @@ static inline HOST_DEVICE Vec2f operator + (const Vec2f& A, const Vec2f& B)
 /*! Divide Vec2f by float value
 	@param[in] V Input vector
 	@param[in] F Input float
-	* \return V / F
+	@result V / F
 */
 static inline HOST_DEVICE Vec2f operator / (const Vec2f& V, const float& F)
 {
@@ -172,7 +172,7 @@ static inline HOST_DEVICE Vec2f operator / (const Vec2f& V, const float& F)
 /*! Divide float by Vec2f
 	@param[in] F Input float
 	@param[in] V Input vector
-	* \return F / V
+	@result F / V
 */
 static inline HOST_DEVICE Vec2f operator / (const float& F, const Vec2f& V)
 {
@@ -182,7 +182,7 @@ static inline HOST_DEVICE Vec2f operator / (const float& F, const Vec2f& V)
 /*! Length squared
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	* \return Squared length of the vector
+	@result Squared length of the vector
 */
 static inline HOST_DEVICE float LengthSquared(const Vec2f& A, const Vec2f& B)
 {
@@ -191,7 +191,7 @@ static inline HOST_DEVICE float LengthSquared(const Vec2f& A, const Vec2f& B)
 
 /*! Length
 	@param[in] V Input vector
-	* \return Length of the vector
+	@result Length of the vector
 */
 static inline HOST_DEVICE float Length(const Vec2f& V)
 {
@@ -200,7 +200,7 @@ static inline HOST_DEVICE float Length(const Vec2f& V)
 
 /*! Normalize
 	@param[in] V Input vector
-	* \return Normalized vector
+	@result Normalized vector
 */
 static inline HOST_DEVICE Vec2f Normalize(const Vec2f& V)
 {
@@ -211,7 +211,7 @@ static inline HOST_DEVICE Vec2f Normalize(const Vec2f& V)
 	@param[in] LerpC Interpolation coefficient
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	* \return Interpolated vector
+	@result Interpolated vector
 */
 HOST_DEVICE inline Vec2f Lerp(const float& LerpC, const Vec2f& A, const Vec2f& B)
 {
