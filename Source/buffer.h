@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "geometry.h"
-#include "timestamp.h"
+#include "vector.h"
+
 #include "wrapper.cuh"
 
 namespace ExposureRender
@@ -32,7 +32,8 @@ public:
 		MemoryType(MemoryType),
 		FilterMode(FilterMode),
 		AddressMode(AddressMode),
-		Data(NULL)
+		Data(NULL),
+		Resolution()
 	{
 		this->SetName(pName);
 	}
@@ -59,7 +60,7 @@ public:
 
 		this->FilterMode	= Other.FilterMode;
 		this->AddressMode	= Other.AddressMode;
-
+		
 		if (this->TimeStamp != Other.TimeStamp)
 		{
 			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
@@ -74,21 +75,26 @@ public:
 	{
 		if (this->Data)
 		{
-			if (this->MemoryType == Enums::Host)
+			switch (this->MemoryType)
 			{
-				free(this->Data);
-				this->Data = NULL;
-			}
+				case Enums::Host:
+				{
+					free(this->Data);
+					this->Data = NULL;
+					break;
+				}
 
+				case Enums::Device:
+				{
 #ifdef __CUDACC__
-			if (this->MemoryType == Enums::Device)
-			{
-				Cuda::Free(this->Data);
-			}
+					Cuda::Free(this->Data);
 #endif
+					break;
+				}
+			}
 		}
 
-		this->Resolution = Vec<int, NoDimensions>;
+		this->Resolution = Vec<int, NoDimensions>();
 
 		this->TimeStamp.Modified();
 	}
@@ -99,13 +105,22 @@ public:
 		if (this->Resolution.CumulativeProduct() <= 0)
 			return;
 
-		if (this->MemoryType == Enums::Host)
-			memset(this->Data, 0, this->GetNoBytes());
-
+		switch (this->MemoryType)
+		{
+			case Enums::Host:
+			{
+				memset(this->Data, 0, this->GetNoBytes());
+				break;
+			}
+			
+			case Enums::Device:
+			{
 #ifdef __CUDACC__
-		if (this->MemoryType == Enums::Device)
-			Cuda::MemSet(this->Data, 0, this->Resolution.CumulativeProduct());
+				Cuda::MemSet(this->Data, 0, this->Resolution.CumulativeProduct());
 #endif
+				break;
+			}
+		}
 
 		this->TimeStamp.Modified();
 	}
@@ -124,10 +139,6 @@ public:
 
 		if (this->Resolution.CumulativeProduct() <= 0)
 			return;
-
-		char MemoryString[MAX_CHAR_SIZE];
-
-		this->GetMemoryString(MemoryString, Enums::MegaByte);
 
 		if (this->MemoryType == Enums::Host)
 		{
@@ -156,30 +167,66 @@ public:
 		if (this->Resolution.CumulativeProduct() <= 0)
 			return;
 
-		if (this->MemoryType == Enums::Host)
+		switch (this->MemoryType)
 		{
-			if (MemoryType == Enums::Host)
-				memcpy(this->Data, Data, this->GetNoBytes());
-
+			case Enums::Host:
+			{
+				switch (MemoryType)
+				{
+					case Enums::Host:
+					{
+						memcpy(this->Data, Data, this->GetNoBytes());
+						break;
+					}
+					
+					case Enums::Device:
+					{
 #ifdef __CUDACC__
-			if (MemoryType == Enums::Device)
-				Cuda::MemCopyDeviceToHost(Data, this->Data, this->Resolution.CumulativeProduct());
+						Cuda::MemCopyDeviceToHost(Data, this->Data, this->Resolution.CumulativeProduct());
 #endif
-		}
+						break;
+					}
+				}
 
+				break;
+			}
+
+			case Enums::Device:
+			{
+				switch (MemoryType)
+				{
+					case Enums::Host:
+					{
 #ifdef __CUDACC__
-		if (this->MemoryType == Enums::Device)
-		{
-			if (MemoryType == Enums::Host)
-				Cuda::MemCopyHostToDevice(Data, this->Data, this->Resolution.CumulativeProduct());
-
-			if (MemoryType == Enums::Device)
-				Cuda::MemCopyDeviceToDevice(Data, this->Data, this->Resolution.CumulativeProduct());
-		}
+						Cuda::MemCopyHostToDevice(Data, this->Data, this->Resolution.CumulativeProduct());
 #endif
+						break;
+					}
+
+					case Enums::Device:
+					{
+#ifdef __CUDACC__
+						Cuda::MemCopyDeviceToDevice(Data, this->Data, this->Resolution.CumulativeProduct());
+#endif
+						break;
+					}
+				}
+
+				break;
+			}
+		}
 	}
-	
-	/*! gets the buffer name
+
+	/*! Get element at index \a ID
+		@param[in] ID Index
+		* \return Element at \a ID
+	*/
+	HOST_DEVICE T& operator[](const int& ID) const
+	{
+		return this->Data[Clamp(ID, 0, this->GetNoElements() - 1)];
+	}
+
+	/*! Gets the buffer name
 		* \return Name of the buffer
 	*/
 	HOST const char* GetName() const

@@ -18,14 +18,29 @@
 namespace ExposureRender
 {
 
+/*! \class One-dimensional buffer
+ * \brief One-dimensional memory container class for both host and device (CUDA) linear memory
+ */
 template<class T>
-class EXPOSURE_RENDER_DLL Buffer1D : public Buffer<T>
+class EXPOSURE_RENDER_DLL Buffer1D : public Buffer<T, 1>
 {
 public:
 	HOST Buffer1D(const char* pName = "Buffer1D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
-		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
-		Resolution(0)
+		Buffer<T, 1>(pName, MemoryType, FilterMode, AddressMode)
 	{
+	}
+
+	HOST Buffer1D& operator = (const Buffer1D& Other)
+	{
+		Buffer<T, 1>::operator = (Other);
+
+		if (this->TimeStamp != Other.TimeStamp)
+		{
+			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
+			this->TimeStamp = Other.TimeStamp;
+		}
+		
+		return *this;
 	}
 
 	HOST_DEVICE T& operator()(const int& X) const
@@ -72,12 +87,6 @@ public:
 			default:
 				return T();
 		}
-	}
-
-	HOST_DEVICE T& operator[](const int& ID) const
-	{
-		const int ClampedID = Clamp(ID, 0, this->NoElements - 1);
-		return this->Data[ClampedID];
 	}
 };
 

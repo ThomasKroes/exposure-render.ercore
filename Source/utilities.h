@@ -16,7 +16,10 @@
 #include "defines.h"
 #include "enums.h"
 #include "exception.h"
-										
+#include "timestamp.h"
+
+#include <cuda_runtime.h>
+
 namespace ExposureRender
 {
 
