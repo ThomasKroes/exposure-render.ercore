@@ -16,22 +16,35 @@
 
 #pragma once
 
-#include "vector.h"
+#include "randomseedbuffer.h"
 
 namespace ExposureRender
 {
 
-class Filter
+/*! \class 1D Random seed buffer
+ * \brief One-dimensional random seed buffer
+ */
+class RandomSeedBuffer1D : public RandomSeedBuffer<1>
 {
 public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
+	/*! Constructor
+		@param[in] pName Buffer name
+		@param[in] MemoryType Place where the memory resides, can be host or device
+	*/
+	HOST RandomSeedBuffer1D(const char* pName = "1D Random seed buffer", const Enums::MemoryType& MemoryType = Enums::Device) :
+		RandomSeedBuffer<1>(pName, MemoryType)
 	{
 	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+	/*! Get buffer element at discrete location \a X
+		@param[in] X Integer position in buffer
+		@return Element at \a X
+	*/
+	HOST_DEVICE unsigned int& operator()(const int& X) const
+	{
+		const int ClampedX = Clamp(X, 0, this->Resolution[0] - 1);
+		return this->Data[ClampedX];
+	}
 };
 
 }

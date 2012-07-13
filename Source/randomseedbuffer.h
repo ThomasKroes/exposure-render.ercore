@@ -16,22 +16,49 @@
 
 #pragma once
 
-#include "vector.h"
+#include "buffer.h"
 
 namespace ExposureRender
 {
 
-class Filter
+/*! \class Random seed buffer
+ * \brief Random seed buffer base template class
+ */
+template<int NoDimensions>
+class RandomSeedBuffer : public Buffer<unsigned int, NoDimensions>
 {
 public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
+	/*! Constructor
+		@param[in] pName Buffer name
+		@param[in] MemoryType Place where the memory resides, can be host or device
+	*/
+	HOST RandomSeedBuffer(const char* pName = "Random seed buffer", const Enums::MemoryType& MemoryType = Enums::Device) :
+		Buffer<unsigned int, NoDimensions>(pName, MemoryType)
 	{
 	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+	/*! Resize the buffer
+		@param[in] Resolution Resolution of the buffer
+	*/
+	HOST void Resize(const Vec<int, NoDimensions>& Resolution)
+	{
+		if (this->Resolution == Resolution)
+			return;
+		
+		const int NoSeeds = Resolution.CumulativeProduct();
+
+		if (NoSeeds < 0)
+			return;
+
+		unsigned int* pSeeds = new unsigned int[NoSeeds];
+
+		for (int i = 0; i < NoSeeds; i++)
+			pSeeds[i] = rand();
+
+		this->Set(Enums::Host, Resolution, pSeeds);
+
+		delete[] pSeeds;
+	}
 };
 
 }
