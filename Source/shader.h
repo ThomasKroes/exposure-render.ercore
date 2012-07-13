@@ -101,10 +101,10 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 		{
 			VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
 
-			const ColorXYZf Diffuse			= gpTracer->GetDiffuse(Int.Intensity);
-			const ColorXYZf Specular		= gpTracer->GetSpecular(Int.Intensity);
-			const float Glossiness			= gpTracer->GetGlossiness(Int.Intensity);
-			const float IndexOfReflection	= gpTracer->GetIndexOfReflection(Int.Intensity);
+			const ColorXYZf Diffuse			= VolumeProperty.GetDiffuse(Int.Intensity);
+			const ColorXYZf Specular		= VolumeProperty.GetSpecular(Int.Intensity);
+			const float Glossiness			= VolumeProperty.GetGlossiness(Int.Intensity);
+			const float IndexOfReflection	= VolumeProperty.GetIndexOfReflection(Int.Intensity);
 
 			switch (VolumeProperty.ShadingType)
 			{
@@ -135,7 +135,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 					const float ExpGF		= 3;
 					const float Exponent	= Sensitivity * powf(VolumeProperty.GradientFactor, ExpGF) * NormalizedGradientMagnitude;
 					
-					const float PdfBrdf = gpTracer->VolumeProperty.OpacityModulated ? gpTracer->GetOpacity(Int.Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
+					const float PdfBrdf = gpTracer->VolumeProperty.OpacityModulated ? VolumeProperty.GetOpacity(Int.Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
 					
 					if (RNG.Get1() < PdfBrdf)
 					{

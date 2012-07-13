@@ -43,7 +43,7 @@ DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& Volum
 		Int.P			= R(R.MinT);
 		Int.Intensity	= Volume(Int.P, VolumeID);
 
-		Sum				+= gDensityScale * gpTracer->GetOpacity(Int.Intensity) * gStepFactorPrimary;
+		Sum				+= gDensityScale * gpTracer->VolumeProperty.GetOpacity(Int.Intensity) * gStepFactorPrimary;
 		R.MinT			+= gStepFactorPrimary;
 	}
 
@@ -78,7 +78,7 @@ DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 		if (R.MinT > R.MaxT)
 			return false;
 
-		Sum		+= gDensityScale * gpTracer->GetOpacity(Volume(R(R.MinT), VolumeID)) * gStepFactorShadow;
+		Sum		+= gDensityScale * gpTracer->VolumeProperty.GetOpacity(Volume(R(R.MinT), VolumeID)) * gStepFactorShadow;
 		R.MinT	+= gStepFactorShadow;
 	}
 
