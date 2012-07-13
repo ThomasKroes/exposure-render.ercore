@@ -51,7 +51,9 @@ public:
 		if (NoElements <= 0)
 			return *this;
 
+#ifdef __CUDACC__
 		Cuda::MemcpyToArray(this->Array, 0, 0, Other.GetData(), Other.GetNoBytes(), cudaMemcpyHostToDevice);
+#endif
 
 		return *this;
 	}
@@ -73,7 +75,9 @@ public:
 		if (NoElements <= 0)
 			throw (Exception(Enums::Error, "No. elements is zero!"));
 
+#ifdef __CUDACC__
 		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Resolution);
+#endif
 	}
 };
 

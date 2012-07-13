@@ -61,7 +61,9 @@ public:
 	/*! Free dynamic data owned by the texture */
 	HOST void Free(void)
 	{
+#ifdef __CUDACC__
 		Cuda::FreeArray(this->Array);
+#endif
 	}
 	
 	/*! Binds the texture to the data
@@ -83,7 +85,9 @@ public:
 
 		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
 
+#ifdef __CUDACC__
 		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
+#endif
 	}
 
 	/*! Gets the resolution

@@ -73,7 +73,8 @@ class EXPOSURE_RENDER_DLL ColorTransferFunction1D : public TimeStamp
 {
 public:
 	HOST ColorTransferFunction1D() :
-		TimeStamp()
+		TimeStamp(),
+		Texture()
 	{
 	}
 
@@ -83,7 +84,18 @@ public:
 	}
 
 	HOST ColorTransferFunction1D& operator = (const ColorTransferFunction1D& Other)
-	{	
+	{
+		if (*this != Other)
+		{
+			Buffer1D<ColorXYZf> Samples("Samples", Enums::Device);
+
+			this->Discretize(512, Samples.GetData());
+
+			printf("Rebuilding color transfer function\n");
+		}
+
+		TimeStamp::operator = (Other);
+
 		for (int i = 0; i < 3; i++)
 			this->PLF[i] = Other.PLF[i];
 		
@@ -108,7 +120,22 @@ public:
 		return ColorXYZf(this->PLF[0].Evaluate(Intensity), this->PLF[1].Evaluate(Intensity), this->PLF[2].Evaluate(Intensity));
 	}
 
+	HOST void Discretize(const int& NoSamples, ColorXYZf* Samples)
+	{
+		if (NoSamples <= 0)
+			throw (Exception(Enums::Error, "Can't discretize scalar transfer function with zero samples!"));
+	
+		Samples = new ColorXYZf[NoSamples];
+
+		for (int i = 0; i < NoSamples; ++i)
+		{
+		}
+
+		delete[] Samples;
+	}
+
 	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF[3];
+	CudaTexture1D<ColorXYZf>					Texture;
 };
 
 }

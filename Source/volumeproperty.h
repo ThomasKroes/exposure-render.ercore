@@ -17,6 +17,7 @@
 #pragma once
 
 #include "transferfunction.h"
+#include "buffers.h"
 
 namespace ExposureRender
 {
@@ -69,6 +70,8 @@ public:
 
 	HOST VolumeProperty& operator = (const VolumeProperty& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Opacity1D				= Other.Opacity1D;
 		this->Diffuse1D				= Other.Diffuse1D;
 		this->Specular1D			= Other.Specular1D;
