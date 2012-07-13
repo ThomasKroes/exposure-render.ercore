@@ -16,22 +16,10 @@
 
 #pragma once
 
-#include "vector.h"
+#include "cudatexture1d.h"
+#include "cudatexture3d.h"
 
 namespace ExposureRender
 {
-
-class Filter
-{
-public:
-	HOST_DEVICE Filter(const Vec2f& Size) :
-		Size(Size),
-		InvSize(1.0f / Size[0], 1.0f / Size[1])
-	{
-	}
-	
-	const Vec2f Size;
-	const Vec2f InvSize;
-};
 
 }
