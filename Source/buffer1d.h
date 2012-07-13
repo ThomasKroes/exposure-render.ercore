@@ -25,30 +25,32 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer1D : public Buffer<T, 1>
 {
 public:
+	/*! Constructor
+		@param[in] pName Buffer name
+		@param[in] MemoryType Place where the memory resides, can be host or device
+		@param[in] FilterMode Type of filtering
+		@param[in] AddressMode Type of addressing near edges
+	*/
 	HOST Buffer1D(const char* pName = "Buffer1D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
 		Buffer<T, 1>(pName, MemoryType, FilterMode, AddressMode)
 	{
 	}
-
-	HOST Buffer1D& operator = (const Buffer1D& Other)
-	{
-		Buffer<T, 1>::operator = (Other);
-
-		if (this->TimeStamp != Other.TimeStamp)
-		{
-			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
-			this->TimeStamp = Other.TimeStamp;
-		}
-		
-		return *this;
-	}
-
+	
+	/*! Get buffer element at discrete location \a X
+		@param[in] X Integer position in buffer
+		@return Element at \a X
+	*/
 	HOST_DEVICE T& operator()(const int& X) const
 	{
 		const int ClampedX = Clamp(X, 0, this->Resolution - 1);
 		return this->Data[ClampedX];
 	}
-
+	
+	/*! Get buffer element at (normalized) floating point position \a X
+		@param[in] X Floating point position
+		@param[in] Normalized Whether \a X is normalized or not
+		@return Interpolated value at \a X
+	*/
 	HOST_DEVICE T operator()(const float& X, const bool Normalized = false) const
 	{
 		if (!this->Data)

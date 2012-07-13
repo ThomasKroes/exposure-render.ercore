@@ -25,23 +25,43 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer2D : public Buffer<T, 2>
 {
 public:
+	/*! Constructor
+		@param[in] pName Buffer name
+		@param[in] MemoryType Place where the memory resides, can be host or device
+		@param[in] FilterMode Type of filtering
+		@param[in] AddressMode Type of addressing near edges
+	*/
 	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
 		Buffer<T, 2>(pName, MemoryType, FilterMode, AddressMode)
 	{
 	}
-
+	
+	/*! Get buffer element at discrete position \a X, \a Y
+		@param[in] X X position in buffer
+		@param[in] Y Y position in buffer
+		@return Element at \a X, \a Y
+	*/
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0) const
 	{
 		const Vec2i ClampedXY(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1));
 		return this->Data[ClampedXY[1] * this->Resolution[0] + ClampedXY[0]];
 	}
-
+	
+	/*! Get buffer element at position \a XY
+		@param[in] XY XY position in buffer
+		@return Interpolated value at \a XY
+	*/
 	HOST_DEVICE T& operator()(const Vec2i& XY) const
 	{
 		const Vec2i ClampedXY(Clamp(XY[0], 0, this->Resolution[0] - 1), Clamp(XY[1], 0, this->Resolution[1] - 1));
 		return this->Data[ClampedXY[1] * this->Resolution[0] + ClampedXY[0]];
 	}
-
+	
+	/*! Get buffer element at (normalized) floating point position \a XY
+		@param[in] XY Floating point position
+		@param[in] Normalized Whether \a XY is normalized or not
+		@return Interpolated value at \a XY
+	*/
 	HOST_DEVICE T operator()(const Vec2f& XY, const bool Normalized = false) const
 	{
 		if (!this->Data)

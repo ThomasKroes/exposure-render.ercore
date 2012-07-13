@@ -25,23 +25,44 @@ template<class T>
 class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T, 3>
 {
 public:
+	/*! Constructor
+		@param[in] pName Buffer name
+		@param[in] MemoryType Place where the memory resides, can be host or device
+		@param[in] FilterMode Type of filtering
+		@param[in] AddressMode Type of addressing near edges
+	*/
 	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Border) :
 		Buffer<T, 3>(pName, MemoryType, FilterMode, AddressMode)
 	{
 	}
-
+	
+	/*! Get buffer element at discrete position \a X, \a Y, \a Z
+		@param[in] X X position in buffer
+		@param[in] Y Y position in buffer
+		@param[in] Z Z position in buffer
+		@return Element at \a X, \a Y, \a Z
+	*/
 	HOST_DEVICE T& operator()(const int& X = 0, const int& Y = 0, const int& Z = 0) const
 	{
 		const Vec3i ClampedXYZ(Clamp(X, 0, this->Resolution[0] - 1), Clamp(Y, 0, this->Resolution[1] - 1), Clamp(Z, 0, this->Resolution[2] - 1));
 		return this->Data[ClampedXYZ[2] * this->Resolution[0] * this->Resolution[1] + ClampedXYZ[1] * this->Resolution[0] + ClampedXYZ[0]];
 	}
-
+	
+	/*! Get buffer element at position \a XYZ
+		@param[in] XYZ XYZ position in buffer
+		@return Interpolated value at \a XYZ
+	*/
 	HOST_DEVICE T& operator()(const Vec3i& XYZ) const
 	{
 		const Vec3i ClampedXYZ(Clamp(XYZ[0], 0, this->Resolution[0] - 1), Clamp(XYZ[1], 0, this->Resolution[1] - 1), Clamp(XYZ[2], 0, this->Resolution[2] - 1));
 		return this->Data[ClampedXYZ[2] * this->Resolution[0] * this->Resolution[1] + ClampedXYZ[1] * this->Resolution[0] + ClampedXYZ[0]];
 	}
 	
+	/*! Get buffer element at (normalized) floating point position \a XYZ
+		@param[in] XYZ Floating point position
+		@param[in] Normalized Whether \a XYZ is normalized or not
+		@return Interpolated value at \a XYZ
+	*/
 	HOST_DEVICE T operator()(const Vec3f& XYZ, const bool Normalized = false) const
 	{
 		if (!this->Data)
