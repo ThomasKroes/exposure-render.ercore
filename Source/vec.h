@@ -62,7 +62,7 @@ public:
 	
 	/*! Subscript operator
 		@param[in] i Element from array
-		* \return Return element by value
+		@result Return element by value
 	*/
 	HOST_DEVICE T operator[](const int& i) const
 	{
@@ -71,7 +71,7 @@ public:
 
 	/*! Subscript operator
 		@param[in] i Array element index
-		* \return Return element by reference
+		@result Return element by reference
 	*/
 	HOST_DEVICE T& operator[](const int& i)
 	{
@@ -80,7 +80,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Vector to copy from
-		* \return Copied vector by reference
+		@result Copied vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator = (const Vec<T, Size>& Other)
 	{
@@ -92,7 +92,7 @@ public:
 	
 	/*! Add operator
 		@param[in] V Vector to add
-		* \return Added vector by value
+		@result Added vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator + (const Vec<T, Size>& V) const
 	{
@@ -106,7 +106,7 @@ public:
 	
 	/*! Add + assignment operator
 		@param[in] V Vector to add
-		* \return Added vector by reference
+		@result Added vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator += (const Vec<T, Size>& V)
 	{
@@ -118,7 +118,7 @@ public:
 		
 	/*! Subtract operator
 		@param[in] V Vector to subtract
-		* \return Subtracted vector by value
+		@result Subtracted vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator - (const Vec<T, Size>& V) const
 	{
@@ -132,7 +132,7 @@ public:
 
 	/*! Subtract + assignment operator
 		@param[in] V Vector to subtract
-		* \return Subtracted vector by reference
+		@result Subtracted vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator -= (const Vec<T, Size>& V)
 	{
@@ -144,7 +144,7 @@ public:
 
 	/*! Multiply operator
 		@param[in] V Vector to multiply by
-		* \return Multiplied vector by value
+		@result Multiplied vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator * (const Vec<T, Size>& V) const
 	{
@@ -158,7 +158,7 @@ public:
 
 	/*! Multiply + assignment operator
 		@param[in] V Vector to multiply by
-		* \return Multiplied vector by reference
+		@result Multiplied vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator *= (const Vec<T, Size>& V)
 	{
@@ -170,7 +170,7 @@ public:
 
 	/*! Divide operator
 		@param[in] V Vector to divide by
-		* \return Divided vector by value
+		@result Divided vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator / (const Vec<T, Size>& V) const
 	{
@@ -184,7 +184,7 @@ public:
 
 	/*! Divide + assignment operator
 		@param[in] V Vector to divide by
-		* \return Divided vector by reference
+		@result Divided vector by reference
 	*/
 	HOST_DEVICE Vec<T, Size>& operator /= (const Vec<T, Size>& V)
 	{
@@ -195,7 +195,7 @@ public:
 	}
 	
 	/*! Negate operator
-		* \return Negated vector by value
+		@result Negated vector by value
 	*/
 	HOST_DEVICE Vec<T, Size> operator - () const
 	{
@@ -292,7 +292,7 @@ public:
 	}
 	
 	/*! Minimum element
-		* \return Minimum element in range
+		@result Minimum element in range
 	*/
 	HOST_DEVICE T Min()
 	{
@@ -308,7 +308,7 @@ public:
 	}
 
 	/*! Maximum element
-		* \return Maximum element in range
+		@result Maximum element in range
 	*/
 	HOST_DEVICE T Max()
 	{
@@ -324,7 +324,7 @@ public:
 	}
 
 	/*! Minimum vector
-		* \return Minimum vector
+		@result Minimum vector
 	*/
 	HOST_DEVICE Vec<T, Size> Min(const Vec<T, Size>& Other) const
 	{
@@ -337,7 +337,7 @@ public:
 	}
 
 	/*! Maximum vector
-		* \return Maximum vector
+		@result Maximum vector
 	*/
 	HOST_DEVICE Vec<T, Size> Max(const Vec<T, Size>& Other) const
 	{
@@ -364,7 +364,7 @@ public:
 	}
 
 	/*! Cumulative product 
-		* \return Cumulative product 
+		@result Cumulative product 
 	*/
 	HOST_DEVICE int CumulativeProduct() const
 	{

@@ -40,7 +40,7 @@ HOST_DEVICE_NI inline float Gauss2D(const float& Sigma, const float& X, const fl
 	@param[in] A Running average
 	@param[in] Ax New sample
 	@param[in] N Number of samples
-	* \return Cumulative moving average
+	@result Cumulative moving average
 */
 template<class T>
 HOST_DEVICE inline T CumulativeMovingAverage(const T& A, const T& Ax, const int& N)
@@ -64,7 +64,7 @@ HOST_DEVICE inline void Swap(T& A, T& B)
 /*! Compute minimum of two values
 	@param[in] A Input value A
 	@param[in] B Input value B
-	* \return Minimum of \a A and \a B
+	@result Minimum of \a A and \a B
 */
 template <class T>
 HOST_DEVICE inline T Min(const T& A, const T& B)
@@ -75,7 +75,7 @@ HOST_DEVICE inline T Min(const T& A, const T& B)
 /*! Compute maximum of two values
 	@param[in] A Input value A
 	@param[in] B Input value B
-	* \return Maximum of \a A and \a B
+	@result Maximum of \a A and \a B
 */
 template <class T>
 HOST_DEVICE inline T Max(const T& A, const T& B)
@@ -87,7 +87,7 @@ HOST_DEVICE inline T Max(const T& A, const T& B)
 	@param[in] Value Value to clamp
 	*@param[in] Min Minimum value
 	@param[in] Max Maximum value
-	* \return Clamped \a Value
+	@result Clamped \a Value
 */
 template <class T>
 HOST_DEVICE inline T Clamp(const T& Value, const T& Min, const T& Max)

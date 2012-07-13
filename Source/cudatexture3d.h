@@ -16,35 +16,30 @@
 
 #pragma once
 
-#include "buffer3d.h"
+#include "cudatexture.h"
 
 namespace ExposureRender
 {
 
 template<class T>
-class EXPOSURE_RENDER_DLL CudaTexture3D
+class EXPOSURE_RENDER_DLL CudaTexture3D : public CudaTexture<T, 3>
 {
 public:
-	HOST CudaTexture3D() :
-		Resolution(0),
-		Array(NULL),
-		Normalized(true),
-		FilterMode(Enums::Linear),
-		AddressMode(Enums::Border)
+	/*! Constructor
+		@param[in] Normalized Normalized element access
+		@param[in] FilterMode Type of filtering
+		@param[in] AddressMode Type of addressing near edges
+	*/
+	HOST CudaTexture3D(const bool& Normalized = true, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Clamp) :
+		CudaTexture<T, 3>(Normalized, FilterMode, AddressMode)
 	{
 	}
 
-	HOST virtual ~CudaTexture3D(void)
-	{
-		this->Free();
-	}
-
-	HOST CudaTexture3D& operator = (const CudaTexture3D& Other)
-	{
-		throw (Exception(Enums::Error, "Not implemented yet!"));
-	}
-
-	HOST CudaTexture3D<T>& operator = (const Buffer3D<T>& Other)
+	/*! Assignment operator
+		@param[in] Other Buffer to copy from
+		@result Copied cuda texture by reference
+	*/
+	HOST CudaTexture3D& operator = (const Buffer3D<T>& Other)
 	{
 		this->Resize(Other.GetResolution());
 		
@@ -74,12 +69,10 @@ public:
 		return *this;
 	}
 
-	HOST void Free(void)
-	{
-		Cuda::FreeArray(this->Array);
-	}
-
-	HOST void Resize(const Vec3i& Resolution)
+	/*! Resize the buffer
+		@param[in] Resolution Resolution of the buffer
+	*/
+	HOST void Resize(const Vec<int, 3>& Resolution)
 	{
 		if (this->Resolution == Resolution)
 			return;
@@ -94,40 +87,8 @@ public:
 			throw (Exception(Enums::Error, "No. elements is zero!"));
 
 		Cuda::Malloc3DArray(&this->Array, cudaCreateChannelDesc<T>(), this->Resolution);
+
 	}
-
-#ifdef __CUDACC__
-	HOST void Bind(textureReference& TextureReference)
-	{
-		if (this->Resolution[0] * this->Resolution[1] * this->Resolution[2] == 0)
-			return;
-
-		if (this->Array == NULL)
-			return;
-
-		TextureReference.normalized		= this->Normalized;
-		TextureReference.filterMode		= (cudaTextureFilterMode)this->FilterMode;
-		TextureReference.addressMode[0]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference.addressMode[1]	= (cudaTextureAddressMode)this->AddressMode;
-		TextureReference.addressMode[2]	= (cudaTextureAddressMode)this->AddressMode;
-
-		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
-		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
-	}
-#endif
-
-	HOST_DEVICE Vec3i GetResolution() const
-	{
-		return this->Resolution;
-	}
-
-protected:
-	Vec3i					Resolution;
-	cudaArray*				Array;
-	bool					Normalized;
-	Enums::FilterMode		FilterMode;
-	Enums::AddressMode		AddressMode;
-			
 };
 
 }

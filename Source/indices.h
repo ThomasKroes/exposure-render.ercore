@@ -37,7 +37,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Indices to copy from
-		* \return Copied indices by reference
+		@result Copied indices by reference
 	*/
 	HOST_DEVICE Indices& operator = (const Indices& Other)
 	{
@@ -50,7 +50,7 @@ public:
 	}
 	
 	/*! Obtain number of indices set
-		* \return Number of used indices
+		@result Number of used indices
 	*/
 	HOST_DEVICE int GetNoIndices() const
 	{
