@@ -18,13 +18,15 @@
 namespace ExposureRender
 {
 
+/*! \class Two-dimensional buffer
+ * \brief Two-dimensional memory container class for both host and device (CUDA) linear memory
+ */
 template<class T>
-class EXPOSURE_RENDER_DLL Buffer2D : public Buffer<T>
+class EXPOSURE_RENDER_DLL Buffer2D : public Buffer<T, 2>
 {
 public:
 	HOST Buffer2D(const char* pName = "Buffer2D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
-		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
-		Resolution(0)
+		Buffer<T, 2>(pName, MemoryType, FilterMode, AddressMode)
 	{
 	}
 
@@ -84,12 +86,6 @@ public:
 			default:
 				return T();
 		}
-	}
-
-	HOST_DEVICE T& operator[](const int& ID) const
-	{
-		const int ClampedID = Clamp(ID, 0, this->NoElements - 1);
-		return this->Data[ClampedID];
 	}
 };
 

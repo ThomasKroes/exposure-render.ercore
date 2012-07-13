@@ -363,7 +363,7 @@ public:
 	/*! Cumulative product 
 		* \return Cumulative product 
 	*/
-	HOST_DEVICE void CumulativeProduct() const
+	HOST_DEVICE int CumulativeProduct() const
 	{
 		T Result = this->D[0];
 

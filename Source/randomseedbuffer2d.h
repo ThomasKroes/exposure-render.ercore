@@ -22,7 +22,7 @@ class RandomSeedBuffer2D : public Buffer2D<unsigned int>
 {
 public:
 	HOST RandomSeedBuffer2D(const char* pName = "RandomSeedBuffer2D", const Enums::MemoryType& MemoryType = Enums::Device) :
-		Buffer2D(pName, MemoryType)
+		Buffer2D<unsigned int>(pName, MemoryType)
 	{
 	}
 
@@ -42,6 +42,7 @@ public:
 
 		delete[] pSeeds;
 	}
+	/**/
 };
 
 }

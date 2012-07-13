@@ -21,7 +21,7 @@ namespace ExposureRender
 
 HOST inline void DebugLog(const char* format, ...)
 {
-	return;
+//	return;
 	va_list fmtargs;
 	char buffer[1024];
 

@@ -67,7 +67,7 @@ public:
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;
 
-		const int NoElements = this->Voxels.GetResolution()[0] * this->Voxels.GetResolution()[1] * this->Voxels.GetResolution()[2];
+		const int NoElements = this->Voxels.GetResolution().CumulativeProduct();
 
 		if (NoElements > 0)
 		{

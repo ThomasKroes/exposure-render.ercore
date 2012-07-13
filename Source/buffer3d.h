@@ -18,13 +18,15 @@
 namespace ExposureRender
 {
 
+/*! \class Three-dimensional buffer
+ * \brief Three-dimensional memory container class for both host and device (CUDA) linear memory
+ */
 template<class T>
-class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T>
+class EXPOSURE_RENDER_DLL Buffer3D : public Buffer<T, 3>
 {
 public:
 	HOST Buffer3D(const char* pName = "Buffer3D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Border) :
-		Buffer<T>(pName, MemoryType, FilterMode, AddressMode),
-		Resolution(0)
+		Buffer<T, 3>(pName, MemoryType, FilterMode, AddressMode)
 	{
 	}
 
@@ -78,18 +80,6 @@ public:
 				return T();
 		}
 	}
-
-	HOST_DEVICE T& operator[](const int& ID) const
-	{
-		const int ClampedID = Clamp(ID, 0, this->NoElements - 1);
-		return this->Data[ClampedID];
-	}
-
-	HOST_DEVICE Vec3i GetResolution() const { return this->Resolution; }
-
-protected:
-	Vec3i	Resolution;
-
 };
 
 }
