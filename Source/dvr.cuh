@@ -88,7 +88,7 @@ KERNEL void KrnlDvr()
 		// Move along ray
 		R.MinT += gStepFactorPrimary;
 		
-		ColorXYZf Diffuse = gpTracer->GetDiffuse(Intensity);
+		ColorXYZf Diffuse = gpTracer->VolumeProperty.GetDiffuse(Intensity);
 
 //		if (NoSamples % 10 == 0)
 //		{
@@ -134,7 +134,7 @@ KERNEL void KrnlDvr()
 		Diffuse * (1.0f - ao);
 		*/
 
-		const float Opacity = gpTracer->GetOpacity(Intensity)  * (gStepFactorPrimary * 200.0f);
+		const float Opacity = gpTracer->VolumeProperty.GetOpacity(Intensity)  * (gStepFactorPrimary * 200.0f);
 
 		if (RNG.Get1() < Opacity)
 		{
@@ -152,7 +152,7 @@ KERNEL void KrnlDvr()
 
 				for (int s = 0; s < 5; s++)
 				{
-					Alpha *= gpTracer->GetOpacity(Volume(Rao((float)s * gStepFactorShadow)));
+					Alpha *= gpTracer->VolumeProperty.GetOpacity(Volume(Rao((float)s * gStepFactorShadow)));
 //					Alpha = Alpha + (1.0f - Alpha) * gpTracer->GetOpacity(Volume(Rao(s * gStepFactorShadow)));
 				}
 

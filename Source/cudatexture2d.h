@@ -61,7 +61,6 @@ public:
 	*/
 	HOST void Resize(const Vec<int, 2>& Resolution)
 	{
-		/*
 		if (this->Resolution == Resolution)
 			return;
 		else
@@ -74,8 +73,7 @@ public:
 		if (NoElements <= 0)
 			throw (Exception(Enums::Error, "No. elements is zero!"));
 
-		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Vec2i(NoElements, 1));
-		*/
+		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Resolution);
 	}
 };
 

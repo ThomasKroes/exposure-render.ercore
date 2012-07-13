@@ -89,6 +89,36 @@ public:
 		return *this;
 	}
 
+	DEVICE float GetOpacity(const unsigned short& Intensity)
+	{
+		return this->Opacity1D.Evaluate(Intensity);
+	}
+
+	DEVICE ColorXYZf GetDiffuse(const unsigned short& Intensity)
+	{
+		return this->Diffuse1D.Evaluate(Intensity);
+	}
+
+	DEVICE ColorXYZf GetSpecular(const unsigned short& Intensity)
+	{
+		return this->Specular1D.Evaluate(Intensity);
+	}
+
+	DEVICE float GetGlossiness(const unsigned short& Intensity)
+	{
+		return this->Glossiness1D.Evaluate(Intensity);
+	}
+
+	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)
+	{
+		return this->IndexOfReflection1D.Evaluate(Intensity);
+	}
+
+	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)
+	{
+		return this->Emission1D.Evaluate(Intensity);
+	}
+
 	ScalarTransferFunction1D	Opacity1D;
 	ColorTransferFunction1D		Diffuse1D;
 	ColorTransferFunction1D		Specular1D;

@@ -136,13 +136,6 @@ public:
 		return *this;
 	}
 
-	DEVICE float GetOpacity(const unsigned short& Intensity)				{	return this->VolumeProperty.Opacity1D.Evaluate(Intensity);				}
-	DEVICE ColorXYZf GetDiffuse(const unsigned short& Intensity)			{	return this->VolumeProperty.Diffuse1D.Evaluate(Intensity);				}
-	DEVICE ColorXYZf GetSpecular(const unsigned short& Intensity)			{	return this->VolumeProperty.Specular1D.Evaluate(Intensity);				}
-	DEVICE float GetGlossiness(const unsigned short& Intensity)				{	return this->VolumeProperty.Glossiness1D.Evaluate(Intensity);			}
-	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)		{	return this->VolumeProperty.IndexOfReflection1D.Evaluate(Intensity);	}
-	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)			{	return this->VolumeProperty.Emission1D.Evaluate(Intensity);				}
-
 	Enums::RenderMode			RenderMode;
 	VolumeProperty				VolumeProperty;
 	Camera						Camera;
