@@ -69,11 +69,10 @@ public:
 	ScalarNode	ScalarNodes[3];
 };
 
-class EXPOSURE_RENDER_DLL ColorTransferFunction1D : public TimeStamp
+class EXPOSURE_RENDER_DLL ColorTransferFunction1D
 {
 public:
 	HOST ColorTransferFunction1D() :
-		TimeStamp(),
 		Texture()
 	{
 	}
@@ -94,7 +93,7 @@ public:
 			printf("Rebuilding color transfer function\n");
 		}
 
-		TimeStamp::operator = (Other);
+		
 
 		for (int i = 0; i < 3; i++)
 			this->PLF[i] = Other.PLF[i];

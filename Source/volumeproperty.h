@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "transferfunction.h"
+#include "transferfunctions.h"
 #include "buffers.h"
 
 namespace ExposureRender

@@ -16,110 +16,102 @@
 
 #pragma once
 
-#include "piecewiselinearfunction.h"
-#include "color.h"
-#include "timestamp.h"
-#include "cudatexture1D.h"
+#include "vector.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ScalarNode
+/*! \class Piecewise function node
+ * \brief Piecewise function node class
+ */
+template<class T>
+class EXPOSURE_RENDER_DLL PiecewiseFunctionNode
 {
 public:
-	HOST ScalarNode(float Position, float Value) :
+	/*! Default constructor */
+	HOST PiecewiseFunctionNode() :
+		Position(),
+		Value()
+	{
+	}
+
+	/*! Constructor with \a Position and \a Value
+		@param[in] Position Node position
+		@param[in] Value Node value
+	*/
+	HOST PiecewiseFunctionNode(const float& Position, const T& Value) :
 		Position(Position),
 		Value(Value)
 	{
 	}
-
-	HOST ScalarNode() :
-		Position(0.0f),
-		Value(0.0f)
+	
+	/*! Destructor */
+	HOST ~PiecewiseFunctionNode()
 	{
 	}
-
-	HOST ScalarNode(const ScalarNode& Other)
+	
+	/*! Copy constructor
+		@param[in] Other Piecewise function node to copy
+	*/
+	HOST PiecewiseFunctionNode(const PiecewiseFunctionNode& Other)
 	{
 		*this = Other;
 	}
-
-	HOST ScalarNode& operator = (const ScalarNode& Other)
+	
+	/*! Assignment operator
+		@param[in] Other Piecewise function node to copy
+		@result Reference to piecewise function node
+	*/
+	HOST PiecewiseFunctionNode& operator = (const PiecewiseFunctionNode& Other)
 	{
 		this->Position	= Other.Position;
 		this->Value		= Other.Value;
 
 		return *this;
 	}
-
-	float	Position;
-	float	Value;
-};
-
-class EXPOSURE_RENDER_DLL ScalarTransferFunction1D : public TimeStamp
-{
-public:
-	HOST ScalarTransferFunction1D() :
-		TimeStamp(),
-		PLF(),
-		Texture()
-	{
-	}
-
-	HOST ScalarTransferFunction1D(const ScalarTransferFunction1D& Other)
-	{
-		*this = Other;
-	}
-
-	HOST ScalarTransferFunction1D& operator = (const ScalarTransferFunction1D& Other)
-	{
-		if (*this != Other)
-		{
-			Buffer1D<float> Samples("Samples", Enums::Device);
-
-			this->Discretize(512, Samples.GetData());
-
-			printf("Rebuilding scalar transfer function\n");
-		}
-
-		TimeStamp::operator = (Other);
-
-		this->PLF = Other.PLF;
-
-		return *this;
-	}
-
-	HOST void AddNode(const ScalarNode& Node)
-	{
-		this->PLF.AddNode(Node.Position, Node.Value);
-	}
-
+	
+	/*! Resets the content of the piecewise function node */
 	HOST void Reset()
 	{
-		this->PLF.Reset();
+		this->Position	= 0.0f;
+		this->Value		= T();
 	}
 
-	HOST_DEVICE float Evaluate(const float& Intensity) const
+	/*! Gets the node position
+		@result Node position
+	*/
+	HOST float GetPosition() const
 	{
-		return this->PLF.Evaluate(Intensity);
+		return this->Position;
 	}
 
-	HOST void Discretize(const int& NoSamples, float* Samples)
+	/*! Sets the node position
+		@param[in] Position Node position
+	*/
+	HOST void SetPosition(const float& Position)
 	{
-		if (NoSamples <= 0)
-			throw (Exception(Enums::Error, "Can't discretize scalar transfer function with zero samples!"));
-		
-		Samples = new float[NoSamples];
-
-		for (int i = 0; i < NoSamples; ++i)
-		{
-		}
-
-		delete[] Samples;
+		this->Position = Position;
 	}
 
-	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF;
-	CudaTexture1D<float>						Texture;
+	/*! Gets the node value
+		@result Node value
+	*/
+	HOST T GetValue() const
+	{
+		return this->Value;
+	}
+
+	/*! Sets the node value
+		@param[in] Value Node value
+	*/
+	HOST void SetValue(const T& Value)
+	{
+		this->Value = Value;
+	}
+
+protected:
+	float	Position;	/*! Node position */
+	T		Value;		/*! Node value */
 };
 
 }
