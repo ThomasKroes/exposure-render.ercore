@@ -30,23 +30,24 @@ class EXPOSURE_RENDER_DLL PiecewiseFunction : public TimeStamp
 {
 public:
 	/*! Default constructor */
-	HOST_DEVICE PiecewiseFunction() :
+	HOST PiecewiseFunction(const char* pName = "Untitled") :
 		TimeStamp(),
 		NodeRange(FLT_MAX, FLT_MIN),
 		Nodes(),
 		Count(0)
 	{
+		this->SetName(pName);
 	}
 	
 	/*! Destructor */
-	HOST_DEVICE ~PiecewiseFunction()
+	HOST ~PiecewiseFunction()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise function to copy
 	*/
-	HOST_DEVICE PiecewiseFunction(const PiecewiseFunction& Other)
+	HOST PiecewiseFunction(const PiecewiseFunction& Other)
 	{
 		*this = Other;
 	}
@@ -55,7 +56,7 @@ public:
 		@param[in] Other Piecewise function to copy
 		@result Reference to copied piecewise function
 	*/
-	HOST_DEVICE PiecewiseFunction& operator = (const PiecewiseFunction& Other)
+	HOST PiecewiseFunction& operator = (const PiecewiseFunction& Other)
 	{
 		TimeStamp::operator = (Other);
 
@@ -67,16 +68,34 @@ public:
 	}
 	
 	/*! Resets the content of the piecewise function */
-	HOST_DEVICE void Reset()
+	HOST void Reset()
 	{
 		this->NodeRange	= Vec2f(FLT_MAX, FLT_MIN);
 		this->Nodes		= Vec<PiecewiseFunctionNode<T>, 256>();
 		this->Count		= 0;
 	}
 
-	Vec2f									NodeRange;		/*! Range of the nodes */
-	Vec<PiecewiseFunctionNode<T>, 256>		Nodes;			/*! Nodes vector */
-	int										Count;			/*! Number of active nodes */
+	/*! Gets the name of the transfer function
+		@result Name of the transfer function
+	*/
+	HOST const char* GetName() const
+	{
+		return this->Name;
+	}
+
+	/*! Sets the transfer function name
+		@param[in] pName Name of the transfer function
+	*/
+	HOST void SetName(const char* pName)
+	{
+		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", pName);
+	}
+
+protected:
+	char									Name[MAX_CHAR_SIZE];	/*! Name */
+	Vec2f									NodeRange;				/*! Range of the nodes */
+	Vec<PiecewiseFunctionNode<T>, 256>		Nodes;					/*! Nodes vector */
+	int										Count;					/*! Number of active nodes */
 };
 
 }

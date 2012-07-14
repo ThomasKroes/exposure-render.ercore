@@ -30,8 +30,8 @@ class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, 
 {
 public:
 	/*! Default constructor */
-	HOST PiecewiseLinearFunction() :
-		PiecewiseFunction<T, Size>()
+	HOST PiecewiseLinearFunction(const char* pName = "Untitled") :
+		PiecewiseFunction<T, Size>(pName)
 	{
 	}
 	
@@ -60,7 +60,7 @@ public:
 
 			this->Discretize(512, Samples.GetData());
 
-			printf("Rebuilding piecewise linear transfer function\n");
+			printf("Rebuilding %s piecewise linear transfer function\n", this->GetName());
 		}
 
 		TimeStamp::operator = (Other);
@@ -88,6 +88,8 @@ public:
 			this->NodeRange[1] = Node.GetPosition();
 
 		this->Count++;
+
+		TimeStamp::Modified();
 	}
 
 	/*! Adds a node with \a Position and \a Value
@@ -103,6 +105,8 @@ public:
 	HOST void Reset()
 	{
 		PiecewiseFunction<T, Size>::Reset();
+
+		TimeStamp::Modified();
 	}
 	
 	/*! Evaluate the piecewise linear function at \a Position
