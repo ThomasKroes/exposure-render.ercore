@@ -74,7 +74,7 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 		{
 			double NodeValue[4];
 			GetOpacity()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Opacity1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+			VolumeProperty.Opacity1D.AddNode(NodeValue[0], NodeValue[1]);
 		}
 
 		VolumeProperty.Opacity1D.Modified();
@@ -91,7 +91,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 		{
 			double NodeValue[6];
 			GetDiffuse()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Diffuse1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+			const ColorXYZf XYZ = RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]));
+			VolumeProperty.Diffuse1D.AddNode(NodeValue[0], XYZ);
 		}
 
 		VolumeProperty.Diffuse1D.Modified();
@@ -108,7 +109,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 		{
 			double NodeValue[6];
 			GetSpecular()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Specular1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+			const ColorXYZf XYZ = RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]));
+			VolumeProperty.Specular1D.AddNode(NodeValue[0], XYZ);
 		}
 
 		VolumeProperty.Specular1D.Modified();
@@ -125,7 +127,7 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 		{
 			double NodeValue[4];
 			GetGlossiness()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Glossiness1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+			VolumeProperty.Glossiness1D.AddNode(NodeValue[0], NodeValue[1]);
 		}
 
 		VolumeProperty.Glossiness1D.Modified();
@@ -142,7 +144,7 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 		{
 			double NodeValue[4];
 			GetIndexOfReflection()->GetNodeValue(j, NodeValue);
-			VolumeProperty.IndexOfReflection1D.AddNode(ExposureRender::ScalarNode(NodeValue[0], NodeValue[1]));
+			VolumeProperty.IndexOfReflection1D.AddNode(NodeValue[0], NodeValue[1]);
 		}
 
 		VolumeProperty.IndexOfReflection1D.Modified();
@@ -159,7 +161,8 @@ void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProp
 		{
 			double NodeValue[6];
 			GetEmission()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Emission1D.AddNode(ExposureRender::ColorNode::FromRGB(NodeValue[0], ExposureRender::ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
+			const ColorXYZf XYZ = RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]));
+			VolumeProperty.Emission1D.AddNode(NodeValue[0], XYZ);
 		}
 
 		VolumeProperty.Emission1D.Modified();

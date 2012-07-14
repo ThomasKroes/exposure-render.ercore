@@ -29,7 +29,7 @@ class EXPOSURE_RENDER_DLL PiecewiseFunctionNode
 {
 public:
 	/*! Default constructor */
-	HOST PiecewiseFunctionNode() :
+	HOST_DEVICE PiecewiseFunctionNode() :
 		Position(),
 		Value()
 	{
@@ -39,21 +39,21 @@ public:
 		@param[in] Position Node position
 		@param[in] Value Node value
 	*/
-	HOST PiecewiseFunctionNode(const float& Position, const T& Value) :
+	HOST_DEVICE PiecewiseFunctionNode(const float& Position, const T& Value) :
 		Position(Position),
 		Value(Value)
 	{
 	}
 	
 	/*! Destructor */
-	HOST ~PiecewiseFunctionNode()
+	HOST_DEVICE ~PiecewiseFunctionNode()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise function node to copy
 	*/
-	HOST PiecewiseFunctionNode(const PiecewiseFunctionNode& Other)
+	HOST_DEVICE PiecewiseFunctionNode(const PiecewiseFunctionNode& Other)
 	{
 		*this = Other;
 	}
@@ -62,7 +62,7 @@ public:
 		@param[in] Other Piecewise function node to copy
 		@result Reference to piecewise function node
 	*/
-	HOST PiecewiseFunctionNode& operator = (const PiecewiseFunctionNode& Other)
+	HOST_DEVICE PiecewiseFunctionNode& operator = (const PiecewiseFunctionNode& Other)
 	{
 		this->Position	= Other.Position;
 		this->Value		= Other.Value;
@@ -71,7 +71,7 @@ public:
 	}
 	
 	/*! Resets the content of the piecewise function node */
-	HOST void Reset()
+	HOST_DEVICE void Reset()
 	{
 		this->Position	= 0.0f;
 		this->Value		= T();
@@ -80,7 +80,7 @@ public:
 	/*! Gets the node position
 		@result Node position
 	*/
-	HOST float GetPosition() const
+	HOST_DEVICE float GetPosition() const
 	{
 		return this->Position;
 	}
@@ -88,7 +88,7 @@ public:
 	/*! Sets the node position
 		@param[in] Position Node position
 	*/
-	HOST void SetPosition(const float& Position)
+	HOST_DEVICE void SetPosition(const float& Position)
 	{
 		this->Position = Position;
 	}
@@ -96,7 +96,7 @@ public:
 	/*! Gets the node value
 		@result Node value
 	*/
-	HOST T GetValue() const
+	HOST_DEVICE T GetValue() const
 	{
 		return this->Value;
 	}
@@ -104,7 +104,7 @@ public:
 	/*! Sets the node value
 		@param[in] Value Node value
 	*/
-	HOST void SetValue(const T& Value)
+	HOST_DEVICE void SetValue(const T& Value)
 	{
 		this->Value = Value;
 	}

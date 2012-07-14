@@ -30,7 +30,7 @@ class EXPOSURE_RENDER_DLL PiecewiseFunction : public TimeStamp
 {
 public:
 	/*! Default constructor */
-	HOST PiecewiseFunction() :
+	HOST_DEVICE PiecewiseFunction() :
 		TimeStamp(),
 		NodeRange(FLT_MAX, FLT_MIN),
 		Nodes(),
@@ -39,23 +39,23 @@ public:
 	}
 	
 	/*! Destructor */
-	HOST ~PiecewiseFunction()
+	HOST_DEVICE ~PiecewiseFunction()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise function to copy
 	*/
-	HOST PiecewiseFunction(const PiecewiseFunction& Other)
+	HOST_DEVICE PiecewiseFunction(const PiecewiseFunction& Other)
 	{
 		*this = Other;
 	}
 	
 	/*! Assignment operator
 		@param[in] Other Piecewise function to copy
-		@result Reference to piecewise function
+		@result Reference to copied piecewise function
 	*/
-	HOST PiecewiseFunction& operator = (const PiecewiseFunction& Other)
+	HOST_DEVICE PiecewiseFunction& operator = (const PiecewiseFunction& Other)
 	{
 		TimeStamp::operator = (Other);
 
@@ -67,10 +67,10 @@ public:
 	}
 	
 	/*! Resets the content of the piecewise function */
-	HOST void Reset()
+	HOST_DEVICE void Reset()
 	{
 		this->NodeRange	= Vec2f(FLT_MAX, FLT_MIN);
-		this->Nodes		= Vec<PiecewiseFunctionNode, 256>();
+		this->Nodes		= Vec<PiecewiseFunctionNode<T>, 256>();
 		this->Count		= 0;
 	}
 
