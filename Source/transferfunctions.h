@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "scalartransferfunction1d.h"
-#include "colortransferfunction1d.h"
+#include "transferfunction1d.h"
+#include "transferfunction2d.h"
 
 namespace ExposureRender
 {

@@ -118,13 +118,9 @@ SET(TransferFunction
 	piecewisefunctionnode.h
 	piecewisefunction.h
 	piecewiselinearfunction.h
-	piecewiselinearfunction1d.h
-	piecewiselinearfunction2d.h
 	transferfunction.h
 	transferfunction1d.h
 	transferfunction2d.h
-	colortransferfunction1d.h
-	scalartransferfunction1d.h
 	transferfunctions.h
 )
 

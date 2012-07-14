@@ -25,44 +25,44 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL TimeStamp
 {
 public:
-	HOST TimeStamp() :
+	HOST_DEVICE TimeStamp() :
 		ModifiedTime(0)
 	{
 	}
 
-	HOST virtual void Modified()
+	HOST_DEVICE virtual void Modified()
 	{
 		this->ModifiedTime++;
 	}
 
-	HOST TimeStamp& operator = (const TimeStamp& Other)
+	HOST_DEVICE TimeStamp& operator = (const TimeStamp& Other)
 	{
 		this->ModifiedTime = Other.ModifiedTime;
 
 		return *this;
 	}
 
-	HOST unsigned long GetModifiedTime()
+	HOST_DEVICE unsigned long GetModifiedTime()
 	{
 		return this->ModifiedTime;
 	}
 
-	HOST bool operator > (const TimeStamp& Other)
+	HOST_DEVICE bool operator > (const TimeStamp& Other)
 	{
 		return this->ModifiedTime > Other.ModifiedTime;
 	};
 	
-	HOST bool operator < (const TimeStamp& Other)
+	HOST_DEVICE bool operator < (const TimeStamp& Other)
 	{
 		return this->ModifiedTime < Other.ModifiedTime;
 	};
 
-	HOST bool operator == (const TimeStamp& Other)
+	HOST_DEVICE bool operator == (const TimeStamp& Other)
 	{
 		return this->ModifiedTime == Other.ModifiedTime;
 	};
 
-	HOST bool operator != (const TimeStamp& Other)
+	HOST_DEVICE bool operator != (const TimeStamp& Other)
 	{
 		return this->ModifiedTime != Other.ModifiedTime;
 	};

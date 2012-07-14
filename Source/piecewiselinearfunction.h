@@ -17,6 +17,7 @@
 #pragma once
 
 #include "piecewisefunction.h"
+#include "buffer1d.h"
 
 namespace ExposureRender
 {
@@ -29,20 +30,20 @@ class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, 
 {
 public:
 	/*! Default constructor */
-	HOST PiecewiseLinearFunction() :
+	HOST_DEVICE PiecewiseLinearFunction() :
 		PiecewiseFunction<T, Size>()
 	{
 	}
 	
 	/*! Destructor */
-	HOST ~PiecewiseLinearFunction()
+	HOST_DEVICE ~PiecewiseLinearFunction()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise linear function to copy
 	*/
-	HOST PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
+	HOST_DEVICE PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
 	{
 		*this = Other;
 	}
@@ -51,7 +52,7 @@ public:
 		@param[in] Other Piecewise linear function to copy
 		@result Reference to piecewise linear function
 	*/
-	HOST PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
+	HOST_DEVICE PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
 		if (*this != Other)
 		{
@@ -59,7 +60,7 @@ public:
 
 			this->Discretize(512, Samples.GetData());
 
-			printf("Rebuilding transfer function\n");
+			printf("Rebuilding piecewise linear transfer function\n");
 		}
 
 		TimeStamp::operator = (Other);
@@ -73,12 +74,12 @@ public:
 		@param[in] Position Position of the node
 		@param[in] Value Value of the node
 	*/
-	HOST void AddNode(const PiecewiseFunctionNode<T>& Node)
+	HOST_DEVICE void AddNode(const PiecewiseFunctionNode<T>& Node)
 	{
 		if (this->Count + 1 >= MAX_NO_TF_NODES)
 			return;
 
-		this->Node[this->Count] = Node;
+		this->Nodes[this->Count] = Node;
 
 		if (Node.GetPosition() < this->NodeRange[0])
 			this->NodeRange[0] = Node.GetPosition();
@@ -93,15 +94,15 @@ public:
 		@param[in] Position Position of the node
 		@param[in] Value Value of the node
 	*/
-	HOST void AddNode(const float& Position, const float& Value)
+	HOST_DEVICE void AddNode(const float& Position, const T& Value)
 	{
-		this->AddNode(Position, Value);
+		this->AddNode(PiecewiseFunctionNode<T>(Position, Value));
 	}
 	
 	/*! Resets the content of the piecewise linear function */
 	HOST void Reset()
 	{
-		PiecewiseFunction<Size>::Reset();
+		PiecewiseFunction<T, Size>::Reset();
 	}
 	
 	/*! Evaluate the piecewise linear function at \a Position
@@ -114,20 +115,20 @@ public:
 			return T();
 
 		if (Position < this->NodeRange[0])
-			return this->Value[0];
+			return this->Nodes[0].GetValue();
 
 		if (Position > this->NodeRange[1])
-			return this->Value[this->Count - 1];
+			return this->Nodes[this->Count - 1].GetValue();
 
 		for (int i = 1; i < this->Count; i++)
 		{
-			const float P1 = this->Position[i - 1];
-			const float P2 = this->Position[i];
+			const float P1 = this->Nodes[i - 1].GetPosition();
+			const float P2 = this->Nodes[i].GetPosition();
 			const float DeltaP = P2 - P1;
 			const float LerpT = DeltaP <= 0.0f ? 0.5f : (Position - P1) / DeltaP;
 
 			if (Position >= P1 && Position < P2)
-				return this->Value[i - 1] + LerpT * (this->Value[i] - this->Value[i - 1]);
+				return this->Nodes[i - 1].GetValue() + LerpT * (this->Nodes[i].GetValue() - this->Nodes[i - 1].GetValue());
 		}
 
 		return T();

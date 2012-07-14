@@ -16,7 +16,82 @@
 
 #pragma once
 
+#include "transferfunction.h"
+#include "piecewiselinearfunction.h"
+#include "cudatexture1d.h"
+#include "color.h"
+
 namespace ExposureRender
 {
+
+/*! \class TransferFunction1D
+ * \brief One-dimensional transfer function base template class
+ */
+template<class T>
+class EXPOSURE_RENDER_DLL TransferFunction1D : public TransferFunction
+{
+public:
+	/*! Constructor
+		@param[in] pName Name
+	*/
+	HOST TransferFunction1D(const char* pName = "Untitled") :
+		TransferFunction(pName),
+		PLF()
+	{
+	}
+	
+	/*! Copy constructor */
+	HOST TransferFunction1D(const TransferFunction1D& Other)
+	{
+		*this = Other;
+	}
+
+	/*! Destructor */
+	HOST virtual ~TransferFunction1D(void)
+	{
+	}
+	
+	/*! Assignment operator
+		@param[in] Other Transfer function to copy
+		@result Reference to the copied transfer function
+	*/
+	HOST TransferFunction1D& operator = (const TransferFunction1D& Other)
+	{
+		TransferFunction::operator = (Other);
+
+		return *this;
+	}
+
+	/*! Adds a node with \a Position and \a Value
+		@param[in] Position Position of the node
+		@param[in] Value Value of the node
+	*/
+	HOST void AddNode(const float& Position, const T& Value)
+	{
+		this->PLF.AddNode(Position, Value);
+	}
+
+	/*! Resets the content of the piecewise linear function */
+	HOST void Reset()
+	{
+		this->PLF.Reset();
+	}
+
+	/*! Evaluates the transfer function at \a Position
+		@param[in] Position Position to evaluate
+		@result Value at \a Position
+	*/
+	HOST_DEVICE T Evaluate(const float& Position) const
+	{
+		return this->PLF.Evaluate(Position);
+	}
+
+protected:
+	PiecewiseLinearFunction<T>		PLF;		/*! Piecewise linear function */
+	CudaTexture1D<T>				Texture;	/*! One-dimensional CUDA texture */
+};
+
+typedef TransferFunction1D<float>		ScalarTransferFunction1D;
+typedef TransferFunction1D<ColorXYZf>	ColorTransferFunction1D;
 
 }

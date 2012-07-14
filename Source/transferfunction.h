@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "piecewiselinearfunction.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
@@ -24,23 +24,20 @@ namespace ExposureRender
 /*! \class Transfer function
  * \brief Base buffer class
  */
-template<class T, int NoDimensions = 1>
-class EXPOSURE_RENDER_DLL TransferFunction
+class EXPOSURE_RENDER_DLL TransferFunction : public TimeStamp
 {
 public:
 	/*! Constructor
-		@param[in] pName Buffer name
-		@param[in] MemoryType Place where the memory resides, can be host or device
-		@param[in] FilterMode Type of filtering
-		@param[in] AddressMode Type of addressing near edges
+		@param[in] pName Name
 	*/
-	HOST TransferFunction(const char* pName = "Untitled")
+	HOST TransferFunction(const char* pName = "Untitled") :
+		TimeStamp()
 	{
 		this->SetName(pName);
 	}
 	
 	/*! Copy constructor */
-	HOST TransferFunction(const Buffer& Other)
+	HOST TransferFunction(const TransferFunction& Other)
 	{
 		*this = Other;
 	}
@@ -48,74 +45,39 @@ public:
 	/*! Destructor */
 	HOST virtual ~TransferFunction(void)
 	{
-		this->Free();
 	}
 	
 	/*! Assignment operator
-		@param[in] Other Buffer to copy from
-		@result Copied buffer by reference
+		@param[in] Other Transfer function to copy
+		@result Reference to the copied transfer function
 	*/
 	HOST TransferFunction& operator = (const TransferFunction& Other)
 	{
-		this->SetName(Other.GetName());
+		TimeStamp::operator = (Other);
 
-		this->FilterMode	= Other.FilterMode;
-		this->AddressMode	= Other.AddressMode;
-		
-		if (this->TimeStamp != Other.TimeStamp)
-		{
-			this->Set(Other.MemoryType, Other.Resolution, Other.Data);
-			this->TimeStamp = Other.TimeStamp;
-		}
+		this->SetName(Other.GetName());
 
 		return *this;
 	}
 	
-	/*! Frees the memory owned by the buffer */
-	HOST void Free(void)
-	{
-		this->TimeStamp.Modified();
-	}
-	
-	/*! Resets the memory owned by the buffer */
-	HOST void Reset(void)
-	{
-		this->TimeStamp.Modified();
-	}
-	
-	/*! Gets the buffer name
-		@result Name of the buffer
+	/*! Gets the name of the transfer function
+		@result Name of the transfer function
 	*/
 	HOST const char* GetName() const
 	{
 		return this->Name;
 	}
 
-	/*! Sets the buffer name
-		@param[in] pName Name of name
-		@result Size of the memory
+	/*! Sets the transfer function name
+		@param[in] pName Name of the transfer function
 	*/
 	HOST void SetName(const char* pName)
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", pName);
-		this->UpdateFullName();
-	}
-	
-	/*! Gets the full name
-		@result Full name
-	*/
-	HOST const char* GetFullName() const
-	{
-		return this->FullName;
 	}
 	
 protected:
-	char										Name[MAX_CHAR_SIZE];			/*! Name  */
-	char										FullName[MAX_CHAR_SIZE];		/*! Full buffer name  */
-	PiecewiseLinearFunction<MAX_NO_TF_NODES>	PLF;							/*! Full buffer name  */
-	CudaTexture1D<T>							Texture1D;
-	CudaTexture2D<T>							Texture2D;
-	CudaTexture3D<t>							Texture3D;
+	char	Name[MAX_CHAR_SIZE];	/*! Name */
 };
 
 }
