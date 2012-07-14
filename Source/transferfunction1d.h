@@ -59,6 +59,9 @@ public:
 	{
 		TransferFunction::operator = (Other);
 
+		this->PLF		= Other.PLF;
+//		this->Texture	= Other.Texture;
+
 		return *this;
 	}
 
