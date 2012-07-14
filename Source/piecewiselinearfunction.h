@@ -30,20 +30,20 @@ class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, 
 {
 public:
 	/*! Default constructor */
-	HOST_DEVICE PiecewiseLinearFunction() :
+	HOST PiecewiseLinearFunction() :
 		PiecewiseFunction<T, Size>()
 	{
 	}
 	
 	/*! Destructor */
-	HOST_DEVICE ~PiecewiseLinearFunction()
+	HOST ~PiecewiseLinearFunction()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise linear function to copy
 	*/
-	HOST_DEVICE PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
+	HOST PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
 	{
 		*this = Other;
 	}
@@ -52,7 +52,7 @@ public:
 		@param[in] Other Piecewise linear function to copy
 		@result Reference to piecewise linear function
 	*/
-	HOST_DEVICE PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
+	HOST PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
 		if (*this != Other)
 		{
@@ -74,7 +74,7 @@ public:
 		@param[in] Position Position of the node
 		@param[in] Value Value of the node
 	*/
-	HOST_DEVICE void AddNode(const PiecewiseFunctionNode<T>& Node)
+	HOST void AddNode(const PiecewiseFunctionNode<T>& Node)
 	{
 		if (this->Count + 1 >= MAX_NO_TF_NODES)
 			return;
