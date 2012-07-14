@@ -115,11 +115,17 @@ SET(Buffer
 SOURCE_GROUP("Buffer" FILES ${Buffer})
 
 SET(TransferFunction
+	piecewisefunctionnode.h
 	piecewisefunction.h
 	piecewiselinearfunction.h
-	colortransferfunction.h
-	scalartransferfunction.h
+	piecewiselinearfunction1d.h
+	piecewiselinearfunction2d.h
 	transferfunction.h
+	transferfunction1d.h
+	transferfunction2d.h
+	colortransferfunction1d.h
+	scalartransferfunction1d.h
+	transferfunctions.h
 )
 
 SOURCE_GROUP("Transfer Function" FILES ${TransferFunction})

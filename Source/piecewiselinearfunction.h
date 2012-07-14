@@ -21,57 +21,97 @@
 namespace ExposureRender
 {
 
-template<int Size = 64>
-class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<Size>
+/*! \class Piecewise linear function
+ * \brief Piecewise linear function base template class
+ */
+template<class T, int Size = 64>
+class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, Size>
 {
 public:
+	/*! Default constructor */
 	HOST PiecewiseLinearFunction() :
-		PiecewiseFunction<Size>()
+		PiecewiseFunction<T, Size>()
 	{
 	}
-
+	
+	/*! Destructor */
 	HOST ~PiecewiseLinearFunction()
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Piecewise linear function to copy
+	*/
 	HOST PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Piecewise linear function to copy
+		@result Reference to piecewise linear function
+	*/
 	HOST PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
-		PiecewiseFunction<Size>::operator = (Other);
+		if (*this != Other)
+		{
+			Buffer1D<float> Samples("Samples", Enums::Device);
+
+			this->Discretize(512, Samples.GetData());
+
+			printf("Rebuilding transfer function\n");
+		}
+
+		TimeStamp::operator = (Other);
+
+		PiecewiseFunction<T, Size>::operator = (Other);
 
 		return *this;
 	}
-
-	HOST void AddNode(const float& Position, const float& Value)
+	
+	/*! Adds a node with \a Position and \a Value
+		@param[in] Position Position of the node
+		@param[in] Value Value of the node
+	*/
+	HOST void AddNode(const PiecewiseFunctionNode<T>& Node)
 	{
 		if (this->Count + 1 >= MAX_NO_TF_NODES)
 			return;
 
-		this->Position[this->Count] = Position;
-		this->Value[this->Count]	= Value;
+		this->Node[this->Count] = Node;
 
-		if (Position < this->NodeRange[0])
-			this->NodeRange[0] = Position;
+		if (Node.GetPosition() < this->NodeRange[0])
+			this->NodeRange[0] = Node.GetPosition();
 
-		if (Position > this->NodeRange[1])
-			this->NodeRange[1] = Position;
+		if (Node.GetPosition() > this->NodeRange[1])
+			this->NodeRange[1] = Node.GetPosition();
 
 		this->Count++;
 	}
 
+	/*! Adds a node with \a Position and \a Value
+		@param[in] Position Position of the node
+		@param[in] Value Value of the node
+	*/
+	HOST void AddNode(const float& Position, const float& Value)
+	{
+		this->AddNode(Position, Value);
+	}
+	
+	/*! Resets the content of the piecewise linear function */
 	HOST void Reset()
 	{
 		PiecewiseFunction<Size>::Reset();
 	}
-
-	HOST_DEVICE float Evaluate(const float& Position) const
+	
+	/*! Evaluate the piecewise linear function at \a Position
+		@param[in] Position Position at which to evaluate the piecewise linear function
+		@result Linearly interpolated value at \a Position
+	*/
+	HOST_DEVICE T Evaluate(const float& Position) const
 	{
 		if (this->Count <= 0)
-			return 0.0f;
+			return T();
 
 		if (Position < this->NodeRange[0])
 			return this->Value[0];
@@ -81,16 +121,34 @@ public:
 
 		for (int i = 1; i < this->Count; i++)
 		{
-			float P1 = this->Position[i - 1];
-			float P2 = this->Position[i];
-			float DeltaP = P2 - P1;
-			float LerpT = DeltaP <= 0.0f ? 0.5f : (Position - P1) / DeltaP;
+			const float P1 = this->Position[i - 1];
+			const float P2 = this->Position[i];
+			const float DeltaP = P2 - P1;
+			const float LerpT = DeltaP <= 0.0f ? 0.5f : (Position - P1) / DeltaP;
 
 			if (Position >= P1 && Position < P2)
 				return this->Value[i - 1] + LerpT * (this->Value[i] - this->Value[i - 1]);
 		}
 
-		return 0.0f;
+		return T();
+	}
+
+	/*! Discretize the piecewise linear function
+		@param[in] NoSamples No of samples to take
+		@param[in, out] Samples Sampels generated
+	*/
+	HOST void Discretize(const int& NoSamples, float* Samples)
+	{
+		if (NoSamples <= 0)
+			throw (Exception(Enums::Error, "Can't discretize transfer function with zero samples!"));
+		
+		Samples = new float[NoSamples];
+
+		for (int i = 0; i < NoSamples; ++i)
+		{
+		}
+
+		delete[] Samples;
 	}
 };
 

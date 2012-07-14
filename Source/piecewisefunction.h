@@ -16,53 +16,67 @@
 
 #pragma once
 
-#include "vector.h"
+#include "piecewisefunctionnode.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-template<int Size>
-class EXPOSURE_RENDER_DLL PiecewiseFunction
+/*! \class Piecewise function
+ * \brief Piecewise function base template class
+ */
+template<class T, int Size>
+class EXPOSURE_RENDER_DLL PiecewiseFunction : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST PiecewiseFunction() :
+		TimeStamp(),
 		NodeRange(FLT_MAX, FLT_MIN),
-		Position(),
-		Value(),
+		Nodes(),
 		Count(0)
 	{
-		this->Count = 0;
 	}
-
+	
+	/*! Destructor */
 	HOST ~PiecewiseFunction()
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Piecewise function to copy
+	*/
 	HOST PiecewiseFunction(const PiecewiseFunction& Other)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Piecewise function to copy
+		@result Reference to piecewise function
+	*/
 	HOST PiecewiseFunction& operator = (const PiecewiseFunction& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->NodeRange		= Other.NodeRange;
-		this->Position		= Other.Position;
-		this->Value			= Other.Value;
+		this->Nodes			= Other.Nodes;
 		this->Count			= Other.Count;
 
 		return *this;
 	}
-
+	
+	/*! Resets the content of the piecewise function */
 	HOST void Reset()
 	{
 		this->NodeRange	= Vec2f(FLT_MAX, FLT_MIN);
+		this->Nodes		= Vec<PiecewiseFunctionNode, 256>();
 		this->Count		= 0;
 	}
 
-	Vec2f				NodeRange;
-	Vec<float, 256>		Position;
-	Vec<float, 256>		Value;
-	int					Count;
+	Vec2f									NodeRange;		/*! Range of the nodes */
+	Vec<PiecewiseFunctionNode<T>, 256>		Nodes;			/*! Nodes vector */
+	int										Count;			/*! Number of active nodes */
 };
 
 }
