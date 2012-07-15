@@ -32,7 +32,7 @@ public:
 	/*! Constructor
 		@param[in] Name Name
 	*/
-	HOST PiecewiseFunction(const char* Name = "Untitled") :
+	HOST_DEVICE PiecewiseFunction(const char* Name = "Untitled") :
 		TimeStamp(),
 		NodeRange(FLT_MAX, FLT_MIN),
 		Nodes(),
@@ -42,14 +42,14 @@ public:
 	}
 	
 	/*! Destructor */
-	HOST ~PiecewiseFunction()
+	HOST_DEVICE ~PiecewiseFunction()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise function to copy
 	*/
-	HOST PiecewiseFunction(const PiecewiseFunction& Other)
+	HOST_DEVICE PiecewiseFunction(const PiecewiseFunction& Other)
 	{
 		*this = Other;
 	}
@@ -58,7 +58,7 @@ public:
 		@param[in] Other Piecewise function to copy
 		@result Reference to copied piecewise function
 	*/
-	HOST PiecewiseFunction& operator = (const PiecewiseFunction& Other)
+	HOST_DEVICE PiecewiseFunction& operator = (const PiecewiseFunction& Other)
 	{
 		TimeStamp::operator = (Other);
 
@@ -70,7 +70,7 @@ public:
 	}
 	
 	/*! Resets the content of the piecewise function */
-	HOST void Reset()
+	HOST_DEVICE void Reset()
 	{
 		this->NodeRange	= Vec2f(FLT_MAX, FLT_MIN);
 		this->Nodes		= Vec<PiecewiseFunctionNode<T>, 256>();
@@ -80,7 +80,7 @@ public:
 	/*! Gets the name of the transfer function
 		@result Name of the transfer function
 	*/
-	HOST const char* GetName() const
+	HOST_DEVICE const char* GetName() const
 	{
 		return this->Name;
 	}
@@ -88,9 +88,11 @@ public:
 	/*! Sets the transfer function name
 		@param[in] pName Name of the transfer function
 	*/
-	HOST void SetName(const char* pName)
+	HOST_DEVICE void SetName(const char* pName)
 	{
+#ifndef __CUDACC__
 		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", pName);
+#endif
 	}
 
 protected:

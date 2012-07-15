@@ -52,7 +52,7 @@ public:
 
 	HOST_DEVICE Vec3f GetTranslation() const
 	{
-		return Vec3f(this->TM.NN[0][3], this->TM.NN[1][3], this->TM.NN[2][3]);
+		return Vec3f(this->TM.GetElement(0, 3), this->TM.GetElement(1, 3), this->TM.GetElement(2, 3));
 	}
 
 	Matrix44	TM;

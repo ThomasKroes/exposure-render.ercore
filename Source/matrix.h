@@ -224,8 +224,29 @@ public:
 
 		return Rotation * Translation;
 	}
+	
+	/*! Get element at \a I and \a J
+		@param[in] I Column index
+		@param[in] J Row index
+		@result Element at \a I and \a J
+	*/
+	HOST_DEVICE float GetElement(const int& I, const int& J) const
+	{
+		return this->NN[I][J];
+	}
+	
+	/*! Set element at \a I and \a J
+		@param[in] I Column index
+		@param[in] J Row index
+		@param[in] Value Value
+	*/
+	HOST_DEVICE void SetElement(const int& I, const int& J, const float& Value)
+	{
+		this->NN[I][J] = Value;
+	}
 
-	float NN[4][4];
+protected:
+	float NN[4][4];		/*! Elements */
 };
 
 }
