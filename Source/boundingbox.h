@@ -21,10 +21,10 @@
 namespace ExposureRender
 {
 
+/*! Bounding box class */
 class EXPOSURE_RENDER_DLL BoundingBox
 {
 public:
-#ifndef NO_CONSTRUCTORS
 	HOST_DEVICE BoundingBox() :
 		MinP(FLT_MAX),
 		MaxP(FLT_MIN),
@@ -40,7 +40,6 @@ public:
 		InvSize(1.0f / Size)
 	{
 	}
-#endif
 	
 	HOST_DEVICE BoundingBox& BoundingBox::operator = (const BoundingBox& Other)
 	{
