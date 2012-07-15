@@ -25,9 +25,9 @@ try																						\
 catch(ExposureRender::Exception& Exception)												\
 {																						\
 	char ErrorMessage[256];																\
-	sprintf_s(ErrorMessage, 256, "%s\n", Exception.Message);								\
+	sprintf_s(ErrorMessage, 256, "%s\n", Exception.GetMessage());						\
 																						\
-	switch (Exception.Level)															\
+	switch (Exception.GetLevel())														\
 	{																					\
 		case ExposureRender::Enums::Info:												\
 		{																				\

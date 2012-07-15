@@ -22,24 +22,37 @@
 namespace ExposureRender
 {
 
+/*! Exception class */
 class EXPOSURE_RENDER_DLL Exception
 {
 public:
-	HOST Exception(const Enums::ExceptionLevel& Level, const char* pMessage = "")
+	/*! Constructor
+		@param[in] Level Level of the exception
+		@param[in] Message Informative message to display to user
+	*/
+	HOST Exception(const Enums::ExceptionLevel& Level, const char* Message = "")
 	{
 		this->Level = Level;
-		sprintf_s(this->Message, MAX_CHAR_SIZE, "%s", pMessage);
+		sprintf_s(this->Message, MAX_CHAR_SIZE, "%s", Message);
 	}
-
-	HOST ~Exception()
+	
+	/*! Destructor */
+	HOST virtual ~Exception()
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Exception to copy
+	*/
 	HOST Exception(const Exception& Other)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Exception to copy
+		@result Exception
+	*/
 	HOST Exception& operator = (const Exception& Other)
 	{
 		this->Level = Other.Level;
@@ -47,9 +60,18 @@ public:
 
 		return *this;
 	}
-
-	Enums::ExceptionLevel	Level;
-	char					Message[MAX_CHAR_SIZE];
+	
+	/*! Gets the exception message */
+	HOST const char* GetMessage() const
+	{
+		return &(this->Message[0]);
+	}
+	
+	HOST GET_SET_MACRO(Level, Enums::ExceptionLevel)
+	
+protected:
+	Enums::ExceptionLevel	Level;						/*! Level of the exception */
+	char					Message[MAX_CHAR_SIZE];		/*! Exception message */
 };
 
 }
