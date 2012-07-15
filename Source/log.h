@@ -22,6 +22,7 @@
 namespace ExposureRender
 {
 
+/*! Outputs a debug log message */
 HOST inline void DebugLog(const char* format, ...)
 {
 //	return;
