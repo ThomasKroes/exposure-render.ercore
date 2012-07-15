@@ -39,17 +39,17 @@ vtkErCamera::~vtkErCamera(void)
 
 void vtkErCamera::RequestData(ExposureRender::Camera& Camera)
 {
-	Camera.Pos					= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
-	Camera.Target				= Vec3f(this->GetFocalPoint()[0], this->GetFocalPoint()[1], this->GetFocalPoint()[2]);
-	Camera.Up					= Vec3f(this->GetViewUp()[0], this->GetViewUp()[1], this->GetViewUp()[2]);
-	Camera.ClipNear				= 0.0f;//this->GetClippingRange()[0];
-	Camera.ClipFar				= 1000.0f;//this->GetClippingRange()[1];
-	Camera.FOV					= this->GetViewAngle();
-	Camera.FocalDistance		= this->GetFocalDistance();
-	Camera.Exposure				= this->GetExposure();
-	Camera.Gamma				= this->GetGamma();
-	Camera.ApertureShape		= this->GetApertureShape();
-	Camera.ApertureSize			= this->GetApertureSize();
-	Camera.NoApertureBlades		= this->GetNoApertureBlades();
-	Camera.ApertureAngle		= this->GetApertureAngle();
+	Camera.SetPos(Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]));
+	Camera.SetTarget(Vec3f(this->GetFocalPoint()[0], this->GetFocalPoint()[1], this->GetFocalPoint()[2]));
+	Camera.SetUp(Vec3f(this->GetViewUp()[0], this->GetViewUp()[1], this->GetViewUp()[2]));
+	Camera.SetClipNear(0.0f);
+	Camera.SetClipFar(1000.0f);
+	Camera.SetFOV(this->GetViewAngle());
+	Camera.SetFocalDistance(this->GetFocalDistance());
+	Camera.SetExposure(this->GetExposure());
+	Camera.SetGamma(this->GetGamma());
+	Camera.SetApertureShape(this->GetApertureShape());
+	Camera.SetApertureSize(this->GetApertureSize());
+	Camera.SetNoApertureBlades(this->GetNoApertureBlades());
+	Camera.SetApertureAngle(this->GetApertureAngle());
 }
