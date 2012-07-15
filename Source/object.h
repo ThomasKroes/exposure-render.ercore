@@ -21,10 +21,12 @@
 namespace ExposureRender
 {
 
+/*! Object class */
 class Object : public TimeStamp
 {
 public:
-	HOST Object() :
+	/*! Default constructor */
+	HOST_DEVICE Object() :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
@@ -38,8 +40,11 @@ public:
 		Clip(false)
 	{
 	}
-
-	HOST Object(const ErObject& Other) :
+	
+	/*! Copy constructor
+		@param[in] Other Object to copy
+	*/
+	HOST_DEVICE Object(const ErObject& Other) :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
@@ -54,7 +59,11 @@ public:
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Object to copy
+		@result Object
+	*/
 	HOST Object& operator = (const ErObject& Other)
 	{
 		TimeStamp::operator = (Other);
@@ -118,16 +127,28 @@ public:
 		return *this;
 	}
 
-	bool					Visible;
-	Shape					Shape;
-	int						DiffuseTextureID;
-	int						SpecularTextureID;
-	int						GlossinessTextureID;
-	int						EmissionTextureID;
-	bool					Emitter;
-	float					Multiplier;
-	Enums::EmissionUnit		EmissionUnit;
-	bool					Clip;
+	GET_SET_MACRO(HOST_DEVICE, Visible, bool)
+	GET_SET_MACRO(HOST_DEVICE, Shape, Shape)
+	GET_SET_MACRO(HOST_DEVICE, DiffuseTextureID, int)
+	GET_SET_MACRO(HOST_DEVICE, SpecularTextureID, int)
+	GET_SET_MACRO(HOST_DEVICE, GlossinessTextureID, int)
+	GET_SET_MACRO(HOST_DEVICE, EmissionTextureID, int)
+	GET_SET_MACRO(HOST_DEVICE, Emitter, bool)
+	GET_SET_MACRO(HOST_DEVICE, Multiplier, float)
+	GET_SET_MACRO(HOST_DEVICE, EmissionUnit, Enums::EmissionUnit)
+	GET_SET_MACRO(HOST_DEVICE, Clip, bool)
+
+protected:
+	bool					Visible;				/*! Whether the object is visible or not */
+	Shape					Shape;					/*! Shape representation */
+	int						DiffuseTextureID;		/*! Diffuse texture ID */
+	int						SpecularTextureID;		/*! Specular texture ID */
+	int						GlossinessTextureID;	/*! Glossiness texture ID */
+	int						EmissionTextureID;		/*! Emission texture ID */
+	bool					Emitter;				/*! Whether the object acts as an emitter */
+	float					Multiplier;				/*! Multiplier, in case of an emitter */
+	Enums::EmissionUnit		EmissionUnit;			/*! Emission unit, in case of an emitter */
+	bool					Clip;					/*! Whether the shape is (also) used for clipping purposes */
 };
 
 }

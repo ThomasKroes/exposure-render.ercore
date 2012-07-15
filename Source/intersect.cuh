@@ -32,13 +32,13 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& Scatter
 	{
 		const Object& Object = gpObjects[i];
 		
-		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.GetT() < NearestT)
+		if (Object.GetVisible() && Object.GetShape().Intersect(R, LocalInt) && LocalInt.GetT() < NearestT)
 		{
 			NearestT			= LocalInt.GetT();
 			Int					= LocalInt;
 
 			Int.SetValid(true);
-			Int.SetScatterType(Object.Emitter ? Enums::Light : Enums::Object);
+			Int.SetScatterType(Object.GetEmitter() ? Enums::Light : Enums::Object);
 			Int.SetID(i);
 			Int.SetWo(-R.D);
 		}
@@ -49,7 +49,7 @@ DEVICE bool IntersectsObjects(Ray R)
 {
 	for (int i = 0; i < gpTracer->ObjectIDs.GetNoIndices(); i++)
 	{
-		if (gpObjects[i].Shape.Intersects(R))
+		if (gpObjects[i].GetShape().Intersects(R))
 			return true;
 	}
 
