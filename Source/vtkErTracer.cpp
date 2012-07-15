@@ -105,7 +105,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		delete[] this->ImageBuffer;
 		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->LastRenderSize[0] * this->LastRenderSize[1]];
 
-		this->Tracer.Camera.FilmSize = this->LastRenderSize;
+		this->Tracer.Camera.SetFilmSize(this->LastRenderSize);
 		this->Tracer.SetDirty();
 	}
 

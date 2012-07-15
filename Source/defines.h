@@ -91,8 +91,8 @@ namespace ExposureRender
 #endif
 
 /*! Adds a function to a class that returns the value of member \a name of \a type */
-#define GET_MACRO(name,type)						\
-type Get##name()									\
+#define GET_MACRO(name,type)	 					\
+type Get##name() const								\
 {													\
 	return this->name;								\
 }
@@ -112,7 +112,7 @@ type& Get##name()									\
 }
 
 /*! Adds a function to a class that sets member a\ name of \a type, and flag the time stamp as modified */
-#define SET_TS_MACRO(name,type)					\
+#define SET_TS_MACRO(name,type)						\
 void Set##name(const type& Arg)						\
 {													\
 	this->name = Arg;								\
@@ -126,12 +126,17 @@ SET_MACRO(name,type)
 
 /*! Adds a function to a class for getting member a\ name and setting it */
 #define GET_SET_TS_MACRO(name,type)					\
-GET_REF_MACRO(name,type)							\
+GET_MACRO(name,type)								\
 SET_TS_MACRO(name,type)
 
 /*! Adds a function to a class for getting member a\ name by reference and setting it */
 #define GET_REF_SET_MACRO(name,type)				\
 GET_REF_MACRO(name,type)							\
 SET_MACRO(name,type)
+
+/*! Adds a function to a class for getting member a\ name by reference and setting it */
+#define GET_REF_SET_TS_MACRO(name,type)				\
+GET_REF_MACRO(name,type)							\
+SET_TS_MACRO(name,type)
 
 }

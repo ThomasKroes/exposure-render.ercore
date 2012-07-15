@@ -113,9 +113,9 @@ public:
 				throw(Exception(Enums::Fatal, "Clipping object not found!"));
 		}
 
-		if (this->FrameBuffer.Resolution != Other.Camera.FilmSize || Other.GetDirty())
+		if (this->FrameBuffer.Resolution != Other.Camera.GetFilmSize() || Other.GetDirty())
 		{
-			this->FrameBuffer.Resize(Other.Camera.FilmSize);
+			this->FrameBuffer.Resize(Other.Camera.GetFilmSize());
 
 			this->NoEstimates = 0;
 			

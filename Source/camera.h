@@ -17,14 +17,18 @@
 #pragma once
 
 #include "montecarlo.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Camera
+/*! Camera class */
+class EXPOSURE_RENDER_DLL Camera : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST Camera() :
+		TimeStamp(),
 		FilmSize(0, 0),
 		Pos(1.0f),
 		Target(0.0f),
@@ -48,8 +52,12 @@ public:
 		InvGamma(1.0f / 2.2f)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Camera to copy
+	*/
 	HOST Camera(const Camera& Other) :
+		TimeStamp(),
 		FilmSize(0, 0),
 		Pos(1.0f),
 		Target(0.0f),
@@ -75,8 +83,14 @@ public:
 		*this = Other;
 	}
 
+	/*! Assignment operator
+		@param[in] Other Camera to copy
+		@result Camera
+	*/
 	HOST Camera& Camera::operator = (const Camera& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->FilmSize			= Other.FilmSize;
 		this->Pos				= Other.Pos;
 		this->Target			= Other.Target;
@@ -98,44 +112,12 @@ public:
 
 		return *this;
 	}
-
-	HOST void Update()
-	{
-		this->InvExposure	= this->Exposure == 0.0f ? 0.0f : 1.0f / this->Exposure;
-		this->InvGamma		= this->Gamma == 0.0f ? 0.0f : 1.0f / this->Gamma;
-		
-		this->N = Normalize(this->Target - this->Pos);
-		this->U = Normalize(Cross(this->N, this->Up));
-		this->V = Normalize(Cross(this->N, this->U));
-
-		if (this->FocalDistance == -1.0f)
-			this->FocalDistance = Length(this->Target, this->Pos);
-
-		float Scale = 0.0f;
-
-		Scale = tanf((0.5f * this->FOV / RAD_F));
-
-		const float AspectRatio = (float)this->FilmSize[1] / (float)this->FilmSize[0];
-
-		if (AspectRatio > 1.0f)
-		{
-			this->Screen[0][0] = -Scale;
-			this->Screen[0][1] = Scale;
-			this->Screen[1][0] = -Scale * AspectRatio;
-			this->Screen[1][1] = Scale * AspectRatio;
-		}
-		else
-		{
-			this->Screen[0][0] = -Scale / AspectRatio;
-			this->Screen[0][1] = Scale / AspectRatio;
-			this->Screen[1][0] = -Scale;
-			this->Screen[1][1] = Scale;
-		}
-
-		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->FilmSize[0];
-		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->FilmSize[1];
-	}
-
+	
+	/*! Samples the camera
+		@param[in,out] R Sampled ray
+		@param[in] UV Position on the film plane
+		@param[in] RNG Random number generator 
+	*/
 	DEVICE void Sample(Ray& R, const Vec2i& UV, RNG& RNG)
 	{
 		Vec2f ScreenPoint;
@@ -187,6 +169,11 @@ public:
 		}
 	}
 
+	/*! Projects a point \a P in world space onto the camera film plane
+		@param[in] P Point in world space
+		@param[out] FilmUV Position on the film plane
+		@result Whether the project point is with the film plane
+	*/
 	HOST_DEVICE bool ProjectPointToFilmPlane(const Vec3f& P, Vec2f& FilmUV) const
 	{
 		const Vec3f D = P - this->Pos;
@@ -216,29 +203,90 @@ public:
 		return true;
 	}
 
-	Vec2i					FilmSize;
-	Vec3f					Pos;
-	Vec3f					Target;
-	Vec3f					Up;
-	Enums::FocusMode		FocusMode;
-	Vec2f					FocusUV;
-	float					FocalDistance;
-	Enums::ApertureShape	ApertureShape;	
-	float					ApertureSize;
-	int						NoApertureBlades;
-	float					ApertureAngle;
-	float					ClipNear;
-	float					ClipFar;
-	float					Exposure;
-	float					Gamma;
-	float					FOV;
-	Vec3f					N;
-	Vec3f					U;
-	Vec3f					V;
-	float					Screen[2][2];
-	float					InvScreen[2];
-	float					InvExposure;
-	float					InvGamma;
+	HOST_DEVICE GET_SET_TS_MACRO(FilmSize, Vec2i)
+	HOST_DEVICE GET_SET_TS_MACRO(Pos, Vec3f)
+	HOST_DEVICE GET_SET_TS_MACRO(Target, Vec3f)
+	HOST_DEVICE GET_SET_TS_MACRO(Up, Vec3f)
+	HOST_DEVICE GET_SET_TS_MACRO(FocusMode, Enums::FocusMode)
+	HOST_DEVICE GET_SET_TS_MACRO(FocusUV, Vec2f)
+	HOST_DEVICE GET_SET_TS_MACRO(FocalDistance, float)
+	HOST_DEVICE GET_SET_TS_MACRO(ApertureShape, Enums::ApertureShape)
+	HOST_DEVICE GET_SET_TS_MACRO(ApertureSize, float)
+	HOST_DEVICE GET_SET_TS_MACRO(NoApertureBlades, int)
+	HOST_DEVICE GET_SET_TS_MACRO(ApertureAngle, float)
+	HOST_DEVICE GET_SET_TS_MACRO(ClipNear, float)
+	HOST_DEVICE GET_SET_TS_MACRO(ClipFar, float)
+	HOST_DEVICE GET_SET_TS_MACRO(Exposure, float)
+	HOST_DEVICE GET_SET_TS_MACRO(Gamma, float)
+	HOST_DEVICE GET_SET_TS_MACRO(FOV, float)
+	HOST_DEVICE GET_SET_TS_MACRO(N, Vec3f)
+	HOST_DEVICE GET_SET_TS_MACRO(U, Vec3f)
+	HOST_DEVICE GET_SET_TS_MACRO(V, Vec3f)
+	HOST_DEVICE GET_SET_TS_MACRO(InvExposure, float)
+	HOST_DEVICE GET_SET_TS_MACRO(InvGamma, float)
+
+protected:
+	/*! Updates internal members */
+	HOST void Update()
+	{
+		this->InvExposure	= this->Exposure == 0.0f ? 0.0f : 1.0f / this->Exposure;
+		this->InvGamma		= this->Gamma == 0.0f ? 0.0f : 1.0f / this->Gamma;
+
+		this->N = Normalize(this->Target - this->Pos);
+		this->U = Normalize(Cross(this->N, this->Up));
+		this->V = Normalize(Cross(this->N, this->U));
+
+		if (this->FocalDistance == -1.0f)
+			this->FocalDistance = Length(this->Target, this->Pos);
+
+		float Scale = 0.0f;
+
+		Scale = tanf((0.5f * this->FOV / RAD_F));
+
+		const float AspectRatio = (float)this->FilmSize[1] / (float)this->FilmSize[0];
+
+		if (AspectRatio > 1.0f)
+		{
+			this->Screen[0][0] = -Scale;
+			this->Screen[0][1] = Scale;
+			this->Screen[1][0] = -Scale * AspectRatio;
+			this->Screen[1][1] = Scale * AspectRatio;
+		}
+		else
+		{
+			this->Screen[0][0] = -Scale / AspectRatio;
+			this->Screen[0][1] = Scale / AspectRatio;
+			this->Screen[1][0] = -Scale;
+			this->Screen[1][1] = Scale;
+		}
+
+		this->InvScreen[0] = (this->Screen[0][1] - this->Screen[0][0]) / (float)this->FilmSize[0];
+		this->InvScreen[1] = (this->Screen[1][1] - this->Screen[1][0]) / (float)this->FilmSize[1];
+	}
+
+	Vec2i					FilmSize;				/*! Size of the film plane */
+	Vec3f					Pos;					/*! Camera position */
+	Vec3f					Target;					/*! Camera target */
+	Vec3f					Up;						/*! Camera up vector */
+	Enums::FocusMode		FocusMode;				/*! Type of focusing e.g. manual, auto-focus */
+	Vec2f					FocusUV;				/*! Focus position on the film plane, used for auto-focus */
+	float					FocalDistance;			/*! Focal distance, in case of manual focus */
+	Enums::ApertureShape	ApertureShape;			/*! Shape of the aperture e.g. circular, polygonal */
+	float					ApertureSize;			/*! Size of the aperture */
+	int						NoApertureBlades;		/*! Number of aperture blades, in case of a polygonal aperture */
+	float					ApertureAngle;			/*! Offset angle of the aperture blades */
+	float					ClipNear;				/*! Near clipping distance */
+	float					ClipFar;				/*! Far clipping distance */
+	float					Exposure;				/*! Film exposure */
+	float					Gamma;					/*! Monitor gamma */
+	float					FOV;					/*! Field of view */
+	Vec3f					N;						/*! Camera normal vector */
+	Vec3f					U;						/*! Camera U vector (to the left) */
+	Vec3f					V;						/*! Camera V vector (up) */
+	float					Screen[2][2];			/*! Pre-computed values for sampling the film plane efficiently */
+	float					InvScreen[2];			/*! Pre-computed values for sampling the film plane efficiently */
+	float					InvExposure;			/*! Reciprocal of the exposure */
+	float					InvGamma;				/*! Reciprocal of the monitor gamma */
 };
 
 }
