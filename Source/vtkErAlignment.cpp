@@ -41,24 +41,24 @@ vtkErAlignment::vtkErAlignment()
 
 void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
 {
-	Alignment.Type		= this->GetAlignmentType();
-	Alignment.Axis		= this->GetAxis();
-	Alignment.AutoFlip	= this->GetAutoFlip();
-	Alignment.Position	= Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]);
-	Alignment.Target	= Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]);
-	Alignment.Up		= Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]);
-	Alignment.Elevation	= this->GetElevation();
-	Alignment.Azimuth	= this->GetAzimuth();
-	Alignment.Offset	= this->GetOffset();
+	Alignment.SetType(this->GetAlignmentType());
+	Alignment.SetAxis(this->GetAxis());
+	Alignment.SetAutoFlip(this->GetAutoFlip());
+	Alignment.SetPosition(Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]));
+	Alignment.SetTarget(Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]));
+	Alignment.SetUp(Vec3f(this->GetUp()[0], this->GetUp()[1], this->GetUp()[2]));
+	Alignment.SetElevation(this->GetElevation());
+	Alignment.SetAzimuth(this->GetAzimuth());
+	Alignment.SetOffset(this->GetOffset());
 
 	if (this->ManualTM.GetPointer())
 	{
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
-				Alignment.ManualTM.NN[i][j] = this->ManualTM->GetElement(i, j);
+				Alignment.GetManualTM().NN[i][j] = this->ManualTM->GetElement(i, j);
 	}
 
-	Alignment.UseOffset = this->GetRelativeToCamera();
+	Alignment.SetUseOffset(this->GetRelativeToCamera());
 }
 
 void vtkErAlignment::GetCameraOffset(vtkCamera* Camera, Matrix44& Offset)
