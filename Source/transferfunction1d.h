@@ -31,17 +31,26 @@ template<class T>
 class EXPOSURE_RENDER_DLL TransferFunction1D : public TransferFunction
 {
 public:
+	/*! Default constructor */
+	HOST TransferFunction1D() :
+		TransferFunction("Untitled"),
+		PLF("Untitled")
+	{
+	}
+
 	/*! Constructor
 		@param[in] pName Name
 	*/
-	HOST TransferFunction1D(const char* pName = "Untitled") :
+	HOST TransferFunction1D(const char* pName) :
 		TransferFunction(pName),
-		PLF()
+		PLF(pName)
 	{
 	}
 	
 	/*! Copy constructor */
-	HOST TransferFunction1D(const TransferFunction1D& Other)
+	HOST TransferFunction1D(const TransferFunction1D& Other) :
+		TransferFunction("Untitled"),
+		PLF("Untitled")
 	{
 		*this = Other;
 	}

@@ -30,7 +30,7 @@ public:
 	/*! Constructor
 		@param[in] pName Name
 	*/
-	HOST TransferFunction(const char* pName = "Untitled") :
+	HOST TransferFunction(const char* pName) :
 		TimeStamp()
 	{
 		this->SetName(pName);
