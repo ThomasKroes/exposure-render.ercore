@@ -89,7 +89,7 @@ public:
 		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
 #endif
 	}
-
+	
 	/*! Gets the resolution
 		@result Resolution
 	*/
@@ -105,7 +105,6 @@ protected:
 	bool					Normalized;			/*! Whether texture access is in normalized texture coordinates */
 	Enums::FilterMode		FilterMode;			/*! Type of filtering  */
 	Enums::AddressMode		AddressMode;		/*! Type of addressing  */
-			
 };
 
 }

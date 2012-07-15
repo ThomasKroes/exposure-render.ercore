@@ -29,14 +29,16 @@ template<class T, int Size>
 class EXPOSURE_RENDER_DLL PiecewiseFunction : public TimeStamp
 {
 public:
-	/*! Default constructor */
-	HOST PiecewiseFunction(const char* pName = "Untitled") :
+	/*! Constructor
+		@param[in] Name Name
+	*/
+	HOST PiecewiseFunction(const char* Name = "Untitled") :
 		TimeStamp(),
 		NodeRange(FLT_MAX, FLT_MIN),
 		Nodes(),
 		Count(0)
 	{
-		this->SetName(pName);
+		this->SetName(Name);
 	}
 	
 	/*! Destructor */
