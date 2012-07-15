@@ -17,20 +17,25 @@
 #pragma once
 
 #include "erbitmap.h"
-#include "buffer.h"
+#include "buffers.h"
 
 namespace ExposureRender
 {
 
+/*! Bitmap class */
 class Bitmap : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST Bitmap() :
 		TimeStamp(),
 		Pixels("Device Pixels", Enums::Device)
 	{
 	}
 	
+	/*! Copy constructor
+		@param[in] Other Bitmap to copy
+	*/
 	HOST Bitmap(const ErBitmap& Other) :
 		TimeStamp(),
 		Pixels("Device Pixels", Enums::Device)
@@ -38,6 +43,10 @@ public:
 		*this = Other;
 	}
 
+	/*! Assignment operator
+		@param[in] Other Bitmap to copy
+		@result Bitmap
+	*/
 	HOST Bitmap& operator = (const ErBitmap& Other)
 	{
 		TimeStamp::operator = (Other);
@@ -47,6 +56,9 @@ public:
 		return *this;
 	}
 
+	HOST_DEVICE GET_REF_MACRO(Pixels, Buffer2D<ColorRGBAuc>)
+
+protected:
 	Buffer2D<ColorRGBAuc> Pixels;
 };
 
