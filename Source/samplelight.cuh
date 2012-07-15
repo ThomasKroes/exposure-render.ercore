@@ -18,6 +18,7 @@
 
 #include "macros.cuh"
 #include "shader.h"
+#include "transport.h"
 
 namespace ExposureRender
 {

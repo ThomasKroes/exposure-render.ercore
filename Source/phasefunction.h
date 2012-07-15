@@ -40,7 +40,7 @@ public:
 
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
 	{
-		Wi	= UniformSampleSphereSurface(U);
+		Wi	= UniformSampleSphere(U);
 		Pdf	= this->Pdf(Wo, Wi);
 
 		return F(Wo, Wi);
