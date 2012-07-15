@@ -129,8 +129,8 @@ public:
 		return true;
 	}
 
-	HOST_DEVICE GET_SET_MACRO(Size, Vec3f);
-	HOST_DEVICE GET_SET_MACRO(InvSize, Vec3f);
+	GET_SET_MACRO(HOST_DEVICE, Size, Vec3f);
+	GET_SET_MACRO(HOST_DEVICE, InvSize, Vec3f);
 
 protected:
 	Vec3f	MinP;			/*! Minimum point of the bounding box */

@@ -40,18 +40,18 @@ DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& Volum
 		if (R.MinT + gStepFactorPrimary >= R.MaxT)
 			return;
 		
-		Int.P			= R(R.MinT);
-		Int.Intensity	= Volume(Int.P, VolumeID);
+		Int.SetP(R(R.MinT));
+		Int.SetIntensity(Volume(Int.GetP(), VolumeID));
 
-		Sum				+= gDensityScale * gpTracer->VolumeProperty.GetOpacity(Int.Intensity) * gStepFactorPrimary;
+		Sum				+= gDensityScale * gpTracer->VolumeProperty.GetOpacity(Int.GetIntensity()) * gStepFactorPrimary;
 		R.MinT			+= gStepFactorPrimary;
 	}
 
-	Int.Valid			= true;
-	Int.Wo				= -R.D;
-	Int.N				= Volume.NormalizedGradient(Int.P, Enums::CentralDifferences);
-	Int.T				= R.MinT;
-	Int.ScatterType		= Enums::Volume;
+	Int.SetValid(true);
+	Int.SetWo(-R.D);
+	Int.SetN(Volume.NormalizedGradient(Int.GetP(), Enums::CentralDifferences));
+	Int.SetT(R.MinT);
+	Int.SetScatterType(Enums::Volume);
 }
 
 DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)

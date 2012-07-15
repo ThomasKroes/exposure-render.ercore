@@ -86,22 +86,22 @@ public:
 		if (LargestMaxT < LargestMinT)
 			return false;
 
-		Int.T = LargestMinT > 0.0f ? LargestMinT : 0.0f;
+		Int.SetT(LargestMinT > 0.0f ? LargestMinT : 0.0f);
 
-		if (Int.T < R.MinT || Int.T > R.MaxT)
+		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
 			return false;
 
-		Int.P		= R(Int.T);
-		Int.N		= Vec3f(0.0f);
-		Int.UV		= Vec2f(0.0f, 0.0f);
+		Int.SetP(R(Int.GetT()));
+		Int.SetN(Vec3f(0.0f));
+		Int.SetUV(Vec2f(0.0f, 0.0f));
 
 		for (int i = 0; i < 3; i++)
 		{
-			if (Int.P[i] <= MinP[i] + 0.0001f)
-				Int.N[i] = -1.0f;
+			if (Int.GetP()[i] <= MinP[i] + 0.0001f)
+				Int.GetN()[i] = -1.0f;
 
-			if (Int.P[i] >= MaxP[i] - 0.0001f)
-				Int.N[i] = 1.0f;
+			if (Int.GetP()[i] >= MaxP[i] - 0.0001f)
+				Int.GetN()[i] = 1.0f;
 		}
 
 		return true;

@@ -23,9 +23,11 @@ using namespace std;
 namespace ExposureRender
 {
 
+/*! Intersection class */
 class Intersection
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE Intersection() :
 		Valid(false),
 		Front(true),
@@ -39,7 +41,10 @@ public:
 		ID(-1)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Intersection to copy
+	*/
 	HOST_DEVICE Intersection(const Intersection& Other) :
 		Valid(false),
 		Front(true),
@@ -55,6 +60,10 @@ public:
 		*this = Other;
 	}
 
+	/*! Assignment operator
+		@param[in] Other Intersection to copy
+		@result Intersection
+	*/
 	HOST_DEVICE Intersection& Intersection::operator = (const Intersection& Other)
 	{
 		this->Valid			= Other.Valid;
@@ -71,16 +80,28 @@ public:
 		return *this;
 	}
 
-	bool					Valid;
-	bool					Front;
-	Vec3f					Wo;
-	float					T;
-	Vec3f					P;
-	Vec3f					N;
-	Vec2f					UV;
-	float					Intensity;
-	Enums::ScatterType		ScatterType;
-	int						ID;
+	GET_REF_SET_MACRO(HOST_DEVICE, Valid, bool)
+	GET_REF_SET_MACRO(HOST_DEVICE, Front, bool)
+	GET_REF_SET_MACRO(HOST_DEVICE, Wo, Vec3f)
+	GET_REF_SET_MACRO(HOST_DEVICE, T, float)
+	GET_REF_SET_MACRO(HOST_DEVICE, P, Vec3f)
+	GET_REF_SET_MACRO(HOST_DEVICE, N, Vec3f)
+	GET_REF_SET_MACRO(HOST_DEVICE, UV, Vec2f)
+	GET_REF_SET_MACRO(HOST_DEVICE, Intensity, float)
+	GET_REF_SET_MACRO(HOST_DEVICE, ScatterType, Enums::ScatterType)
+	GET_REF_SET_MACRO(HOST_DEVICE, ID, int)
+
+protected:
+	bool					Valid;			/*! If there is a valid intersection */
+	bool					Front;			/*! Front (true) or back (false) */
+	Vec3f					Wo;				/*! Outgoing direction */
+	float					T;				/*! Distance along ray */
+	Vec3f					P;				/*! Position at intersection */
+	Vec3f					N;				/*! Normal at intersection */
+	Vec2f					UV;				/*! UV coordinates at intersection */
+	float					Intensity;		/*! Intensity at intersection */
+	Enums::ScatterType		ScatterType;	/*! Scatter type */
+	int						ID;				/*! ID of the entity that was hit */
 };
 
 }

@@ -93,9 +93,9 @@ public:
 	IsotropicPhase				IsotropicPhase;
 };
 
-DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const int& VolumeID = 0)
+DEVICE void GetShader(Intersection Int, Shader& Shader, RNG& RNG, const int& VolumeID = 0)
 {
-	switch (Int.ScatterType)
+	switch (Int.GetScatterType())
 	{
 		case Enums::Volume:
 		{
@@ -105,17 +105,17 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 			// Get reference to volume property
 			VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
 
-			const ColorXYZf Diffuse			= VolumeProperty.GetDiffuse(Int.Intensity);
-			const ColorXYZf Specular		= VolumeProperty.GetSpecular(Int.Intensity);
-			const float Glossiness			= VolumeProperty.GetGlossiness(Int.Intensity);
-			const float IndexOfReflection	= VolumeProperty.GetIndexOfReflection(Int.Intensity);
+			const ColorXYZf Diffuse			= VolumeProperty.GetDiffuse(Int.GetIntensity());
+			const ColorXYZf Specular		= VolumeProperty.GetSpecular(Int.GetIntensity());
+			const float Glossiness			= VolumeProperty.GetGlossiness(Int.GetIntensity());
+			const float IndexOfReflection	= VolumeProperty.GetIndexOfReflection(Int.GetIntensity());
 
 			switch (VolumeProperty.GetShadingType())
 			{
 				case Enums::BrdfOnly:
 				{
 					Shader.Type	= Enums::Brdf;			
-					Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, Glossiness);
+					Shader.Brdf	= Brdf(Int.GetN(), Int.GetWo(), Diffuse, Specular, IndexOfReflection, Glossiness);
 
 					break;
 				}
@@ -130,19 +130,19 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 
 				case Enums::Hybrid:
 				{
-					const float GradientMagnitude			= Volume.GradientMagnitude(Int.P);
+					const float GradientMagnitude			= Volume.GradientMagnitude(Int.GetP());
 					const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
 
 					const float Sensitivity	= 25;
 					const float ExpGF		= 3;
 					const float Exponent	= Sensitivity * powf(VolumeProperty.GetGradientFactor(), ExpGF) * NormalizedGradientMagnitude;
 					
-					const float PdfBrdf = VolumeProperty.GetOpacityModulated() ? VolumeProperty.GetOpacity(Int.Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
+					const float PdfBrdf = VolumeProperty.GetOpacityModulated() ? VolumeProperty.GetOpacity(Int.GetIntensity()) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
 					
 					if (RNG.Get1() < PdfBrdf)
 					{
 						Shader.Type	= Enums::Brdf;			
-						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, Glossiness);
+						Shader.Brdf	= Brdf(Int.GetN(), Int.GetWo(), Diffuse, Specular, IndexOfReflection, Glossiness);
 					}
 					else
 					{
@@ -155,7 +155,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 				
 				case Enums::Modulation:
 				{
-					const float GradientMagnitude = Volume.GradientMagnitude(Int.P);
+					const float GradientMagnitude = Volume.GradientMagnitude(Int.GetP());
 
 					const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
 	
@@ -164,7 +164,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 					if (RNG.Get1() < PdfBrdf)
 					{
 						Shader.Type	= Enums::Brdf;			
-						Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, IndexOfReflection, Glossiness);
+						Shader.Brdf	= Brdf(Int.GetN(), Int.GetWo(), Diffuse, Specular, IndexOfReflection, Glossiness);
 					}
 					else
 					{
@@ -186,12 +186,12 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 
 		case Enums::Object:
 		{
-			const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[Int.ID].DiffuseTextureID, Int.UV);
-			const ColorXYZf Specular	= EvaluateTexture(gpObjects[Int.ID].SpecularTextureID, Int.UV);
-			const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[Int.ID].GlossinessTextureID, Int.UV);
+			const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[Int.GetID()].DiffuseTextureID, Int.GetUV());
+			const ColorXYZf Specular	= EvaluateTexture(gpObjects[Int.GetID()].SpecularTextureID, Int.GetUV());
+			const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[Int.GetID()].GlossinessTextureID, Int.GetUV());
 
 			Shader.Type	= Enums::Brdf;			
-			Shader.Brdf	= Brdf(Int.N, Int.Wo, Diffuse, Specular, 15, 500);
+			Shader.Brdf	= Brdf(Int.GetN(), Int.GetWo(), Diffuse, Specular, 15, 500);
 
 			break;
 		}
