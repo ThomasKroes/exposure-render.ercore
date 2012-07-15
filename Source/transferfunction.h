@@ -22,18 +22,18 @@ namespace ExposureRender
 {
 
 /*! \class Transfer function
- * \brief Base buffer class
+ * \brief Base transfer function class
  */
 class EXPOSURE_RENDER_DLL TransferFunction : public TimeStamp
 {
 public:
 	/*! Constructor
-		@param[in] pName Name
+		@param[in] Name Name
 	*/
-	HOST TransferFunction(const char* pName) :
+	HOST TransferFunction(const char* Name) :
 		TimeStamp()
 	{
-		this->SetName(pName);
+		this->SetName(Name);
 	}
 	
 	/*! Copy constructor */
@@ -56,7 +56,7 @@ public:
 		TimeStamp::operator = (Other);
 
 		this->SetName(Other.GetName());
-
+		
 		return *this;
 	}
 	
@@ -71,9 +71,9 @@ public:
 	/*! Sets the transfer function name
 		@param[in] pName Name of the transfer function
 	*/
-	HOST void SetName(const char* pName)
+	HOST void SetName(const char* Name)
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", pName);
+		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", Name);
 	}
 	
 protected:

@@ -33,7 +33,6 @@ public:
 		Glossiness1D("Glossiness"),
 		IndexOfReflection1D("IOR"),
 		Emission1D("Emission"),
-		G("G"),
 		StepFactorPrimary(2),
 		StepFactorShadow(2),
 		Shadows(true),
@@ -54,7 +53,6 @@ public:
 		Glossiness1D("Glossiness"),
 		IndexOfReflection1D("IOR"),
 		Emission1D("Emission"),
-		G("G"),
 		StepFactorPrimary(2),
 		StepFactorShadow(2),
 		Shadows(true),
@@ -78,7 +76,6 @@ public:
 		this->Glossiness1D			= Other.Glossiness1D;
 		this->IndexOfReflection1D	= Other.IndexOfReflection1D;
 		this->Emission1D			= Other.Emission1D;
-		this->G						= Other.G;
 		this->StepFactorPrimary		= Other.StepFactorPrimary;
 		this->StepFactorShadow		= Other.StepFactorShadow;
 		this->Shadows				= Other.Shadows;

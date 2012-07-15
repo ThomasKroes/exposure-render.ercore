@@ -29,14 +29,16 @@ template<class T, int Size = 64>
 class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, Size>
 {
 public:
-	/*! Default constructor */
-	HOST PiecewiseLinearFunction(const char* pName = "Untitled") :
-		PiecewiseFunction<T, Size>(pName)
+	/*! Constructor
+		@param[in] Name Name
+	*/
+	HOST PiecewiseLinearFunction(const char* Name = "Untitled") :
+		PiecewiseFunction<T, Size>(Name)
 	{
 	}
 	
 	/*! Destructor */
-	HOST ~PiecewiseLinearFunction()
+	HOST virtual ~PiecewiseLinearFunction()
 	{
 	}
 	
@@ -54,15 +56,6 @@ public:
 	*/
 	HOST PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
-		if (*this != Other)
-		{
-			Buffer1D<float> Samples("Samples", Enums::Device);
-
-			this->Discretize(512, Samples.GetData());
-
-			printf("Rebuilding %s piecewise linear transfer function\n", this->GetName());
-		}
-
 		TimeStamp::operator = (Other);
 
 		PiecewiseFunction<T, Size>::operator = (Other);
@@ -147,13 +140,9 @@ public:
 		if (NoSamples <= 0)
 			throw (Exception(Enums::Error, "Can't discretize transfer function with zero samples!"));
 		
-		Samples = new float[NoSamples];
-
 		for (int i = 0; i < NoSamples; ++i)
 		{
 		}
-
-		delete[] Samples;
 	}
 };
 

@@ -34,23 +34,27 @@ public:
 	/*! Default constructor */
 	HOST TransferFunction1D() :
 		TransferFunction("Untitled"),
-		PLF("Untitled")
+		PLF("Untitled"),
+		UseTexture(true)
 	{
 	}
 
 	/*! Constructor
-		@param[in] pName Name
+		@param[in] Name Name
+		@param[in] UseTexture Whether a texture is used or not
 	*/
-	HOST TransferFunction1D(const char* pName) :
-		TransferFunction(pName),
-		PLF(pName)
+	HOST TransferFunction1D(const char* Name, const bool& UseTexture = true) :
+		TransferFunction(Name),
+		PLF(Name),
+		UseTexture(UseTexture)
 	{
 	}
 	
 	/*! Copy constructor */
 	HOST TransferFunction1D(const TransferFunction1D& Other) :
 		TransferFunction("Untitled"),
-		PLF("Untitled")
+		PLF("Untitled"),
+		UseTexture(true)
 	{
 		*this = Other;
 	}
@@ -67,10 +71,22 @@ public:
 	HOST TransferFunction1D& operator = (const TransferFunction1D& Other)
 	{
 		TransferFunction::operator = (Other);
+		
+		if (this->PLF != Other.PLF)
+		{
+			Buffer1D<float> Samples("Samples", Enums::Device);
+			
+			Samples.Resize(512);
 
-		this->PLF		= Other.PLF;
-//		this->Texture	= Other.Texture;
+			this->PLF.Discretize(512, Samples.GetData());
 
+			printf("Rebuilding %s piecewise linear transfer function\n", this->GetName());
+		}
+
+		this->PLF			= Other.PLF;
+		this->UseTexture	= Other.UseTexture;
+//		this->Texture		= Other.Texture;
+		
 		return *this;
 	}
 
@@ -88,7 +104,7 @@ public:
 	{
 		this->PLF.Reset();
 	}
-
+	
 	/*! Evaluates the transfer function at \a Position
 		@param[in] Position Position to evaluate
 		@result Value at \a Position
@@ -99,11 +115,12 @@ public:
 	}
 
 protected:
-	PiecewiseLinearFunction<T>		PLF;		/*! Piecewise linear function */
-	CudaTexture1D<T>				Texture;	/*! One-dimensional CUDA texture */
+	PiecewiseLinearFunction<T>		PLF;			/*! Piecewise linear function */
+	bool							UseTexture;		/*! Whether a texture is used or not */
+	CudaTexture1D<T>				Texture;		/*! One-dimensional CUDA texture */
 };
 
-typedef TransferFunction1D<float>		ScalarTransferFunction1D;
-typedef TransferFunction1D<ColorXYZf>	ColorTransferFunction1D;
+typedef TransferFunction1D<float> ScalarTransferFunction1D;
+typedef TransferFunction1D<ColorXYZf> ColorTransferFunction1D;
 
 }
