@@ -151,20 +151,20 @@ public:
 		return this->Emission1D.Evaluate(Intensity);
 	}
 
-	HOST_DEVICE GET_REF_SET_MACRO(Opacity1D, ScalarTransferFunction1D)
-	HOST_DEVICE GET_REF_SET_MACRO(Diffuse1D, ColorTransferFunction1D)
-	HOST_DEVICE GET_REF_SET_MACRO(Specular1D, ColorTransferFunction1D)
-	HOST_DEVICE GET_REF_SET_MACRO(Glossiness1D, ScalarTransferFunction1D)
-	HOST_DEVICE GET_REF_SET_MACRO(IndexOfReflection1D, ScalarTransferFunction1D)
-	HOST_DEVICE GET_REF_SET_MACRO(Emission1D, ColorTransferFunction1D)
-	HOST_DEVICE GET_SET_MACRO(StepFactorPrimary, float)
-	HOST_DEVICE GET_SET_MACRO(StepFactorShadow, float)
-	HOST_DEVICE GET_SET_MACRO(Shadows, bool)
-	HOST_DEVICE GET_SET_MACRO(ShadingType, Enums::ShadingMode)
-	HOST_DEVICE GET_SET_MACRO(DensityScale, float)
-	HOST_DEVICE GET_SET_MACRO(OpacityModulated, bool)
-	HOST_DEVICE GET_SET_MACRO(GradientFactor, float)
-	HOST_DEVICE GET_SET_MACRO(GradientMode, Enums::GradientMode)
+	GET_REF_SET_MACRO(HOST_DEVICE, Opacity1D, ScalarTransferFunction1D)
+	GET_REF_SET_MACRO(HOST_DEVICE, Diffuse1D, ColorTransferFunction1D)
+	GET_REF_SET_MACRO(HOST_DEVICE, Specular1D, ColorTransferFunction1D)
+	GET_REF_SET_MACRO(HOST_DEVICE, Glossiness1D, ScalarTransferFunction1D)
+	GET_REF_SET_MACRO(HOST_DEVICE, IndexOfReflection1D, ScalarTransferFunction1D)
+	GET_REF_SET_MACRO(HOST_DEVICE, Emission1D, ColorTransferFunction1D)
+	GET_SET_MACRO(HOST_DEVICE, StepFactorPrimary, float)
+	GET_SET_MACRO(HOST_DEVICE, StepFactorShadow, float)
+	GET_SET_MACRO(HOST_DEVICE, Shadows, bool)
+	GET_SET_MACRO(HOST_DEVICE, ShadingType, Enums::ShadingMode)
+	GET_SET_MACRO(HOST_DEVICE, DensityScale, float)
+	GET_SET_MACRO(HOST_DEVICE, OpacityModulated, bool)
+	GET_SET_MACRO(HOST_DEVICE, GradientFactor, float)
+	GET_SET_MACRO(HOST_DEVICE, GradientMode, Enums::GradientMode)
 
 protected:
 	ScalarTransferFunction1D	Opacity1D;					/*! Opacity transfer function */

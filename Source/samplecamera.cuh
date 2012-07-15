@@ -57,12 +57,12 @@ KERNEL void KrnlSampleCamera()
 	// Intersections
 	if (Intersect(Sample.Ray, RNG, Sample.Intersection))
 	{
-		if (Sample.Intersection.ScatterType == Enums::Light)
+		if (Sample.Intersection.GetScatterType() == Enums::Light)
 		{
-			ColorXYZf Le = gpObjects[Sample.Intersection.ID].Multiplier * EvaluateTexture(gpObjects[Sample.Intersection.ID].EmissionTextureID, Sample.Intersection.UV);
+			ColorXYZf Le = gpObjects[Sample.Intersection.GetID()].Multiplier * EvaluateTexture(gpObjects[Sample.Intersection.GetID()].EmissionTextureID, Sample.Intersection.GetUV());
 		
-			if (gpObjects[Sample.Intersection.ID].EmissionUnit == Enums::Power)
-				Le /= gpObjects[Sample.Intersection.ID].Shape.Area;
+			if (gpObjects[Sample.Intersection.GetID()].EmissionUnit == Enums::Power)
+				Le /= gpObjects[Sample.Intersection.GetID()].Shape.Area;
 
 			FrameEstimate[0] = Le[0];
 			FrameEstimate[1] = Le[1];
@@ -77,7 +77,7 @@ KERNEL void KrnlSampleCamera()
 	}
 
 	// Adjust alpha
-	FrameEstimate[3] = Sample.Intersection.Valid ? 1.0f : 0.0f;
+	FrameEstimate[3] = Sample.Intersection.GetValid() ? 1.0f : 0.0f;
 }
 
 void SampleCamera(Tracer& Tracer, Statistics& Statistics)

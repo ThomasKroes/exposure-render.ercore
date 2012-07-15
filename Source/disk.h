@@ -50,14 +50,14 @@ public:
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.T = (0.0f - R.O[2]) / R.D[2];
+		Int.SetT((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.T < R.MinT || Int.T > R.MaxT)
+		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
 			return false;
 
-		Int.UV = Vec2f(Int.P[0], Int.P[1]);
+		Int.SetUV(Vec2f(Int.GetP()[0], Int.GetP()[1]));
 
-		if (Int.UV.Length() > this->Radius)
+		if (Int.GetUV().Length() > this->Radius)
 			return false;
 		
 		return true;
@@ -68,29 +68,29 @@ public:
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
 			return false;
 
-		Int.T = (0.0f - R.O[2]) / R.D[2];
+		Int.SetT((0.0f - R.O[2]) / R.D[2]);
 		
-		if (Int.T < R.MinT || Int.T > R.MaxT)
+		if (Int.GetT() < R.MinT || Int.GetT() > R.MaxT)
 			return false;
 
-		Int.P 	= R(Int.T);
-		Int.UV	= Vec2f(Int.P[0], Int.P[1]);
-		Int.N	= Vec3f(0.0f, 0.0f, 1.0f);
+		Int.SetP(R(Int.GetT()));
+		Int.SetUV(Vec2f(Int.GetP()[0], Int.GetP()[1]));
+		Int.SetN(Vec3f(0.0f, 0.0f, 1.0f));
 
 		if (this->OneSided && R.D[2] >= 0.0f)
 		{
-			Int.Front	= false;
-			Int.N		= Vec3f(0.0f, 0.0f, -1.0f);
+			Int.SetFront(false);
+			Int.SetN(Vec3f(0.0f, 0.0f, -1.0f));
 		}
 
-		if (Int.UV.Length() > this->Radius)
+		if (Int.GetUV().Length() > this->Radius)
 			return false;
 
 		const float Diameter = 2.0f * this->Radius;
 
-		Int.UV /= Diameter;
-		Int.UV += Vec2f(0.5f);
-		Int.UV[0] = 1.0f - Int.UV[0];
+		Int.GetUV() /= Diameter;
+		Int.GetUV() += Vec2f(0.5f);
+		Int.GetUV()[0] = 1.0f - Int.GetUV()[0];
 
 		return true;
 	}

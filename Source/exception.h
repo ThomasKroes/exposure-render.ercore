@@ -67,7 +67,7 @@ public:
 		return &(this->Message[0]);
 	}
 	
-	HOST GET_SET_MACRO(Level, Enums::ExceptionLevel)
+	GET_SET_MACRO(HOST, Level, Enums::ExceptionLevel)
 	
 protected:
 	Enums::ExceptionLevel	Level;						/*! Level of the exception */

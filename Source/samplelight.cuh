@@ -71,30 +71,30 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	Ray R;
 	
 	R.O		= SS.P;
-	R.D		= Normalize(Sample.Intersection.P - SS.P);
+	R.D		= Normalize(Sample.Intersection.GetP() - SS.P);
 	R.MinT	= RAY_EPS;
-	R.MaxT	= Length(Sample.Intersection.P, SS.P);
+	R.MaxT	= Length(Sample.Intersection.GetP(), SS.P);
 
-	const Vec3f Wi = Normalize(SS.P - Sample.Intersection.P);
+	const Vec3f Wi = Normalize(SS.P - Sample.Intersection.GetP());
 
 	// Reflected radiance
-	const ColorXYZf F = Shader.F(Sample.Intersection.Wo, Wi);
+	const ColorXYZf F = Shader.F(Sample.Intersection.GetWo(), Wi);
 
-	const float ShaderPdf = Shader.Pdf(Sample.Intersection.Wo, Wi);
+	const float ShaderPdf = Shader.Pdf(Sample.Intersection.GetWo(), Wi);
 
 	if (F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
 
 	if (!Intersects(R, RNG))
 	{
-		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.P) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
+		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 
 		ColorXYZf Ld;
 
 		if (Shader.Type == Enums::Brdf)
-			Ld = F * Li * (AbsDot(Wi, Sample.Intersection.N) * Weight / LightPdf);
+			Ld = F * Li * (AbsDot(Wi, Sample.Intersection.GetN()) * Weight / LightPdf);
 		else
 			Ld = F * ((Li * Weight) / LightPdf);
 

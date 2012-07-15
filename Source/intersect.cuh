@@ -32,14 +32,15 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& Scatter
 	{
 		const Object& Object = gpObjects[i];
 		
-		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.T < NearestT)
+		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.GetT() < NearestT)
 		{
-			NearestT			= LocalInt.T;
+			NearestT			= LocalInt.GetT();
 			Int					= LocalInt;
-			Int.Valid			= true;
-			Int.ScatterType		= Object.Emitter ? Enums::Light : Enums::Object;
-			Int.ID				= i;
-			Int.Wo				= -R.D;
+
+			Int.SetValid(true);
+			Int.SetScatterType(Object.Emitter ? Enums::Light : Enums::Object);
+			Int.SetID(i);
+			Int.SetWo(-R.D);
 		}
 	}
 }
@@ -69,14 +70,14 @@ DEVICE bool Intersect(Ray R, RNG& RNG, Intersection& Int, const int& ScatterType
 
 	for (int i = 0; i < 2; i++)
 	{
-		if (Ints[i].Valid && Ints[i].T < HitT)
+		if (Ints[i].GetValid() && Ints[i].GetT() < HitT)
 		{
 			Int		= Ints[i];
-			HitT	= Ints[i].T;
+			HitT	= Ints[i].GetT();
 		}
 	}
 
-	return Int.Valid;
+	return Int.GetValid();
 }
 
 DEVICE bool Intersects(Ray R, RNG& RNG)

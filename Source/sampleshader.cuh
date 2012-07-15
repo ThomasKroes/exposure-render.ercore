@@ -52,11 +52,11 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	Ray R;
 	
-	R.O		= Sample.Intersection.P;
+	R.O		= Sample.Intersection.GetP();
 	R.MinT	= gStepFactorShadow;
 	R.MaxT	= 1000.0f;
 
-	const ColorXYZf F = Shader.SampleF(Sample.Intersection.Wo, R.D, ShaderPdf, RNG);
+	const ColorXYZf F = Shader.SampleF(Sample.Intersection.GetWo(), R.D, ShaderPdf, RNG);
 
 	if (F.IsBlack() || ShaderPdf <= 0.0f)
 		return;
@@ -65,36 +65,36 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 
 	if (Intersect(R, RNG, Int, Enums::Light))
 	{
-		switch (Int.ScatterType)
+		switch (Int.GetScatterType())
 		{
 			case Enums::Light:
 			{
-				if (Int.ID == Sample.LightID)
+				if (Int.GetID() == Sample.LightID)
 				{
-					Object& Light = gpObjects[Int.ID];
+					Object& Light = gpObjects[Int.GetID()];
 
-					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.UV);
+					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.GetUV());
 
 					if (Light.EmissionUnit == Enums::Power)
 						Li /= Light.Shape.Area;
 
-					const float LightPdf = LengthSquared(Int.P, Sample.Intersection.P) / (AbsDot(-R.D, Int.N) * Light.Shape.Area);
+					const float LightPdf = LengthSquared(Int.GetP(), Sample.Intersection.GetP()) / (AbsDot(-R.D, Int.GetN()) * Light.Shape.Area);
 
 					const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
 
 					ColorXYZf Ld;
 
 					if (Shader.Type == Enums::Brdf)
-						Ld = F * Li * (AbsDot(R.D, Sample.Intersection.N) * Weight / ShaderPdf);
+						Ld = F * Li * (AbsDot(R.D, Sample.Intersection.GetN()) * Weight / ShaderPdf);
 					else
 						Ld = F * ((Li * Weight) / ShaderPdf);
 
 					Ld *= (float)gpTracer->LightIDs.GetNoIndices();
 					
-					R.O		= Int.P;
-					R.D		= Normalize(Sample.Intersection.P - R.O);
+					R.O		= Int.GetP();
+					R.D		= Normalize(Sample.Intersection.GetP() - R.O);
 					R.MinT	= RAY_EPS;
-					R.MaxT	= Length(Sample.Intersection.P, R.O);
+					R.MaxT	= Length(Sample.Intersection.GetP(), R.O);
 
 					if (!Intersects(R, RNG))
 					{

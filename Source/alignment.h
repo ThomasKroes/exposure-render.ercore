@@ -209,18 +209,18 @@ public:
 		return Offset;
 	}
 	
-	HOST_DEVICE GET_SET_MACRO(Type, Enums::AlignmentType)
-	HOST_DEVICE GET_SET_MACRO(Axis, Enums::Axis)
-	HOST_DEVICE GET_SET_MACRO(AutoFlip, bool)
-	HOST_DEVICE GET_SET_MACRO(Position, Vec3f)
-	HOST_DEVICE GET_SET_MACRO(Target, Vec3f)
-	HOST_DEVICE GET_SET_MACRO(Up, Vec3f)
-	HOST_DEVICE GET_SET_MACRO(Elevation, float)
-	HOST_DEVICE GET_SET_MACRO(Azimuth, float)
-	HOST_DEVICE GET_SET_MACRO(Offset, float)
-	HOST_DEVICE GET_REF_SET_MACRO(ManualTM, Matrix44)
-	HOST_DEVICE GET_SET_MACRO(UseOffset, bool)
-	HOST_DEVICE GET_REF_SET_MACRO(OffsetTM, Matrix44)
+	GET_SET_MACRO(HOST_DEVICE, Type, Enums::AlignmentType)
+	GET_SET_MACRO(HOST_DEVICE, Axis, Enums::Axis)
+	GET_SET_MACRO(HOST_DEVICE, AutoFlip, bool)
+	GET_SET_MACRO(HOST_DEVICE, Position, Vec3f)
+	GET_SET_MACRO(HOST_DEVICE, Target, Vec3f)
+	GET_SET_MACRO(HOST_DEVICE, Up, Vec3f)
+	GET_SET_MACRO(HOST_DEVICE, Elevation, float)
+	GET_SET_MACRO(HOST_DEVICE, Azimuth, float)
+	GET_SET_MACRO(HOST_DEVICE, Offset, float)
+	GET_REF_SET_MACRO(HOST_DEVICE, ManualTM, Matrix44)
+	GET_SET_MACRO(HOST_DEVICE, UseOffset, bool)
+	GET_REF_SET_MACRO(HOST_DEVICE, OffsetTM, Matrix44)
 	
 protected:
 	Enums::AlignmentType	Type;				/*! Type of alignment */

@@ -126,22 +126,22 @@ public:
 
 		if (Hit0 >= R.MinT && Hit0 < R.MaxT)
 		{
-			Int.T = Hit0;
+			Int.SetT(Hit0);
 
 			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
-				Int.T = Hit1;
+				Int.SetT(Hit1);
 		}
 		else
 		{
 			if (Hit1 >= R.MinT && Hit1 < R.MaxT)
-				Int.T = Hit1;
+				Int.SetT(Hit1);
 			else
 				return false;
 		}
 
-		Int.P		= R(Int.T);
-		Int.N		= Normalize(Int.P);
-		Int.UV		= SphericalToUV(Int.P);
+		Int.SetP(R(Int.GetT()));
+		Int.SetN(Normalize(Int.GetP()));
+		Int.SetUV(SphericalToUV(Int.GetP()));
 
 		return true;
 	}

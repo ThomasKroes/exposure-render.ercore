@@ -110,10 +110,10 @@ public:
 
 		if (Intersects)
 		{
-			Int.Valid	= true;
-			Int.P		= TransformPoint(this->Transform.TM, Int.P);
-			Int.N		= TransformVector(this->Transform.TM, Int.N);
-			Int.T		= Length(Int.P, R.O);
+			Int.SetValid(true);
+			Int.SetP(TransformPoint(this->Transform.TM, Int.GetP()));
+			Int.SetN(TransformVector(this->Transform.TM, Int.GetN()));
+			Int.SetT(Length(Int.GetP(), R.O));
 		}
 		
 		return Intersects;
