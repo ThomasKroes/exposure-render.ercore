@@ -66,118 +66,141 @@ vtkErVolumeProperty::vtkErVolumeProperty()
 
 void vtkErVolumeProperty::RequestData(ExposureRender::VolumeProperty& VolumeProperty)
 {
+	// Only copy when needed
 	if (this->LastOpacityTimeStamp < Opacity->GetMTime())
 	{
-		VolumeProperty.Opacity1D.Reset();
+		// Get reference to transfer function
+		ScalarTransferFunction1D& Opacity1D = VolumeProperty.GetOpacity1D();
+
+		// Reset
+		Opacity1D.Reset();
 		
+		// Copy
 		for (int j = 0; j < GetOpacity()->GetSize(); j++)
 		{
 			double NodeValue[4];
 			GetOpacity()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Opacity1D.AddNode(NodeValue[0], NodeValue[1]);
+			Opacity1D.AddNode(NodeValue[0], NodeValue[1]);
 		}
-
-		VolumeProperty.Opacity1D.Modified();
-		VolumeProperty.Modified();
-
+		
+		// Record last time stamp
 		this->LastOpacityTimeStamp = Opacity->GetMTime();
 	}
 
+	// Only copy when needed
 	if (this->LastDiffuseTimeStamp < Diffuse->GetMTime())
 	{
-		VolumeProperty.Diffuse1D.Reset();
+		// Get reference to transfer function
+		ColorTransferFunction1D& Diffuse1D = VolumeProperty.GetDiffuse1D();
 
+		// Reset
+		Diffuse1D.Reset();
+
+		// Copy
 		for (int j = 0; j < GetDiffuse()->GetSize(); j++)
 		{
 			double NodeValue[6];
 			GetDiffuse()->GetNodeValue(j, NodeValue);
 			const ColorXYZf XYZ = RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]));
-			VolumeProperty.Diffuse1D.AddNode(NodeValue[0], XYZ);
+			Diffuse1D.AddNode(NodeValue[0], XYZ);
 		}
-
-		VolumeProperty.Diffuse1D.Modified();
-		VolumeProperty.Modified();
-
+		
+		// Record last time stamp
 		this->LastDiffuseTimeStamp = Diffuse->GetMTime();
 	}
 	
+	// Only copy when needed
 	if (this->LastSpecularTimeStamp < Specular->GetMTime())
 	{
-		VolumeProperty.Specular1D.Reset();
+		// Get reference to transfer function
+		ColorTransferFunction1D& Specular1D = VolumeProperty.GetSpecular1D();
 
+		// Reset
+		Specular1D.Reset();
+
+		// Copy
 		for (int j = 0; j < GetSpecular()->GetSize(); j++)
 		{
 			double NodeValue[6];
 			GetSpecular()->GetNodeValue(j, NodeValue);
 			const ColorXYZf XYZ = RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]));
-			VolumeProperty.Specular1D.AddNode(NodeValue[0], XYZ);
+			Specular1D.AddNode(NodeValue[0], XYZ);
 		}
-
-		VolumeProperty.Specular1D.Modified();
-		VolumeProperty.Modified();
-
+		
+		// Record last time stamp
 		this->LastSpecularTimeStamp = Specular->GetMTime();
 	}
 
+	// Only copy when needed
 	if (this->LastGlossinessTimeStamp < Glossiness->GetMTime())
 	{
-		VolumeProperty.Glossiness1D.Reset();
+		// Get reference to transfer function
+		ScalarTransferFunction1D& Glossiness1D = VolumeProperty.GetGlossiness1D();
 		
+		// Reset
+		Glossiness1D.Reset();
+		
+		// Copy
 		for (int j = 0; j < GetGlossiness()->GetSize(); j++)
 		{
 			double NodeValue[4];
 			GetGlossiness()->GetNodeValue(j, NodeValue);
-			VolumeProperty.Glossiness1D.AddNode(NodeValue[0], NodeValue[1]);
+			Glossiness1D.AddNode(NodeValue[0], NodeValue[1]);
 		}
-
-		VolumeProperty.Glossiness1D.Modified();
-		VolumeProperty.Modified();
-
+		
+		// Record last time stamp
 		this->LastGlossinessTimeStamp = Glossiness->GetMTime();
 	}
 
+	// Only copy when needed
 	if (this->LastIndexOfReflectionTimeStamp < IndexOfReflection->GetMTime())
 	{
-		VolumeProperty.IndexOfReflection1D.Reset();
+		// Get reference to transfer function
+		ScalarTransferFunction1D& IndexOfReflection1D = VolumeProperty.GetIndexOfReflection1D();
+
+		// Reset
+		IndexOfReflection1D.Reset();
 		
+		// Copy
 		for (int j = 0; j < GetIndexOfReflection()->GetSize(); j++)
 		{
 			double NodeValue[4];
 			GetIndexOfReflection()->GetNodeValue(j, NodeValue);
-			VolumeProperty.IndexOfReflection1D.AddNode(NodeValue[0], NodeValue[1]);
+			IndexOfReflection1D.AddNode(NodeValue[0], NodeValue[1]);
 		}
-
-		VolumeProperty.IndexOfReflection1D.Modified();
-		VolumeProperty.Modified();
-
+		
+		// Record last time stamp
 		this->LastIndexOfReflectionTimeStamp = IndexOfReflection->GetMTime();
 	}
-
+	
+	// Only copy when needed
 	if (this->LastEmissionTimeStamp < Emission->GetMTime())
 	{
-		VolumeProperty.Emission1D.Reset();
+		// Get reference to transfer function
+		ColorTransferFunction1D& Emission1D = VolumeProperty.GetEmission1D();
 
+		// Reset
+		Emission1D.Reset();
+
+		// Copy
 		for (int j = 0; j < GetEmission()->GetSize(); j++)
 		{
 			double NodeValue[6];
 			GetEmission()->GetNodeValue(j, NodeValue);
 			const ColorXYZf XYZ = RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3]));
-			VolumeProperty.Emission1D.AddNode(NodeValue[0], XYZ);
+			Emission1D.AddNode(NodeValue[0], XYZ);
 		}
 
-		VolumeProperty.Emission1D.Modified();
-		VolumeProperty.Modified();
-
+		// Record last time stamp
 		this->LastEmissionTimeStamp = Emission->GetMTime();
 	}
 
-	VolumeProperty.StepFactorPrimary 	= GetStepFactorPrimary();
-	VolumeProperty.StepFactorShadow		= GetStepFactorShadow();
-	VolumeProperty.Shadows				= GetShadows();
-	VolumeProperty.ShadingType			= GetShadingMode();
-	VolumeProperty.DensityScale			= GetDensityScale();
-	VolumeProperty.OpacityModulated		= GetOpacityModulated();
-	VolumeProperty.GradientMode			= GetGradientMode();
-	VolumeProperty.GradientThreshold	= GetGradientThreshold();
-	VolumeProperty.GradientFactor		= GetGradientFactor();
+	VolumeProperty.SetStepFactorPrimary(this->GetStepFactorPrimary());
+	VolumeProperty.SetStepFactorShadow(this->GetStepFactorShadow());
+	VolumeProperty.SetShadows(this->GetShadows());
+	VolumeProperty.SetShadingType(this->GetShadingMode());
+	VolumeProperty.SetDensityScale(this->GetDensityScale());
+	VolumeProperty.SetOpacityModulated(this->GetOpacityModulated());
+	VolumeProperty.SetGradientMode(this->GetGradientMode());
+	VolumeProperty.SetGradientFactor(this->GetGradientFactor());
 }

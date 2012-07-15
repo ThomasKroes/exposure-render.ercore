@@ -99,6 +99,10 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 	{
 		case Enums::Volume:
 		{
+			// Get reference to volume
+			Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
+			
+			// Get reference to volume property
 			VolumeProperty& VolumeProperty = gpTracer->VolumeProperty;
 
 			const ColorXYZf Diffuse			= VolumeProperty.GetDiffuse(Int.Intensity);
@@ -106,7 +110,7 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 			const float Glossiness			= VolumeProperty.GetGlossiness(Int.Intensity);
 			const float IndexOfReflection	= VolumeProperty.GetIndexOfReflection(Int.Intensity);
 
-			switch (VolumeProperty.ShadingType)
+			switch (VolumeProperty.GetShadingType())
 			{
 				case Enums::BrdfOnly:
 				{
@@ -126,16 +130,14 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 
 				case Enums::Hybrid:
 				{
-					Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
-
 					const float GradientMagnitude			= Volume.GradientMagnitude(Int.P);
 					const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;
 
 					const float Sensitivity	= 25;
 					const float ExpGF		= 3;
-					const float Exponent	= Sensitivity * powf(VolumeProperty.GradientFactor, ExpGF) * NormalizedGradientMagnitude;
+					const float Exponent	= Sensitivity * powf(VolumeProperty.GetGradientFactor(), ExpGF) * NormalizedGradientMagnitude;
 					
-					const float PdfBrdf = gpTracer->VolumeProperty.OpacityModulated ? VolumeProperty.GetOpacity(Int.Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
+					const float PdfBrdf = VolumeProperty.GetOpacityModulated() ? VolumeProperty.GetOpacity(Int.Intensity) * (1.0f - __expf(-Exponent)) : (1.0f - __expf(-Exponent));
 					
 					if (RNG.Get1() < PdfBrdf)
 					{
@@ -153,8 +155,6 @@ DEVICE void GetShader(const Intersection& Int, Shader& Shader, RNG& RNG, const i
 				
 				case Enums::Modulation:
 				{
-					Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
-
 					const float GradientMagnitude = Volume.GradientMagnitude(Int.P);
 
 					const float NormalizedGradientMagnitude = GradientMagnitude / Volume.MaxGradientMagnitude;

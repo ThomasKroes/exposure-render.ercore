@@ -128,9 +128,9 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 
 	Tracer& Tracer = gTracers[TracerID];
 
-	const float DensityScale		= Tracer.VolumeProperty.DensityScale;
-	const float StepFactorPrimary	= gVolumes[gVolumesHashMap[Tracer.VolumeIDs[0]]].MinStep * Tracer.VolumeProperty.StepFactorPrimary;
-	const float StepFactorShadow	= gVolumes[gVolumesHashMap[Tracer.VolumeIDs[0]]].MinStep * Tracer.VolumeProperty.StepFactorShadow;
+	const float DensityScale		= Tracer.VolumeProperty.GetDensityScale();
+	const float StepFactorPrimary	= gVolumes[gVolumesHashMap[Tracer.VolumeIDs[0]]].MinStep * Tracer.VolumeProperty.GetStepFactorPrimary();
+	const float StepFactorShadow	= gVolumes[gVolumesHashMap[Tracer.VolumeIDs[0]]].MinStep * Tracer.VolumeProperty.GetStepFactorShadow();
 	
 	Cuda::HostToConstantDevice(&DensityScale, "gDensityScale");
 	Cuda::HostToConstantDevice(&StepFactorPrimary, "gStepFactorPrimary");
