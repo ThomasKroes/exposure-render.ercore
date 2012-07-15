@@ -35,7 +35,9 @@ public:
 			this->D[i] = T();
 	}
 	
-	/*! Copy constructor */
+	/*! Copy constructor
+		@param[in] Other Vector to copy
+	*/
 	HOST_DEVICE Vec(const Vec& Other)
 	{
 		for (int i = 0; i < Size; ++i)

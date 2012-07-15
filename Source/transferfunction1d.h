@@ -34,8 +34,7 @@ public:
 	/*! Default constructor */
 	HOST TransferFunction1D() :
 		TransferFunction("Untitled"),
-		PLF("Untitled"),
-		UseTexture(true)
+		PLF("Untitled")
 	{
 	}
 
@@ -43,18 +42,18 @@ public:
 		@param[in] Name Name
 		@param[in] UseTexture Whether a texture is used or not
 	*/
-	HOST TransferFunction1D(const char* Name, const bool& UseTexture = true) :
+	HOST TransferFunction1D(const char* Name) :
 		TransferFunction(Name),
-		PLF(Name),
-		UseTexture(UseTexture)
+		PLF(Name)
 	{
 	}
 	
-	/*! Copy constructor */
+	/*! Copy constructor
+		@param[in] Other Transfer function to copy
+	*/
 	HOST TransferFunction1D(const TransferFunction1D& Other) :
 		TransferFunction("Untitled"),
-		PLF("Untitled"),
-		UseTexture(true)
+		PLF("Untitled")
 	{
 		*this = Other;
 	}
@@ -72,20 +71,7 @@ public:
 	{
 		TransferFunction::operator = (Other);
 		
-		if (this->PLF != Other.PLF)
-		{
-			Buffer1D<float> Samples("Samples", Enums::Device);
-			
-			Samples.Resize(512);
-
-			this->PLF.Discretize(512, Samples.GetData());
-
-			printf("Rebuilding %s piecewise linear transfer function\n", this->GetName());
-		}
-
-		this->PLF			= Other.PLF;
-		this->UseTexture	= Other.UseTexture;
-//		this->Texture		= Other.Texture;
+		this->PLF = Other.PLF;
 		
 		return *this;
 	}
@@ -116,11 +102,9 @@ public:
 
 protected:
 	PiecewiseLinearFunction<T>		PLF;			/*! Piecewise linear function */
-	bool							UseTexture;		/*! Whether a texture is used or not */
-	CudaTexture1D<T>				Texture;		/*! One-dimensional CUDA texture */
 };
 
-typedef TransferFunction1D<float> ScalarTransferFunction1D;
-typedef TransferFunction1D<ColorXYZf> ColorTransferFunction1D;
+typedef TransferFunction1D<float>		ScalarTransferFunction1D;
+typedef TransferFunction1D<ColorXYZf>	ColorTransferFunction1D;
 
 }

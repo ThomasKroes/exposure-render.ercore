@@ -56,7 +56,7 @@ DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& Volum
 
 DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 {
-	if (!gpTracer->VolumeProperty.Shadows)
+	if (!gpTracer->VolumeProperty.GetShadows())
 		return false;
 
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];

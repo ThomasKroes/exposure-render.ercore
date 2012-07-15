@@ -130,20 +130,6 @@ public:
 
 		return T();
 	}
-
-	/*! Discretize the piecewise linear function
-		@param[in] NoSamples No of samples to take
-		@param[in, out] Samples Sampels generated
-	*/
-	HOST void Discretize(const int& NoSamples, float* Samples)
-	{
-		if (NoSamples <= 0)
-			throw (Exception(Enums::Error, "Can't discretize transfer function with zero samples!"));
-		
-		for (int i = 0; i < NoSamples; ++i)
-		{
-		}
-	}
 };
 
 }
