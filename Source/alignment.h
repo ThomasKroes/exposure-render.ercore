@@ -17,14 +17,18 @@
 #pragma once
 
 #include "transform.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Alignment
+/*! Alignment class */
+class EXPOSURE_RENDER_DLL Alignment : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE Alignment() :
+		TimeStamp(),
 		Type(Enums::Spherical),
 		Axis(Enums::X),
 		AutoFlip(true),
@@ -39,14 +43,36 @@ public:
 		OffsetTM()
 	{
 	}
-
-	HOST_DEVICE Alignment(const Alignment& Other)
+	
+	/*! Copy constructor
+		@param[in] Other Alignment to copy
+	*/
+	HOST_DEVICE Alignment(const Alignment& Other) :
+		TimeStamp(),
+		Type(Enums::Spherical),
+		Axis(Enums::X),
+		AutoFlip(true),
+		Position(0.0f),
+		Target(0.0f),
+		Up(0.0f, 1.0f, 0.0f),
+		Elevation(45.0f),
+		Azimuth(0.0f),
+		Offset(0.0f),
+		ManualTM(),
+		UseOffset(),
+		OffsetTM()
 	{
 		*this = Other;
 	}
 	
+	/*! Assignment operator
+		@param[in] Other Alignment to copy
+		@result Alignment
+	*/
 	HOST_DEVICE Alignment& operator = (const Alignment& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Type				= Other.Type;
 		this->Axis				= Other.Axis;
 		this->AutoFlip			= Other.AutoFlip;
@@ -62,7 +88,10 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Gets a transform object from the alignment parameters
+		@result Transform object
+	*/
 	HOST_DEVICE Transform GetTransform() const
 	{
 		Transform Result;
@@ -179,19 +208,33 @@ public:
 
 		return Offset;
 	}
-
-	Enums::AlignmentType	Type;
-	Enums::Axis				Axis;
-	bool					AutoFlip;
-	Vec3f					Position;
-	Vec3f					Target;
-	Vec3f					Up;
-	float					Elevation;
-	float					Azimuth;
-	float					Offset;
-	Matrix44				ManualTM;
-	bool					UseOffset;
-	Matrix44				OffsetTM;
+	
+	HOST_DEVICE GET_SET_MACRO(Type, Enums::AlignmentType)
+	HOST_DEVICE GET_SET_MACRO(Axis, Enums::Axis)
+	HOST_DEVICE GET_SET_MACRO(AutoFlip, bool)
+	HOST_DEVICE GET_SET_MACRO(Position, Vec3f)
+	HOST_DEVICE GET_SET_MACRO(Target, Vec3f)
+	HOST_DEVICE GET_SET_MACRO(Up, Vec3f)
+	HOST_DEVICE GET_SET_MACRO(Elevation, float)
+	HOST_DEVICE GET_SET_MACRO(Azimuth, float)
+	HOST_DEVICE GET_SET_MACRO(Offset, float)
+	HOST_DEVICE GET_REF_SET_MACRO(ManualTM, Matrix44)
+	HOST_DEVICE GET_SET_MACRO(UseOffset, bool)
+	HOST_DEVICE GET_REF_SET_MACRO(OffsetTM, Matrix44)
+	
+protected:
+	Enums::AlignmentType	Type;				/*! Type of alignment */
+	Enums::Axis				Axis;				/*! Axis to align to */
+	bool					AutoFlip;			/*! Auto-flip the direction */
+	Vec3f					Position;			/*! Position vector */
+	Vec3f					Target;				/*! Target vector, for look-at alignment */
+	Vec3f					Up;					/*! Up vector, for look-at alignment */
+	float					Elevation;			/*! Elevation, for spherical alignment */
+	float					Azimuth;			/*! Azimuth, for spherical alignment */
+	float					Offset;				/*! Offset, for spherical/look-at alignment */
+	Matrix44				ManualTM;			/*! Manual transformation matrix */
+	bool					UseOffset;			/*! Whether the transformation will be pre-multiplied by \a OffsetTM */
+	Matrix44				OffsetTM;			/*! Offset transformation matrix */
 };
 
 }
