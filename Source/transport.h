@@ -21,10 +21,32 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE inline float G(const Vec3f& P1, const Vec3f& N1, const Vec3f& P2, const Vec3f& N2)
+/*! Computes the geometric factor
+	@param[in] P1 Point 1
+	@param[in] N1 Normal 1
+	@param[in] P2 Point 2
+	@param[in] N2 Normal 2
+	@result Geometric factor
+*/
+HOST_DEVICE inline float GeometricFactor(const Vec3f& P1, const Vec3f& N1, const Vec3f& P2, const Vec3f& N2)
 {
 	const Vec3f W = Normalize(P2 - P1);
 	return (ClampedDot(W, N1) * ClampedDot(-1.0f * W, N2)) / LengthSquared(P1, P2);
+}
+
+/*! Computes MIS weight based on power heuristic
+	@param[in] Nf Nf
+	@param[in] PdfF Pdf F
+	@param[in] Ng Ng
+	@param[in] PdfG Pdf G
+	@result MIS weight
+*/
+HOST_DEVICE_NI inline float PowerHeuristic(const int& Nf, const float& PdfF, const int& Ng, const float& PdfG)
+{
+	const float F = Nf * PdfF;
+	const float G = Ng * PdfG;
+
+	return (F * F) / (F * F + G * G); 
 }
 
 }

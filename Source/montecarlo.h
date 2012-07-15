@@ -22,51 +22,74 @@
 namespace ExposureRender
 {
 
-HOST_DEVICE_NI inline float CosTheta(const Vec3f& Ws)
+/*! Cosine of theta
+	@param[in] W Input vector
+	@result Cosine of theta
+*/
+HOST_DEVICE_NI inline float CosTheta(const Vec3f& W)
 {
-	return Ws[2];
+	return W[2];
 }
 
-HOST_DEVICE_NI inline float AbsCosTheta(const Vec3f &Ws)
+/*! Absolute cosine of theta
+	@param[in] W Input vector
+	@result Absolute Cosine of theta
+*/
+HOST_DEVICE_NI inline float AbsCosTheta(const Vec3f& W)
 {
-	return fabsf(CosTheta(Ws));
+	return fabsf(CosTheta(W));
 }
 
-HOST_DEVICE_NI inline float SinTheta(const Vec3f& Ws)
+/*! Sine of theta
+	@param[in] W Input vector
+	@result Sine of theta
+*/
+HOST_DEVICE_NI inline float SinTheta(const Vec3f& W)
 {
-	return sqrtf(max(0.f, 1.f - Ws[2] * Ws[2]));
+	return sqrtf(max(0.0f, 1.0f - W[2] * W[2]));
 }
 
-HOST_DEVICE_NI inline float SinTheta2(const Vec3f& Ws)
+/*! Sine of theta 2
+	@param[in] W Input vector
+	@result Sine of theta 2
+*/
+HOST_DEVICE_NI inline float SinTheta2(const Vec3f& W)
 {
-	return 1.f - CosTheta(Ws) * CosTheta(Ws);
+	return 1.0f - CosTheta(W) * CosTheta(W);
 }
 
-HOST_DEVICE_NI inline float CosPhi(const Vec3f& Ws)
+/*! Cosine of phi
+	@param[in] W Input vector
+	@result Cosine of phi
+*/
+HOST_DEVICE_NI inline float CosPhi(const Vec3f& W)
 {
-	return Ws[0] / SinTheta(Ws);
+	return W[0] / SinTheta(W);
 }
 
-HOST_DEVICE_NI inline float SinPhi(const Vec3f& Ws)
+/*! Sine of phi
+	@param[in] W Input vector
+	@result Sine of phi
+*/
+HOST_DEVICE_NI inline float SinPhi(const Vec3f& W)
 {
-	return Ws[1] / SinTheta(Ws);
+	return W[1] / SinTheta(W);
 }
 
-HOST_DEVICE_NI inline bool SameHemisphere(const Vec3f& Ww1, const Vec3f& Ww2)
+/*! Determine whether \a W1 and \a W2 are in the same hemisphere
+	@param[in] W1 Input vector 1
+	@param[in] W2 Input vector 2
+	@result If \a W1 and \a W2 are in the same hemisphere
+*/
+HOST_DEVICE_NI inline bool SameHemisphere(const Vec3f& W1, const Vec3f& W2)
 {
-   return (Ww1[2] * Ww2[2]) > 0.0f;
+   return (W1[2] * W2[2]) > 0.0f;
 }
 
-HOST_DEVICE_NI inline bool SameHemisphere(const Vec3f& W1, const Vec3f& W2, const Vec3f& N)
-{
-   return (Dot(W1, N) * Dot(W2, N)) >= 0.0f;
-}
-
-HOST_DEVICE_NI inline bool InShadingHemisphere(const Vec3f& W1, const Vec3f& W2, const Vec3f& N)
-{
-   return Dot(W1, N) >= 0.0f && Dot(W2, N) >= 0.0f;
-}
-
+/*! Sample a disk
+	@param[in] U Input random vector
+	@result Sample
+*/
 HOST_DEVICE_NI Vec2f inline ConcentricSampleDisk(const Vec2f& U)
 {
 	float r, theta;
@@ -120,44 +143,31 @@ HOST_DEVICE_NI Vec2f inline ConcentricSampleDisk(const Vec2f& U)
 	return Vec2f(r*cosf(theta), r*sinf(theta));
 }
 
+/*! Cosine weighted hemisphere
+	@param[in] U Input random vector
+	@result Sample
+*/
 HOST_DEVICE_NI inline Vec3f CosineWeightedHemisphere(const Vec2f& U)
 {
 	const Vec2f ret = ConcentricSampleDisk(U);
 	return Vec3f(ret[0], ret[1], sqrtf(max(0.f, 1.f - ret[0] * ret[0] - ret[1] * ret[1])));
 }
 
-HOST_DEVICE_NI inline Vec3f CosineWeightedHemisphere(const Vec2f& U, const Vec3f& N)
-{
-	const Vec3f Wl = CosineWeightedHemisphere(U);
-
-	const Vec3f u = Normalize(Cross(N, N));
-	const Vec3f v = Normalize(Cross(N, u));
-
-	return Vec3f(	u[0] * Wl[0] + v[0] * Wl[1] + N[0] * Wl[2],
-						u[1] * Wl[0] + v[1] * Wl[1] + N[1] * Wl[2],
-						u[2] * Wl[0] + v[2] * Wl[1] + N[2] * Wl[2]);
-}
-
+/*! Generates a spherical direction
+	@param[in] SinTheta Sine of theta
+	@param[in] CosTheta Cosine of theta
+	@param[in] Phi Phi
+	@result Vector
+*/
 HOST_DEVICE_NI inline Vec3f SphericalDirection(const float& SinTheta, const float& CosTheta, const float& Phi)
 {
 	return Vec3f(SinTheta * cosf(Phi), SinTheta * sinf(Phi), CosTheta);
 }
 
-HOST_DEVICE_NI inline Vec3f SphericalDirection(float sintheta, float costheta, float phi, const Vec3f& x, const Vec3f& y, const Vec3f& z)
-{
-	return sintheta * cosf(phi) * x + sintheta * sinf(phi) * y + costheta * z;
-}
-
-HOST_DEVICE_NI inline Vec3f UniformSampleSphereSurface(const Vec2f& U)
-{
-	float z = 1.f - 2.f * U[0];
-	float r = sqrtf(max(0.f, 1.f - z*z));
-	float phi = 2.f * PI_F * U[1];
-	float x = r * cosf(phi);
-	float y = r * sinf(phi);
-	return Vec3f(x, y, z);
-}
-
+/*! Uniformly sample the upper hemisphere
+	@param[in] U Input random vector
+	@result Random vector in upper hemisphere
+*/
 HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U)
 {
 	float z = U[0];
@@ -168,21 +178,19 @@ HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U)
 	return Vec3f(x, y, z);
 }
 
-HOST_DEVICE_NI inline Vec3f UniformSampleSphere(const Vec2f& UV)
+/*! Uniformly sample a unit sphere
+	@param[in] U Input random vector
+	@result Random vector in unit sphere
+*/
+HOST_DEVICE_NI inline Vec3f UniformSampleSphere(const Vec2f& U)
 {
-	const float Z	= 1.0f - 2.0f * UV[0];
+	const float Z	= 1.0f - 2.0f * U[0];
 	const float R	= sqrtf(max(0.0f, 1.0f - Z * Z));
-	const float Phi	= 2.0f * PI_F * UV[1];
+	const float Phi	= 2.0f * PI_F * U[1];
 	const float X	= R * cosf(Phi);
 	const float Y	= R * sinf(Phi);
 
 	return Vec3f(X, Y, Z);
-}
-
-HOST_DEVICE_NI inline float PowerHeuristic(int nf, float fPdf, int ng, float gPdf)
-{
-	float f = nf * fPdf, g = ng * gPdf;
-	return (f * f) / (f * f + g * g); 
 }
 
 }
