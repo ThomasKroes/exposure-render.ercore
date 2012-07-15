@@ -73,12 +73,12 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 				{
 					Object& Light = gpObjects[Int.GetID()];
 
-					ColorXYZf Li = Light.GetMultiplier() * EvaluateTexture(Light.GetEmissionTextureID(), Int.GetUV());
+					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.GetUV());
 
-					if (Light.GetEmissionUnit() == Enums::Power)
-						Li /= Light.GetShape().Area;
+					if (Light.EmissionUnit == Enums::Power)
+						Li /= Light.Shape.Area;
 
-					const float LightPdf = LengthSquared(Int.GetP(), Sample.Intersection.GetP()) / (AbsDot(-R.D, Int.GetN()) * Light.GetShape().Area);
+					const float LightPdf = LengthSquared(Int.GetP(), Sample.Intersection.GetP()) / (AbsDot(-R.D, Int.GetN()) * Light.Shape.Area);
 
 					const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
 

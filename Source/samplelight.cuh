@@ -56,12 +56,12 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	SurfaceSample SS;
 
 	// Sample light and determine exitant radiance
-	Light.GetShape().Sample(SS, RNG.Get3());
+	Light.Shape.Sample(SS, RNG.Get3());
 
-	ColorXYZf Li = Light.GetMultiplier() * EvaluateTexture(Light.GetEmissionTextureID(), SS.UV);
+	ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, SS.UV);
 
-	if (Light.GetEmissionUnit() == Enums::Power)
-		Li /= Light.GetShape().Area;
+	if (Light.EmissionUnit == Enums::Power)
+		Li /= Light.Shape.Area;
 
 	Shader Shader;
 
@@ -88,7 +88,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	if (!Intersects(R, RNG))
 	{
-		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.N) * Light.GetShape().Area);
+		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 
