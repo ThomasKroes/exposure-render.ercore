@@ -30,20 +30,20 @@ public:
 	/*! Constructor
 		@param[in] Name Name
 	*/
-	HOST TransferFunction(const char* Name) :
+	HOST_DEVICE TransferFunction(const char* Name) :
 		TimeStamp()
 	{
 		this->SetName(Name);
 	}
 	
 	/*! Copy constructor */
-	HOST TransferFunction(const TransferFunction& Other)
+	HOST_DEVICE TransferFunction(const TransferFunction& Other)
 	{
 		*this = Other;
 	}
 
 	/*! Destructor */
-	HOST virtual ~TransferFunction(void)
+	HOST_DEVICE virtual ~TransferFunction(void)
 	{
 	}
 	
@@ -51,7 +51,7 @@ public:
 		@param[in] Other Transfer function to copy
 		@result Reference to the copied transfer function
 	*/
-	HOST TransferFunction& operator = (const TransferFunction& Other)
+	HOST_DEVICE TransferFunction& operator = (const TransferFunction& Other)
 	{
 		TimeStamp::operator = (Other);
 
@@ -63,7 +63,7 @@ public:
 	/*! Gets the name of the transfer function
 		@result Name of the transfer function
 	*/
-	HOST const char* GetName() const
+	HOST_DEVICE const char* GetName() const
 	{
 		return this->Name;
 	}
@@ -71,9 +71,11 @@ public:
 	/*! Sets the transfer function name
 		@param[in] pName Name of the transfer function
 	*/
-	HOST void SetName(const char* Name)
+	HOST_DEVICE void SetName(const char* Name)
 	{
+#ifndef __CUDACC__
 		sprintf_s(this->Name, MAX_CHAR_SIZE, "%s", Name);
+#endif
 	}
 	
 protected:

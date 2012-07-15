@@ -32,7 +32,7 @@ class EXPOSURE_RENDER_DLL TransferFunction1D : public TransferFunction
 {
 public:
 	/*! Default constructor */
-	HOST TransferFunction1D() :
+	HOST_DEVICE TransferFunction1D() :
 		TransferFunction("Untitled"),
 		PLF("Untitled")
 	{
@@ -42,7 +42,7 @@ public:
 		@param[in] Name Name
 		@param[in] UseTexture Whether a texture is used or not
 	*/
-	HOST TransferFunction1D(const char* Name) :
+	HOST_DEVICE TransferFunction1D(const char* Name) :
 		TransferFunction(Name),
 		PLF(Name)
 	{
@@ -51,7 +51,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Transfer function to copy
 	*/
-	HOST TransferFunction1D(const TransferFunction1D& Other) :
+	HOST_DEVICE TransferFunction1D(const TransferFunction1D& Other) :
 		TransferFunction("Untitled"),
 		PLF("Untitled")
 	{
@@ -59,7 +59,7 @@ public:
 	}
 
 	/*! Destructor */
-	HOST virtual ~TransferFunction1D(void)
+	HOST_DEVICE virtual ~TransferFunction1D(void)
 	{
 	}
 	
@@ -67,7 +67,7 @@ public:
 		@param[in] Other Transfer function to copy
 		@result Reference to the copied transfer function
 	*/
-	HOST TransferFunction1D& operator = (const TransferFunction1D& Other)
+	HOST_DEVICE TransferFunction1D& operator = (const TransferFunction1D& Other)
 	{
 		TransferFunction::operator = (Other);
 		
@@ -80,13 +80,13 @@ public:
 		@param[in] Position Position of the node
 		@param[in] Value Value of the node
 	*/
-	HOST void AddNode(const float& Position, const T& Value)
+	HOST_DEVICE void AddNode(const float& Position, const T& Value)
 	{
 		this->PLF.AddNode(Position, Value);
 	}
 
 	/*! Resets the content of the piecewise linear function */
-	HOST void Reset()
+	HOST_DEVICE void Reset()
 	{
 		this->PLF.Reset();
 	}

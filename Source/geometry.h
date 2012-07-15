@@ -36,9 +36,9 @@ HOST_DEVICE inline Vec3f TransformVector(const Matrix44& TM, const Vec3f& V)
 
 	const float x = V[0], y = V[1], z = V[2];
 
-	Vt[0] = TM.NN[0][0] * x + TM.NN[0][1] * y + TM.NN[0][2] * z;
-	Vt[1] = TM.NN[1][0] * x + TM.NN[1][1] * y + TM.NN[1][2] * z;
-	Vt[2] = TM.NN[2][0] * x + TM.NN[2][1] * y + TM.NN[2][2] * z;
+	Vt[0] = TM.GetElement(0, 0) * x + TM.GetElement(0, 1) * y + TM.GetElement(0, 2) * z;
+	Vt[1] = TM.GetElement(1, 0) * x + TM.GetElement(1, 1) * y + TM.GetElement(1, 2) * z;
+	Vt[2] = TM.GetElement(2, 0) * x + TM.GetElement(2, 1) * y + TM.GetElement(2, 2) * z;
 
 	return Vt;
 }
@@ -52,9 +52,9 @@ HOST_DEVICE inline Vec3f TransformPoint(const Matrix44& TM, const Vec3f& P)
 {
 	const float x = P[0], y = P[1], z = P[2];
     
-	const float Px = TM.NN[0][0]*x + TM.NN[0][1]*y + TM.NN[0][2]*z + TM.NN[0][3];
-    const float Py = TM.NN[1][0]*x + TM.NN[1][1]*y + TM.NN[1][2]*z + TM.NN[1][3];
-    const float Pz = TM.NN[2][0]*x + TM.NN[2][1]*y + TM.NN[2][2]*z + TM.NN[2][3];
+	const float Px = TM.GetElement(0, 0) * x + TM.GetElement(0, 1) * y + TM.GetElement(0, 2) * z + TM.GetElement(0, 3);
+    const float Py = TM.GetElement(1, 0) * x + TM.GetElement(1, 1) * y + TM.GetElement(1, 2) * z + TM.GetElement(1, 3);
+    const float Pz = TM.GetElement(2, 0) * x + TM.GetElement(2, 1) * y + TM.GetElement(2, 2) * z + TM.GetElement(2, 3);
 	
 	return Vec3f(Px, Py, Pz);
 }

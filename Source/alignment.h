@@ -105,59 +105,59 @@ public:
 		{
 			case Enums::AxisAlign:
 			{
-				Translation.NN[0][3] = this->Position[0];
-				Translation.NN[1][3] = this->Position[1];
-				Translation.NN[2][3] = this->Position[2];
+				Translation.SetElement(0, 3, this->Position[0]);
+				Translation.SetElement(1, 3, this->Position[1]);
+				Translation.SetElement(2, 3, this->Position[2]);
 
 				switch (this->Axis)
 				{
 					case Enums::X:
 					{
-						Rotation.NN[0][0] = 0.0f;
-						Rotation.NN[1][0] = 0.0f;
-						Rotation.NN[2][0] = 1.0f;
+						Rotation.SetElement(0, 0, 0.0f);
+						Rotation.SetElement(1, 0, 0.0f);
+						Rotation.SetElement(2, 0, 1.0f);
 
-						Rotation.NN[0][1] = 0.0f;
-						Rotation.NN[1][1] = 1.0f;
-						Rotation.NN[2][1] = 0.0f;
+						Rotation.SetElement(0, 1, 0.0f);
+						Rotation.SetElement(1, 1, 1.0f);
+						Rotation.SetElement(2, 1, 0.0f);
 
-						Rotation.NN[0][2] = this->AutoFlip ? (this->Position[0] > 0.0f ? -1.0f : 1.0f) : 1.0f;
-						Rotation.NN[1][2] = 0.0f;
-						Rotation.NN[2][2] = 0.0f;
+						Rotation.SetElement(0, 2, this->AutoFlip ? (this->Position[0] > 0.0f ? -1.0f : 1.0f) : 1.0f);
+						Rotation.SetElement(1, 2, 0.0f);
+						Rotation.SetElement(2, 2, 0.0f);
 						
 						return Transform(Offset * Translation * Rotation);
 					}
 
 					case Enums::Y:
 					{
-						Rotation.NN[0][0] = 1.0f;
-						Rotation.NN[1][0] = 0.0f;
-						Rotation.NN[2][0] = 0.0f;
+						Rotation.SetElement(0, 0, 1.0f);
+						Rotation.SetElement(1, 0, 0.0f);
+						Rotation.SetElement(2, 0, 0.0f);
 
-						Rotation.NN[0][1] = 0.0f;
-						Rotation.NN[1][1] = 0.0f;
-						Rotation.NN[2][1] = 1.0f;
+						Rotation.SetElement(0, 1, 0.0f);
+						Rotation.SetElement(1, 1, 0.0f);
+						Rotation.SetElement(2, 1, 1.0f);
 
-						Rotation.NN[0][2] = 0.0f;
-						Rotation.NN[1][2] = this->AutoFlip ? (this->Position[1] > 0.0f ? -1.0f : 1.0f) : 1.0f;
-						Rotation.NN[2][2] = 0.0f;
+						Rotation.SetElement(0, 2, 0.0f);
+						Rotation.SetElement(1, 2, this->AutoFlip ? (this->Position[1] > 0.0f ? -1.0f : 1.0f) : 1.0f);
+						Rotation.SetElement(2, 2, 0.0f);
 						
 						return Transform(Offset * Translation * Rotation);
 					}
 
 					case Enums::Z:
 					{
-						Rotation.NN[0][0] = 1.0f;
-						Rotation.NN[1][0] = 0.0f;
-						Rotation.NN[2][0] = 0.0f;
+						Rotation.SetElement(0, 0, 1.0f);
+						Rotation.SetElement(1, 0, 0.0f);
+						Rotation.SetElement(2, 0, 0.0f);
 
-						Rotation.NN[0][1] = 0.0f;
-						Rotation.NN[1][1] = 1.0f;
-						Rotation.NN[2][1] = 0.0f;
+						Rotation.SetElement(0, 1, 0.0f);
+						Rotation.SetElement(1, 1, 1.0f);
+						Rotation.SetElement(2, 1, 0.0f);
 
-						Rotation.NN[0][2] = 0.0f;
-						Rotation.NN[1][2] = 0.0f;
-						Rotation.NN[2][2] = this->AutoFlip ? (this->Position[2] > 0.0f ? -1.0f : 1.0f) : 1.0f;
+						Rotation.SetElement(0, 2, 0.0f);
+						Rotation.SetElement(1, 2, 0.0f);
+						Rotation.SetElement(2, 2, this->AutoFlip ? (this->Position[2] > 0.0f ? -1.0f : 1.0f) : 1.0f);
 						
 						return Transform(Offset * Translation * Rotation);
 					}
@@ -181,21 +181,21 @@ public:
 				const Vec3f V = -Normalize(Cross(-Direction, U));
 				const Vec3f W = Normalize(-Direction);
 
-				Translation.NN[0][3] = P[0];
-				Translation.NN[1][3] = P[1];
-				Translation.NN[2][3] = P[2];
+				Translation.SetElement(0, 3, P[0]);
+				Translation.SetElement(1, 3, P[1]);
+				Translation.SetElement(2, 3, P[2]);
 
-				Rotation.NN[0][0] = U[0];
-				Rotation.NN[1][0] = U[1];
-				Rotation.NN[2][0] = U[2];
+				Rotation.SetElement(0, 0, U[0]);
+				Rotation.SetElement(1, 0, U[1]);
+				Rotation.SetElement(2, 0, U[2]);
 
-				Rotation.NN[0][1] = V[0];
-				Rotation.NN[1][1] = V[1];
-				Rotation.NN[2][1] = V[2];
+				Rotation.SetElement(0, 1, V[0]);
+				Rotation.SetElement(1, 1, V[1]);
+				Rotation.SetElement(2, 1, V[2]);
 
-				Rotation.NN[0][2] = W[0];
-				Rotation.NN[1][2] = W[1];
-				Rotation.NN[2][2] = W[2];
+				Rotation.SetElement(0, 2, W[0]);
+				Rotation.SetElement(1, 2, W[1]);
+				Rotation.SetElement(2, 2, W[2]);
 
 				return Transform(Offset * Translation * Rotation);
 			}

@@ -32,20 +32,20 @@ public:
 	/*! Constructor
 		@param[in] Name Name
 	*/
-	HOST PiecewiseLinearFunction(const char* Name = "Untitled") :
+	HOST_DEVICE PiecewiseLinearFunction(const char* Name = "Untitled") :
 		PiecewiseFunction<T, Size>(Name)
 	{
 	}
 	
 	/*! Destructor */
-	HOST virtual ~PiecewiseLinearFunction()
+	HOST_DEVICE virtual ~PiecewiseLinearFunction()
 	{
 	}
 	
 	/*! Copy constructor
 		@param[in] Other Piecewise linear function to copy
 	*/
-	HOST PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
+	HOST_DEVICE PiecewiseLinearFunction(const PiecewiseLinearFunction& Other)
 	{
 		*this = Other;
 	}
@@ -54,7 +54,7 @@ public:
 		@param[in] Other Piecewise linear function to copy
 		@result Reference to piecewise linear function
 	*/
-	HOST PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
+	HOST_DEVICE PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
 		TimeStamp::operator = (Other);
 
@@ -67,7 +67,7 @@ public:
 		@param[in] Position Position of the node
 		@param[in] Value Value of the node
 	*/
-	HOST void AddNode(const PiecewiseFunctionNode<T>& Node)
+	HOST_DEVICE void AddNode(const PiecewiseFunctionNode<T>& Node)
 	{
 		if (this->Count + 1 >= MAX_NO_TF_NODES)
 			return;
@@ -95,7 +95,7 @@ public:
 	}
 	
 	/*! Resets the content of the piecewise linear function */
-	HOST void Reset()
+	HOST_DEVICE void Reset()
 	{
 		PiecewiseFunction<T, Size>::Reset();
 
