@@ -19,39 +19,58 @@
 #include "defines.h"
 #include "enums.h"
 #include "vector.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Matrix44
+/*! Transformation matrix class */
+	class EXPOSURE_RENDER_DLL Matrix44 : public TimeStamp
 {
 public:
-	HOST_DEVICE Matrix44()
+	/*! Default constructor */
+	HOST_DEVICE Matrix44() :
+		TimeStamp()
 	{
 		this->Identity();
 	}
 
-	HOST_DEVICE Matrix44(const Matrix44& Other)
+	/*! Copy constructor
+		@param[in] Other Matrix to copy
+	*/
+	HOST_DEVICE Matrix44(const Matrix44& Other) :
+		TimeStamp()
 	{
 		*this = Other;
 	}
 
+	/*! Assignment operator
+		@param[in] Other Matrix to copy
+		@result Matrix
+	*/
 	HOST_DEVICE Matrix44& operator = (const Matrix44& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
 				this->NN[i][j] = Other.NN[i][j];
 
 		return *this;
 	}
-
+	
+	/*! Set the matrix to identity */
 	HOST_DEVICE void Identity()
 	{
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
 				this->NN[i][j] = i == j ? 1.0f : 0.0f;
 	}
-
+	
+	/*! Matrix multiplication operator
+		@param[in] Other Matrix to multiply with
+		@result Multiplied matrix
+	*/
 	HOST_DEVICE Matrix44 operator * (const Matrix44& Other) const	
 	{
 		Matrix44 Result;
@@ -81,7 +100,11 @@ public:
 		return Result;
 	}
 	*/
-
+	
+	/*! Matrix inverse
+		@param[out] Result Inverted matrix
+		@result Whether matrix inversion was successful
+	*/
 	HOST_DEVICE bool Invert(Matrix44& Result) const
 	{
 		using std::abs; // use overloaded abs
@@ -145,15 +168,23 @@ public:
 		return true;
 	}
 
-	HOST_DEVICE static Matrix44 Inverse(const Matrix44& M)
+	/*! Matrix inverse
+		@param[in] TM Input matrix
+		@result Inverse of \a TM
+	*/
+	HOST_DEVICE static Matrix44 Inverse(const Matrix44& TM)
 	{
 		Matrix44 Result;
 
-		M.Invert(Result);
+		TM.Invert(Result);
 
 		return Result;
 	}
-
+	
+	/*! Translation matrix
+		@param[in] Translation Translation
+		@result Translation matrix
+	*/
 	HOST_DEVICE static Matrix44 CreateTranslation(const Vec3f& Translation)
 	{
 		Matrix44 Result;
@@ -164,7 +195,13 @@ public:
 
 		return Result;
 	}
-
+	
+	/*! Look-at matrix
+		@param[in] Position Position
+		@param[in] Target Target
+		@param[in] Up Up
+		@result Look-at matrix
+	*/
 	HOST_DEVICE static Matrix44 CreateLookAt(const Vec3f& Position, const Vec3f& Target, const Vec3f& Up)
 	{
 		const Vec3f W = Normalize(Target - Position);
