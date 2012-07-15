@@ -25,6 +25,11 @@ using namespace std;
 namespace ExposureRender
 {
 
+/*! Transform a vector by a matrix
+	@param[in] TM Transformation matrix
+	@param[in] V Vector to transform
+	@return Transformed vector
+*/
 HOST_DEVICE inline Vec3f TransformVector(const Matrix44& TM, const Vec3f& V)
 {
 	Vec3f Vt;
@@ -38,6 +43,11 @@ HOST_DEVICE inline Vec3f TransformVector(const Matrix44& TM, const Vec3f& V)
 	return Vt;
 }
 
+/*! Transform a point by a matrix
+	@param[in] TM Transformation matrix
+	@param[in] P Point to transform
+	@return Transformed point
+*/
 HOST_DEVICE inline Vec3f TransformPoint(const Matrix44& TM, const Vec3f& P)
 {
 	const float x = P[0], y = P[1], z = P[2];
@@ -49,6 +59,11 @@ HOST_DEVICE inline Vec3f TransformPoint(const Matrix44& TM, const Vec3f& P)
 	return Vec3f(Px, Py, Pz);
 }
 
+/*! Transform a ray by a matrix
+	@param[in] TM Transformation matrix
+	@param[in] R Ray to transform
+	@return Transformed ray
+*/
 HOST_DEVICE inline Ray TransformRay(const Matrix44& TM, const Ray& R)
 {
 	Ray Rt;
@@ -65,30 +80,51 @@ HOST_DEVICE inline Ray TransformRay(const Matrix44& TM, const Ray& R)
 	return Rt;
 }
 
+/*! Computes the spherical theta of \a W
+	@param[in] W Input vector
+	@return Spherical theta
+*/
 HOST_DEVICE inline float SphericalTheta(const Vec3f& W)
 {
 	return acosf(Clamp(W[1], -1.0f, 1.0f));
 }
 
+/*! Computes the spherical phi of \a W
+	@param[in] W Input vector
+	@return Spherical phi
+*/
 HOST_DEVICE inline float SphericalPhi(const Vec3f& W)
 {
 	float p = atan2f(W[2], W[0]);
 	return (p < 0.0f) ? p + 2.0f * PI_F : p;
 }
 
+/*! Transforms spherical coordinates into normalized UV coordinates
+	@param[in] W Input vector
+	@return UV coordinates theta
+*/
 HOST_DEVICE inline Vec2f SphericalToUV(const Vec3f& W)
 {
 	const Vec3f V = Normalize(W);
 	return Vec2f(INV_TWO_PI_F * SphericalPhi(V), 1.0f - (INV_PI_F * SphericalTheta(V)));
 }
 
+/*! Linearly interpolate between two values \a A and \a B
+	@param[in] LerpC Interpolation coefficient
+	@param[in] A Value A
+	@param[in] B Value B
+	@return Interpolation between \a A and \a B
+*/
 template<class T>
-HOST_DEVICE inline T Lerp(const float& X, const T& A, const T& B)
+HOST_DEVICE inline T Lerp(const float& LerpC, const T& A, const T& B)
 {
-	return (1.0f - X) * A + X * B;
+	return (1.0f - LerpC) * A + LerpC * B;
 }
 
-inline float RandomFloat(void)
+/*! Get a random float between 0.0f and 1.0f 
+	@return Random float between 0.0f and 1.0f 
+*/
+inline float RandomFloat()
 {
 	return (float)rand() / RAND_MAX;
 }
