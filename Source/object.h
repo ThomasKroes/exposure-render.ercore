@@ -127,6 +127,8 @@ public:
 		return *this;
 	}
 
+	/*
+
 	GET_SET_MACRO(HOST_DEVICE, Visible, bool)
 	GET_SET_MACRO(HOST_DEVICE, Shape, Shape)
 	GET_SET_MACRO(HOST_DEVICE, DiffuseTextureID, int)
@@ -137,8 +139,11 @@ public:
 	GET_SET_MACRO(HOST_DEVICE, Multiplier, float)
 	GET_SET_MACRO(HOST_DEVICE, EmissionUnit, Enums::EmissionUnit)
 	GET_SET_MACRO(HOST_DEVICE, Clip, bool)
+	
+protected:*/
 
-protected:
+	// FIXME: For some reason, using get/set function on this class has a significant impact on performance so for now we let them be public
+
 	bool					Visible;				/*! Whether the object is visible or not */
 	Shape					Shape;					/*! Shape representation */
 	int						DiffuseTextureID;		/*! Diffuse texture ID */

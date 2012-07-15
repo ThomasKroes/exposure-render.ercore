@@ -186,9 +186,9 @@ DEVICE void GetShader(Intersection Int, Shader& Shader, RNG& RNG, const int& Vol
 
 		case Enums::Object:
 		{
-			const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[Int.GetID()].GetDiffuseTextureID(), Int.GetUV());
-			const ColorXYZf Specular	= EvaluateTexture(gpObjects[Int.GetID()].GetSpecularTextureID(), Int.GetUV());
-			const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[Int.GetID()].GetGlossinessTextureID(), Int.GetUV());
+			const ColorXYZf Diffuse		= EvaluateTexture(gpObjects[Int.GetID()].DiffuseTextureID, Int.GetUV());
+			const ColorXYZf Specular	= EvaluateTexture(gpObjects[Int.GetID()].SpecularTextureID, Int.GetUV());
+			const ColorXYZf Glossiness	= EvaluateTexture(gpObjects[Int.GetID()].GlossinessTextureID, Int.GetUV());
 
 			Shader.Type	= Enums::Brdf;			
 			Shader.Brdf	= Brdf(Int.GetN(), Int.GetWo(), Diffuse, Specular, 15, 500);
