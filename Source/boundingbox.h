@@ -25,6 +25,7 @@ namespace ExposureRender
 class EXPOSURE_RENDER_DLL BoundingBox
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE BoundingBox() :
 		MinP(FLT_MAX),
 		MaxP(FLT_MIN),
@@ -33,6 +34,10 @@ public:
 	{
 	}
 
+	/*! Constructor
+		@param[in] MinP Minimum point of bounding box
+		@param[in] MaxP Maximum point of bounding box
+	*/
 	HOST_DEVICE BoundingBox(const Vec3f& MinP, const Vec3f& MaxP) :
 		MinP(MinP),
 		MaxP(MaxP),
@@ -41,6 +46,10 @@ public:
 	{
 	}
 	
+	/*! Assignment operator
+		@param[in] Other Bounding box to copy
+		@result Bounding box
+	*/
 	HOST_DEVICE BoundingBox& BoundingBox::operator = (const BoundingBox& Other)
 	{
 		this->MinP		= Other.MinP;	
@@ -50,25 +59,54 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Gets the minimum point of the bounding box
+		@result Minimum point
+	*/
+	HOST_DEVICE Vec3f GetMinP() const
+	{
+		return this->MinP;
+	}
+	
+	/*! Sets the minimum point of the bounding box
+		@param MinP Minimum point
+	*/
 	HOST_DEVICE void SetMinP(const Vec3f& MinP)
 	{
 		this->MinP = MinP;
 		this->Update();
 	}
 
+	/*! Gets the maximum point of the bounding box
+		@result Maximum point
+	*/
+	HOST_DEVICE Vec3f GetMaxP() const
+	{
+		return this->MaxP;
+	}
+	
+	/*! Sets the maximum point of the bounding box
+		@param MaxP Maximum point
+	*/
 	HOST_DEVICE void SetMaxP(const Vec3f& MaxP)
 	{
 		this->MaxP = MaxP;
 		this->Update();
 	}
 
+	/*! Updates the bounding box */
 	HOST_DEVICE void Update()
 	{
 		this->Size		= this->MaxP - this->MinP,
 		this->InvSize	= 1.0f / Size;
 	}
-
+	
+	/*! Intersects the bounding box with a ray
+		@param R Ray
+		@param T0 Nearest hit distance
+		@param T1 Farthest hit distance
+		@result Whether \a R intersects the bounding box or not
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, float& T0, float& T1) const
 	{
 		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
@@ -91,10 +129,14 @@ public:
 		return true;
 	}
 
-	Vec3f	MinP;
-	Vec3f	MaxP;
-	Vec3f	Size;
-	Vec3f	InvSize;
+	HOST_DEVICE GET_SET_MACRO(Size, Vec3f);
+	HOST_DEVICE GET_SET_MACRO(InvSize, Vec3f);
+
+protected:
+	Vec3f	MinP;			/*! Minimum point of the bounding box */
+	Vec3f	MaxP;			/*! Maximum point of the bounding box */
+	Vec3f	Size;			/*! Size of the bounding box */
+	Vec3f	InvSize;		/*! Inverse size of the bounding box */
 };
 
 }

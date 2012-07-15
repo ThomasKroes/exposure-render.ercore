@@ -59,7 +59,7 @@ public:
 	HOST_DEVICE GET_REF_MACRO(Pixels, Buffer2D<ColorRGBAuc>)
 
 protected:
-	Buffer2D<ColorRGBAuc> Pixels;
+	Buffer2D<ColorRGBAuc> Pixels;		/*! Buffer for pixels */
 };
 
 }
