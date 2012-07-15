@@ -71,7 +71,7 @@ protected:
 			int NewDepth = Depth + 1;
 
 			// calculate halfsize of bounding box
-			Vec3f HalfSize = this->BoundingBox.Size / 2;
+			Vec3f HalfSize = this->BoundingBox.GetSize() / 2;
 
 			// initialize children and append to vector
 			OctreeNode Children[8];
@@ -92,11 +92,11 @@ protected:
 				int b = (i >> 1) & 1;
 				int c = (i >> 2) & 1;
 				ChildNode->BoundingBox.SetMinP(Vec3f(
-					ThisNode->BoundingBox.MinP[0] + a * HalfSize[0],
-					ThisNode->BoundingBox.MinP[1] + b * HalfSize[1],
-					ThisNode->BoundingBox.MinP[2] + c * HalfSize[2]
+					ThisNode->BoundingBox.GetMinP()[0] + a * HalfSize[0],
+					ThisNode->BoundingBox.GetMinP()[1] + b * HalfSize[1],
+					ThisNode->BoundingBox.GetMinP()[2] + c * HalfSize[2]
 				));
-				ChildNode->BoundingBox.SetMaxP(ChildNode->BoundingBox.MinP + HalfSize);
+				ChildNode->BoundingBox.SetMaxP(ChildNode->BoundingBox.GetMinP() + HalfSize);
 				ChildNode->BoundingBox.Update();
 
 				// recurse
