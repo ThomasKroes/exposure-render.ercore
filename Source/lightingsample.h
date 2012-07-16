@@ -43,7 +43,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Lighting sample to copy
-		@result Lighting sample
+		@return Lighting sample
 	*/
 	HOST_DEVICE LightingSample& LightingSample::operator=(const LightingSample& Other)
 	{

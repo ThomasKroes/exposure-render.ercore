@@ -75,7 +75,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Isotropic phase function to copy
-		@result Isotropic phase function
+		@return Isotropic phase function
 	*/
 	HOST_DEVICE IsotropicPhase& operator = (const IsotropicPhase& Other)
 	{

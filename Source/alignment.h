@@ -67,7 +67,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Alignment to copy
-		@result Alignment
+		@return Alignment
 	*/
 	HOST_DEVICE Alignment& operator = (const Alignment& Other)
 	{
@@ -90,7 +90,7 @@ public:
 	}
 	
 	/*! Gets a transform object from the alignment parameters
-		@result Transform object
+		@return Transform object
 	*/
 	HOST_DEVICE Transform GetTransform() const
 	{

@@ -48,7 +48,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Bounding box to copy
-		@result Bounding box
+		@return Bounding box
 	*/
 	HOST_DEVICE BoundingBox& BoundingBox::operator = (const BoundingBox& Other)
 	{
@@ -61,7 +61,7 @@ public:
 	}
 	
 	/*! Gets the minimum point of the bounding box
-		@result Minimum point
+		@return Minimum point
 	*/
 	HOST_DEVICE Vec3f GetMinP() const
 	{
@@ -78,7 +78,7 @@ public:
 	}
 
 	/*! Gets the maximum point of the bounding box
-		@result Maximum point
+		@return Maximum point
 	*/
 	HOST_DEVICE Vec3f GetMaxP() const
 	{
@@ -105,7 +105,7 @@ public:
 		@param R Ray
 		@param T0 Nearest hit distance
 		@param T1 Farthest hit distance
-		@result Whether \a R intersects the bounding box or not
+		@return Whether \a R intersects the bounding box or not
 	*/
 	HOST_DEVICE bool Intersect(const Ray& R, float& T0, float& T1) const
 	{

@@ -51,7 +51,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Exception to copy
-		@result Exception
+		@return Exception
 	*/
 	HOST Exception& operator = (const Exception& Other)
 	{

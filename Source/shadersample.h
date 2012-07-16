@@ -51,7 +51,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Shader sample to copy
-		@result Shader sample
+		@return Shader sample
 	*/
 	HOST_DEVICE ShaderSample& ShaderSample::operator=(const ShaderSample& Other)
 	{

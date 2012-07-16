@@ -38,7 +38,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Render sample to copy
-		@result Render sample
+		@return Render sample
 	*/
 	HOST RenderSample& operator = (const RenderSample& Other)
 	{

@@ -117,7 +117,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Brdf to copy
-		@result Brdf
+		@return Brdf
 	*/
 	HOST_DEVICE Brdf& operator = (const Brdf& Other)
 	{

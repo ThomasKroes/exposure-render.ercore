@@ -49,7 +49,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Transfer function to copy
-		@result Reference to the copied transfer function
+		@return Reference to the copied transfer function
 	*/
 	HOST_DEVICE TransferFunction& operator = (const TransferFunction& Other)
 	{
@@ -61,7 +61,7 @@ public:
 	}
 	
 	/*! Gets the name of the transfer function
-		@result Name of the transfer function
+		@return Name of the transfer function
 	*/
 	HOST_DEVICE const char* GetName() const
 	{
@@ -69,7 +69,7 @@ public:
 	}
 
 	/*! Sets the transfer function name
-		@param[in] pName Name of the transfer function
+		@param[in] Name Name of the transfer function
 	*/
 	HOST_DEVICE void SetName(const char* Name)
 	{

@@ -24,7 +24,7 @@ namespace ExposureRender
 
 /*! Cosine of theta
 	@param[in] W Input vector
-	@result Cosine of theta
+	@return Cosine of theta
 */
 HOST_DEVICE_NI inline float CosTheta(const Vec3f& W)
 {
@@ -33,7 +33,7 @@ HOST_DEVICE_NI inline float CosTheta(const Vec3f& W)
 
 /*! Absolute cosine of theta
 	@param[in] W Input vector
-	@result Absolute Cosine of theta
+	@return Absolute Cosine of theta
 */
 HOST_DEVICE_NI inline float AbsCosTheta(const Vec3f& W)
 {
@@ -42,7 +42,7 @@ HOST_DEVICE_NI inline float AbsCosTheta(const Vec3f& W)
 
 /*! Sine of theta
 	@param[in] W Input vector
-	@result Sine of theta
+	@return Sine of theta
 */
 HOST_DEVICE_NI inline float SinTheta(const Vec3f& W)
 {
@@ -51,7 +51,7 @@ HOST_DEVICE_NI inline float SinTheta(const Vec3f& W)
 
 /*! Sine of theta 2
 	@param[in] W Input vector
-	@result Sine of theta 2
+	@return Sine of theta 2
 */
 HOST_DEVICE_NI inline float SinTheta2(const Vec3f& W)
 {
@@ -60,7 +60,7 @@ HOST_DEVICE_NI inline float SinTheta2(const Vec3f& W)
 
 /*! Cosine of phi
 	@param[in] W Input vector
-	@result Cosine of phi
+	@return Cosine of phi
 */
 HOST_DEVICE_NI inline float CosPhi(const Vec3f& W)
 {
@@ -69,7 +69,7 @@ HOST_DEVICE_NI inline float CosPhi(const Vec3f& W)
 
 /*! Sine of phi
 	@param[in] W Input vector
-	@result Sine of phi
+	@return Sine of phi
 */
 HOST_DEVICE_NI inline float SinPhi(const Vec3f& W)
 {
@@ -79,7 +79,7 @@ HOST_DEVICE_NI inline float SinPhi(const Vec3f& W)
 /*! Determine whether \a W1 and \a W2 are in the same hemisphere
 	@param[in] W1 Input vector 1
 	@param[in] W2 Input vector 2
-	@result If \a W1 and \a W2 are in the same hemisphere
+	@return If \a W1 and \a W2 are in the same hemisphere
 */
 HOST_DEVICE_NI inline bool SameHemisphere(const Vec3f& W1, const Vec3f& W2)
 {
@@ -88,7 +88,7 @@ HOST_DEVICE_NI inline bool SameHemisphere(const Vec3f& W1, const Vec3f& W2)
 
 /*! Sample a disk
 	@param[in] U Input random vector
-	@result Sample
+	@return Sample
 */
 HOST_DEVICE_NI Vec2f inline ConcentricSampleDisk(const Vec2f& U)
 {
@@ -145,7 +145,7 @@ HOST_DEVICE_NI Vec2f inline ConcentricSampleDisk(const Vec2f& U)
 
 /*! Cosine weighted hemisphere
 	@param[in] U Input random vector
-	@result Sample
+	@return Sample
 */
 HOST_DEVICE_NI inline Vec3f CosineWeightedHemisphere(const Vec2f& U)
 {
@@ -157,7 +157,7 @@ HOST_DEVICE_NI inline Vec3f CosineWeightedHemisphere(const Vec2f& U)
 	@param[in] SinTheta Sine of theta
 	@param[in] CosTheta Cosine of theta
 	@param[in] Phi Phi
-	@result Vector
+	@return Vector
 */
 HOST_DEVICE_NI inline Vec3f SphericalDirection(const float& SinTheta, const float& CosTheta, const float& Phi)
 {
@@ -166,7 +166,7 @@ HOST_DEVICE_NI inline Vec3f SphericalDirection(const float& SinTheta, const floa
 
 /*! Uniformly sample the upper hemisphere
 	@param[in] U Input random vector
-	@result Random vector in upper hemisphere
+	@return Random vector in upper hemisphere
 */
 HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U)
 {
@@ -180,7 +180,7 @@ HOST_DEVICE_NI inline Vec3f UniformSampleHemisphere(const Vec2f& U)
 
 /*! Uniformly sample a unit sphere
 	@param[in] U Input random vector
-	@result Random vector in unit sphere
+	@return Random vector in unit sphere
 */
 HOST_DEVICE_NI inline Vec3f UniformSampleSphere(const Vec2f& U)
 {

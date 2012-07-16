@@ -25,11 +25,6 @@
 namespace ExposureRender
 {
 
-DEVICE inline float NormalizedColorDistance(const ColorRGBAuc& A, const ColorRGBAuc& B)
-{
-	return ONE_OVER_255 * sqrtf(powf(A[0] - B[0], 2.0f) + powf(A[1] - B[1], 2.0f) + powf(A[2] - B[2], 2.0f));
-}
-
 HOST_DEVICE float Mitchell1D(const float& B, const float& C, const float& v)
 {
 	float av = ::fabsf(v);

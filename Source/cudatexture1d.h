@@ -37,7 +37,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Buffer to copy from
-		@result Copied cuda texture by reference
+		@return Copied cuda texture by reference
 	*/
 	HOST CudaTexture1D& operator = (const Buffer1D<T>& Other)
 	{

@@ -38,7 +38,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Range to copy
-		@result Range
+		@return Range
 	*/
 	HOST Range& Range::operator = (const Vec2f& Other)
 	{

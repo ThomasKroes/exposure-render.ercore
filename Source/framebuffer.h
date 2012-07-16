@@ -44,7 +44,8 @@ public:
 		RandomSeedsCopy2("Random Seeds 2 Copy", Enums::Device),
 		HostDisplayEstimate("Display Estimate", Enums::Host),
 		IDs("IDs", Enums::Device),
-		Samples("Samples", Enums::Device)
+		Samples("Samples", Enums::Device),
+		PixelHysteresis("Pixel hysteresis", Enums::Device)
 	{
 	}
 
@@ -68,26 +69,28 @@ public:
 		this->HostDisplayEstimate.Resize(this->Resolution);
 		this->IDs.Resize(this->Resolution);
 		this->Samples.Resize(this->Resolution);
-
+		this->PixelHysteresis.Resize(this->Resolution);
+		
 		this->RandomSeedsCopy1 = this->RandomSeeds1;
 		this->RandomSeedsCopy2 = this->RandomSeeds2;
 	}
 
-	Vec2i					Resolution;
-	Buffer2D<ColorXYZAf>	FrameEstimate;
-	Buffer2D<ColorXYZAf>	TempFrameEstimate;
-	Buffer2D<ColorXYZAf>	RunningEstimateXYZ;
-	Buffer2D<ColorRGBAuc>	RunningEstimateRGB;
-	Buffer2D<ColorRGBAuc>	TempRunningEstimateRGB;
-	Buffer2D<ColorRGBAuc>	DisplayEstimate;
-	Buffer2D<ColorRGBAuc>	DVR;
-	RandomSeedBuffer2D		RandomSeeds1;
-	RandomSeedBuffer2D		RandomSeeds2;
-	RandomSeedBuffer2D		RandomSeedsCopy1;
-	RandomSeedBuffer2D		RandomSeedsCopy2;
-	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
-	Buffer2D<int>			IDs;
+	Vec2i						Resolution;
+	Buffer2D<ColorXYZAf>		FrameEstimate;
+	Buffer2D<ColorXYZAf>		TempFrameEstimate;
+	Buffer2D<ColorXYZAf>		RunningEstimateXYZ;
+	Buffer2D<ColorRGBAuc>		RunningEstimateRGB;
+	Buffer2D<ColorRGBAuc>		TempRunningEstimateRGB;
+	Buffer2D<ColorRGBAuc>		DisplayEstimate;
+	Buffer2D<ColorRGBAuc>		DVR;
+	RandomSeedBuffer2D			RandomSeeds1;
+	RandomSeedBuffer2D			RandomSeeds2;
+	RandomSeedBuffer2D			RandomSeedsCopy1;
+	RandomSeedBuffer2D			RandomSeedsCopy2;
+	Buffer2D<ColorRGBAuc>		HostDisplayEstimate;
+	Buffer2D<int>				IDs;
 	Buffer2D<RenderSample>		Samples;
+	Buffer2D<PixelHysteresis>	PixelHysteresis;
 };
 
 }

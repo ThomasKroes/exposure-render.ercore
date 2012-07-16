@@ -45,7 +45,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Bitmap to copy
-		@result Bitmap
+		@return Bitmap
 	*/
 	HOST Bitmap& operator = (const ErBitmap& Other)
 	{

@@ -73,7 +73,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Volume property to copy
-		@result Volume property
+		@return Volume property
 	*/
 	HOST VolumeProperty& operator = (const VolumeProperty& Other)
 	{
@@ -99,7 +99,7 @@ public:
 	
 	/*! Gets the opacity at \a Intensity from the opacity transfer function
 		@param[in] Intensity Intensity at which to fetch the opacity
-		@result Opacity
+		@return Opacity
 	*/
 	DEVICE float GetOpacity(const unsigned short& Intensity)
 	{
@@ -108,7 +108,7 @@ public:
 	
 	/*! Gets the diffuse color at \a Intensity from the diffuse transfer function
 		@param[in] Intensity Intensity at which to fetch the diffuse color
-		@result Diffuse color
+		@return Diffuse color
 	*/
 	DEVICE ColorXYZf GetDiffuse(const unsigned short& Intensity)
 	{
@@ -117,7 +117,7 @@ public:
 	
 	/*! Gets the specular color at \a Intensity from the specular transfer function
 		@param[in] Intensity Intensity at which to fetch the specular color
-		@result Specular color
+		@return Specular color
 	*/
 	DEVICE ColorXYZf GetSpecular(const unsigned short& Intensity)
 	{
@@ -126,7 +126,7 @@ public:
 	
 	/*! Gets the glossiness at \a Intensity from the glossiness transfer function
 		@param[in] Intensity Intensity at which to fetch the glossiness
-		@result Glossiness
+		@return Glossiness
 	*/
 	DEVICE float GetGlossiness(const unsigned short& Intensity)
 	{
@@ -135,7 +135,7 @@ public:
 	
 	/*! Gets the index of reflection at \a Intensity from the index of reflection transfer function
 		@param[in] Intensity Intensity at which to fetch the index of reflection
-		@result Index of reflection
+		@return Index of reflection
 	*/
 	DEVICE float GetIndexOfReflection(const unsigned short& Intensity)
 	{
@@ -144,7 +144,7 @@ public:
 	
 	/*! Gets the emission color at \a Intensity from the emission transfer function
 		@param[in] Intensity Intensity at which to fetch the emission color
-		@result Emission color
+		@return Emission color
 	*/
 	DEVICE ColorXYZf GetEmission(const unsigned short& Intensity)
 	{

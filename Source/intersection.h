@@ -62,7 +62,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Intersection to copy
-		@result Intersection
+		@return Intersection
 	*/
 	HOST_DEVICE Intersection& Intersection::operator = (const Intersection& Other)
 	{

@@ -34,7 +34,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Surface sample to copy
-		@result Surface sample
+		@return Surface sample
 	*/
 	HOST_DEVICE SurfaceSample& SurfaceSample::operator = (const SurfaceSample& Other)
 	{
@@ -54,9 +54,9 @@ protected:*/
 
 	// FIXME: For some reason, using get/set function on this class has a significant impact on performance so for now we let them be public
 
-	Vec3f	P;
-	Vec3f	N;
-	Vec2f	UV;
+	Vec3f	P;		/*! Position */
+	Vec3f	N;		/*! Normal */
+	Vec2f	UV;		/*! UV coordinates */
 };
 
 }

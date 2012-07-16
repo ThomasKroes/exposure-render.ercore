@@ -86,7 +86,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Fresnel to copy
-		@result Fresnel
+		@return Fresnel
 	*/
 	HOST_DEVICE Fresnel& operator = (const Fresnel& Other)
 	{

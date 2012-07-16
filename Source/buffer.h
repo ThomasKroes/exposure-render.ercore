@@ -60,7 +60,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Buffer to copy from
-		@result Copied buffer by reference
+		@return Copied buffer by reference
 	*/
 	HOST Buffer& operator = (const Buffer& Other)
 	{
@@ -227,7 +227,7 @@ public:
 
 	/*! Get element at index \a ID
 		@param[in] ID Index
-		@result Element at \a ID
+		@return Element at \a ID
 	*/
 	HOST_DEVICE T& operator[](const int& ID) const
 	{
@@ -235,7 +235,7 @@ public:
 	}
 
 	/*! Gets the buffer name
-		@result Name of the buffer
+		@return Name of the buffer
 	*/
 	HOST const char* GetName() const
 	{
@@ -244,7 +244,7 @@ public:
 
 	/*! Sets the buffer name
 		@param[in] pName Name of name
-		@result Size of the memory
+		@return Size of the memory
 	*/
 	HOST void SetName(const char* pName)
 	{
@@ -253,7 +253,7 @@ public:
 	}
 	
 	/*! Gets the full name
-		@result Full name
+		@return Full name
 	*/
 	HOST const char* GetFullName() const
 	{
@@ -261,7 +261,7 @@ public:
 	}
 	
 	/*! Gets the number of bytes
-		@result Number of bytes occupied by the buffer
+		@return Number of bytes occupied by the buffer
 	*/
 	HOST_DEVICE virtual long GetNoBytes(void) const
 	{
@@ -270,7 +270,7 @@ public:
 	
 	/*! Gets the memory string
 		@param[in] MemoryUnit Memory unit
-		@result Size of the memory
+		@return Size of the memory
 	*/
 	HOST virtual float GetMemorySize(const Enums::MemoryUnit& MemoryUnit) const
 	{
@@ -290,7 +290,7 @@ public:
 	}
 
 	/*! Gets a pointer to the data
-		@result Pointer to raw data
+		@return Pointer to raw data
 	*/
 	HOST_DEVICE T* GetData() const
 	{
@@ -298,7 +298,7 @@ public:
 	}
 
 	/*! Gets the memory type
-		@result Memory type
+		@return Memory type
 	*/
 	HOST Enums::MemoryType GetMemoryType() const
 	{
@@ -306,7 +306,7 @@ public:
 	}
 
 	/*! Gets the filter mode
-		@result Filter mode
+		@return Filter mode
 	*/
 	HOST Enums::FilterMode GetFilterMode() const
 	{
@@ -322,7 +322,7 @@ public:
 	}
 
 	/*! Gets the address mode 
-		@result Address mode
+		@return Address mode
 	*/
 	HOST Enums::AddressMode GetAddressMode() const
 	{
@@ -336,7 +336,7 @@ public:
 	}
 
 	/*! Gets the buffer's resolution 
-		@result Resolution
+		@return Resolution
 	*/
 	HOST_DEVICE Vec<int, NoDimensions> GetResolution() const
 	{
@@ -344,7 +344,7 @@ public:
 	}
 
 	/*! Gets the number of elements in the buffer 
-		@result Number of elements
+		@return Number of elements
 	*/
 	HOST_DEVICE int GetNoElements() const
 	{

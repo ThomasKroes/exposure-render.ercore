@@ -54,7 +54,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Ray to copy
-		@result Ray
+		@return Ray
 	*/
 	HOST_DEVICE Ray& operator = (const Ray& Other)
 	{
@@ -69,7 +69,7 @@ public:
 	
 	/*! Advance ray
 		@param[in] T Ray distance
-		@result Advanced point along ray distance \a T
+		@return Advanced point along ray distance \a T
 	*/
 	HOST_DEVICE Vec3f operator()(const float& T) const
 	{

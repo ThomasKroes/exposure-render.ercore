@@ -46,7 +46,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Matrix to copy
-		@result Matrix
+		@return Matrix
 	*/
 	HOST_DEVICE Matrix44& operator = (const Matrix44& Other)
 	{
@@ -69,7 +69,7 @@ public:
 	
 	/*! Matrix multiplication operator
 		@param[in] Other Matrix to multiply with
-		@result Multiplied matrix
+		@return Multiplied matrix
 	*/
 	HOST_DEVICE Matrix44 operator * (const Matrix44& Other) const	
 	{
@@ -103,7 +103,7 @@ public:
 	
 	/*! Matrix inverse
 		@param[out] Result Inverted matrix
-		@result Whether matrix inversion was successful
+		@return Whether matrix inversion was successful
 	*/
 	HOST_DEVICE bool Invert(Matrix44& Result) const
 	{
@@ -170,7 +170,7 @@ public:
 
 	/*! Matrix inverse
 		@param[in] TM Input matrix
-		@result Inverse of \a TM
+		@return Inverse of \a TM
 	*/
 	HOST_DEVICE static Matrix44 Inverse(const Matrix44& TM)
 	{
@@ -183,7 +183,7 @@ public:
 	
 	/*! Translation matrix
 		@param[in] Translation Translation
-		@result Translation matrix
+		@return Translation matrix
 	*/
 	HOST_DEVICE static Matrix44 CreateTranslation(const Vec3f& Translation)
 	{
@@ -200,7 +200,7 @@ public:
 		@param[in] Position Position
 		@param[in] Target Target
 		@param[in] Up Up
-		@result Look-at matrix
+		@return Look-at matrix
 	*/
 	HOST_DEVICE static Matrix44 CreateLookAt(const Vec3f& Position, const Vec3f& Target, const Vec3f& Up)
 	{
@@ -228,7 +228,7 @@ public:
 	/*! Get element at \a I and \a J
 		@param[in] I Column index
 		@param[in] J Row index
-		@result Element at \a I and \a J
+		@return Element at \a I and \a J
 	*/
 	HOST_DEVICE float GetElement(const int& I, const int& J) const
 	{
