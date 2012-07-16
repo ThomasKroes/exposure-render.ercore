@@ -23,13 +23,28 @@
 namespace ExposureRender
 {
 
+/*! BRDF class */
 class Brdf
 {
 public:
-	HOST_DEVICE Brdf(void)
+	/*! Default constructor */
+	HOST_DEVICE Brdf() :
+		Nn(0.0f),
+		Nu(0.0f),
+		Nv(0.0f),
+		Lambert(),
+		Microfacet()
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] N Normal vector
+		@param[in] Wo Outgoing vector
+		@param[in] Kd Diffuse color
+		@param[in] Ks Specular color
+		@param[in] Ior Index of reflection
+		@param[in] Exponent Blinn exponent
+	*/
 	HOST_DEVICE Brdf(const Vec3f& N, const Vec3f& Wo, const ColorXYZf& Kd, const ColorXYZf& Ks, const float& Ior, const float& Exponent) :
 		Nn(Normalize(N)),
 		Nu(Normalize(Cross(N, Wo))),
@@ -38,19 +53,12 @@ public:
 		Microfacet(Ks, Ior, Exponent)
 	{
 	}
-
-	HOST_DEVICE Vec3f WorldToLocal(const Vec3f& W)
-	{
-		return Normalize(Vec3f(Dot(W, this->Nu), Dot(W, this->Nv), Dot(W, this->Nn)));
-	}
-
-	HOST_DEVICE Vec3f LocalToWorld(const Vec3f& W)
-	{
-		return Normalize(Vec3f(	this->Nu[0] * W[0] + this->Nv[0] * W[1] + this->Nn[0] * W[2],
-								this->Nu[1] * W[0] + this->Nv[1] * W[1] + this->Nn[1] * W[2],
-								this->Nu[2] * W[0] + this->Nv[2] * W[1] + this->Nn[2] * W[2]));
-	}
-
+	
+	/*! Computes the reflectance given \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@return Reflectance
+	*/
 	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		const Vec3f Wol = WorldToLocal(Wo);
@@ -58,7 +66,13 @@ public:
 
 		return this->Lambert.F(Wol, Wil) + this->Microfacet.F(Wol, Wil);
 	}
-
+	
+	/*! Samples a random direction with importance sampling
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@param[out] Pdf Probability of sampling \a Wi
+		@param[in,out] RNG Random number generator
+	*/
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, RNG& RNG)
 	{
 		const Vec3f Wol = WorldToLocal(Wo);
@@ -82,7 +96,12 @@ public:
 
 		return this->Lambert.F(Wol, Wil) + this->Microfacet.F(Wol, Wil);
 	}
-
+	
+	/*! Computes the probability giving vector \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[in] Wi Incoming direction
+		@return Probability
+	*/
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		const Vec3f Wol = WorldToLocal(Wo);
@@ -95,7 +114,11 @@ public:
 		
 		return Pdf;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Brdf to copy
+		@result Brdf
+	*/
 	HOST_DEVICE Brdf& operator = (const Brdf& Other)
 	{
 		this->Nn 			= Other.Nn;
@@ -107,11 +130,31 @@ public:
 		return *this;
 	}
 
-	Vec3f			Nn;
-	Vec3f			Nu;
-	Vec3f			Nv;
-	Lambert			Lambert;
-	Microfacet		Microfacet;
+	/*! Transform vector from world to shader coordinates
+		@param[in] W Vector in world coordinates
+		@return Vector in shader coordinates
+	*/
+	HOST_DEVICE Vec3f WorldToLocal(const Vec3f& W)
+	{
+		return Normalize(Vec3f(Dot(W, this->Nu), Dot(W, this->Nv), Dot(W, this->Nn)));
+	}
+	
+	/*! Transform vector from shader to world coordinates
+		@param[in] W Vector in shader coordinates
+		@return Vector in world coordinates
+	*/
+	HOST_DEVICE Vec3f LocalToWorld(const Vec3f& W)
+	{
+		return Normalize(Vec3f(	this->Nu[0] * W[0] + this->Nv[0] * W[1] + this->Nn[0] * W[2],
+								this->Nu[1] * W[0] + this->Nv[1] * W[1] + this->Nn[1] * W[2],
+								this->Nu[2] * W[0] + this->Nv[2] * W[1] + this->Nn[2] * W[2]));
+	}
+
+	Vec3f			Nn;				/*! N orthogonal vector */
+	Vec3f			Nu;				/*! U orthogonal vector */
+	Vec3f			Nv;				/*! V orthogonal vector */
+	Lambert			Lambert;		/*! Lambert */
+	Microfacet		Microfacet;		/*! Microfacet */
 };
 
 }

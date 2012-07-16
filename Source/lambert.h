@@ -21,23 +21,40 @@
 namespace ExposureRender
 {
 
+/*! Lambert class */
 class Lambert
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE Lambert(void)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Kd Diffuse color
+	*/
 	HOST_DEVICE Lambert(const ColorXYZf& Kd)
 	{
 		this->Kd = Kd;
 	}
-
+	
+	/*! Computes the reflectance given \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@return Reflectance
+	*/
 	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		return Kd * INV_PI_F;
 	}
-
+	
+	/*! Samples a random direction with importance sampling
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@param[out] Pdf Probability of sampling \a Wi
+		@param[in] U Random sample
+		@return Reflectance, given \a Wo and \a Wi
+	*/
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
 	{
 		Wi = CosineWeightedHemisphere(U);
@@ -49,12 +66,21 @@ public:
 
 		return this->F(Wo, Wi);
 	}
-
+	
+	/*! Computes the probability giving vector \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[in] Wi Incoming direction
+		@return Probability
+	*/
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		return SameHemisphere(Wo, Wi) ? AbsCosTheta(Wi) * INV_PI_F : 0.0f;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Lambert to copy
+		@result Lambert
+	*/
 	HOST_DEVICE Lambert& operator = (const Lambert& Other)
 	{
 		this->Kd = Other.Kd;
@@ -62,7 +88,7 @@ public:
 		return *this;
 	}
 
-	ColorXYZf	Kd;
+	ColorXYZf	Kd;		/*! Diffuse color */
 };
 
 }
