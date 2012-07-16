@@ -21,21 +21,29 @@
 namespace ExposureRender
 {
 
+/*! Random number generator class */
 class RNG
 {
 public:
-	HOST_DEVICE RNG(unsigned int* pSeed0, unsigned int* pSeed1)
+	/*! Constructor
+		@param[in] Seed0 First seed value
+		@param[in] Seed1 Second seed value
+	*/
+	HOST_DEVICE RNG(unsigned int* Seed0, unsigned int* Seed1)
 	{
-		this->pSeed0 = pSeed0;
-		this->pSeed1 = pSeed1;
+		this->Seed0 = Seed0;
+		this->Seed1 = Seed1;
 	}
 
-	HOST_DEVICE float Get1(void)
+	/*! Gets a single random float
+		@return Random float
+	*/
+	HOST_DEVICE float Get1()
 	{
-		*this->pSeed0 = 36969 * ((*pSeed0) & 65535) + ((*pSeed0) >> 16);
-		*this->pSeed1 = 18000 * ((*pSeed1) & 65535) + ((*pSeed1) >> 16);
+		*this->Seed0 = 36969 * ((*Seed0) & 65535) + ((*Seed0) >> 16);
+		*this->Seed1 = 18000 * ((*Seed1) & 65535) + ((*Seed1) >> 16);
 
-		unsigned int ires = ((*pSeed0) << 16) + (*pSeed1);
+		unsigned int ires = ((*Seed0) << 16) + (*Seed1);
 
 		union
 		{
@@ -48,19 +56,25 @@ public:
 		return (res.f - 2.f) / 2.f;
 	}
 
-	HOST_DEVICE Vec2f Get2(void)
+	/*! Gets a two-dimensional random vector
+		@return Two-dimensional random vector
+	*/
+	HOST_DEVICE Vec2f Get2()
 	{
 		return Vec2f(Get1(), Get1());
 	}
-
+	
+	/*! Gets a three-dimensional random vector
+		@return Three-dimensional random vector
+	*/
 	HOST_DEVICE Vec3f Get3(void)
 	{
 		return Vec3f(Get1(), Get1(), Get1());
 	}
 
 private:
-	unsigned int*	pSeed0;
-	unsigned int*	pSeed1;
+	unsigned int*	Seed0;		/*! First random seed value */
+	unsigned int*	Seed1;		/*! Second random seed value */
 };
 
 }
