@@ -21,19 +21,31 @@
 namespace ExposureRender
 {
 
+/*! Fresnel class */
 class Fresnel
 {
 public:
-	HOST_DEVICE Fresnel(void)
+	/*! Default constructor */
+	HOST_DEVICE Fresnel(void) :
+		EtaI(1.0f),
+		EtaT(1.0f)
 	{
 	}
 
+	/*! Constructor
+		@param[in] EtaI IOR incoming
+		@param[in] EtaT IOR outgoing
+	*/
 	HOST_DEVICE Fresnel(const float& EtaI, const float& EtaT) :
 		EtaI(EtaI),
 		EtaT(EtaT)
 	{
 	}
-
+	
+	/*! Computes the Fresnel reflectance
+		@param[in] CosI Cosing of incoming direction
+		@return Fresnel reflectance
+	*/
 	HOST_DEVICE ColorXYZf Evaluate(float CosI)
 	{
 		CosI = Clamp(CosI, -1.0f, 1.0f);
@@ -57,7 +69,14 @@ public:
 			return FresnelDielectric(fabsf(CosI), CosT, EtaI, EtaT);
 		}
 	}
-
+	
+	/*! Computes the Fresnel reflectance for dielectrics
+		@param[in] CosI Cosing of incoming direction
+		@param[in] CosT Cosing of outgoing direction
+		@param[in] EtaI IOR incoming
+		@param[in] EtaT IOR outgoing
+		@return Fresnel reflectance
+	*/
 	HOST_DEVICE ColorXYZf FresnelDielectric(const float& CosI, const float& CosT, const float& EtaI, const float& EtaT)
 	{
 		const ColorXYZf Rparl = ((EtaT * CosI) - (EtaI * CosT)) / ((EtaT * CosI) + (EtaI * CosT));
@@ -65,6 +84,10 @@ public:
 		return 0.5f * (Rparl * Rparl + Rperp * Rperp);
 	}
 
+	/*! Assignment operator
+		@param[in] Other Fresnel to copy
+		@result Fresnel
+	*/
 	HOST_DEVICE Fresnel& operator = (const Fresnel& Other)
 	{
 		this->EtaI = Other.EtaI;
@@ -73,8 +96,8 @@ public:
 		return *this;
 	}
 
-	float	EtaI;
-	float	EtaT;
+	float	EtaI;		/*! IOR incoming */
+	float	EtaT;		/*! IOR outgoing */
 };
 
 }

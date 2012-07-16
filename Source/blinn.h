@@ -21,18 +21,29 @@
 namespace ExposureRender
 {
 
+/*! Blinn microfacet distribution class */
 class Blinn
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE Blinn(void)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Exponent Blinn exponent
+	*/
 	HOST_DEVICE Blinn(const float& Exponent) :
 		Exponent(Exponent)
 	{
 	}
-
+	
+	/*! Samples a random direction with importance sampling
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@param[out] Pdf Probability of sampling \a Wi
+		@param[in] U Random sample
+	*/
 	HOST_DEVICE void SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
 	{
 		const float CosTheta	= powf(U[0], 1.0f / (this->Exponent + 1));
@@ -53,7 +64,12 @@ public:
 
 		Pdf = BlinnPdf;
 	}
-
+	
+	/*! Determines the probability of sampling \a Wi with \a Wo
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@return Probability
+	*/
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		const Vec3f Wh = Normalize(Wo + Wi);
@@ -67,13 +83,21 @@ public:
 
 		return Pdf;
 	}
-
+	
+	/*! Distribution
+		@param[in] Wh Half angle vector
+		@return Distribution
+	*/
 	HOST_DEVICE float D(const Vec3f& Wh) const
 	{
 		float CosThetaH = AbsCosTheta(Wh);
 		return (this->Exponent + 2) * INV_TWO_PI_F * powf(max(0.0f, CosThetaH), this->Exponent);
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Blinn to copy
+		@result Blinn
+	*/
 	HOST_DEVICE Blinn& operator = (const Blinn& Other)
 	{
 		this->Exponent = Other.Exponent;
@@ -81,7 +105,7 @@ public:
 		return *this;
 	}
 
-	float	Exponent;
+	float	Exponent;		/*! Blinn exponent */
 };
 
 

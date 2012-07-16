@@ -22,20 +22,35 @@
 namespace ExposureRender
 {
 
+/*! Microfacet class */
 class Microfacet
 {
 public:
-	HOST_DEVICE Microfacet(void)
+	/*! Default constructor */
+	HOST_DEVICE Microfacet(void) :
+		R(1.0f),
+		Fresnel(1.0f, 1.0f),
+		Blinn(1.0f)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Reflectance Reflectance
+		@param[in] Ior Index of reflection
+		@param[in] Exponent Blinn exponent
+	*/
 	HOST_DEVICE Microfacet(const ColorXYZf& Reflectance, const float& Ior, const float& Exponent) :
 		R(Reflectance),
 		Fresnel(1.0f, Ior),
 		Blinn(Exponent)
 	{
 	}
-
+	
+	/*! Computes the reflectance given \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@return Reflectance
+	*/
 	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		const float CosThetaO = AbsCosTheta(Wo);
@@ -52,7 +67,13 @@ public:
 
 		return this->R * this->Blinn.D(Wh) * G(Wo, Wi, Wh) * Fr / (4.0f * CosThetaI * CosThetaO);
 	}
-
+	
+	/*! Samples a random direction with importance sampling
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@param[out] Pdf Probability of sampling \a Wi
+		@param[in] U Random sample
+	*/
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
 	{
 		this->Blinn.SampleF(Wo, Wi, Pdf, U);
@@ -62,7 +83,12 @@ public:
 
 		return this->F(Wo, Wi);
 	}
-
+	
+	/*! Computes the probability giving vector \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[in] Wi Incoming direction
+		@return Probability
+	*/
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		if (!SameHemisphere(Wo, Wi))
@@ -70,7 +96,13 @@ public:
 
 		return Blinn.Pdf(Wo, Wi);
 	}
-
+	
+	/*! Computes the geometric factor giving vector \a Wo, \a Wi and \a Wh
+		@param[in] Wo Outgoing direction
+		@param[in] Wi Incoming direction
+		@param[in] Wi Half angle vector
+		@return geometric factor
+	*/
 	HOST_DEVICE float G(const Vec3f& Wo, const Vec3f& Wi, const Vec3f& Wh)
 	{
 		const float NdotWh 	= AbsCosTheta(Wh);
@@ -80,7 +112,11 @@ public:
 
 		return min(1.0f, min((2.0f * NdotWh * NdotWo / WOdotWh), (2.0f * NdotWh * NdotWi / WOdotWh)));
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Microfacet to copy
+		@result Microfacet
+	*/
 	HOST_DEVICE Microfacet& operator = (const Microfacet& Other)
 	{
 		this->R			= Other.R;
@@ -90,9 +126,9 @@ public:
 		return *this;
 	}
 
-	ColorXYZf	R;
-	Fresnel		Fresnel;
-	Blinn		Blinn;
+	ColorXYZf	R;				/*! Reflectance */
+	Fresnel		Fresnel;		/*! Fresnel */
+	Blinn		Blinn;			/*! Blinn */
 
 };
 

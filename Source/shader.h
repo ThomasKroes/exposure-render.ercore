@@ -23,20 +23,39 @@
 namespace ExposureRender
 {
 
+/*! Shader class */
 class Shader
 {
 public:
-	HOST_DEVICE Shader(void)
+	/*! Default constructor */
+	HOST_DEVICE Shader(void) :
+		Type(Enums::Brdf),
+		Brdf(),
+		IsotropicPhase()
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Type Type of scattering function
+		@param[in] N Normal
+		@param[in] Wo Outgoing vector
+		@param[in] Kd Diffuse color
+		@param[in] Ks Specular color
+		@param[in] Ior Index of reflection
+		@param[in] Exponent Blinn exponent
+	*/
 	HOST_DEVICE Shader(const Enums::ScatterFunction& Type, const Vec3f& N, const Vec3f& Wo, const ColorXYZf& Kd, const ColorXYZf& Ks, const float& Ior, const float& Exponent) :
 		Type(Type),
 		Brdf(N, Wo, Kd, Ks, Ior, Exponent),
 		IsotropicPhase(Kd)
 	{
 	}
-
+	
+	/*! Computes the reflectance given \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@return Reflectance
+	*/
 	HOST_DEVICE ColorXYZf F(Vec3f Wo, Vec3f Wi)
 	{
 		switch (this->Type)
@@ -50,7 +69,13 @@ public:
 
 		return 1.0f;
 	}
-
+	
+	/*! Samples a random direction with importance sampling
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@param[out] Pdf Probability of sampling \a Wi
+		@param[in,out] RNG Random number generator
+	*/
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, RNG& RNG)
 	{
 		switch (this->Type)
@@ -64,7 +89,12 @@ public:
 
 		return ColorXYZf(0.0f);
 	}
-
+	
+	/*! Computes the probability giving vector \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[in] Wi Incoming direction
+		@return Probability
+	*/
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		switch (this->Type)
@@ -78,7 +108,11 @@ public:
 
 		return 1.0f;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Shader to copy
+		@result Shader
+	*/
 	HOST_DEVICE Shader& operator = (const Shader& Other)
 	{
 		this->Type 				= Other.Type;
@@ -88,11 +122,17 @@ public:
 		return *this;
 	}
 
-	Enums::ScatterFunction		Type;
-	Brdf						Brdf;
-	IsotropicPhase				IsotropicPhase;
+	Enums::ScatterFunction		Type;				/*! Type of scattering */
+	Brdf						Brdf;				/*! Brdf */
+	IsotropicPhase				IsotropicPhase;		/*! Isotropic phase function */
 };
 
+/*! Outputs a shader based on intersection \a Int
+	@param[in] Int Intersection
+	@param[out] Shader Shader
+	@param[in,out] Random number generator
+	@param[in] VolumeID ID of the volume
+*/
 DEVICE void GetShader(Intersection Int, Shader& Shader, RNG& RNG, const int& VolumeID = 0)
 {
 	switch (Int.GetScatterType())

@@ -21,23 +21,40 @@
 namespace ExposureRender
 {
 
+/*! Isotropic phase function class */
 class IsotropicPhase
 {
 public:
-	HOST_DEVICE IsotropicPhase(void)
+	/*! Default constructor */
+	HOST_DEVICE IsotropicPhase() :
+		Kd(0.0f)
 	{
 	}
 
+	/*! Constructor
+		@param[in] Kd Diffuse color
+	*/
 	HOST_DEVICE IsotropicPhase(const ColorXYZf& Kd) :
 		Kd(Kd)
 	{
 	}
-
+	
+	/*! Computes the reflectance given \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@return Reflectance
+	*/
 	HOST_DEVICE ColorXYZf F(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		return Kd * INV_PI_F;
 	}
 
+	/*! Samples a random direction
+		@param[in] Wo Outgoing direction
+		@param[out] Wi Incoming direction
+		@param[out] Pdf Probability of sampling \a Wi
+		@param[in] U Random sample
+	*/
 	HOST_DEVICE ColorXYZf SampleF(const Vec3f& Wo, Vec3f& Wi, float& Pdf, const Vec2f& U)
 	{
 		Wi	= UniformSampleSphere(U);
@@ -45,12 +62,21 @@ public:
 
 		return F(Wo, Wi);
 	}
-
+	
+	/*! Computes the probability giving vector \a Wo and \a Wi
+		@param[in] Wo Outgoing direction
+		@param[in] Wi Incoming direction
+		@return Probability
+	*/
 	HOST_DEVICE float Pdf(const Vec3f& Wo, const Vec3f& Wi)
 	{
 		return INV_FOUR_PI_F;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Isotropic phase function to copy
+		@result Isotropic phase function
+	*/
 	HOST_DEVICE IsotropicPhase& operator = (const IsotropicPhase& Other)
 	{
 		this->Kd = Other.Kd;
@@ -58,7 +84,7 @@ public:
 		return *this;
 	}
 
-	ColorXYZf	Kd;
+	ColorXYZf	Kd;		/*! Diffuse color */
 };
 
 }
