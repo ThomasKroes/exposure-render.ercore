@@ -103,17 +103,17 @@ public:
 		float r = InnerRadius + (1.0f - InnerRadius) * sqrtf(UVW[0]);
 		float theta = 2.0f * PI_F * UVW[1];
 
-		SS.P 	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
-		SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
-		SS.UV	= Vec2f(SS.P[0], SS.P[1]);
+		SS.SetP(Vec3f(r * cosf(theta), r * sinf(theta), 0.0f));
+		SS.SetN(Vec3f(0.0f, 0.0f, 1.0f));
+		SS.SetUV(Vec2f(SS.GetP()[0], SS.GetP()[1]));
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		this->SampleUnit(SS, UVW, this->InnerRadius / this->OuterRadius);
 
-		SS.P *= this->OuterRadius;
-		SS.UV	= Vec2f(SS.P[0], SS.P[1]);
+		SS.GetP() *= this->OuterRadius;
+		SS.SetUV(Vec2f(SS.GetP()[0], SS.GetP()[1]));
 	}
 
 	HOST_DEVICE float GetArea() const

@@ -18,7 +18,7 @@
 
 #include "buffers.h"
 #include "randomseedbuffers.h"
-#include "sample.h"
+#include "rendersample.h"
 
 namespace ExposureRender
 {
@@ -87,7 +87,7 @@ public:
 	RandomSeedBuffer2D		RandomSeedsCopy2;
 	Buffer2D<ColorRGBAuc>	HostDisplayEstimate;
 	Buffer2D<int>			IDs;
-	Buffer2D<Sample>		Samples;
+	Buffer2D<RenderSample>		Samples;
 };
 
 }

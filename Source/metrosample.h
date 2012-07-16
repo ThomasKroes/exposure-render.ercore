@@ -13,5 +13,71 @@
 *
 *	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#pragma once
 
-#include "metrosample.h"
+#include "lightingsample.h"
+#include "camerasample.h"
+
+namespace ExposureRender
+{
+
+/*! Metropolis sample class */
+class MetroSample
+{
+public:
+	/*! Default constructor */
+	HOST_DEVICE MetroSample()
+	{
+	}
+	
+	/*! Constructor
+		@param[in,out] RNG Random number generator
+	*/
+	HOST_DEVICE MetroSample(RNG& RNG)
+	{
+		this->LargeStep(RNG);
+	}
+
+	/*! Assignment operator
+		@param[in] Other Metropolis sample to copy
+		@result Metropolis sample
+	*/
+	HOST_DEVICE MetroSample& MetroSample::operator=(const MetroSample& Other)
+	{
+		this->LightingSample 	= Other.LightingSample;
+		this->CameraSample		= Other.CameraSample;
+
+		return *this;
+	}
+	
+	/*! Large step mutation
+		@param[in,out] RNG Random number generator
+	*/
+	HOST_DEVICE void LargeStep(RNG& RNG)
+	{
+		this->LightingSample.LargeStep(RNG);
+		this->CameraSample.LargeStep(RNG);
+	}
+	
+	/*! Mutation
+		@param[in,out] RNG Random number generator
+	*/
+	HOST_DEVICE MetroSample Mutate(RNG& RNG)
+	{
+		MetroSample Result = *this;
+
+		Result.LightingSample.Mutate(RNG);
+		Result.CameraSample.Mutate(RNG);
+
+		return Result;
+	}
+
+	GET_MACRO(HOST_DEVICE, LightingSample, LightingSample)
+	GET_MACRO(HOST_DEVICE, CameraSample, CameraSample)
+
+protected:
+	LightingSample	LightingSample;		/*! Lighting sample */
+	CameraSample	CameraSample;		/*! Camera sample */
+};
+
+}

@@ -131,8 +131,8 @@ public:
 //			case Enums::Cylinder:	Cylinder.Sample(SS, UVW);	break;
 		}
 
-		SS.P = TransformPoint(this->Transform.TM, SS.P);
-		SS.N = TransformVector(this->Transform.TM, SS.N);
+		SS.SetP(TransformPoint(this->Transform.TM, SS.GetP()));
+		SS.SetN(TransformVector(this->Transform.TM, SS.GetN()));
 	}
 
 	HOST_DEVICE bool GetOneSided() const

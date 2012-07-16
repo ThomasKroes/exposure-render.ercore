@@ -29,7 +29,7 @@ KERNEL void KrnlSampleCamera()
 	KERNEL_2D(gpTracer->FrameBuffer.Resolution[0], gpTracer->FrameBuffer.Resolution[1])
 
 	// Get current sample
-	Sample& Sample = gpTracer->FrameBuffer.Samples(IDx, IDy);
+	RenderSample& Sample = gpTracer->FrameBuffer.Samples(IDx, IDy);
 
 	// Sample ID reference
 	int& SampleID = gpTracer->FrameBuffer.IDs(IDx, IDy);

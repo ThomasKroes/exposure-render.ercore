@@ -17,7 +17,7 @@
 #pragma once
 
 #include "intersection.h"
-#include "sample.h"
+#include "surfacesample.h"
 #include "geometry.h"
 
 namespace ExposureRender
@@ -137,67 +137,55 @@ public:
 		{
 			case 0:
 			{
-				SS.P[0] = 0.5f;
-				SS.P[1] = -0.5f + UVW[2];
-				SS.P[2] = -0.5f + UVW[1];
-				SS.N	= Vec3f(1.0f, 0.0f, 0.0f);
+				SS.SetP(Vec3f(0.5f, -0.5f + UVW[2], -0.5f + UVW[1]));
+				SS.SetN(Vec3f(1.0f, 0.0f, 0.0f));
 				break;
 			}
 
 			case 1:
 			{
-				SS.P[0] = -0.5f;
-				SS.P[1] = -0.5f + UVW[2];
-				SS.P[2] = -0.5f + UVW[1];
-				SS.N	= Vec3f(-1.0f, 0.0f, 0.0f);
+				SS.SetP(Vec3f(-0.5f, -0.5f + UVW[2], -0.5f + UVW[1]));
+				SS.SetN(Vec3f(-1.0f, 0.0f, 0.0f));
 				break;
 			}
 
 			case 2:
 			{
-				SS.P[0] = -0.5f + UVW[1];
-				SS.P[1] = 0.5f;
-				SS.P[2] = -0.5f + UVW[2];
-				SS.N	= Vec3f(0.0f, 1.0f, 0.0f);
+				SS.SetP(Vec3f(-0.5f + UVW[1], 0.5f, -0.5f + UVW[2]));
+				SS.SetN(Vec3f(0.0f, 1.0f, 0.0f));
 				break;
 			}
 
 			case 3:
 			{
-				SS.P[0] = -0.5f + UVW[1];
-				SS.P[1] = -0.5f;
-				SS.P[2] = -0.5f + UVW[2];
-				SS.N	= Vec3f(0.0f, -1.0f, 0.0f);
+				SS.SetP(Vec3f(-0.5f + UVW[1], -0.5f, -0.5f + UVW[2]));
+				SS.SetN(Vec3f(0.0f, -1.0f, 0.0f));
 				break;
 			}
 
 			case 4:
 			{
-				SS.P[0] = -0.5f + UVW[1];
-				SS.P[1] = -0.5f + UVW[2];
-				SS.P[2] = 0.5f;
-				SS.N	= Vec3f(0.0f, 0.0f, 1.0f);
+				SS.SetP(Vec3f(-0.5f + UVW[1], -0.5f + UVW[2], 0.5f));
+				SS.SetN(Vec3f(0.0f, 0.0f, 1.0f));
 				break;
 			}
 
 			case 5:
 			{
-				SS.P[0] = -0.5f + UVW[1];
-				SS.P[1] = -0.5f + UVW[2];
-				SS.P[2] = -0.5f;
-				SS.N	= Vec3f(0.0f, 0.0f, -1.0f);
+				SS.SetP(Vec3f(-0.5f + UVW[1], -0.5f + UVW[2], -0.5f));
+				SS.SetN(Vec3f(0.0f, 0.0f, -1.0f));
 				break;
 			}
 		}
 
-		SS.UV = Vec2f(UVW[1], UVW[2]);
+		SS.SetUV(Vec2f(UVW[1], UVW[2]));
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		SampleUnit(SS, UVW);
 
-		SS.P = this->MinP + SS.P * (this->MaxP - this->MinP);
+		SS.SetP(this->MinP + SS.GetP() * (this->MaxP - this->MinP));
 	}
 
 	HOST_DEVICE float GetArea() const

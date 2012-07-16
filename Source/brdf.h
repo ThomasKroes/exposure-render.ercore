@@ -18,7 +18,7 @@
 
 #include "lambert.h"
 #include "microfacet.h"
-#include "sample.h"
+#include "surfacesample.h"
 
 namespace ExposureRender
 {

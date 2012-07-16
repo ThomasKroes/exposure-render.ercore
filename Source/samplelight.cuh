@@ -19,6 +19,7 @@
 #include "macros.cuh"
 #include "shader.h"
 #include "transport.h"
+#include "samples.h"
 
 namespace ExposureRender
 {
@@ -37,7 +38,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 		return;
 
 	// Get sample
-	Sample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
+	RenderSample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
 	
 	// Get random number generator
 	RNG RNG(&gpTracer->FrameBuffer.RandomSeeds1(Sample.UV[0], Sample.UV[1]), &gpTracer->FrameBuffer.RandomSeeds2(Sample.UV[0], Sample.UV[1]));
@@ -58,7 +59,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	// Sample light and determine exitant radiance
 	Light.Shape.Sample(SS, RNG.Get3());
 
-	ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, SS.UV);
+	ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, SS.GetUV());
 
 	if (Light.EmissionUnit == Enums::Power)
 		Li /= Light.Shape.Area;
@@ -71,12 +72,12 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	// Construct shadow ray
 	Ray R;
 	
-	R.O		= SS.P;
-	R.D		= Normalize(Sample.Intersection.GetP() - SS.P);
+	R.O		= SS.GetP();
+	R.D		= Normalize(Sample.Intersection.GetP() - SS.GetP());
 	R.MinT	= RAY_EPS;
-	R.MaxT	= Length(Sample.Intersection.GetP(), SS.P);
+	R.MaxT	= Length(Sample.Intersection.GetP(), SS.GetP());
 
-	const Vec3f Wi = Normalize(SS.P - Sample.Intersection.GetP());
+	const Vec3f Wi = Normalize(SS.GetP() - Sample.Intersection.GetP());
 
 	// Reflected radiance
 	const ColorXYZf F = Shader.F(Sample.Intersection.GetWo(), Wi);
@@ -88,7 +89,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	if (!Intersects(R, RNG))
 	{
-		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
+		const float LightPdf = LengthSquared(SS.GetP(), Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.GetN()) * Light.Shape.Area);
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 

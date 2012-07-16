@@ -17,7 +17,7 @@
 #pragma once
 
 #include "intersection.h"
-#include "sample.h"
+#include "surfacesample.h"
 
 namespace ExposureRender
 {
@@ -94,11 +94,11 @@ public:
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
-		SS.P 	= Vec3f(-0.5f + UVW[0], -0.5f + UVW[1], 0.0f);
-		SS.N 	= Vec3f(0.0f, 0.0f, 1.0f);
-		SS.UV	= Vec2f(UVW[0], UVW[1]);
+		SS.SetP(Vec3f(-0.5f + UVW[0], -0.5f + UVW[1], 0.0f));
+		SS.SetN(Vec3f(0.0f, 0.0f, 1.0f));
+		SS.SetUV(Vec2f(UVW[0], UVW[1]));
 
-		SS.P *= Vec3f(this->Size[0], this->Size[1], 0.0f);
+		SS.GetP() *= Vec3f(this->Size[0], this->Size[1], 0.0f);
 	}
 
 	HOST_DEVICE float GetArea() const
