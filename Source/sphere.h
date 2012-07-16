@@ -22,28 +22,39 @@
 namespace ExposureRender
 {
 
-// http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection#Example_Code
-
+/*! Sphere shape class */
 class EXPOSURE_RENDER_DLL Sphere
 {	
 public:
+	/*! Default constructor */
 	HOST_DEVICE Sphere() :
 		Radius(1.0f)
 	{
 	}
 
+	/*! Constructor
+		@param[in] Radius Radius of the sphere
+	*/
 	HOST_DEVICE Sphere(const float& Radius) :
 		Radius(Radius)
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Sphere to copy
+		@return Copied sphere
+	*/
 	HOST_DEVICE Sphere& operator = (const Sphere& Other)
 	{
-		this->Radius	= Other.Radius;
+		this->Radius = Other.Radius;
 
 		return *this;
 	}
-
+	
+	/*! Test whether ray \a R intersects the sphere
+		@param[in] R Ray
+		@return If \a R intersects the sphere
+	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
 		const float A = Dot(R.D, R.D);
@@ -93,7 +104,12 @@ public:
 
 		return true;
 	}
-
+	
+	/*! Intersect the sphere with ray \a R and store the result in \a Int
+		@param[in] R Ray
+		@param[out] Int Resulting intersection
+		@return If \a R intersects the sphere
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		const float A = Dot(R.D, R.D);
@@ -146,6 +162,10 @@ public:
 		return true;
 	}
 
+	/*! Sample the unit sphere
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		float z		= 1.0f - 2.0f * UVW[0];
@@ -159,30 +179,45 @@ public:
 		SS.UV	= Vec2f(SphericalTheta(SS.P), SphericalPhi(SS.P));
 	}
 
+	/*! Samples the sphere
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		SampleUnit(SS, UVW);
 
 		SS.P *= this->Radius;
 	}
-
+	
+	/*! Computes the surface area of the sphere
+		@param[in] Surface area
+	*/
 	HOST_DEVICE float GetArea() const
 	{
 		return 4.0f * PI_F * (this->Radius * this->Radius);
 	}
-
+	
+	/*! Returns if the sphere is one sided or not
+		@return If the sphere is one sided
+	*/
 	HOST_DEVICE bool GetOneSided() const
 	{
 		return false;
 	}
-
+	
+	/*! Test whether point \a P is inside the sphere
+		@return If \a P is inside the sphere
+	*/
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
 		return P[2] > 0.0f;
 	}
+	
+	GET_SET_MACRO(HOST_DEVICE, Radius, float)
 
 protected:
-	float	Radius;
+	float	Radius;		/*! Radius of the sphere */
 };
 
 }

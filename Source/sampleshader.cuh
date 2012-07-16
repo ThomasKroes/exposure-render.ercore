@@ -76,9 +76,9 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.GetUV());
 
 					if (Light.EmissionUnit == Enums::Power)
-						Li /= Light.Shape.Area;
+						Li /= Light.Shape.GetArea();
 
-					const float LightPdf = LengthSquared(Int.GetP(), Sample.Intersection.GetP()) / (AbsDot(-R.D, Int.GetN()) * Light.Shape.Area);
+					const float LightPdf = LengthSquared(Int.GetP(), Sample.Intersection.GetP()) / (AbsDot(-R.D, Int.GetN()) * Light.Shape.GetArea());
 
 					const float Weight = PowerHeuristic(1, ShaderPdf, 1, LightPdf);
 

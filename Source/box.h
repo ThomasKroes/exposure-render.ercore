@@ -23,27 +23,40 @@
 namespace ExposureRender
 {
 
+/*! Box shape class */
 class EXPOSURE_RENDER_DLL Box
 {	
 public:
+	/*! Default constructor */
 	HOST_DEVICE Box() :
 		MinP(-0.5f),
 		MaxP(0.5f)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Size Size of the box
+	*/
 	HOST_DEVICE Box(const Vec3f& Size) :
 		MinP(-0.5f * Size),
 		MaxP(0.5f * Size)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] MinP Minimum point of the box
+		@param[in] MaxP Maximum point of the box
+	*/
 	HOST_DEVICE Box(const Vec3f& MinP, const Vec3f& MaxP) :
 		MinP(MinP),
 		MaxP(MaxP)
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Box to copy
+		@return Copied box
+	*/
 	HOST_DEVICE Box& operator = (const Box& Other)
 	{
 		this->MinP	= Other.MinP;
@@ -51,7 +64,11 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Test whether ray \a R intersects the box
+		@param[in] R Ray
+		@return If \a R intersects the box
+	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
 		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
@@ -72,7 +89,12 @@ public:
 
 		return true;
 	}
-
+	
+	/*! Intersect the box with ray \a R and store the result in \a Int
+		@param[in] R Ray
+		@param[out] Int Resulting intersection
+		@return If \a R intersects the box
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
@@ -107,6 +129,12 @@ public:
 		return true;
 	}
 
+	/*! Intersect the box with ray \a R and output the near \a T0 and far \a T1 distance
+		@param[in] R Ray
+		@param[out] T0 Nearest intersection, if any
+		@param[out] T1 Farthest intersection, if any
+		@return If \a R intersects the box
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, float& T0, float& T1) const
 	{
 		const Vec3f InvR		= Vec3f(1.0f, 1.0f, 1.0f) / R.D;
@@ -128,7 +156,11 @@ public:
 
 		return true;
 	}
-
+	
+	/*! Sample the unit box
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		int Side = (int)floorf(UVW[0] * 6.0f);
@@ -180,127 +212,49 @@ public:
 
 		SS.UV = Vec2f(UVW[1], UVW[2]);
 	}
-
+	
+	/*! Samples the box
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		SampleUnit(SS, UVW);
 
 		SS.P = this->MinP + SS.P * (this->MaxP - this->MinP);
 	}
-
+	
+	/*! Computes the surface area of the box
+		@param[in] Surface area
+	*/
 	HOST_DEVICE float GetArea() const
 	{
 		const Vec3f Size = this->MaxP - this->MinP;
 		return (2.0f * Size[0] * Size[1]) + (2.0f * Size[0] * Size[2]) + (2.0f * Size[1] * Size[2]);
 	}
-
+	
+	/*! Returns if the box is one sided or not
+		@return One sided
+	*/
 	HOST_DEVICE bool GetOneSided() const
 	{
 		return false;
 	}
-
+	
+	/*! Test whether point \a P is inside the box
+		@return If \a P is inside the box
+	*/
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
 		return P[2] > 0.0f;
 	}
+	
+	GET_SET_MACRO(HOST_DEVICE, MinP, Vec3f)
+	GET_SET_MACRO(HOST_DEVICE, MaxP, Vec3f)
 
 protected:
-	Vec3f	MinP;
-	Vec3f	MaxP;
+	Vec3f	MinP;		/*! Minimum point of the box */
+	Vec3f	MaxP;		/*! Maximum point of the box */
 };
 
-/*
-HOST_DEVICE void IntersectBox(const Ray& R, const Vec3f& Size, Intersection& Int)
-{
-	IntersectBox(R, -0.5f * Size, 0.5f * Size, Int);
-}
-
-
-
-
-
-
-
-HOST_DEVICE bool IntersectBoxP(Ray R, Vec3f Size)
-{
-	return IntersectBoxP(R, -0.5f * Size, 0.5f * Size);
-}
-
-HOST_DEVICE bool InsideBox(Vec3f P, Vec3f Size)
-{
-	const float HalfSize[3] = { 0.5f * Size[0], 0.5f * Size[1], 0.5f * Size[2] };
-	return P[0] > -HalfSize[0] && P[0] < HalfSize[0] && P[1] > -HalfSize[1] && P[1] < HalfSize[1] && P[2] > -HalfSize[2] && P[2] < HalfSize[2];
-}
-
-HOST_DEVICE void SampleUnitBox(SurfaceSample& SS, Vec3f UVW)
-{
-	int Side = (int)floorf(UVW[0] * 6.0f);
-
-	switch (Side)
-	{
-		case 0:
-		{
-			SS.P[0] = 0.5f;
-			SS.P[1] = -0.5f + UVW[2];
-			SS.P[2] = -0.5f + UVW[1];
-			SS.N	= Vec3f(1.0f, 0.0f, 0.0f);
-			break;
-		}
-
-		case 1:
-		{
-			SS.P[0] = -0.5f;
-			SS.P[1] = -0.5f + UVW[2];
-			SS.P[2] = -0.5f + UVW[1];
-			SS.N	= Vec3f(-1.0f, 0.0f, 0.0f);
-			break;
-		}
-
-		case 2:
-		{
-			SS.P[0] = -0.5f + UVW[1];
-			SS.P[1] = 0.5f;
-			SS.P[2] = -0.5f + UVW[2];
-			SS.N	= Vec3f(0.0f, 1.0f, 0.0f);
-			break;
-		}
-
-		case 3:
-		{
-			SS.P[0] = -0.5f + UVW[1];
-			SS.P[1] = -0.5f;
-			SS.P[2] = -0.5f + UVW[2];
-			SS.N	= Vec3f(0.0f, -1.0f, 0.0f);
-			break;
-		}
-
-		case 4:
-		{
-			SS.P[0] = -0.5f + UVW[1];
-			SS.P[1] = -0.5f + UVW[2];
-			SS.P[2] = 0.5f;
-			SS.N	= Vec3f(0.0f, 0.0f, 1.0f);
-			break;
-		}
-
-		case 5:
-		{
-			SS.P[0] = -0.5f + UVW[1];
-			SS.P[1] = -0.5f + UVW[2];
-			SS.P[2] = -0.5f;
-			SS.N	= Vec3f(0.0f, 0.0f, -1.0f);
-			break;
-		}
-	}
-
-	SS.UV = Vec2f(UVW[1], UVW[2]);
-}
-
-HOST_DEVICE void SampleBox(SurfaceSample& SS, Vec3f UVW, Vec3f Size)
-{
-	SampleUnitBox(SS, UVW);
-
-	SS.P *= Size;
-}
-*/
 }

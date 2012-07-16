@@ -21,31 +21,48 @@
 namespace ExposureRender
 {
 
+/*! Ring shape class */
 class EXPOSURE_RENDER_DLL Ring : public Plane
 {	
 public:
+	/*! Default constructor */
 	HOST_DEVICE Ring() :
 		Plane(Vec2f(1.0f), true),
 		InnerRadius(0.5f),
 		OuterRadius(1.0f)
 	{
 	}
-		
+	
+	/*! Constructor
+		@param[in] InnerRadius Inner radius of the ring
+		@param[in] OuterRadius Outer radius of the ring
+		@param[in] OneSided Whether the ring is one sided or not
+	*/
 	HOST_DEVICE Ring(const float& InnerRadius, const float& OuterRadius, const bool& OneSided) :
 		Plane(Vec2f(2.0f * OuterRadius), OneSided),
 		InnerRadius(InnerRadius),
 		OuterRadius(OuterRadius)
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Ring to copy
+		@return Copied ring
+	*/
 	HOST_DEVICE Ring& operator = (const Ring& Other)
 	{
+		Plane::operator = (Other);
+
 		this->InnerRadius	= Other.InnerRadius;
 		this->OuterRadius	= Other.OuterRadius;
 
 		return *this;
 	}
-
+	
+	/*! Test whether ray \a R intersects the ring
+		@param[in] R Ray
+		@return If \a R intersects the ring
+	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
 		Intersection Int;
@@ -66,6 +83,11 @@ public:
 		return true;
 	}
 
+	/*! Intersect the ring with ray \a R and store the result in \a Int
+		@param[in] R Ray
+		@param[out] Int Resulting intersection
+		@return If \a R intersects the ring
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
@@ -98,16 +120,25 @@ public:
 		return true;
 	}
 
+	/*! Sample the unit ring
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+		@param[in] InnerRadius Inner radius of the ring
+	*/
 	HOST_DEVICE void SampleUnit(SurfaceSample& SS, const Vec3f& UVW, const float& InnerRadius) const
 	{
-		float r = InnerRadius + (1.0f - InnerRadius) * sqrtf(UVW[0]);
-		float theta = 2.0f * PI_F * UVW[1];
+		const float r = InnerRadius + (1.0f - InnerRadius) * sqrtf(UVW[0]);
+		const float theta = 2.0f * PI_F * UVW[1];
 
 		SS.P	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
 		SS.N	= Vec3f(0.0f, 0.0f, 1.0f);
 		SS.UV	= Vec2f(SS.P[0], SS.P[1]);
 	}
-
+	
+	/*! Samples the ring
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		this->SampleUnit(SS, UVW, this->InnerRadius / this->OuterRadius);
@@ -115,25 +146,37 @@ public:
 		SS.P *= this->OuterRadius;
 		SS.UV = Vec2f(SS.P[0], SS.P[1]);
 	}
-
+	
+	/*! Computes the surface area of the ring
+		@param[in] Surface area
+	*/
 	HOST_DEVICE float GetArea() const
 	{
 		return (PI_F * (this->OuterRadius * this->OuterRadius)) - (PI_F * (this->InnerRadius * this->InnerRadius));
 	}
-
+	
+	/*! Returns if the ring is one sided
+		@return One sided
+	*/
 	HOST_DEVICE bool GetOneSided() const
 	{
 		return Plane::GetOneSided();
 	}
-
+	
+	/*! Test whether point \a P is inside the ring
+		@return If \a P is inside the ring
+	*/
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
 		return P[2] > 0.0f;
 	}
+	
+	GET_SET_MACRO(HOST_DEVICE, InnerRadius, float)
+	GET_SET_MACRO(HOST_DEVICE, OuterRadius, float)
 
 protected:
-	float	InnerRadius;
-	float	OuterRadius;
+	float	InnerRadius;		/*! Inner radius of the ring */
+	float	OuterRadius;		/*! Outer radius of the ring */
 };
 
 }
