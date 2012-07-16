@@ -23,7 +23,7 @@ namespace ExposureRender
 {
 
 /*! Procedural class */
-	class EXPOSURE_RENDER_DLL Procedural : public TimeStamp
+class EXPOSURE_RENDER_DLL Procedural : public TimeStamp
 {
 public:
 	/*! Default constructor */
