@@ -21,6 +21,10 @@
 namespace ExposureRender
 {
 
+/*! Evaluates texture with \a ID
+	@param[in] UV UV coordinates
+	@return Evaluated color
+*/
 HOST_DEVICE ColorXYZf EvaluateTexture(const int& ID, const Vec2f& UV)
 {
 	if (ID < 0)

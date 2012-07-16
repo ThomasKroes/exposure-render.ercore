@@ -31,9 +31,9 @@ KERNEL void KrnlToneMap()
 
 // 	ToneMapped.GammaCorrect(gpTracer->Camera.Gamma);
 
-	gpTracer->FrameBuffer.PixelHysteresis(IDx, IDy).AddPixel(ToneMapped);
+//	gpTracer->FrameBuffer.PixelHysteresis(IDx, IDy).AddPixel(ToneMapped);
 
-	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = gpTracer->FrameBuffer.PixelHysteresis(IDx, IDy).PixelAverage;
+	gpTracer->FrameBuffer.RunningEstimateRGB(IDx, IDy) = ToneMapped;//gpTracer->FrameBuffer.PixelHysteresis(IDx, IDy).PixelAverage;
 }
 
 void ToneMap(Tracer& Tracer, Statistics& Statistics)

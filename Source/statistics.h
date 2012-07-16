@@ -21,20 +21,29 @@
 namespace ExposureRender
 {
 
+/*! Statistics class */
 class EXPOSURE_RENDER_DLL Statistics
 {
 public:
+	/*! Default constructor */
 	HOST Statistics() :
 		Count(0)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Statistics to copy
+	*/
 	HOST Statistics(const Statistics& Other) :
 		Count(0)
 	{
 		*this = Other;
 	}
 
+	/*! Assignment operator
+		@param[in] Other Statistics to copy
+		@return Copied statistics
+	*/
 	HOST Statistics& operator = (const Statistics& Other)
 	{
 		for (int i = 0; i < MAX_NO_TIMINGS; i++)
@@ -44,7 +53,11 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Timing to copy
+		@return Copied statistics
+	*/
 	HOST Statistics& operator = (const Timing& Other)
 	{
 		int ID = -1;
@@ -71,8 +84,8 @@ public:
 		return *this;
 	}
 
-	Timing		Timings[MAX_NO_TIMINGS];
-	int			Count;
+	Timing		Timings[MAX_NO_TIMINGS];		/*! Timings */
+	int			Count;							/*! Number of timings */
 };
 
 }
