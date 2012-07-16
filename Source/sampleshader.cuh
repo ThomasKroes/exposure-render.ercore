@@ -37,7 +37,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 		return;
 
 	// Get sample
-	Sample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
+	RenderSample& Sample = gpTracer->FrameBuffer.Samples[SampleID];
 
 	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
 

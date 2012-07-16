@@ -13,5 +13,49 @@
 *
 *	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#pragma once
 
-#include "metrosample.h"
+#include "geometry.h"
+#include "intersection.h"
+#include "color.h"
+
+namespace ExposureRender
+{
+
+/*! Render sample class */
+class RenderSample
+{
+public:
+	/*! Default constructor */
+	HOST_DEVICE RenderSample()
+	{
+	}
+	
+	/*! Destructor */
+	HOST_DEVICE virtual ~RenderSample()
+	{
+	}
+
+	/*! Assignment operator
+		@param[in] Other Render sample to copy
+		@result Render sample
+	*/
+	HOST RenderSample& operator = (const RenderSample& Other)
+	{
+		this->Intersection	= Other.Intersection;
+		this->UV			= Other.UV;
+		this->LightID		= Other.LightID;
+		this->Ray			= Other.Ray;
+
+		return *this;
+	}
+	
+	// FIXME: Members are intentionally left public
+
+	Intersection	Intersection;		/*! Intersection */
+	Vec2i			UV;					/*! UV coordinates */
+	int				LightID;			/*! Light ID */
+	Ray				Ray;				/*! Ray */
+};
+
+}

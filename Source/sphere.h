@@ -17,7 +17,7 @@
 #pragma once
 
 #include "intersection.h"
-#include "sample.h"
+#include "surfacesample.h"
 
 namespace ExposureRender
 {
@@ -154,16 +154,16 @@ public:
 		float x		= r * cosf(phi);
 		float y		= r * sinf(phi);
 
-		SS.P	= Vec3f(x, y, z);
-		SS.N	= SS.P;
-		SS.UV	= Vec2f(SphericalTheta(SS.P), SphericalPhi(SS.P));
+		SS.SetP(Vec3f(x, y, z));
+		SS.SetN(SS.GetP());
+		SS.SetUV(Vec2f(SphericalTheta(SS.GetP()), SphericalPhi(SS.GetP())));
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		SampleUnit(SS, UVW);
 
-		SS.P *= this->Radius;
+		SS.GetP() *= this->Radius;
 	}
 
 	HOST_DEVICE float GetArea() const

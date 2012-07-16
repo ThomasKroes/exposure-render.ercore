@@ -59,7 +59,6 @@ SET(General
 	utilities.h
 	geometry.h
 	raymarching.h
-	sample.h
 	rng.h
 	montecarlo.h
 	ray.h
@@ -138,6 +137,20 @@ SET(Shapes
 )
 
 SOURCE_GROUP("Shapes" FILES ${Shapes})
+
+SET(Sample
+	mutate.h
+	rendersample.h
+	surfacesample.h
+	lightsample.h
+	lightingsample.h
+	camerasample.h
+	metrosample.h
+	shadersample.h
+	samples.h
+)
+
+SOURCE_GROUP("Sample" FILES ${Sample})
 
 SET(Shading
 	shader.h
@@ -222,7 +235,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Bindable} ${Filter} ${Color} ${Vector} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Sample} ${Bindable} ${Filter} ${Color} ${Vector} ${Cuda} SHARED)
 
 IF(ER_VTK)
 
