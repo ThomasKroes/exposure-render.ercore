@@ -216,22 +216,14 @@ void vtkErTracer::AfterRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	{
 		std::string NameString, DurationString;
 	
-		NameString.append("FPS\n");
-
-		char FPS[256];
-
-		sprintf_s(FPS, 256, "%0.2f\n", this->Statistics.FPS);
-
-		DurationString.append(FPS);
-
 		for (int i = 0; i < this->Statistics.Count; i++)
 		{
-			NameString.append(this->Statistics.Timings[i].Name);
+			NameString.append(this->Statistics.Timings[i].GetName());
 			NameString.append("\n");
 
 			char Duration[256];
 
-			sprintf_s(Duration, 256, "%0.2f", this->Statistics.Timings[i].Duration);
+			sprintf_s(Duration, 256, "%0.2f", this->Statistics.Timings[i].GetDuration());
 
 			DurationString.append(Duration);
 			DurationString.append("\n");

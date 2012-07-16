@@ -25,14 +25,12 @@ class EXPOSURE_RENDER_DLL Statistics
 {
 public:
 	HOST Statistics() :
-		Count(0),
-		FPS(0.0f)
+		Count(0)
 	{
 	}
 
 	HOST Statistics(const Statistics& Other) :
-		Count(0),
-		FPS(0.0f)
+		Count(0)
 	{
 		*this = Other;
 	}
@@ -43,7 +41,6 @@ public:
 			this->Timings[i] = Other.Timings[i];
 
 		this->Count = Other.Count;
-		this->FPS	= Other.FPS;
 
 		return *this;
 	}
@@ -54,13 +51,13 @@ public:
 
 		for (int i = 0; i < MAX_NO_TIMINGS; i++)
 		{
-			if (strcmp(this->Timings[i].Name, Other.Name) == 0)
+			if (strcmp(this->Timings[i].GetName(), Other.GetName()) == 0)
 				ID = i;
 		}
 
 		if (ID >= 0)
 		{
-			this->Timings[ID].AddDuration(Other.Duration);
+			this->Timings[ID].AddDuration(Other.GetDuration());
 		}
 		else
 		{
@@ -76,7 +73,6 @@ public:
 
 	Timing		Timings[MAX_NO_TIMINGS];
 	int			Count;
-	float		FPS;
 };
 
 }

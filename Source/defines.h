@@ -77,7 +77,7 @@ namespace ExposureRender
 #define MAX_NO_INT					4
 #define MAX_NO_CLIPPING_SEGMENTS	8
 #define MAX_NO_TIMINGS				64
-#define MAX_NO_TIMING_SAMPLES		64
+#define MAX_NO_TIMING_SAMPLES		128
 #define UAH							1
 #define TF_TEXTURE_RESOLUTION		1024
 #define BLOCK_W						16

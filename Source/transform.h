@@ -21,21 +21,30 @@
 namespace ExposureRender
 {
 
+/*! Transform class */
 class EXPOSURE_RENDER_DLL Transform
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE Transform() :
 		TM(),
 		InvTM()
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] M Matrix to copy
+	*/
 	HOST_DEVICE Transform(const Matrix44& M) :
 		TM(M),
 		InvTM(Matrix44::Inverse(M))
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Transform to copy
+		@return Copied transform
+	*/
 	HOST_DEVICE Transform& operator = (const Transform& Other)
 	{
 		this->TM	= Other.TM;
@@ -43,20 +52,26 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Set matrix
+		@param[in] M Matrix
+	*/
 	HOST_DEVICE void Set(const Matrix44& M)
 	{
 		this->TM	= M;
 		this->InvTM	= Matrix44::Inverse(this->TM);
 	}
-
+	
+	/*! Get translation
+		@return Translation
+	*/
 	HOST_DEVICE Vec3f GetTranslation() const
 	{
 		return Vec3f(this->TM.GetElement(0, 3), this->TM.GetElement(1, 3), this->TM.GetElement(2, 3));
 	}
 
-	Matrix44	TM;
-	Matrix44	InvTM;
+	Matrix44	TM;			/*! Transformation matrix */
+	Matrix44	InvTM;		/*! Inverse transformation matrix */
 };
 
 }
