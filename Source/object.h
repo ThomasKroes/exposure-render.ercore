@@ -26,7 +26,7 @@ class Object : public TimeStamp
 {
 public:
 	/*! Default constructor */
-	HOST_DEVICE Object() :
+	HOST Object() :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
@@ -44,7 +44,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Object to copy
 	*/
-	HOST_DEVICE Object(const ErObject& Other) :
+	HOST Object(const ErObject& Other) :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
