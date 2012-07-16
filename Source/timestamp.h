@@ -22,53 +22,77 @@
 namespace ExposureRender
 {
 
+/*! Timestamp class */
 class EXPOSURE_RENDER_DLL TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE TimeStamp() :
 		ModifiedTime(0)
 	{
 	}
-
-	HOST_DEVICE virtual void Modified()
-	{
-		this->ModifiedTime++;
-	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Timestamp to copy
+		@return Copied Timestamp
+	*/
 	HOST_DEVICE TimeStamp& operator = (const TimeStamp& Other)
 	{
 		this->ModifiedTime = Other.ModifiedTime;
 
 		return *this;
 	}
+	
+	/*! Flag timestamp as modified */
+	HOST_DEVICE virtual void Modified()
+	{
+		this->ModifiedTime++;
+	}
 
+	/*! Get time when last modified */
 	HOST_DEVICE unsigned long GetModifiedTime()
 	{
 		return this->ModifiedTime;
 	}
-
+	
+	/*! Test whether \a Other timestamp is older than this
+		@param[in] Other Timestamp to test against
+		@return Whether \a Other is older
+	*/
 	HOST_DEVICE bool operator > (const TimeStamp& Other)
 	{
 		return this->ModifiedTime > Other.ModifiedTime;
 	};
 	
+	/*! Test whether \a Other timestamp is younger than this
+		@param[in] Other Timestamp to test against
+		@return Whether \a Other is younger
+	*/
 	HOST_DEVICE bool operator < (const TimeStamp& Other)
 	{
 		return this->ModifiedTime < Other.ModifiedTime;
 	};
-
+	
+	/*! Test whether \a Other timestamp is equal to this
+		@param[in] Other Timestamp to test against
+		@return Whether \a Other is equal to this
+	*/
 	HOST_DEVICE bool operator == (const TimeStamp& Other)
 	{
 		return this->ModifiedTime == Other.ModifiedTime;
 	};
-
+	
+	/*! Test whether \a Other timestamp is not equal to this
+		@param[in] Other Timestamp to test against
+		@return Whether \a Other is not equal to this
+	*/
 	HOST_DEVICE bool operator != (const TimeStamp& Other)
 	{
 		return this->ModifiedTime != Other.ModifiedTime;
 	};
 
 protected:
-	unsigned long	ModifiedTime;
+	unsigned long	ModifiedTime;		/*! Last modified time */
 };
 
 }
