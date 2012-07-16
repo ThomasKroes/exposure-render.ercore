@@ -26,9 +26,11 @@
 namespace ExposureRender
 {
 
+/*! Volume class */
 class Volume : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST Volume() :
 		TimeStamp(),
 		Transform(),
@@ -40,11 +42,13 @@ public:
 		MinStep(1.0f),
 		Voxels(),
 		AcceleratorType(Enums::Octree),
-		Octree(),
 		MaxGradientMagnitude(0.0f)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Volume to copy
+	*/
 	HOST Volume(const ErVolume& Other) :
 		TimeStamp(),
 		Transform(),
@@ -56,12 +60,15 @@ public:
 		MinStep(1.0f),
 		Voxels(),
 		AcceleratorType(Enums::Octree),
-		Octree(),
 		MaxGradientMagnitude(0.0f)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Volume to copy
+		@return Copied volume
+	*/
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
 		TimeStamp::operator = (Other);
@@ -97,7 +104,12 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Gets voxel data at \a XYZ
+		@param[in] XYZ Position
+		@param[in] TextureID CUDA texture ID
+		@return Data at \a XYZ volume
+	*/
 	DEVICE unsigned short operator()(const Vec3f& XYZ, const int& TextureID = 0)
 	{
 		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.GetMinP()) * this->InvSize;
@@ -110,35 +122,32 @@ public:
 
 		return 0;
 	}
-
+	
+	/*! Gets voxel data at (\aX,\aY,\aX)
+		@param[in] XYZ Position
+		@param[in] TextureID CUDA texture ID
+		@return Data at \a XYZ volume
+	*/
 	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)
 	{
 		const Vec3f NormalizedXYZ((float)X / (float)Voxels.GetResolution()[0], (float)X / (float)Voxels.GetResolution()[1], (float)X / (float)Voxels.GetResolution()[2]);
 		
 		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
-
-	DEVICE float GetIntensity(const Vec3f& P)
+	
+	/*! Gets the voxel data at \a P
+		@param[in] P Position
+		@return Data at \a XYZ volume
+	*/
+	DEVICE unsigned short GetIntensity(const Vec3f& P)
 	{
-		switch (this->AcceleratorType)
-		{
-			case Enums::NoAcceleration:
-			{
-				return (*this)(P);
-			}
-
-			case Enums::Octree:
-			{
-				return this->Octree.GetIntensity(P);
-			}
-
-			default:
-			{
-				return (*this)(P);
-			}
-		}
+		return (*this)(P);
 	}
-
+	
+	/*! Computes the gradient at \a P using central differences
+		@param[in] P Position at which to compute the gradient
+		@return Gradient at \a P
+	*/
 	DEVICE Vec3f GradientCD(const Vec3f& P)
 	{
 		const float Intensity[3][2] = 
@@ -150,7 +159,11 @@ public:
 
 		return Vec3f(Intensity[0][1] - Intensity[0][0], Intensity[1][1] - Intensity[1][0], Intensity[2][1] - Intensity[2][0]);
 	}
-
+	
+	/*! Computes the gradient at \a P using forward differences
+		@param[in] P Position at which to compute the gradient
+		@return Gradient at \a P
+	*/
 	DEVICE Vec3f GradientFD(const Vec3f& P)
 	{
 		const float Intensity[4] = 
@@ -163,7 +176,11 @@ public:
 
 		return Vec3f(Intensity[0] - Intensity[1], Intensity[0] - Intensity[2], Intensity[0] - Intensity[3]);
 	}
-
+	
+	/*! Computes the filtered gradient at \a P using central differences
+		@param[in] P Position at which to compute the gradient
+		@return Gradient at \a P
+	*/
 	DEVICE Vec3f GradientFiltered(const Vec3f& P)
 	{
 		Vec3f Offset(Vec3f(this->Spacing[0], 0.0f, 0.0f)[0], Vec3f(0.0f, this->Spacing[1], 0.0f)[1], Vec3f(0.0f, 0.0f, this->Spacing[2])[2]);
@@ -183,7 +200,12 @@ public:
 	    
 		return Lerp(0.75f, G0, Lerp(0.5f, L0, L1));
 	}
-
+	
+	/*! Computes the gradient at \a P using \a GradientMode
+		@param[in] P Position at which to compute the gradient
+		@param[in] GradientMode Type of gradient computation
+		@return Gradient at \a P
+	*/
 	DEVICE Vec3f Gradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
 	{
 		switch (GradientMode)
@@ -195,12 +217,21 @@ public:
 
 		return GradientFD(P);
 	}
-
+	
+	/*! Computes the normalized gradient at \a P using \a GradientMode
+		@param[in] P Position at which to compute the gradient
+		@param[in] GradientMode Type of gradient computation
+		@return Gradient at \a P
+	*/
 	DEVICE Vec3f NormalizedGradient(const Vec3f& P, const Enums::GradientMode& GradientMode)
 	{
 		return Normalize(Gradient(P, GradientMode));
 	}
-
+	
+	/*! Computes the gradient magnitude at \a P
+		@param[in] P Position at which to compute the gradient magnitude
+		@return Gradient magnitude at \a P
+	*/
 	DEVICE float GradientMagnitude(const Vec3f& P)
 	{
 		const Vec3f HalfSpacing = 0.5f / this->Spacing;
@@ -219,17 +250,16 @@ public:
 		return sqrtf(Sum);
 	}
 	
-	Transform						Transform;
-	BoundingBox						BoundingBox;
-	Vec3f							Spacing;
-	Vec3f							InvSpacing;
-	Vec3f							Size;
-	Vec3f							InvSize;
-	float							MinStep;
-	CudaTexture3D<unsigned short>	Voxels;
-	Enums::AcceleratorType			AcceleratorType;
-	Octree							Octree;
-	float							MaxGradientMagnitude;
+	Transform						Transform;					/*! Transform of the volume */
+	BoundingBox						BoundingBox;				/*! Encompassing bounding box */
+	Vec3f							Spacing;					/*! Voxel spacing */
+	Vec3f							InvSpacing;					/*! Inverse voxel spacing */
+	Vec3f							Size;						/*! Volume size */
+	Vec3f							InvSize;					/*! Inverse volume size */
+	float							MinStep;					/*! Minimum step size */
+	CudaTexture3D<unsigned short>	Voxels;						/*! Voxel 3D buffer */
+	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
+	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
 };
 
 }
