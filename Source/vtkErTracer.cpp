@@ -151,7 +151,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 			if (ObjectData->Bindable.Clip)
 				this->Tracer.ClippingObjectIDs.Add(ObjectData->Bindable.ID);
 
-			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.Alignment.GetOffsetTM());
+			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.GetAlignment().GetOffsetTM());
 			ObjectData->Bind();
 		}
 	}

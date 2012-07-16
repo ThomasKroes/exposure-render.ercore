@@ -21,28 +21,44 @@
 namespace ExposureRender
 {
 
+/*! Disk shape class */
 class EXPOSURE_RENDER_DLL Disk : public Plane
 {	
 public:
+	/*! Default constructor */
 	HOST_DEVICE Disk() :
 		Plane(Vec2f(1.0f), true),
 		Radius(1.0f)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Radius Radius of the disk
+		@param[in] OneSided Whether the disk is one sided or not
+	*/
 	HOST_DEVICE Disk(const float& Radius, const bool& OneSided) :
 		Plane(Vec2f(2.0f * Radius), OneSided),
 		Radius(Radius)
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Disk to copy
+		@return Copied disk
+	*/
 	HOST_DEVICE Disk& operator = (const Disk& Other)
 	{
+		Plane::operator = (Other);
+
 		this->Radius = Other.Radius;
 
 		return *this;
 	}
-
+	
+	/*! Test whether ray \a R intersects the disk
+		@param[in] R Ray
+		@return If \a R intersects the disk
+	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
 		Intersection Int;
@@ -62,7 +78,12 @@ public:
 		
 		return true;
 	}
-
+	
+	/*! Intersect the disk with ray \a R and store the result in \a Int
+		@param[in] R Ray
+		@param[out] Int Resulting intersection
+		@return If \a R intersects the disk
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
@@ -94,7 +115,11 @@ public:
 
 		return true;
 	}
-
+	
+	/*! Samples the disk
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		float r = sqrtf(UVW[0]);
@@ -106,24 +131,35 @@ public:
 		
 		SS.P *= this->Radius;
 	}
-
+	
+	/*! Computes the surface area of the disk
+		@param[in] Surface area
+	*/
 	HOST_DEVICE float GetArea() const
 	{
 		return PI_F * (this->Radius * this->Radius);
 	}
-
+	
+	/*! Returns if the disk is one sided or not
+		@return One sided
+	*/
 	HOST_DEVICE bool GetOneSided() const
 	{
 		return Plane::GetOneSided();
 	}
-
+	
+	/*! Test whether point \a P is inside the disk
+		@return If \a P is inside the disk
+	*/
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
 		return P[2] > 0.0f;
 	}
+	
+	GET_SET_MACRO(HOST_DEVICE, Radius, float)
 
 protected:
-	float	Radius;
+	float	Radius;		/*! Radius */
 };
 
 }

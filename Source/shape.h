@@ -22,9 +22,11 @@
 namespace ExposureRender
 {
 
+/*! Shape class */
 class EXPOSURE_RENDER_DLL Shape
 {
 public:
+	/*! Default constructor */
 	HOST_DEVICE Shape() :
 		Type(Enums::Plane),
 		Plane(),
@@ -37,12 +39,19 @@ public:
 		Area(0.0f)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Shape to copy
+	*/
 	HOST_DEVICE Shape(const Shape& Other)
 	{
 		*this = Other;
 	}
 	
+	/*! Assignment operator
+		@param[in] Other Shape to copy
+		@return Copied shape
+	*/
 	HOST_DEVICE Shape& operator = (const Shape& Other)
 	{
 		this->Type			= Other.Type;
@@ -59,7 +68,8 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Update the shape internally */
 	HOST_DEVICE void Update()
 	{
 		switch (this->Type)
@@ -74,7 +84,11 @@ public:
 
 		this->Transform = this->Alignment.GetTransform();
 	}
-
+	
+	/*! Test whether ray \a R intersects the shape
+		@param[in] R Ray
+		@return If \a R intersects the shape
+	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{
 		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
@@ -91,7 +105,12 @@ public:
 
 		return false;
 	}
-
+	
+	/*! Intersect the shape with ray \a R and store the result in \a Int
+		@param[in] R Ray
+		@param[out] Int Resulting intersection
+		@return If \a R intersects the shape
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		const Ray LocalShapeR = TransformRay(this->Transform.InvTM, R);
@@ -118,7 +137,11 @@ public:
 		
 		return Intersects;
 	}
-
+	
+	/*! Samples the shape
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		switch (this->Type)
@@ -134,7 +157,10 @@ public:
 		SS.P = TransformPoint(this->Transform.TM, SS.P);
 		SS.N = TransformVector(this->Transform.TM, SS.N);
 	}
-
+	
+	/*! Returns if the shape is one sided or not
+		@return If the shape is one sided
+	*/
 	HOST_DEVICE bool GetOneSided() const
 	{
 		switch (this->Type)
@@ -149,7 +175,10 @@ public:
 
 		return false;
 	}
-
+	
+	/*! Test whether point \a P is inside the shape
+		@return If \a P is inside the shape
+	*/
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
 		const Vec3f LocalP = TransformPoint(this->Transform.InvTM, P);
@@ -166,16 +195,26 @@ public:
 
 		return false;
 	}
+	
+	GET_SET_MACRO(HOST_DEVICE, Type, Enums::ShapeType)
+	GET_REF_SET_MACRO(HOST_DEVICE, Plane, Plane)
+	GET_REF_SET_MACRO(HOST_DEVICE, Disk, Disk)
+	GET_REF_SET_MACRO(HOST_DEVICE, Ring, Ring)
+	GET_REF_SET_MACRO(HOST_DEVICE, Sphere, Sphere)
+	GET_REF_SET_MACRO(HOST_DEVICE, Box, Box)
+	GET_REF_MACRO(HOST_DEVICE, Alignment, Alignment)
+	GET_MACRO(HOST_DEVICE, Area, float)
 
-	Enums::ShapeType	Type;
-	Plane				Plane;
-	Disk				Disk;
-	Ring				Ring;
-	Sphere				Sphere;
-	Box					Box;
-	Alignment			Alignment;
-	Transform			Transform;
-	float				Area;
+protected:
+	Enums::ShapeType	Type;			/*! Type of active shape */	
+	Plane				Plane;			/*! Plane shape */
+	Disk				Disk;			/*! Disk shape */
+	Ring				Ring;			/*! Ring shape */
+	Sphere				Sphere;			/*! Sphere shape */
+	Box					Box;			/*! Box shape */
+	Alignment			Alignment;		/*! Shape alignment */
+	Transform			Transform;		/*! Shape transform */
+	float				Area;			/*! Area of the shape */
 };
 
 }

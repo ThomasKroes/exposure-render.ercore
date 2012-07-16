@@ -22,21 +22,31 @@
 namespace ExposureRender
 {
 
+/*! Plane shape class */
 class EXPOSURE_RENDER_DLL Plane
 {	
 public:
+	/*! Default constructor */
 	HOST_DEVICE Plane() :
 		Size(1.0f),
 		OneSided(false)
 	{
 	}
-
+	
+	/*! Constructor
+		@param[in] Size Size of the plane
+		@param[in] OneSided Whether the plane is one sided or not
+	*/
 	HOST_DEVICE Plane(const Vec2f& Size, const bool& OneSided) :
 		Size(Size),
 		OneSided(OneSided)
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Plane to copy
+		@return Copied plane
+	*/
 	HOST_DEVICE Plane& operator = (const Plane& Other)
 	{
 		this->Size		= Other.Size;
@@ -44,7 +54,11 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Test whether ray \a R intersects the plane
+		@param[in] R Ray
+		@return If \a R intersects the plane
+	*/
 	HOST_DEVICE bool Intersects(const Ray& R) const
 	{	
 		Intersection Int;
@@ -64,7 +78,12 @@ public:
 		
 		return true;
 	}
-
+	
+	/*! Intersect the plane with ray \a R and store the result in \a Int
+		@param[in] R Ray
+		@param[out] Int Resulting intersection
+		@return If \a R intersects the plane
+	*/
 	HOST_DEVICE bool Intersect(const Ray& R, Intersection& Int) const
 	{
 		if (fabs(R.O[2] - R.D[2]) < RAY_EPS)
@@ -91,7 +110,11 @@ public:
 
 		return true;
 	}
-
+	
+	/*! Samples the plane
+		@param[out] SS Resulting surface sample
+		@param[in] UVW Random sample
+	*/
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		SS.P 	= Vec3f(-0.5f + UVW[0], -0.5f + UVW[1], 0.0f);
@@ -100,25 +123,36 @@ public:
 
 		SS.P *= Vec3f(this->Size[0], this->Size[1], 0.0f);
 	}
-
+	
+	/*! Computes the surface area of the plane
+		@param[in] Surface area
+	*/
 	HOST_DEVICE float GetArea() const
 	{
 		return this->Size[0] * this->Size[1];
 	}
-
+	
+	/*! Returns if the plane is one sided or not
+		@return If the plane is one sided
+	*/
 	HOST_DEVICE bool GetOneSided() const
 	{
 		return this->OneSided;
 	}
-
+	
+	/*! Test whether point \a P is inside the plane
+		@return If \a P is inside the plane
+	*/
 	HOST_DEVICE bool Inside(const Vec3f& P) const
 	{
 		return P[2] < 0.0f;
 	}
+	
+	GET_SET_MACRO(HOST_DEVICE, Size, Vec2f)
 
 protected:
-	Vec2f	Size;
-	bool	OneSided;
+	Vec2f	Size;			/*! Size of the plane */
+	bool	OneSided;		/*! One sided */
 };
 
 }

@@ -62,7 +62,7 @@ KERNEL void KrnlSampleCamera()
 			ColorXYZf Le = gpObjects[Sample.Intersection.GetID()].Multiplier * EvaluateTexture(gpObjects[Sample.Intersection.GetID()].EmissionTextureID, Sample.Intersection.GetUV());
 		
 			if (gpObjects[Sample.Intersection.GetID()].EmissionUnit == Enums::Power)
-				Le /= gpObjects[Sample.Intersection.GetID()].Shape.Area;
+				Le /= gpObjects[Sample.Intersection.GetID()].Shape.GetArea();
 
 			FrameEstimate[0] = Le[0];
 			FrameEstimate[1] = Le[1];

@@ -62,7 +62,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, SS.UV);
 
 	if (Light.EmissionUnit == Enums::Power)
-		Li /= Light.Shape.Area;
+		Li /= Light.Shape.GetArea();
 
 	Shader Shader;
 
@@ -89,7 +89,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 
 	if (!Intersects(R, RNG))
 	{
-		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.N) * Light.Shape.Area);
+		const float LightPdf = LengthSquared(SS.P, Sample.Intersection.GetP()) / (AbsDot(-Wi, SS.N) * Light.Shape.GetArea());
 
 		const float Weight = PowerHeuristic(1, LightPdf, 1, ShaderPdf);
 
