@@ -85,7 +85,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Camera to copy
-		@result Camera
+		@return Camera
 	*/
 	HOST Camera& Camera::operator = (const Camera& Other)
 	{
@@ -172,7 +172,7 @@ public:
 	/*! Projects a point \a P in world space onto the camera film plane
 		@param[in] P Point in world space
 		@param[out] FilmUV Position on the film plane
-		@result Whether the project point is with the film plane
+		@return Whether the project point is with the film plane
 	*/
 	HOST_DEVICE bool ProjectPointToFilmPlane(const Vec3f& P, Vec2f& FilmUV) const
 	{

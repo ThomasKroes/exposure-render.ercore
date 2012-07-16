@@ -56,7 +56,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Piecewise function to copy
-		@result Reference to copied piecewise function
+		@return Reference to copied piecewise function
 	*/
 	HOST_DEVICE PiecewiseFunction& operator = (const PiecewiseFunction& Other)
 	{
@@ -78,7 +78,7 @@ public:
 	}
 
 	/*! Gets the name of the transfer function
-		@result Name of the transfer function
+		@return Name of the transfer function
 	*/
 	HOST_DEVICE const char* GetName() const
 	{

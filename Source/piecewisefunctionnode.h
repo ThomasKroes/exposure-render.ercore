@@ -60,7 +60,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Piecewise function node to copy
-		@result Reference to piecewise function node
+		@return Reference to piecewise function node
 	*/
 	HOST_DEVICE PiecewiseFunctionNode& operator = (const PiecewiseFunctionNode& Other)
 	{
@@ -78,7 +78,7 @@ public:
 	}
 
 	/*! Gets the node position
-		@result Node position
+		@return Node position
 	*/
 	HOST_DEVICE float GetPosition() const
 	{
@@ -94,7 +94,7 @@ public:
 	}
 
 	/*! Gets the node value
-		@result Node value
+		@return Node value
 	*/
 	HOST_DEVICE T GetValue() const
 	{

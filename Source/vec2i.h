@@ -56,7 +56,7 @@ public:
 	}
 
 	/*! Negate operator
-		@result Negated vector by value
+		@return Negated vector by value
 	*/
 	HOST_DEVICE Vec2i operator - () const
 	{
@@ -72,7 +72,7 @@ public:
 /*! Multiply Vec2i with float
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result V x F
+	@return V x F
 */
 static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
 {
@@ -82,7 +82,7 @@ static inline HOST_DEVICE Vec2i operator * (const Vec2i& V, const float& F)
 /*! Multiply float with Vec2i
 	@param[in] F Input float 
 	@param[in] V Input vector
-	@result F x V
+	@return F x V
 */
 static inline HOST_DEVICE Vec2i operator * (const float& F, const Vec2i& V)
 {
@@ -92,7 +92,7 @@ static inline HOST_DEVICE Vec2i operator * (const float& F, const Vec2i& V)
 /*! Multiply two Vec2i vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A x B
+	@return A x B
 */
 static inline HOST_DEVICE Vec2i operator * (const Vec2i& A, const Vec2i& B)
 {
@@ -102,7 +102,7 @@ static inline HOST_DEVICE Vec2i operator * (const Vec2i& A, const Vec2i& B)
 /*! Subtract two Vec2i vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A - B
+	@return A - B
 */
 static inline HOST_DEVICE Vec2i operator - (const Vec2i& A, const Vec2i& B)
 {
@@ -112,7 +112,7 @@ static inline HOST_DEVICE Vec2i operator - (const Vec2i& A, const Vec2i& B)
 /*! Add two Vec2i vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A + B
+	@return A + B
 */
 static inline HOST_DEVICE Vec2i operator + (const Vec2i& A, const Vec2i& B)
 {
@@ -122,7 +122,7 @@ static inline HOST_DEVICE Vec2i operator + (const Vec2i& A, const Vec2i& B)
 /*! Divide Vec2i by float value
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result V / F
+	@return V / F
 */
 static inline HOST_DEVICE Vec2i operator / (const Vec2i& V, const float& F)
 {
@@ -135,7 +135,7 @@ static inline HOST_DEVICE Vec2i operator / (const Vec2i& V, const float& F)
 /*! Divide float by Vec2i
 	@param[in] F Input float
 	@param[in] V Input vector
-	@result F / V
+	@return F / V
 */
 static inline HOST_DEVICE Vec2i operator / (const float& F, const Vec2i& V)
 {
@@ -146,7 +146,7 @@ static inline HOST_DEVICE Vec2i operator / (const float& F, const Vec2i& V)
 	@param[in] LerpC Interpolation coefficient
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Interpolated vector
+	@return Interpolated vector
 */
 HOST_DEVICE inline Vec2i Lerp(const float& LerpC, const Vec2i& A, const Vec2i& B)
 {

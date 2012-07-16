@@ -96,7 +96,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Blinn to copy
-		@result Blinn
+		@return Blinn
 	*/
 	HOST_DEVICE Blinn& operator = (const Blinn& Other)
 	{

@@ -41,7 +41,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Camera sample to copy
-		@result Camera sample
+		@return Camera sample
 	*/
 	HOST_DEVICE CameraSample& CameraSample::operator=(const CameraSample& Other)
 	{

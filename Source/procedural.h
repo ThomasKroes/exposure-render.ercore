@@ -52,7 +52,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Procedural to copy
-		@result Procedural
+		@return Procedural
 	*/
 	HOST_DEVICE Procedural& operator = (const Procedural& Other)
 	{
@@ -68,8 +68,8 @@ public:
 	}
 	
 	/*! Evaluates the procedural at \a UV
-		@param[in] UVW Texture coordinates to evaluate at
-		@result Color
+		@param[in] UV Texture coordinates to evaluate at
+		@return Color
 	*/
 	HOST_DEVICE ColorXYZf Evaluate(const Vec2f& UV) const
 	{

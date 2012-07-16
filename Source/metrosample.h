@@ -40,7 +40,7 @@ public:
 
 	/*! Assignment operator
 		@param[in] Other Metropolis sample to copy
-		@result Metropolis sample
+		@return Metropolis sample
 	*/
 	HOST_DEVICE MetroSample& MetroSample::operator=(const MetroSample& Other)
 	{

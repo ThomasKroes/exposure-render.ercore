@@ -57,7 +57,7 @@ public:
 	}
 	
 	/*! Length squared
-		@result Squared length of the vector
+		@return Squared length of the vector
 	*/
 	HOST_DEVICE float LengthSquared(void) const
 	{
@@ -65,7 +65,7 @@ public:
 	}
 	
 	/*! Length
-		@result Length of the vector
+		@return Length of the vector
 	*/
 	HOST_DEVICE float Length(void) const
 	{
@@ -84,7 +84,7 @@ public:
 	}
 	
 	/*! Normalized
-		@result Normalized vector
+		@return Normalized vector
 	*/
 	HOST_DEVICE Vec3f Normalized(void) const
 	{
@@ -96,7 +96,7 @@ public:
 
 	/*! Dot product
 		@param[in] V Input vector
-		@result Dot product
+		@return Dot product
 	*/
 	HOST_DEVICE float Dot(const Vec3f& V) const
 	{
@@ -105,7 +105,7 @@ public:
 	
 	/*! Cross product
 		@param[in] V Input vector
-		@result Cross product
+		@return Cross product
 	*/
 	HOST_DEVICE Vec3f Cross(const Vec3f& V) const
 	{
@@ -113,7 +113,7 @@ public:
 	}
 
 	/*! Negate operator
-		@result Negated vector by value
+		@return Negated vector by value
 	*/
 	HOST_DEVICE Vec3f operator - () const
 	{
@@ -129,7 +129,7 @@ public:
 /*! Multiply Vec3f with float
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result V x F
+	@return V x F
 */
 static inline HOST_DEVICE Vec3f operator * (const Vec3f& V, const float& F)
 {
@@ -139,7 +139,7 @@ static inline HOST_DEVICE Vec3f operator * (const Vec3f& V, const float& F)
 /*! Multiply float with Vec3f
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result F x V
+	@return F x V
 */
 static inline HOST_DEVICE Vec3f operator * (const float& F, const Vec3f& V)
 {
@@ -149,7 +149,7 @@ static inline HOST_DEVICE Vec3f operator * (const float& F, const Vec3f& V)
 /*! Multiply two Vec3f vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A x B
+	@return A x B
 */
 static inline HOST_DEVICE Vec3f operator * (const Vec3f& A, const Vec3f& B)
 {
@@ -159,7 +159,7 @@ static inline HOST_DEVICE Vec3f operator * (const Vec3f& A, const Vec3f& B)
 /*! Divide Vec3f by float value
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result V / F
+	@return V / F
 */
 static inline HOST_DEVICE Vec3f operator / (const Vec3f& V, const float& F)
 {
@@ -172,7 +172,7 @@ static inline HOST_DEVICE Vec3f operator / (const Vec3f& V, const float& F)
 /*! Divide float by Vec3f
 	@param[in] F Input float
 	@param[in] V Input vector
-	@result F / V
+	@return F / V
 */
 static inline HOST_DEVICE Vec3f operator / (const float& F, const Vec3f& V)
 {
@@ -182,7 +182,7 @@ static inline HOST_DEVICE Vec3f operator / (const float& F, const Vec3f& V)
 /*! Subtract two Vec3f vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A - B
+	@return A - B
 */
 static inline HOST_DEVICE Vec3f operator - (const Vec3f& A, const Vec3f& B)
 {
@@ -192,7 +192,7 @@ static inline HOST_DEVICE Vec3f operator - (const Vec3f& A, const Vec3f& B)
 /*! Add two Vec3f vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A + B
+	@return A + B
 */
 static inline HOST_DEVICE Vec3f operator + (const Vec3f& A, const Vec3f& B)
 {
@@ -202,7 +202,7 @@ static inline HOST_DEVICE Vec3f operator + (const Vec3f& A, const Vec3f& B)
 /*! Length squared
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Squared length of the vector
+	@return Squared length of the vector
 */
 static inline HOST_DEVICE float LengthSquared(const Vec3f& A, const Vec3f& B)
 {
@@ -211,7 +211,7 @@ static inline HOST_DEVICE float LengthSquared(const Vec3f& A, const Vec3f& B)
 
 /*! Length
 	@param[in] V Input vector
-	@result Length of the vector
+	@return Length of the vector
 */
 static inline HOST_DEVICE float Length(const Vec3f& A, const Vec3f& B)
 {
@@ -220,7 +220,7 @@ static inline HOST_DEVICE float Length(const Vec3f& A, const Vec3f& B)
 
 /*! Normalize
 	@param[in] V Input vector
-	@result Normalized vector
+	@return Normalized vector
 */
 static inline HOST_DEVICE Vec3f Normalize(const Vec3f& V)
 {
@@ -230,7 +230,7 @@ static inline HOST_DEVICE Vec3f Normalize(const Vec3f& V)
 /*! Dot product
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Dot product of A and B
+	@return Dot product of A and B
 */
 static inline HOST_DEVICE float Dot(const Vec3f& A, const Vec3f& B)
 {
@@ -240,7 +240,7 @@ static inline HOST_DEVICE float Dot(const Vec3f& A, const Vec3f& B)
 /*! Absolute dot product
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Absolute dot product of A and B
+	@return Absolute dot product of A and B
 */
 static inline HOST_DEVICE float AbsDot(const Vec3f& A, const Vec3f& B)
 {
@@ -250,7 +250,7 @@ static inline HOST_DEVICE float AbsDot(const Vec3f& A, const Vec3f& B)
 /*! Clamped dot product
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Clamped dot product of A and B
+	@return Clamped dot product of A and B
 */
 static inline HOST_DEVICE float ClampedDot(const Vec3f& A, const Vec3f& B)
 {
@@ -260,7 +260,7 @@ static inline HOST_DEVICE float ClampedDot(const Vec3f& A, const Vec3f& B)
 /*! Clamped absolute dot product
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Clamped absolute dot product of A and B
+	@return Clamped absolute dot product of A and B
 */
 static inline HOST_DEVICE float ClampedAbsDot(const Vec3f& A, const Vec3f& B)
 {
@@ -270,7 +270,7 @@ static inline HOST_DEVICE float ClampedAbsDot(const Vec3f& A, const Vec3f& B)
 /*! Cross product
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Cross product of A and B
+	@return Cross product of A and B
 */
 static inline HOST_DEVICE Vec3f Cross(const Vec3f& A, const Vec3f& B)
 {
@@ -280,7 +280,7 @@ static inline HOST_DEVICE Vec3f Cross(const Vec3f& A, const Vec3f& B)
 /*! Normalized cross product
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Normalized cross product of A and B
+	@return Normalized cross product of A and B
 */
 static inline HOST_DEVICE Vec3f NormalizedCross(const Vec3f& A, const Vec3f& B)
 {
@@ -291,7 +291,7 @@ static inline HOST_DEVICE Vec3f NormalizedCross(const Vec3f& A, const Vec3f& B)
 	@param[in] LerpC Interpolation coefficient
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Interpolated vector
+	@return Interpolated vector
 */
 HOST_DEVICE inline Vec3f Lerp(const float& LerpC, const Vec3f& A, const Vec3f& B)
 {

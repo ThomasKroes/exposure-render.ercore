@@ -79,7 +79,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Lambert to copy
-		@result Lambert
+		@return Lambert
 	*/
 	HOST_DEVICE Lambert& operator = (const Lambert& Other)
 	{

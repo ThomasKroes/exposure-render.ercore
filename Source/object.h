@@ -62,7 +62,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Object to copy
-		@result Object
+		@return Object
 	*/
 	HOST Object& operator = (const ErObject& Other)
 	{

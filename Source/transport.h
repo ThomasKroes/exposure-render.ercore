@@ -26,7 +26,7 @@ namespace ExposureRender
 	@param[in] N1 Normal 1
 	@param[in] P2 Point 2
 	@param[in] N2 Normal 2
-	@result Geometric factor
+	@return Geometric factor
 */
 HOST_DEVICE inline float GeometricFactor(const Vec3f& P1, const Vec3f& N1, const Vec3f& P2, const Vec3f& N2)
 {
@@ -39,7 +39,7 @@ HOST_DEVICE inline float GeometricFactor(const Vec3f& P1, const Vec3f& N1, const
 	@param[in] PdfF Pdf F
 	@param[in] Ng Ng
 	@param[in] PdfG Pdf G
-	@result MIS weight
+	@return MIS weight
 */
 HOST_DEVICE_NI inline float PowerHeuristic(const int& Nf, const float& PdfF, const int& Ng, const float& PdfG)
 {

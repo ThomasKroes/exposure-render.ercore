@@ -57,7 +57,7 @@ public:
 	}
 
 	/*! Negate operator
-		@result Negated vector by value
+		@return Negated vector by value
 	*/
 	HOST_DEVICE Vec3i operator - () const
 	{
@@ -73,7 +73,7 @@ public:
 /*! Multiply Vec3i with float
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result V x F
+	@return V x F
 */
 static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
 {
@@ -83,7 +83,7 @@ static inline HOST_DEVICE Vec3i operator * (const Vec3i& V, const float& F)
 /*! Multiply float with Vec3i
 	@param[in] V Input vector
 	@param[in] F Input float
-	@result F x V
+	@return F x V
 */
 static inline HOST_DEVICE Vec3i operator * (const float& F, const Vec3i& V)
 {
@@ -93,7 +93,7 @@ static inline HOST_DEVICE Vec3i operator * (const float& F, const Vec3i& V)
 /*! Multiply two Vec3i vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A x B
+	@return A x B
 */
 static inline HOST_DEVICE Vec3i operator * (const Vec3i& A, const Vec3i& B)
 {
@@ -103,7 +103,7 @@ static inline HOST_DEVICE Vec3i operator * (const Vec3i& A, const Vec3i& B)
 /*! Subtract two Vec3i vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A - B
+	@return A - B
 */
 static inline HOST_DEVICE Vec3i operator - (const Vec3i& A, const Vec3i& B)
 {
@@ -113,7 +113,7 @@ static inline HOST_DEVICE Vec3i operator - (const Vec3i& A, const Vec3i& B)
 /*! Add two Vec3i vectors
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result A + B
+	@return A + B
 */
 static inline HOST_DEVICE Vec3i operator + (const Vec3i& A, const Vec3i& B)
 {
@@ -124,7 +124,7 @@ static inline HOST_DEVICE Vec3i operator + (const Vec3i& A, const Vec3i& B)
 	@param[in] LerpC Interpolation coefficient
 	@param[in] A Input vector A
 	@param[in] B Input vector B
-	@result Interpolated vector
+	@return Interpolated vector
 */
 HOST_DEVICE inline Vec3i Lerp(const float& LerpC, const Vec3i& A, const Vec3i& B)
 {

@@ -58,7 +58,7 @@ public:
 	}
 
 	/*! Negate operator
-		@result Negated vector by value
+		@return Negated vector by value
 	*/
 	HOST_DEVICE Vec4i operator - () const
 	{

@@ -35,7 +35,7 @@ public:
 	}
 	
 	/*! Construct and initialize with default value
-		* \param Default The default value
+		* \param V The default value
 	*/
 	HOST_DEVICE ColorXYZAf(const float& V)
 	{
@@ -152,7 +152,7 @@ public:
 /*! Multiply ColorXYZAf with float
 	* \param C ColorXYZAf
 	* \param F Float to multiply with
-	@result C x F
+	@return C x F
 */
 static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& C, const float& F)
 {
@@ -162,7 +162,7 @@ static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& C, const floa
 /*! Multiply float with ColorXYZAf
 	* \param C ColorXYZAf
 	* \param F Float to multiply with
-	@result F x C
+	@return F x C
 */
 static inline HOST_DEVICE ColorXYZAf operator * (const float& F, const ColorXYZAf& C)
 {
@@ -172,7 +172,7 @@ static inline HOST_DEVICE ColorXYZAf operator * (const float& F, const ColorXYZA
 /*! Multiply two ColorXYZAf vectors
 	* \param A Vector A
 	* \param B Vector B
-	@result A x B
+	@return A x B
 */
 static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& A, const ColorXYZAf& B)
 {
@@ -182,7 +182,7 @@ static inline HOST_DEVICE ColorXYZAf operator * (const ColorXYZAf& A, const Colo
 /*! Divide ColorXYZAf vector by float value
 	* \param C ColorXYZAf to divide
 	* \param F Float to divide with
-	@result F / V
+	@return F / V
 */
 static inline HOST_DEVICE ColorXYZAf operator / (const ColorXYZAf& C, const float& F)
 {
@@ -195,7 +195,7 @@ static inline HOST_DEVICE ColorXYZAf operator / (const ColorXYZAf& C, const floa
 /*! Subtract two ColorXYZAf vectors
 	* \param A Vector A
 	* \param B Vector B
-	@result A - B
+	@return A - B
 */
 static inline HOST_DEVICE ColorXYZAf operator - (const ColorXYZAf& A, const ColorXYZAf& B)
 {
@@ -205,7 +205,7 @@ static inline HOST_DEVICE ColorXYZAf operator - (const ColorXYZAf& A, const Colo
 /*! Add two ColorXYZAf vectors
 	* \param A Vector A
 	* \param B Vector B
-	@result A + B
+	@return A + B
 */
 static inline HOST_DEVICE ColorXYZAf operator + (const ColorXYZAf& A, const ColorXYZAf& B)
 {
@@ -216,7 +216,7 @@ static inline HOST_DEVICE ColorXYZAf operator + (const ColorXYZAf& A, const Colo
 	* \param LerpC Interpolation coefficient
 	* \param A Vector A
 	* \param B Vector B
-	@result Interpolated vector
+	@return Interpolated vector
 */
 HOST_DEVICE inline ColorXYZAf Lerp(const float& LerpC, const ColorXYZAf& A, const ColorXYZAf& B)
 {

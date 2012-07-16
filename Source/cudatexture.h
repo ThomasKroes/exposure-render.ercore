@@ -51,7 +51,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Cuda texture to copy from
-		@result Copied cuda texture by reference
+		@return Copied cuda texture by reference
 	*/
 	HOST CudaTexture& operator = (const CudaTexture& Other)
 	{
@@ -91,7 +91,7 @@ public:
 	}
 	
 	/*! Gets the resolution
-		@result Resolution
+		@return Resolution
 	*/
 	HOST_DEVICE Vec<int, NoDimensions> GetResolution() const
 	{

@@ -111,7 +111,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Shader to copy
-		@result Shader
+		@return Shader
 	*/
 	HOST_DEVICE Shader& operator = (const Shader& Other)
 	{
@@ -130,7 +130,7 @@ public:
 /*! Outputs a shader based on intersection \a Int
 	@param[in] Int Intersection
 	@param[out] Shader Shader
-	@param[in,out] Random number generator
+	@param[in,out] RNG Random number generator
 	@param[in] VolumeID ID of the volume
 */
 DEVICE void GetShader(Intersection Int, Shader& Shader, RNG& RNG, const int& VolumeID = 0)

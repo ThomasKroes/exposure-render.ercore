@@ -37,7 +37,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Indices to copy from
-		@result Copied indices by reference
+		@return Copied indices by reference
 	*/
 	HOST_DEVICE Indices& operator = (const Indices& Other)
 	{
@@ -50,7 +50,7 @@ public:
 	}
 	
 	/*! Obtain number of indices set
-		@result Number of used indices
+		@return Number of used indices
 	*/
 	HOST_DEVICE int GetNoIndices() const
 	{
@@ -58,7 +58,7 @@ public:
 	}
 
 	/*! Set number of indices
-		@param[in] Number of indices
+		@param[in] NoIndices Number of indices
 	*/
 	HOST_DEVICE void SetNoIndices(const int& NoIndices)
 	{
@@ -75,7 +75,7 @@ public:
 	}
 
 	/*! Adds an index
-		@param[in] Number of indices
+		@param[in] Index Index
 	*/
 	HOST_DEVICE void Add(const int& Index)
 	{

@@ -100,7 +100,7 @@ public:
 	/*! Computes the geometric factor giving vector \a Wo, \a Wi and \a Wh
 		@param[in] Wo Outgoing direction
 		@param[in] Wi Incoming direction
-		@param[in] Wi Half angle vector
+		@param[in] Wh Half angle vector
 		@return geometric factor
 	*/
 	HOST_DEVICE float G(const Vec3f& Wo, const Vec3f& Wi, const Vec3f& Wh)
@@ -115,7 +115,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Microfacet to copy
-		@result Microfacet
+		@return Microfacet
 	*/
 	HOST_DEVICE Microfacet& operator = (const Microfacet& Other)
 	{

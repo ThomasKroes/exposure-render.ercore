@@ -35,7 +35,7 @@ public:
 	}
 
 	/*! Construct and initialize with default value
-		* \param Default The default value
+		* \param V The default value
 	*/
 	HOST_DEVICE ColorRGBAuc(const unsigned char& V)
 	{
@@ -186,7 +186,7 @@ public:
 /*! Multiply ColorRGBAuc with float
 	* \param C ColorRGBAuc
 	* \param F Float to multiply with
-	@result C x F
+	@return C x F
 */
 static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& C, const float& F)
 {
@@ -199,7 +199,7 @@ static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& C, const fl
 /*! Multiply float with ColorRGBAuc
 	* \param C ColorRGBAuc
 	* \param F Float to multiply with
-	@result F x C
+	@return F x C
 */
 static inline HOST_DEVICE ColorRGBAuc operator * (const float& F, const ColorRGBAuc& C)
 {
@@ -212,7 +212,7 @@ static inline HOST_DEVICE ColorRGBAuc operator * (const float& F, const ColorRGB
 /*! Multiply two ColorRGBAuc vectors
 	* \param A Vector A
 	* \param B Vector B
-	@result A x B
+	@return A x B
 */
 static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
@@ -222,7 +222,7 @@ static inline HOST_DEVICE ColorRGBAuc operator * (const ColorRGBAuc& A, const Co
 /*! Divide ColorRGBAuc vector by float value
 	* \param C ColorRGBAuc to divide
 	* \param F Float to divide with
-	@result F / V
+	@return F / V
 */
 static inline HOST_DEVICE ColorRGBAuc operator / (const ColorRGBAuc& C, const float& F)
 {
@@ -235,7 +235,7 @@ static inline HOST_DEVICE ColorRGBAuc operator / (const ColorRGBAuc& C, const fl
 /*! Subtract two ColorRGBAuc vectors
 	* \param A Vector A
 	* \param B Vector B
-	@result A - B
+	@return A - B
 */
 static inline HOST_DEVICE ColorRGBAuc operator - (const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
@@ -245,7 +245,7 @@ static inline HOST_DEVICE ColorRGBAuc operator - (const ColorRGBAuc& A, const Co
 /*! Add two ColorRGBAuc vectors
 	* \param A Vector A
 	* \param B Vector B
-	@result A + B
+	@return A + B
 */
 static inline HOST_DEVICE ColorRGBAuc operator + (const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
@@ -256,11 +256,21 @@ static inline HOST_DEVICE ColorRGBAuc operator + (const ColorRGBAuc& A, const Co
 	* \param LerpC Interpolation coefficient
 	* \param A Vector A
 	* \param B Vector B
-	@result Interpolated vector
+	@return Interpolated vector
 */
 HOST_DEVICE inline ColorRGBAuc Lerp(const float& LerpC, const ColorRGBAuc& A, const ColorRGBAuc& B)
 {
 	return (1.0f - LerpC) * A + LerpC * B;
+}
+
+/*! Computes the normalized color distance between \a A and \a B
+	@param A Color A
+	@param B Color B
+	@return Normalized color distance
+*/
+HOST_DEVICE inline float NormalizedColorDistance(const ColorRGBAuc& A, const ColorRGBAuc& B)
+{
+	return ONE_OVER_255 * sqrtf(powf((float)(A[0] - B[0]), 2.0f) + powf((float)(A[1] - B[1]), 2.0f) + powf((float)(A[2] - B[2]), 2.0f));
 }
 
 }

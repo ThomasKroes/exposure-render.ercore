@@ -40,7 +40,6 @@ public:
 
 	/*! Constructor
 		@param[in] Name Name
-		@param[in] UseTexture Whether a texture is used or not
 	*/
 	HOST_DEVICE TransferFunction1D(const char* Name) :
 		TransferFunction(Name),
@@ -65,7 +64,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Transfer function to copy
-		@result Reference to the copied transfer function
+		@return Reference to the copied transfer function
 	*/
 	HOST_DEVICE TransferFunction1D& operator = (const TransferFunction1D& Other)
 	{
@@ -93,7 +92,7 @@ public:
 	
 	/*! Evaluates the transfer function at \a Position
 		@param[in] Position Position to evaluate
-		@result Value at \a Position
+		@return Value at \a Position
 	*/
 	HOST_DEVICE T Evaluate(const float& Position) const
 	{

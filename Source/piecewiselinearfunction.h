@@ -52,7 +52,7 @@ public:
 	
 	/*! Assignment operator
 		@param[in] Other Piecewise linear function to copy
-		@result Reference to piecewise linear function
+		@return Reference to piecewise linear function
 	*/
 	HOST_DEVICE PiecewiseLinearFunction& operator = (const PiecewiseLinearFunction& Other)
 	{
@@ -64,8 +64,7 @@ public:
 	}
 	
 	/*! Adds a node with \a Position and \a Value
-		@param[in] Position Position of the node
-		@param[in] Value Value of the node
+		@param[in] Node Piecewise linear functio node
 	*/
 	HOST_DEVICE void AddNode(const PiecewiseFunctionNode<T>& Node)
 	{
@@ -104,7 +103,7 @@ public:
 	
 	/*! Evaluate the piecewise linear function at \a Position
 		@param[in] Position Position at which to evaluate the piecewise linear function
-		@result Linearly interpolated value at \a Position
+		@return Linearly interpolated value at \a Position
 	*/
 	HOST_DEVICE T Evaluate(const float& Position) const
 	{
