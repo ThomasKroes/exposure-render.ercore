@@ -21,9 +21,13 @@
 namespace ExposureRender
 {
 
+/*! Range class */
 class Range
 {
 public:
+	/*! constructor
+		@param[in] MinMax Range
+	*/
 	HOST_DEVICE Range(const Vec2f& MinMax = Vec2f(0.0f)) :
 		Min(MinMax[0]),
 		Max(MinMax[1]),
@@ -31,7 +35,11 @@ public:
 		InvLength(Length > 0.0f ? 1.0f / Length : 0.0f)
 	{
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Range to copy
+		@result Range
+	*/
 	HOST Range& Range::operator = (const Vec2f& Other)
 	{
 		this->Min		= Other[0];
@@ -42,10 +50,16 @@ public:
 		return *this;
 	}
 
-	float	Min;
-	float	Max;
-	float	Length;
-	float	InvLength;
+	GET_SET_MACRO(HOST_DEVICE, Min, float)
+	GET_SET_MACRO(HOST_DEVICE, Max, float)
+	GET_MACRO(HOST_DEVICE, Length, float)
+	GET_MACRO(HOST_DEVICE, InvLength, float)
+
+protected:
+	float	Min;				/*! Minimum range */
+	float	Max;				/*! Maximum range */
+	float	Length;				/*! Length of the interval */
+	float	InvLength;			/*! Reciprocal of the interval length */
 };
 
 }
