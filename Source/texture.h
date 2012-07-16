@@ -21,9 +21,11 @@
 namespace ExposureRender
 {
 
+/*! Texture class */
 class Texture : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST Texture() :
 		TimeStamp(),
 		Type(Enums::Procedural),
@@ -35,7 +37,10 @@ public:
 		Flip(0)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Texture to copy
+	*/
 	HOST Texture(const ErTexture& Other) :
 		TimeStamp(),
 		Type(Enums::Procedural),
@@ -48,7 +53,11 @@ public:
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Texture to copy
+		@return Copied texture
+	*/
 	HOST Texture& operator = (const ErTexture& Other)
 	{
 		TimeStamp::operator = (Other);
@@ -76,13 +85,13 @@ public:
 		return *this;
 	}
 
-	Enums::TextureType	Type;
-	float				OutputLevel;
-	int					BitmapID;
-	Procedural			Procedural;
-	Vec2f				Offset;
-	Vec2f				Repeat;
-	Vec2i				Flip;
+	Enums::TextureType		Type;				/*! Texture type */
+	float					OutputLevel;		/*! Output level */
+	int						BitmapID;			/*! Bitmap ID */
+	Procedural				Procedural;			/*! Procedural */
+	Vec2f					Offset;				/*! Offset */
+	Vec2f					Repeat;				/*! Repeat */
+	Vec2i					Flip;				/*! Flip */
 };
 
 }
