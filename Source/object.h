@@ -128,7 +128,6 @@ public:
 	}
 
 	/*
-
 	GET_SET_MACRO(HOST_DEVICE, Visible, bool)
 	GET_SET_MACRO(HOST_DEVICE, Shape, Shape)
 	GET_SET_MACRO(HOST_DEVICE, DiffuseTextureID, int)

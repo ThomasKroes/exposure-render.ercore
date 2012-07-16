@@ -100,11 +100,11 @@ public:
 		float r = sqrtf(UVW[0]);
 		float theta = 2.0f * PI_F * UVW[1];
 
-		SS.SetP(Vec3f(r * cosf(theta), r * sinf(theta), 0.0f));
-		SS.SetN(Vec3f(0.0f, 0.0f, 1.0f));
-		SS.SetUV(Vec2f(UVW[0], UVW[1]));
+		SS.P	= Vec3f(r * cosf(theta), r * sinf(theta), 0.0f);
+		SS.N	= Vec3f(0.0f, 0.0f, 1.0f);
+		SS.UV	= Vec2f(UVW[0], UVW[1]);
 		
-		SS.GetP() *= this->Radius;
+		SS.P *= this->Radius;
 	}
 
 	HOST_DEVICE float GetArea() const

@@ -45,11 +45,15 @@ public:
 		return *this;
 	}
 
+	/*
 	GET_REF_SET_MACRO(HOST_DEVICE, P, Vec3f)
 	GET_REF_SET_MACRO(HOST_DEVICE, N, Vec3f)
 	GET_REF_SET_MACRO(HOST_DEVICE, UV, Vec2f)
 
-protected:
+protected:*/
+
+	// FIXME: For some reason, using get/set function on this class has a significant impact on performance so for now we let them be public
+
 	Vec3f	P;
 	Vec3f	N;
 	Vec2f	UV;

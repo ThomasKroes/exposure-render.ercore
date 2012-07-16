@@ -154,16 +154,16 @@ public:
 		float x		= r * cosf(phi);
 		float y		= r * sinf(phi);
 
-		SS.SetP(Vec3f(x, y, z));
-		SS.SetN(SS.GetP());
-		SS.SetUV(Vec2f(SphericalTheta(SS.GetP()), SphericalPhi(SS.GetP())));
+		SS.P	= Vec3f(x, y, z);
+		SS.N	= SS.P;
+		SS.UV	= Vec2f(SphericalTheta(SS.P), SphericalPhi(SS.P));
 	}
 
 	HOST_DEVICE void Sample(SurfaceSample& SS, const Vec3f& UVW) const
 	{
 		SampleUnit(SS, UVW);
 
-		SS.GetP() *= this->Radius;
+		SS.P *= this->Radius;
 	}
 
 	HOST_DEVICE float GetArea() const
