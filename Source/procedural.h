@@ -22,35 +22,56 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL Procedural
+/*! Procedural class */
+	class EXPOSURE_RENDER_DLL Procedural : public TimeStamp
 {
 public:
-	HOST Procedural()
+	/*! Default constructor */
+	HOST_DEVICE Procedural() :
+		TimeStamp(),
+		Type(Enums::Uniform),
+		UniformColor(0.5f),
+		CheckerColor1(0.5f),
+		CheckerColor2(0.5f),
+		Gradient()
 	{
-		this->Type = Enums::Uniform;
 	}
 	
-	HOST ~Procedural()
+	/*! Destructor */
+	HOST_DEVICE virtual ~Procedural()
 	{
 	}
 
-	HOST Procedural(const Procedural& Other)
+	/*! Copy constructor
+		@param[in] Other Procedural to copy
+	*/
+	HOST_DEVICE Procedural(const Procedural& Other)
 	{
 		*this = Other;
 	}
-
-	HOST Procedural& operator = (const Procedural& Other)
+	
+	/*! Assignment operator
+		@param[in] Other Procedural to copy
+		@result Procedural
+	*/
+	HOST_DEVICE Procedural& operator = (const Procedural& Other)
 	{
-		this->Type			= Other.Type;
-		this->UniformColor	= Other.UniformColor;
-		this->CheckerColor1	= Other.CheckerColor1;
-		this->CheckerColor2	= Other.CheckerColor2;
-		this->Gradient		= Other.Gradient;
+		TimeStamp::operator = (Other);
+
+		this->Type				= Other.Type;
+		this->UniformColor		= Other.UniformColor;
+		this->CheckerColor1		= Other.CheckerColor1;
+		this->CheckerColor2		= Other.CheckerColor2;
+		this->Gradient			= Other.Gradient;
 
 		return *this;
 	}
-
-	HOST_DEVICE ColorXYZf Evaluate(const Vec2f& UVW) const
+	
+	/*! Evaluates the procedural at \a UV
+		@param[in] UVW Texture coordinates to evaluate at
+		@result Color
+	*/
+	HOST_DEVICE ColorXYZf Evaluate(const Vec2f& UV) const
 	{
 		switch (this->Type)
 		{
@@ -61,22 +82,22 @@ public:
 
 			case Enums::Checker:
 			{
-				const int UV[2] =
+				const int CheckerUV[2] =
 				{
-					(int)(UVW[0] * 2.0f),
-					(int)(UVW[1] * 2.0f)
+					(int)(UV[0] * 2.0f),
+					(int)(UV[1] * 2.0f)
 				};
 
-				if (UV[0] % 2 == 0)
+				if (CheckerUV[0] % 2 == 0)
 				{
-					if (UV[1] % 2 == 0)
+					if (CheckerUV[1] % 2 == 0)
 						return this->CheckerColor1;
 					else
 						return this->CheckerColor2;
 				}
 				else
 				{
-					if (UV[1] % 2 == 0)
+					if (CheckerUV[1] % 2 == 0)
 						return this->CheckerColor2;
 					else
 						return this->CheckerColor1;
@@ -85,18 +106,25 @@ public:
 
 			case Enums::Gradient:
 			{
-				return this->Gradient.Evaluate(UVW[1]);
+				return this->Gradient.Evaluate(UV[1]);
 			}
 		}
 
 		return ColorXYZf::Black();
 	}
+	
+	GET_SET_TS_MACRO(HOST_DEVICE, Type, Enums::ProceduralType)
+	GET_SET_TS_MACRO(HOST_DEVICE, UniformColor, ColorXYZf)
+	GET_SET_TS_MACRO(HOST_DEVICE, CheckerColor1, ColorXYZf)
+	GET_SET_TS_MACRO(HOST_DEVICE, CheckerColor2, ColorXYZf)
+	GET_REF_SET_TS_MACRO(HOST_DEVICE, Gradient, ColorTransferFunction1D)
 
-	Enums::ProceduralType		Type;
-	ColorXYZf					UniformColor;
-	ColorXYZf					CheckerColor1;
-	ColorXYZf					CheckerColor2;
-	ColorTransferFunction1D		Gradient;
+protected:
+	Enums::ProceduralType		Type;				/*! Type of procedural */
+	ColorXYZf					UniformColor;		/*! Uniform color */
+	ColorXYZf					CheckerColor1;		/*! First checker color */
+	ColorXYZf					CheckerColor2;		/*! Second checker color */
+	ColorTransferFunction1D		Gradient;			/*! Gradient */
 };
 
 }
