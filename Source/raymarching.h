@@ -23,6 +23,12 @@
 namespace ExposureRender
 {
 
+/*! Intersects the volume with a ray
+	@param[in] R Ray
+	@param[in] RNG Random number generator
+	@param[out] Int Intersection result
+	@param[in] VolumeID ID of the volume
+*/
 DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& VolumeID = 0)
 {
 	Volume& Volume = gpVolumes[gpTracer->VolumeIDs[VolumeID]];
@@ -54,6 +60,12 @@ DEVICE void IntersectVolume(Ray R, RNG& RNG, Intersection& Int, const int& Volum
 	Int.SetScatterType(Enums::Volume);
 }
 
+/*! Whether a scattering event happens in the volume along the ray
+	@param[in] R Ray
+	@param[in] RNG Random number generator
+	@param[in] VolumeID ID of the volume
+	@return Whether an scattering event occurs in the ray's parametric range
+*/
 DEVICE bool IntersectsVolume(Ray R, RNG& RNG, const int& VolumeID = 0)
 {
 	if (!gpTracer->VolumeProperty.GetShadows())

@@ -25,7 +25,7 @@ namespace ExposureRender
 class Range
 {
 public:
-	/*! constructor
+	/*! Constructor
 		@param[in] MinMax Range
 	*/
 	HOST_DEVICE Range(const Vec2f& MinMax = Vec2f(0.0f)) :

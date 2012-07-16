@@ -21,9 +21,16 @@
 namespace ExposureRender
 {
 
+/*! Ray class */
 class Ray
 {	
 public:
+	/*! Constructor
+		@param[in] O Origin of the ray
+		@param[in] D Ray direction
+		@param[in] MinT Minimum ray range
+		@param[in] MaxT Maximum ray range
+	*/
 	HOST_DEVICE Ray(Vec3f O = Vec3f(), Vec3f D = Vec3f(0.0f, 0.0f, 1.0f), float MinT = 0.0f, float MaxT = 1000000.0f) :
 		O(O),
 		D(D),
@@ -32,15 +39,23 @@ public:
 	{
 	}
 
+	/*! Copy constructor
+		@param[in] Other Ray to copy
+	*/
 	HOST_DEVICE Ray(const Ray& Other) :
 		O(),
 		D(),
 		MinT(),
 		MaxT()
-	{
+	{ 
+
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Ray to copy
+		@result Ray
+	*/
 	HOST_DEVICE Ray& operator = (const Ray& Other)
 	{
 		this->O			= Other.O;
@@ -51,17 +66,21 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Advance ray
+		@param[in] T Ray distance
+		@result Advanced point along ray distance \a T
+	*/
 	HOST_DEVICE Vec3f operator()(const float& T) const
 	{
 		return this->O + Normalize(this->D) * T;
 	}
 
-	Vec3f 	O;
-	Vec3f 	D;
-	float	MinT;
-	float	MaxT;
-	Vec2f	ImageUV;
+	Vec3f 	O;				/*! Origin */
+	Vec3f 	D;				/*! Direction */
+	float	MinT;			/*! Minimum range */
+	float	MaxT;			/*! Maximum range */
+	Vec2f	ImageUV;		/*! Image UV coordinates */
 };
 
 }
