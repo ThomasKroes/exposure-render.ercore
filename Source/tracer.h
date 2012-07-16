@@ -28,9 +28,11 @@ using namespace std;
 namespace ExposureRender
 {
 
+/*! Tracer class */
 class Tracer : public TimeStamp
 {
 public:
+	/*! Default constructor */
 	HOST Tracer() :
 		TimeStamp(),
 		RenderMode(Enums::StochasticRayCasting),
@@ -43,11 +45,13 @@ public:
 		FrameBuffer(),
 		NoEstimates(0),
 		NoiseReduction(true),
-		EmptySpace("Empty space", Enums::Device),
 		GaussianFilterTables()
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Tracer to copy
+	*/
 	HOST Tracer(const ErTracer& Other) :
 		TimeStamp(),
 		RenderMode(Enums::StochasticRayCasting),
@@ -60,12 +64,15 @@ public:
 		FrameBuffer(),
 		NoEstimates(0),
 		NoiseReduction(true),
-		EmptySpace("Empty space", Enums::Device),
 		GaussianFilterTables()
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Tracer to copy
+		@return Copied tracer
+	*/
 	HOST Tracer& Tracer::operator = (const ErTracer& Other)
 	{
 		TimeStamp::operator = (Other);
@@ -131,26 +138,22 @@ public:
 
 		this->NoiseReduction = Other.NoiseReduction;
 
-		this->UpdateEmptySpace = this->VolumeProperty.Opacity1D != Other.VolumeProperty.Opacity1D;
-
 		this->VolumeProperty = Other.VolumeProperty;
 
 		return *this;
 	}
 
-	Enums::RenderMode			RenderMode;
-	VolumeProperty				VolumeProperty;
-	Camera						Camera;
-	Indices<64>					VolumeIDs;
-	Indices<64>					LightIDs;
-	Indices<64>					ObjectIDs;
-	Indices<64>					ClippingObjectIDs;
-	FrameBuffer					FrameBuffer;
-	int							NoEstimates;
-	bool						NoiseReduction;
-	Buffer3D<unsigned char>		EmptySpace;
-	bool						UpdateEmptySpace;
-	GaussianFilterTables		GaussianFilterTables;
+	Enums::RenderMode			RenderMode;					/*! Type of rendering */
+	VolumeProperty				VolumeProperty;				/*! Volume property */
+	Camera						Camera;						/*! Camera */
+	Indices<64>					VolumeIDs;					/*! Volume IDs */
+	Indices<64>					LightIDs;					/*! Light IDs */
+	Indices<64>					ObjectIDs;					/*! Object IDs */
+	Indices<64>					ClippingObjectIDs;			/*! Clipping object IDs */
+	FrameBuffer					FrameBuffer;				/*! Frame buffer */
+	int							NoEstimates;				/*! Number of estimates rendered so far */
+	bool						NoiseReduction;				/*! Whether noise reduction is on/off */
+	GaussianFilterTables		GaussianFilterTables;		/*! Pre-computed Gaussian filter weights */
 };
 
 }

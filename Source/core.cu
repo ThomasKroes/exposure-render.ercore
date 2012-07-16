@@ -23,13 +23,6 @@ texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
 
 #include "color.h"
 
-texture<float, 1, cudaReadModeElementType>			Opacity1D;
-texture<float4, 1, cudaReadModeElementType> 		Diffuse1D;
-texture<float4, 1, cudaReadModeElementType> 		Specular1D;
-texture<float, 1, cudaReadModeElementType> 			Glossiness1D;
-texture<float, 1, cudaReadModeElementType> 			IndexOfReflection1D;
-texture<float4, 1, cudaReadModeElementType> 		Emission1D;
-
 map<int, int> gTracersHashMap;
 map<int, int> gVolumesHashMap;
 map<int, int> gObjectsHashMap;
@@ -174,7 +167,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 																							
 	Cuda::HandleCudaError(cudaEventElapsedTime(&TimeDelta, EventStart, EventStop), "cudaEventElapsedTime");
 	
-	Statistics.FPS = 1000.0f / TimeDelta;
+	Statistics = Timing("FPS", 1000.0f / TimeDelta);
 														
 	Cuda::HandleCudaError(cudaEventDestroy(EventStart));
 	Cuda::HandleCudaError(cudaEventDestroy(EventStop));										

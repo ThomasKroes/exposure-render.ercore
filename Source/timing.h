@@ -26,58 +26,113 @@ using namespace std;
 namespace ExposureRender
 {
 
+/*! Timing class */
 class EXPOSURE_RENDER_DLL Timing
 {
 public:
+	/*! Default constructor */
 	HOST Timing() :
 		Duration(0.0f),
-		Durations()
+		NoDurations(0)
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, "Untitled");
+
+		this->Reset();
 	}
 
-	HOST Timing(const char* pName, const float& Duration) :
-		Duration(Duration),
-		Durations()
+	/*! Constructor
+		@param[in] Name Timing name
+		@param[in] Duration Duration of the event
+	*/
+	HOST Timing(const char* Name, const float& Duration) :
+		Duration(0.0f),
+		NoDurations(0)
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, pName);
+		sprintf_s(this->Name, MAX_CHAR_SIZE, Name);
+
+		this->Reset();
+		this->AddDuration(Duration);
 	}
 	
+	/*! Copy constructor
+		@param[in] Other Timing to copy
+	*/
 	HOST Timing(const Timing& Other) :
 		Duration(0.0f),
-		Durations()
+		NoDurations(0)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Timing to copy
+		@return Copied timing
+	*/
 	HOST Timing& operator = (const Timing& Other)
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, Other.Name);
 		
-		this->Duration		= Other.Duration;
-		this->Durations		= Other.Durations;
+		this->Duration = Other.Duration;
+		
+		for (int i = 0; i < MAX_NO_TIMINGS; i++)
+			this->AddDuration(Other.Durations[i]);
+		
+		this->NoDurations = Other.NoDurations;
 
 		return *this;
 	}
-
+	
+	/*! Adds a duration
+		@param[in] Duration Duration of the event
+	*/
 	HOST void AddDuration(const float& Duration)
 	{
-		if (this->Durations.size() >= MAX_NO_TIMINGS)
-			this->Durations.erase(this->Durations.begin());
-		
-		this->Durations.push_back(Duration);
-		
-		float SumDuration = 0.0f;
+		if (this->NoDurations > 1)
+		{
+			for (int i = this->NoDurations - 1; i > 0; i--)
+				Durations[i] = Durations[i - 1];
+		}
 
-		for (vector<float>::iterator It = this->Durations.begin(); It != this->Durations.end(); ++It)
-			SumDuration += *It;
+		Durations[0] = Duration;
+		
+		this->NoDurations++;
+		
+		this->NoDurations = Clamp(this->NoDurations, 0, MAX_NO_TIMING_SAMPLES - 1);
 
-		this->Duration = this->Durations.size() > 0 ? SumDuration / (float)this->Durations.size() : 0.0f;
+		float Sum = 0.0f;
+
+		for (int i = 0; i < this->NoDurations; i++)
+			Sum += this->Durations[i];
+		
+		this->Duration = Sum / (float)this->NoDurations;
+	}
+	
+	/*! Resets the timing */
+	HOST void Reset()
+	{
+		this->Duration = 0.0f;
+
+		for (int i = 0; i < MAX_NO_TIMINGS; i++)
+			this->Durations[i] = 0.0f;
+
+		this->NoDurations = 0;
 	}
 
-	char			Name[MAX_CHAR_SIZE];
-	float			Duration;
-	vector<float>	Durations;
+	/*! Get the name of the timing
+		@return Name
+	*/
+	HOST const char* GetName() const
+	{
+		return this->Name;
+	}
+
+	GET_MACRO(HOST, Duration, float)
+
+protected:
+	char	Name[MAX_CHAR_SIZE];					/*! Name */
+	float	Duration;								/*! Smoothed duration */
+	float	Durations[MAX_NO_TIMING_SAMPLES];		/*! Durations */
+	int		NoDurations;							/*! Number of durations */
 };
 
 }
