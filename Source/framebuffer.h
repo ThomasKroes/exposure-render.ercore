@@ -23,9 +23,7 @@
 namespace ExposureRender
 {
 
-/*! \class Frame buffer
- * \brief Contains all necessary 2D runtime buffers
- */
+/*! Frame buffer class */
 class FrameBuffer
 {
 public:

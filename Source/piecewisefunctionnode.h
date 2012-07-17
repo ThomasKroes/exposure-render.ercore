@@ -21,9 +21,7 @@
 namespace ExposureRender
 {
 
-/*! \class Piecewise function node
- * \brief Piecewise function node class
- */
+/*! Piecewise function node class */
 template<class T>
 class EXPOSURE_RENDER_DLL PiecewiseFunctionNode
 {

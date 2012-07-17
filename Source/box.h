@@ -225,7 +225,7 @@ public:
 	}
 	
 	/*! Computes the surface area of the box
-		@param[in] Surface area
+		@return Surface area
 	*/
 	HOST_DEVICE float GetArea() const
 	{

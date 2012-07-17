@@ -22,9 +22,7 @@
 namespace ExposureRender
 {
 
-/*! \class Piecewise linear function
- * \brief Piecewise linear function base template class
- */
+/*! Piecewise linear function base template class */
 template<class T, int Size = 64>
 class EXPOSURE_RENDER_DLL PiecewiseLinearFunction : public PiecewiseFunction<T, Size>
 {

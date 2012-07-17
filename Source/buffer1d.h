@@ -21,21 +21,19 @@
 namespace ExposureRender
 {
 
-/*! \class One-dimensional buffer
- * \brief One-dimensional memory container class for both host and device (CUDA) linear memory
- */
+/*! 1D buffer for host and device (CUDA) linear memory */
 template<class T>
 class EXPOSURE_RENDER_DLL Buffer1D : public Buffer<T, 1>
 {
 public:
 	/*! Constructor
-		@param[in] pName Buffer name
+		@param[in] Name Buffer name
 		@param[in] MemoryType Place where the memory resides, can be host or device
 		@param[in] FilterMode Type of filtering
 		@param[in] AddressMode Type of addressing near edges
 	*/
-	HOST Buffer1D(const char* pName = "Buffer1D", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
-		Buffer<T, 1>(pName, MemoryType, FilterMode, AddressMode)
+	HOST Buffer1D(const char* Name = "1D Buffer", const Enums::MemoryType& MemoryType = Enums::Host, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Wrap) :
+		Buffer<T, 1>(Name, MemoryType, FilterMode, AddressMode)
 	{
 	}
 	

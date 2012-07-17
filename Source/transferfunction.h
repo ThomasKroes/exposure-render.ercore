@@ -21,9 +21,7 @@
 namespace ExposureRender
 {
 
-/*! \class Transfer function
- * \brief Base transfer function class
- */
+/*! Transfer function class */
 class EXPOSURE_RENDER_DLL TransferFunction : public TimeStamp
 {
 public:

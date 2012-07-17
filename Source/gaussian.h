@@ -95,9 +95,7 @@ template<int FilterRadius>
 class GaussianFilterTable
 {	
 public:
-	/*! Default constructor
-		@param Size Size of the filter
-	*/
+	/*! Default constructor */
 	HOST GaussianFilterTable()
 	{
 		this->Generate();
