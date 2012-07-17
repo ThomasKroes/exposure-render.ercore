@@ -22,12 +22,11 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErTexture : public ErBindable, public TimeStamp
+class EXPOSURE_RENDER_DLL ErTexture : public ErBindable
 {
 public:
 	HOST ErTexture() :
 		ErBindable(),
-		TimeStamp(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
 		BitmapID(-1),
@@ -40,7 +39,6 @@ public:
 
 	HOST ErTexture(const ErTexture& Other) :
 		ErBindable(),
-		TimeStamp(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
 		BitmapID(-1),
@@ -55,7 +53,6 @@ public:
 	HOST ErTexture& operator = (const ErTexture& Other)
 	{
 		ErBindable::operator = (Other);
-		TimeStamp::operator = (Other);
 
 		this->Type			= Other.Type;
 		this->OutputLevel	= Other.OutputLevel;

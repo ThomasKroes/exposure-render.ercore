@@ -51,7 +51,7 @@ public:
 	{
 		TimeStamp::operator = (Other);
 
-		this->Pixels = Other.Pixels;
+		this->Pixels = Other.GetPixels();
 
 		return *this;
 	}

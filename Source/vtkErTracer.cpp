@@ -47,7 +47,7 @@ vtkErTracer::vtkErTracer(void)
 	this->SetNoiseReduction(true);
 	this->SetShowStatistics(true);
 
-	this->Tracer.SetDirty();
+	this->Tracer.SetDirty(true);
 }
 
 vtkErTracer::~vtkErTracer(void)
@@ -93,7 +93,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->VolumeProperty->RequestData(this->Tracer.VolumeProperty);
 		
 		this->VolumePropertyTimeStamp = this->VolumeProperty->GetMTime();
-		this->Tracer.SetDirty();
+		this->Tracer.SetDirty(true);
 	}
 
 	const Vec2i CurrentRenderSize = Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
@@ -106,7 +106,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->LastRenderSize[0] * this->LastRenderSize[1]];
 
 		this->Tracer.Camera.SetFilmSize(this->LastRenderSize);
-		this->Tracer.SetDirty();
+		this->Tracer.SetDirty(true);
 	}
 
 	vtkErCamera* Camera = dynamic_cast<vtkErCamera*>(Renderer->GetActiveCamera());
@@ -116,7 +116,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		Camera->RequestData(this->Tracer.Camera);
 
 		this->CameraTimeStamp = Camera->GetMTime();
-		this->Tracer.SetDirty();
+		this->Tracer.SetDirty(true);
 	}
 	
 	const int NoVolumes = this->GetNumberOfInputConnections(VolumesPort);
@@ -157,7 +157,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	}
 
 	if (this->Tracer.NoiseReduction != this->NoiseReduction)
-		this->Tracer.SetDirty();
+		this->Tracer.SetDirty(true);
 
 	this->Tracer.NoiseReduction = this->NoiseReduction;
 

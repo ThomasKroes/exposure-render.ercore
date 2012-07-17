@@ -22,12 +22,11 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErObject : public ErBindable, public TimeStamp
+class EXPOSURE_RENDER_DLL ErObject : public ErBindable
 {
 public:
 	HOST ErObject() :
 	  	ErBindable(),
-		TimeStamp(),
 		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
@@ -43,7 +42,6 @@ public:
 
 	HOST ErObject(const ErObject& Other) :
 	  	ErBindable(),
-		TimeStamp(),
 		Visible(true),
 		Shape(),
 		DiffuseTextureID(-1),
@@ -61,7 +59,6 @@ public:
 	HOST ErObject& operator = (const ErObject& Other)
 	{
 		ErBindable::operator = (Other);
-		TimeStamp::operator = (Other);
 
 		this->Visible				= Other.Visible;
 		this->Shape					= Other.Shape;

@@ -71,8 +71,6 @@ public:
 	*/
 	HOST Volume& Volume::operator = (const ErVolume& Other)
 	{
-		TimeStamp::operator = (Other);
-
 		this->Transform			= Other.Alignment.GetTransform();
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;

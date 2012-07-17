@@ -23,40 +23,54 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErBitmap : public ErBindable, public TimeStamp
+/*! Exposure Render API bitmap class */
+class EXPOSURE_RENDER_DLL ErBitmap : public ErBindable
 {
 public:
+	/*! Default constructor */
 	HOST ErBitmap() :
 		ErBindable(),
-		TimeStamp(),
 		Pixels("Host Pixels", Enums::Host)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Bitmap to copy
+	*/
 	HOST ErBitmap(const ErBitmap& Other) :
 		ErBindable(),
-		TimeStamp(),
 		Pixels("Host Pixels", Enums::Host)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Bitmap to copy
+		@return Copied bitmap
+	*/
 	HOST ErBitmap& operator = (const ErBitmap& Other)
 	{
 		ErBindable::operator = (Other);
-		TimeStamp::operator = (Other);
-
+		
 		this->Pixels = Other.Pixels;
 		
 		return *this;
 	}
-
+	
+	/*! Binds pixels to the bitmap
+		@param[in] Resolution Resolution of the bitmap
+		@param[in] Pixels Pointer to RGBA pixels
+	*/
 	HOST void BindPixels(const Vec2i& Resolution, ColorRGBAuc* Pixels)
 	{
 		this->Pixels.Set(Enums::Host, Resolution, Pixels);
 	}
 
-	Buffer2D<ColorRGBAuc>	Pixels;
+	GET_MACRO(HOST, Pixels, Buffer2D<ColorRGBAuc>)
+	GET_REF_MACRO(HOST, Pixels, Buffer2D<ColorRGBAuc>)
+
+protected:
+	Buffer2D<ColorRGBAuc>	Pixels;		/*! Pixel buffer */
 };
 
 }

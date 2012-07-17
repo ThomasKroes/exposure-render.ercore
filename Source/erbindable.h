@@ -19,31 +19,49 @@
 #include "defines.h"
 #include "enums.h"
 #include "exception.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErBindable
+/*! Exposure Render bindable base class */
+class EXPOSURE_RENDER_DLL ErBindable : public TimeStamp
 {
 public:
-	HOST ErBindable()
+	/*! Default constructor */
+	HOST ErBindable() :
+		TimeStamp(),
+		ID(-1),
+		Enabled(true),
+		Dirty(false)
 	{
-		this->ID		= -1;
-		this->Enabled	= true;
-		this->Dirty		= false;
 	}
-
+	
+	/*! Destructor */
 	HOST virtual ~ErBindable()
 	{
 	}
-
-	HOST ErBindable(const ErBindable& Other)
+	
+	/*! Copy constructor
+		@param[in] Other Bindable to copy
+	*/
+	HOST ErBindable(const ErBindable& Other) :
+		TimeStamp(),
+		ID(-1),
+		Enabled(true),
+		Dirty(false)
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Bindable to copy
+		@return Copied bindable
+	*/
 	HOST ErBindable& operator = (const ErBindable& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->ID		= Other.ID;
 		this->Enabled	= Other.Enabled;
 		this->Dirty		= Other.Dirty;
@@ -51,17 +69,13 @@ public:
 		return *this;
 	}
 
-	HOST void BindHost();
-	HOST void UnbindHost();
+	GET_SET_MACRO(HOST, Dirty, bool)
 
-	HOST bool GetDirty() const { return this->Dirty; }
-	HOST void SetDirty(const bool& Dirty = true) { this->Dirty = Dirty; }
-
-	mutable int		ID;
-	bool			Enabled;
+	mutable int		ID;				/*! ID of the bindable */
+	bool			Enabled;		/*! Whether enabled or not */
 
 protected:
-	bool			Dirty;
+	bool			Dirty;			/*! Whether bindable is dirty or not */
 };
 
 }

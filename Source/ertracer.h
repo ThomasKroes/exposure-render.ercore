@@ -28,13 +28,12 @@ using namespace std;
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErTracer : public ErBindable, public TimeStamp
+class EXPOSURE_RENDER_DLL ErTracer : public ErBindable
 {
 public:
 	HOST ErTracer() :
 		ErBindable(),
 		RenderMode(Enums::StochasticRayCasting),
-		TimeStamp(),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -48,7 +47,6 @@ public:
 	HOST ErTracer(const ErTracer& Other) :
 		ErBindable(),
 		RenderMode(Enums::StochasticRayCasting),
-		TimeStamp(),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -63,7 +61,6 @@ public:
 	HOST ErTracer& ErTracer::operator = (const ErTracer& Other)
 	{
 		ErBindable::operator = (Other);
-		TimeStamp::operator = (Other);
 
 		this->RenderMode			= Other.RenderMode;
 		this->VolumeProperty		= Other.VolumeProperty;

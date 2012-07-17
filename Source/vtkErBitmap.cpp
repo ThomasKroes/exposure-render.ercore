@@ -152,7 +152,7 @@ int vtkErBitmap::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (ImageDataIn->GetScalarType() == VTK_UNSIGNED_CHAR)
 	{
 		BitmapDataOut->Bindable.BindPixels(Resolution, (ColorRGBAuc*)ImageDataIn->GetScalarPointer());
-		BitmapDataOut->Bindable.Pixels.SetFilterMode(this->GetFilterMode());
+		BitmapDataOut->Bindable.GetPixels().SetFilterMode(this->GetFilterMode());
 	}
 
 	BitmapDataOut->Bind();
