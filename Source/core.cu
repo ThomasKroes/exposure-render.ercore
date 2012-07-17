@@ -49,11 +49,11 @@ DEVICE ExposureRender::Bitmap*			gpBitmaps			= NULL;
 
 #include "list.cuh"
 
-ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::ErTracer>					gTracers("gpTracer");
-ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::ErVolume>					gVolumes("gpVolumes");
-ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::ErObject>					gObjects("gpObjects");
-ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::ErTexture>					gTextures("gpTextures");
-ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>					gBitmaps("gpBitmaps");
+ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::HostTracer>					gTracers("gpTracer");
+ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::HostVolume>					gVolumes("gpVolumes");
+ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::HostObject>					gObjects("gpObjects");
+ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::HostTexture>				gTextures("gpTextures");
+ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::HostBitmap>					gBitmaps("gpBitmaps");
 
 #include "autofocus.cuh"
 #include "render.cuh"
@@ -61,7 +61,7 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::ErBitmap>				
 namespace ExposureRender
 {
 
-EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*= true*/)
+EXPOSURE_RENDER_DLL void BindTracer(const HostTracer& Tracer, const bool& Bind /*= true*/)
 {
 	if (Bind)
 		gTracers.Bind(Tracer);
@@ -71,7 +71,7 @@ EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind /*=
 	gTracersHashMap = gTracers.HashMap;
 }
 
-EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*= true*/)
+EXPOSURE_RENDER_DLL void BindVolume(const HostVolume& Volume, const bool& Bind /*= true*/)
 {
 	if (Bind)
 		gVolumes.Bind(Volume);
@@ -81,7 +81,7 @@ EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind /*=
 	gVolumesHashMap = gVolumes.HashMap;
 }
 
-EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind /*= true*/)
+EXPOSURE_RENDER_DLL void BindObject(const HostObject& Object, const bool& Bind /*= true*/)
 {
 	if (Bind)
 		gObjects.Bind(Object);
@@ -91,7 +91,7 @@ EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind /*=
 	gObjectsHashMap = gObjects.HashMap;
 }
 
-EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind /*= true*/)
+EXPOSURE_RENDER_DLL void BindTexture(const HostTexture& Texture, const bool& Bind /*= true*/)
 {
 	if (Bind)
 		gTextures.Bind(Texture);
@@ -101,7 +101,7 @@ EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind 
 	gTexturesHashMap = gTextures.HashMap;
 }
 
-EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind /*= true*/)
+EXPOSURE_RENDER_DLL void BindBitmap(const HostBitmap& Bitmap, const bool& Bind /*= true*/)
 {
 	if (Bind)
 		gBitmaps.Bind(Bitmap);

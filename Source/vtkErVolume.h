@@ -22,7 +22,7 @@
 
 #include <vtkDataObject.h>
 
-class vtkErVolumeData : public vtkDataObject, public vtkErBindableVolume
+class vtkErVolumeData : public vtkDataObject, public vtkHostBindableVolume
 {
 public:
 	static vtkErVolumeData* New();

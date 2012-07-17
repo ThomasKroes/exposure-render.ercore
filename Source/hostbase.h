@@ -16,61 +16,66 @@
 
 #pragma once
 
-#include "erbindable.h"
-#include "color.h"
-#include "buffer2d.h"
+#include "defines.h"
+#include "enums.h"
+#include "exception.h"
+#include "timestamp.h"
 
 namespace ExposureRender
 {
 
-/*! Exposure Render API bitmap class */
-class EXPOSURE_RENDER_DLL ErBitmap : public ErBindable
+/*! Exposure Render bindable base class */
+class EXPOSURE_RENDER_DLL HostBase : public TimeStamp
 {
 public:
 	/*! Default constructor */
-	HOST ErBitmap() :
-		ErBindable(),
-		Pixels("Host Pixels", Enums::Host)
+	HOST HostBase() :
+		TimeStamp(),
+		ID(-1),
+		Enabled(true),
+		Dirty(false)
+	{
+	}
+	
+	/*! Destructor */
+	HOST virtual ~HostBase()
 	{
 	}
 	
 	/*! Copy constructor
-		@param[in] Other Bitmap to copy
+		@param[in] Other Bindable to copy
 	*/
-	HOST ErBitmap(const ErBitmap& Other) :
-		ErBindable(),
-		Pixels("Host Pixels", Enums::Host)
+	HOST HostBase(const HostBase& Other) :
+		TimeStamp(),
+		ID(-1),
+		Enabled(true),
+		Dirty(false)
 	{
 		*this = Other;
 	}
 	
 	/*! Assignment operator
-		@param[in] Other Bitmap to copy
-		@return Copied bitmap
+		@param[in] Other Bindable to copy
+		@return Copied bindable
 	*/
-	HOST ErBitmap& operator = (const ErBitmap& Other)
+	HOST HostBase& operator = (const HostBase& Other)
 	{
-		ErBindable::operator = (Other);
-		
-		this->Pixels = Other.Pixels;
-		
+		TimeStamp::operator = (Other);
+
+		this->ID		= Other.ID;
+		this->Enabled	= Other.Enabled;
+		this->Dirty		= Other.Dirty;
+
 		return *this;
 	}
-	
-	/*! Binds pixels to the bitmap
-		@param[in] Resolution Resolution of the bitmap
-		@param[in] Pixels Pointer to RGBA pixels
-	*/
-	HOST void BindPixels(const Vec2i& Resolution, ColorRGBAuc* Pixels)
-	{
-		this->Pixels.Set(Enums::Host, Resolution, Pixels);
-	}
 
-	GET_MACRO(HOST, Pixels, Buffer2D<ColorRGBAuc>)
-	GET_REF_MACRO(HOST, Pixels, Buffer2D<ColorRGBAuc>)
+	GET_SET_MACRO(HOST, Dirty, bool)
+
+	mutable int		ID;				/*! ID of the bindable */
+	bool			Enabled;		/*! Whether enabled or not */
 
 protected:
-	Buffer2D<ColorRGBAuc>	Pixels;		/*! Pixel buffer */
+	bool			Dirty;			/*! Whether bindable is dirty or not */
 };
 
 }

@@ -16,11 +16,11 @@
 
 #pragma once
 
-#include "ertracer.h"
-#include "ervolume.h"
-#include "erobject.h"
-#include "ertexture.h"
-#include "erbitmap.h"
+#include "hosttracer.h"
+#include "hostvolume.h"
+#include "hostobject.h"
+#include "hosttexture.h"
+#include "hostbitmap.h"
 #include "statistics.h"
 
 namespace ExposureRender
@@ -30,31 +30,31 @@ namespace ExposureRender
 	@param[in] Tracer Tracer to bind/unbind
 	@param[in] Bind whether to bind/unbind
 */
-EXPOSURE_RENDER_DLL void BindTracer(const ErTracer& Tracer, const bool& Bind = true);
+EXPOSURE_RENDER_DLL void BindTracer(const HostTracer& Tracer, const bool& Bind = true);
 
 /*! Bind/unbind a volume
 	@param[in] Volume Volume to bind/unbind
 	@param[in] Bind whether to bind/unbind
 */
-EXPOSURE_RENDER_DLL void BindVolume(const ErVolume& Volume, const bool& Bind = true);
+EXPOSURE_RENDER_DLL void BindVolume(const HostVolume& Volume, const bool& Bind = true);
 
 /*! Bind/unbind an object
 	@param[in] Object Object to bind/unbind
 	@param[in] Bind whether to bind/unbind
 */
-EXPOSURE_RENDER_DLL void BindObject(const ErObject& Object, const bool& Bind = true);
+EXPOSURE_RENDER_DLL void BindObject(const HostObject& Object, const bool& Bind = true);
 
 /*! Bind/unbind a texture
 	@param[in] Texture Texture to bind/unbind
 	@param[in] Bind whether to bind/unbind
 */
-EXPOSURE_RENDER_DLL void BindTexture(const ErTexture& Texture, const bool& Bind = true);
+EXPOSURE_RENDER_DLL void BindTexture(const HostTexture& Texture, const bool& Bind = true);
 
 /*! Bind/unbind a bitmap
 	@param[in] Bitmap Bitmap to bind/unbind
 	@param[in] Bind whether to bind/unbind
 */
-EXPOSURE_RENDER_DLL void BindBitmap(const ErBitmap& Bitmap, const bool& Bind = true);
+EXPOSURE_RENDER_DLL void BindBitmap(const HostBitmap& Bitmap, const bool& Bind = true);
 
 /*! Render tracer with \a TracerID
 	@param[in] TracerID ID of the tracer to render

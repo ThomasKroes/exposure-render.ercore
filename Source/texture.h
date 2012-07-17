@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "ertexture.h"
+#include "hosttexture.h"
 
 namespace ExposureRender
 {
@@ -41,7 +41,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Texture to copy
 	*/
-	HOST Texture(const ErTexture& Other) :
+	HOST Texture(const HostTexture& Other) :
 		TimeStamp(),
 		Type(Enums::Procedural),
 		OutputLevel(1.0f),
@@ -58,7 +58,7 @@ public:
 		@param[in] Other Texture to copy
 		@return Copied texture
 	*/
-	HOST Texture& operator = (const ErTexture& Other)
+	HOST Texture& operator = (const HostTexture& Other)
 	{
 		TimeStamp::operator = (Other);
 

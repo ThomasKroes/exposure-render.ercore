@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "erbindable.h"
+#include "hostbase.h"
 #include "vector.h"
 #include "buffer3d.h"
 #include "alignment.h"
@@ -24,11 +24,11 @@
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErVolume : public ErBindable
+class EXPOSURE_RENDER_DLL HostVolume : public HostBase
 {
 public:
-	HOST ErVolume() :
-		ErBindable(),
+	HOST HostVolume() :
+		HostBase(),
 		Alignment(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
@@ -37,8 +37,8 @@ public:
 	{
 	}
 
-	HOST ErVolume(const ErVolume& Other) :
-		ErBindable(),
+	HOST HostVolume(const HostVolume& Other) :
+		HostBase(),
 		Alignment(),
 		Voxels("Host Voxels", Enums::Host),
 		NormalizeSize(false),
@@ -48,9 +48,9 @@ public:
 		*this = Other;
 	}
 
-	HOST ErVolume& ErVolume::operator = (const ErVolume& Other)
+	HOST HostVolume& HostVolume::operator = (const HostVolume& Other)
 	{
-		ErBindable::operator = (Other);
+		HostBase::operator = (Other);
 
 		this->Alignment			= Other.Alignment;
 		this->Voxels			= Other.Voxels;

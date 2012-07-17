@@ -145,13 +145,13 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		{
 			this->Tracer.ObjectIDs.Add(ObjectData->Bindable.ID);
 
-			if (ObjectData->Bindable.Emitter)
+			if (ObjectData->Bindable.GetEmitter())
 				this->Tracer.LightIDs.Add(ObjectData->Bindable.ID);
 
-			if (ObjectData->Bindable.Clip)
+			if (ObjectData->Bindable.GetClip())
 				this->Tracer.ClippingObjectIDs.Add(ObjectData->Bindable.ID);
 
-			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.Shape.GetAlignment().GetOffsetTM());
+			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.GetShape().GetAlignment().GetOffsetTM());
 			ObjectData->Bind();
 		}
 	}

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "ertracer.h"
+#include "hosttracer.h"
 #include "framebuffer.h"
 #include "buffer3d.h"
 #include "gaussian.h"
@@ -52,7 +52,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Tracer to copy
 	*/
-	HOST Tracer(const ErTracer& Other) :
+	HOST Tracer(const HostTracer& Other) :
 		TimeStamp(),
 		RenderMode(Enums::StochasticRayCasting),
 		VolumeProperty(),
@@ -73,7 +73,7 @@ public:
 		@param[in] Other Tracer to copy
 		@return Copied tracer
 	*/
-	HOST Tracer& Tracer::operator = (const ErTracer& Other)
+	HOST Tracer& Tracer::operator = (const HostTracer& Other)
 	{
 		TimeStamp::operator = (Other);
 

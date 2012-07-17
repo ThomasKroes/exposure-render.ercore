@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "erobject.h"
+#include "hostobject.h"
 
 namespace ExposureRender
 {
@@ -44,7 +44,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Object to copy
 	*/
-	HOST Object(const ErObject& Other) :
+	HOST Object(const HostObject& Other) :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
@@ -64,17 +64,17 @@ public:
 		@param[in] Other Object to copy
 		@return Object
 	*/
-	HOST Object& operator = (const ErObject& Other)
+	HOST Object& operator = (const HostObject& Other)
 	{
 		TimeStamp::operator = (Other);
 
-		this->Visible	= Other.Visible;
-		this->Shape		= Other.Shape;
+		this->Visible	= Other.GetVisible();
+		this->Shape		= Other.GetShape();
 
-		if (Other.DiffuseTextureID >= 0)
+		if (Other.GetDiffuseTextureID() >= 0)
 		{
-			if (gTexturesHashMap.find(Other.DiffuseTextureID) != gTexturesHashMap.end())
-				this->DiffuseTextureID = gTexturesHashMap[Other.DiffuseTextureID];
+			if (gTexturesHashMap.find(Other.GetDiffuseTextureID()) != gTexturesHashMap.end())
+				this->DiffuseTextureID = gTexturesHashMap[Other.GetDiffuseTextureID()];
 			else
 				throw(Exception(Enums::Fatal, "Diffuse texture not found!"));
 		}
@@ -83,10 +83,10 @@ public:
 			this->DiffuseTextureID = -1;
 		}
 
-		if (Other.SpecularTextureID >= 0)
+		if (Other.GetSpecularTextureID() >= 0)
 		{
-			if (gTexturesHashMap.find(Other.SpecularTextureID) != gTexturesHashMap.end())
-				this->SpecularTextureID = gTexturesHashMap[Other.SpecularTextureID];
+			if (gTexturesHashMap.find(Other.GetSpecularTextureID()) != gTexturesHashMap.end())
+				this->SpecularTextureID = gTexturesHashMap[Other.GetSpecularTextureID()];
 			else
 				throw(Exception(Enums::Fatal, "Specular texture not found!"));
 		}
@@ -95,10 +95,10 @@ public:
 			this->SpecularTextureID = -1;
 		}
 
-		if (Other.GlossinessTextureID >= 0)
+		if (Other.GetGlossinessTextureID() >= 0)
 		{
-			if (gTexturesHashMap.find(Other.GlossinessTextureID) != gTexturesHashMap.end())
-				this->GlossinessTextureID = gTexturesHashMap[Other.GlossinessTextureID];
+			if (gTexturesHashMap.find(Other.GetGlossinessTextureID()) != gTexturesHashMap.end())
+				this->GlossinessTextureID = gTexturesHashMap[Other.GetGlossinessTextureID()];
 			else
 				throw(Exception(Enums::Fatal, "Glossiness texture not found!"));
 		}
@@ -107,10 +107,10 @@ public:
 			this->GlossinessTextureID = -1;
 		}
 
-		if (Other.EmissionTextureID >= 0)
+		if (Other.GetEmissionTextureID() >= 0)
 		{
-			if (gTexturesHashMap.find(Other.EmissionTextureID ) != gTexturesHashMap.end())
-				this->EmissionTextureID  = gTexturesHashMap[Other.EmissionTextureID ];
+			if (gTexturesHashMap.find(Other.GetEmissionTextureID() ) != gTexturesHashMap.end())
+				this->EmissionTextureID  = gTexturesHashMap[Other.GetEmissionTextureID() ];
 			else
 				throw(Exception(Enums::Fatal, "Emission texture not found!"));
 		}
@@ -119,10 +119,10 @@ public:
 			this->EmissionTextureID = -1;
 		}
 
-		this->Emitter		= Other.Emitter;
-		this->Multiplier	= Other.Multiplier;
-		this->EmissionUnit	= Other.EmissionUnit;
-		this->Clip			= Other.Clip;
+		this->Emitter		= Other.GetEmitter();
+		this->Multiplier	= Other.GetMultiplier();
+		this->EmissionUnit	= Other.GetEmissionUnit();
+		this->Clip			= Other.GetClip();
 
 		return *this;
 	}

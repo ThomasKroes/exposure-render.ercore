@@ -26,7 +26,7 @@
 
 #include "kelvin.h"
 
-class vtkErTextureData : public vtkDataObject, public vtkErBindableTexture
+class vtkErTextureData : public vtkDataObject, public vtkHostBindableTexture
 {
 public:
 	static vtkErTextureData* New();

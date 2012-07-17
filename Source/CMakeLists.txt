@@ -165,16 +165,16 @@ SET(Shading
 
 SOURCE_GROUP("Shading" FILES ${Shading})
 
-SET(Bindable
-	erbindable.h
-	ertracer.h
-	ervolume.h
-	erobject.h
-	ertexture.h
-	erbitmap.h
+SET(API
+	hostbase.h
+	hosttracer.h
+	hostvolume.h
+	hostobject.h
+	hosttexture.h
+	hostbitmap.h
 )
 
-SOURCE_GROUP("Bindable" FILES ${Bindable})
+SOURCE_GROUP("API" FILES ${API})
 
 SET(Filter
 	filter.h
@@ -235,7 +235,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Sample} ${Bindable} ${Filter} ${Color} ${Vector} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Sample} ${API} ${Filter} ${Color} ${Vector} ${Cuda} SHARED)
 
 IF(ER_VTK)
 
