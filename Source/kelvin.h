@@ -26,18 +26,18 @@ class KelvinRgb
 {
 public:
 	/*! Constructor */
-	KelvinRgb(const float& Temperature, const ColorRGBf& RGB) :
+	KelvinRgb(const float& Temperature, const ColorRGBf& Color) :
 		Temperature(Temperature),
-		RGB(RGB)
+		Color(Color)
 	{
 	}
 
 	float		Temperature;
-	ColorRGBf	RGB;
-}
+	ColorRGBf	Color;
+};
 
 /*! Precomputed table of kelvin temperatures and corresponding color */
-static gKelvinRgb[] =
+static KelvinRgb gKelvinRgb[] =
 {
 	KelvinRgb(1000, ColorRGBf(255, 51, 0)),
 	KelvinRgb(1100, ColorRGBf(255, 69, 0)),
@@ -179,7 +179,7 @@ static gKelvinRgb[] =
 	KelvinRgb(14700, ColorRGBf(184, 201, 255)),
 	KelvinRgb(14800, ColorRGBf(184, 201, 255)),
 	KelvinRgb(14900, ColorRGBf(184, 201, 255)),
-	KelvinRgb(15000, ColorRGBf(183, 201, 255)
+	KelvinRgb(15000, ColorRGBf(183, 201, 255))
 };
 
 /*! Converts a Kelvin temperature into RGB color
@@ -196,7 +196,7 @@ inline ColorRGBf KelvinToColorRGBf(const float& Kelvin)
 	const float L1 = 1.0f - ((Kelvin - S1.Temperature) / 100.0f);
 	const float L2 = 1.0f - L1;
 
-	return ColorRGBf(L1 * S1.RGB[0] + L2 * S2.RGB[0], L1 * S1.RGB[1] + L2 * S2.RGB[1], L1 * S1.RGB[2] + L2 * S2.RGB[2]);
+	return ColorRGBf(L1 * S1.Color[0] + L2 * S2.Color[0], L1 * S1.Color[1] + L2 * S2.Color[1], L1 * S1.Color[2] + L2 * S2.Color[2]);
 }
 
 /*! Converts a Kelvin temperature into CIE XYZ color

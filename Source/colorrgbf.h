@@ -33,6 +33,15 @@ public:
 		for (int i = 0; i < 3; ++i)
 			this->D[i] = 0.0f;
 	}
+
+	/*! Copy constructor
+		@param[in] Other Color to copy
+	*/
+	HOST ColorRGBf(const ColorRGBf& Other)
+	{
+		for (int i = 0; i < 3; ++i)
+			this->D[i] = Other.D[i];
+	}
 	
 	/*! Construct and initialize with default value
 		* \param V The default value
@@ -57,12 +66,17 @@ public:
 		for (int i = 0; i < 3; ++i)
 			this->D[i] = Other[i];
 	}
-
+	
+	/*! Constructs a black RGBf color */
 	static HOST_DEVICE ColorRGBf Black()
 	{
 		return ColorRGBf();
 	}
-
+	
+	/*! Initialize RGB color from XYZ float color
+		@param XYZ XYZ coefficients
+		@return RGB color
+	*/
 	static HOST_DEVICE ColorRGBf FromXYZf(const float XYZ[3])
 	{
 		ColorRGBf Result;
@@ -73,7 +87,11 @@ public:
 
 		return Result;
 	};
-
+	
+	/*! Initialize RGB color from XYZA float color
+		@param XYZA XYZA coefficients
+		@return RGB color
+	*/
 	static HOST_DEVICE ColorRGBf FromXYZAf(const float XYZA[4])
 	{
 		ColorRGBf Result;
@@ -84,7 +102,10 @@ public:
 
 		return Result;
 	};
-
+	
+	/*! Test whether the color is black
+		@param Black
+	*/
 	HOST_DEVICE bool IsBlack()
 	{
 		for (int i = 0; i < 3; i++)
@@ -94,6 +115,9 @@ public:
 		return true;
 	}
 
+	/*! Determine the luminance
+		@return Luminance
+	*/
 	HOST_DEVICE float Luminance() const
 	{
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
