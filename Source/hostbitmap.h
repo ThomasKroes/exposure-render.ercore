@@ -16,76 +16,61 @@
 
 #pragma once
 
-#include "erbindable.h"
-#include "shape.h"
+#include "hostbase.h"
+#include "color.h"
+#include "buffer2d.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErObject : public ErBindable
+/*! Exposure Render host bitmap class */
+class EXPOSURE_RENDER_DLL HostBitmap : public HostBase
 {
 public:
-	HOST ErObject() :
-	  	ErBindable(),
-		Visible(true),
-		Shape(),
-		DiffuseTextureID(-1),
-		SpecularTextureID(-1),
-		GlossinessTextureID(-1),
-		EmissionTextureID(-1),
-		Emitter(false),
-		Multiplier(1.0f),
-		EmissionUnit(Enums::Power),
-		Clip(false)
+	/*! Default constructor */
+	HOST HostBitmap() :
+		HostBase(),
+		Pixels("Host Pixels", Enums::Host)
 	{
 	}
-
-	HOST ErObject(const ErObject& Other) :
-	  	ErBindable(),
-		Visible(true),
-		Shape(),
-		DiffuseTextureID(-1),
-		SpecularTextureID(-1),
-		GlossinessTextureID(-1),
-		EmissionTextureID(-1),
-		Emitter(false),
-		Multiplier(1.0f),
-		EmissionUnit(Enums::Power),
-		Clip(false)
+	
+	/*! Copy constructor
+		@param[in] Other Bitmap to copy
+	*/
+	HOST HostBitmap(const HostBitmap& Other) :
+		HostBase(),
+		Pixels("Host Pixels", Enums::Host)
 	{
 		*this = Other;
 	}
-
-	HOST ErObject& operator = (const ErObject& Other)
+	
+	/*! Assignment operator
+		@param[in] Other Bitmap to copy
+		@return Copied bitmap
+	*/
+	HOST HostBitmap& operator = (const HostBitmap& Other)
 	{
-		ErBindable::operator = (Other);
-
-		this->Visible				= Other.Visible;
-		this->Shape					= Other.Shape;
-		this->DiffuseTextureID		= Other.DiffuseTextureID;
-		this->SpecularTextureID		= Other.SpecularTextureID;
-		this->GlossinessTextureID	= Other.GlossinessTextureID;
-		this->EmissionTextureID		= Other.EmissionTextureID;
-		this->Multiplier			= Other.Multiplier;
-		this->EmissionUnit			= Other.EmissionUnit;
-		this->Clip					= Other.Clip;
-
-		this->Shape.Update();
-
+		HostBase::operator = (Other);
+		
+		this->Pixels = Other.Pixels;
+		
 		return *this;
 	}
+	
+	/*! Binds pixels to the bitmap
+		@param[in] Resolution Resolution of the bitmap
+		@param[in] Pixels Pointer to RGBA pixels
+	*/
+	HOST void BindPixels(const Vec2i& Resolution, ColorRGBAuc* Pixels)
+	{
+		this->Pixels.Set(Enums::Host, Resolution, Pixels);
+	}
 
-	bool					Visible;
-	Shape					Shape;
-	int						DiffuseTextureID;
-	int						SpecularTextureID;
-	int						GlossinessTextureID;
-	int						EmissionTextureID;
-	float					IndexOfReflection;
-	bool					Emitter;
-	float					Multiplier;
-	Enums::EmissionUnit		EmissionUnit;
-	bool					Clip;
+	GET_MACRO(HOST, Pixels, Buffer2D<ColorRGBAuc>)
+	GET_REF_MACRO(HOST, Pixels, Buffer2D<ColorRGBAuc>)
+
+protected:
+	Buffer2D<ColorRGBAuc>	Pixels;		/*! Pixel buffer */
 };
 
 }

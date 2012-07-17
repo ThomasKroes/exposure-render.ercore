@@ -24,7 +24,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkColorTransferFunction.h>
 
-class vtkErBitmapData : public vtkDataObject, public vtkErBindableBitmap
+class vtkErBitmapData : public vtkDataObject, public vtkHostBindableBitmap
 {
 public:
 	static vtkErBitmapData* New();

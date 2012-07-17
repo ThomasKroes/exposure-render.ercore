@@ -29,7 +29,7 @@
 
 using namespace ExposureRender;
 
-class vtkErTracerData : public vtkDataObject, public vtkErBindableTracer
+class vtkErTracerData : public vtkDataObject, public vtkHostBindableTracer
 {
 public:
 	static vtkErTracerData* New();
@@ -87,7 +87,7 @@ private:
 	Enums::RenderMode						RenderMode;
 	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperty;
 	unsigned long							VolumePropertyTimeStamp;
-	ErTracer								Tracer;
+	HostTracer								Tracer;
 	bool									NoiseReduction;
 	bool									ShowStatistics;
 	vtkSmartPointer<vtkTextActor>			NameTextActor;

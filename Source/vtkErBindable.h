@@ -25,15 +25,15 @@ using namespace ExposureRender;
 
 #define ER_BINDABLE(type, name)												\
 																			\
-class VTK_ER_EXPORT vtkErBindable##type##									\
+class VTK_ER_EXPORT vtkHostBindable##type##									\
 {																			\
 public:																		\
-	vtkErBindable##type##()													\
+	vtkHostBindable##type##()												\
 	{																		\
 		ER_CALL(this->Bind());												\
 	}																		\
 																			\
-	virtual ~vtkErBindable##type##()										\
+	virtual ~vtkHostBindable##type##()										\
 	{																		\
 		ER_CALL(this->Unbind());											\
 	}																		\
@@ -48,7 +48,7 @@ public:																		\
 		ExposureRender::Bind##type##(this->Bindable, false);				\
 	}																		\
 																			\
-	ExposureRender::Er##type	Bindable;									\
+	ExposureRender::Host##type	Bindable;									\
 																			\
 };
 

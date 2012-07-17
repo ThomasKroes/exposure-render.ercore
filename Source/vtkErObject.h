@@ -22,7 +22,7 @@
 
 class vtkErObject;
 
-class vtkErObjectData : public vtkDataObject, public vtkErBindableObject
+class vtkErObjectData : public vtkDataObject, public vtkHostBindableObject
 {
 public:
 	static vtkErObjectData* New();

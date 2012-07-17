@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "ervolume.h"
+#include "hostvolume.h"
 #include "boundingbox.h"
 #include "octree.h"
 #include "cudatexture3d.h"
@@ -49,7 +49,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Volume to copy
 	*/
-	HOST Volume(const ErVolume& Other) :
+	HOST Volume(const HostVolume& Other) :
 		TimeStamp(),
 		Transform(),
 		BoundingBox(),
@@ -69,8 +69,10 @@ public:
 		@param[in] Other Volume to copy
 		@return Copied volume
 	*/
-	HOST Volume& Volume::operator = (const ErVolume& Other)
+	HOST Volume& Volume::operator = (const HostVolume& Other)
 	{
+		TimeStamp::operator = (Other);
+
 		this->Transform			= Other.Alignment.GetTransform();
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.AcceleratorType;

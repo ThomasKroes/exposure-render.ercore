@@ -16,72 +16,62 @@
 
 #pragma once
 
-#include "erbindable.h"
-#include "camera.h"
-#include "volumeproperty.h"
-#include "rendersettings.h"
-
-#include <map>
-
-using namespace std;
+#include "hostbase.h"
+#include "procedural.h"
 
 namespace ExposureRender
 {
 
-class EXPOSURE_RENDER_DLL ErTracer : public ErBindable
+class EXPOSURE_RENDER_DLL HostTexture : public HostBase
 {
 public:
-	HOST ErTracer() :
-		ErBindable(),
-		RenderMode(Enums::StochasticRayCasting),
-		VolumeProperty(),
-		Camera(),
-		VolumeIDs(),
-		LightIDs(),
-		ObjectIDs(),
-		ClippingObjectIDs(),
-		NoiseReduction(true)
+	HOST HostTexture() :
+		HostBase(),
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
 	{
 	}
 
-	HOST ErTracer(const ErTracer& Other) :
-		ErBindable(),
-		RenderMode(Enums::StochasticRayCasting),
-		VolumeProperty(),
-		Camera(),
-		VolumeIDs(),
-		LightIDs(),
-		ObjectIDs(),
-		ClippingObjectIDs(),
-		NoiseReduction(true)
+	HOST HostTexture(const HostTexture& Other) :
+		HostBase(),
+		Type(Enums::Procedural),
+		OutputLevel(1.0f),
+		BitmapID(-1),
+		Procedural(),
+		Offset(0.0f),
+		Repeat(0.0f),
+		Flip(0)
 	{
 		*this = Other;
 	}
 
-	HOST ErTracer& ErTracer::operator = (const ErTracer& Other)
+	HOST HostTexture& operator = (const HostTexture& Other)
 	{
-		ErBindable::operator = (Other);
+		HostBase::operator = (Other);
 
-		this->RenderMode			= Other.RenderMode;
-		this->VolumeProperty		= Other.VolumeProperty;
-		this->Camera				= Other.Camera;
-		this->VolumeIDs				= Other.VolumeIDs;
-		this->LightIDs				= Other.LightIDs;
-		this->ObjectIDs				= Other.ObjectIDs;
-		this->ClippingObjectIDs		= Other.ClippingObjectIDs;
-		this->NoiseReduction		= Other.NoiseReduction;
-
+		this->Type			= Other.Type;
+		this->OutputLevel	= Other.OutputLevel;
+		this->BitmapID		= Other.BitmapID;
+		this->Procedural	= Other.Procedural;
+		this->Offset		= Other.Offset;
+		this->Repeat		= Other.Repeat;
+		this->Flip			= Other.Flip;
+		
 		return *this;
 	}
 
-	Enums::RenderMode	RenderMode;
-	VolumeProperty		VolumeProperty;
-	Camera				Camera;
-	Indices<64>			VolumeIDs;
-	Indices<64>			LightIDs;
-	Indices<64>			ObjectIDs;
-	Indices<64>			ClippingObjectIDs;
-	bool				NoiseReduction;
+	Enums::TextureType	Type;
+	float				OutputLevel;
+	int					BitmapID;
+	Procedural			Procedural;
+	Vec2f				Offset;
+	Vec2f				Repeat;
+	Vec2i				Flip;
 };
 
 }

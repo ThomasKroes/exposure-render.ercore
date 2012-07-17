@@ -129,34 +129,34 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (!ObjectDataOut)
 		return 0;
 
-	vtkErShape::RequestData(ObjectDataOut->Bindable.Shape);
+	vtkErShape::RequestData(ObjectDataOut->Bindable.GetShape());
 
 	vtkErTextureData* Diffuse = vtkErTextureData::SafeDownCast(this->GetInputDataObject(DiffuseTexturePort, 0));
 
 	if (Diffuse)
-		ObjectDataOut->Bindable.DiffuseTextureID = Diffuse->Bindable.ID;
+		ObjectDataOut->Bindable.SetDiffuseTextureID(Diffuse->Bindable.ID);
 
 	vtkErTextureData* Specular = vtkErTextureData::SafeDownCast(this->GetInputDataObject(SpecularTexturePort, 0));
 
 	if (Specular)
-		ObjectDataOut->Bindable.SpecularTextureID = Specular->Bindable.ID;
+		ObjectDataOut->Bindable.SetSpecularTextureID(Specular->Bindable.ID);
 
 	vtkErTextureData* Glossiness = vtkErTextureData::SafeDownCast(this->GetInputDataObject(GlossinessTexturePort, 0));
 
 	if (Glossiness)
-		ObjectDataOut->Bindable.GlossinessTextureID = Glossiness->Bindable.ID;
+		ObjectDataOut->Bindable.SetGlossinessTextureID(Glossiness->Bindable.ID);
 
 	vtkErTextureData* Emission = vtkErTextureData::SafeDownCast(this->GetInputDataObject(EmissionTexturePort, 0));
 
 	if (Emission)
-		ObjectDataOut->Bindable.EmissionTextureID = Emission->Bindable.ID;
+		ObjectDataOut->Bindable.SetEmissionTextureID(Emission->Bindable.ID);
 	
 	ObjectDataOut->Bindable.Enabled			= this->GetEnabled();
-	ObjectDataOut->Bindable.Visible			= this->GetVisible();
-	ObjectDataOut->Bindable.Emitter			= this->GetEmitter();
-	ObjectDataOut->Bindable.Multiplier		= this->GetMultiplier();
-	ObjectDataOut->Bindable.EmissionUnit	= this->GetEmissionUnit();
-	ObjectDataOut->Bindable.Clip			= this->GetClip();
+	ObjectDataOut->Bindable.SetVisible(this->GetVisible());
+	ObjectDataOut->Bindable.SetEmitter(this->GetEmitter());
+	ObjectDataOut->Bindable.SetMultiplier(this->GetMultiplier());
+	ObjectDataOut->Bindable.SetEmissionUnit(this->GetEmissionUnit());
+	ObjectDataOut->Bindable.SetClip(this->GetClip());
 
 	ObjectDataOut->Bind();
 

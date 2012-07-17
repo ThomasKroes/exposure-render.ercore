@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "erbitmap.h"
+#include "hostbitmap.h"
 #include "buffers.h"
 
 namespace ExposureRender
@@ -36,7 +36,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Bitmap to copy
 	*/
-	HOST Bitmap(const ErBitmap& Other) :
+	HOST Bitmap(const HostBitmap& Other) :
 		TimeStamp(),
 		Pixels("Device Pixels", Enums::Device)
 	{
@@ -47,7 +47,7 @@ public:
 		@param[in] Other Bitmap to copy
 		@return Copied bitmap
 	*/
-	HOST Bitmap& operator = (const ErBitmap& Other)
+	HOST Bitmap& operator = (const HostBitmap& Other)
 	{
 		TimeStamp::operator = (Other);
 
