@@ -91,52 +91,73 @@ namespace ExposureRender
 #endif
 
 /*! Adds a function to a class that returns the value of member \a name of \a type */
-#define GET_MACRO(scope,name,type)	 				\
-scope type Get##name() const						\
-{													\
-	return this->name;								\
+#define GET_MACRO(scope,name,type)	 										\
+scope type Get##name() const												\
+{																			\
+	return this->name;														\
 }
 
 /*! Adds a function to a class that returns a reference to member a\ name of \a type */
-#define GET_REF_MACRO(scope,name,type)				\
-scope type& Get##name()								\
-{													\
-	return this->name;								\
+#define GET_REF_MACRO(scope,name,type)										\
+scope type& Get##name()														\
+{																			\
+	return this->name;														\
 }
 
 /*! Adds a function to a class that sets member a\ name of \a type */
-#define SET_MACRO(scope,name,type)					\
-scope void Set##name(const type& Arg)				\
-{													\
-	this->name = Arg;								\
+#define SET_MACRO(scope,name,type)											\
+scope void Set##name(const type& Arg)										\
+{																			\
+	this->name = Arg;														\
 }
 
 /*! Adds a function to a class that sets member a\ name of \a type, and flag the time stamp as modified */
-#define SET_TS_MACRO(scope,name,type)				\
-scope void Set##name(const type& Arg)				\
-{													\
-	this->name = Arg;								\
-	this->Modified();								\
+#define SET_TS_MACRO(scope,name,type)										\
+scope void Set##name(const type& Arg)										\
+{																			\
+	this->name = Arg;														\
+	this->Modified();														\
+}
+
+/*! Adds a function to a class that returns the value of an element of a 2D array \a name of \a type */
+#define GET_2D_ARRAY_ELEMENT_MACRO(scope,name,type)							\
+scope type Get##name(const int& x, const int& y) const						\
+{																			\
+	return this->name[x][y];												\
+}
+
+/*! Adds a function to a class that returns the reference to an element of a 2D array \a name of \a type */
+#define GET_2D_ARRAY_ELEMENT_REF_MACRO(scope,name,type)						\
+scope type& Get##name(const int& x, const int& y)							\
+{																			\
+	return this->name[x][y];												\
+}
+
+/*! Adds a function to a class that sets the value of an element of a 2D array \a name of \a type */
+#define SET_2D_ARRAY_ELEMENT_MACRO(scope,name,type)							\
+scope type Set##name(const int& x, const int& y, const type& Arg)			\
+{																			\
+	this->name[x][y] = Arg;													\
 }
 
 /*! Adds a function to a class for getting member a\ name and setting it */
-#define GET_SET_MACRO(scope,name,type)				\
-scope GET_MACRO(scope,name,type)					\
+#define GET_SET_MACRO(scope,name,type)										\
+scope GET_MACRO(scope,name,type)											\
 scope SET_MACRO(scope,name,type)
 
 /*! Adds a function to a class for getting member a\ name and setting it */
-#define GET_SET_TS_MACRO(scope,name,type)			\
-scope GET_MACRO(scope,name,type)					\
+#define GET_SET_TS_MACRO(scope,name,type)									\
+scope GET_MACRO(scope,name,type)											\
 scope SET_TS_MACRO(scope,name,type)
 
 /*! Adds a function to a class for getting member a\ name by reference and setting it */
-#define GET_REF_SET_MACRO(scope,name,type)			\
-scope GET_REF_MACRO(scope,name,type)				\
+#define GET_REF_SET_MACRO(scope,name,type)									\
+scope GET_REF_MACRO(scope,name,type)										\
 scope SET_MACRO(scope,name,type)
 
 /*! Adds a function to a class for getting member a\ name by reference and setting it */
-#define GET_REF_SET_TS_MACRO(scope,name,type)		\
-scope GET_REF_MACRO(scope,name,type)				\
+#define GET_REF_SET_TS_MACRO(scope,name,type)								\
+scope GET_REF_MACRO(scope,name,type)										\
 scope SET_TS_MACRO(scope,name,type)
 
 }

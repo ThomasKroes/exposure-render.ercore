@@ -32,6 +32,10 @@ public:
 	{
 	}
 
+	GET_SET_MACRO(HOST_DEVICE, Temperature, float)
+	GET_SET_MACRO(HOST_DEVICE, Color, ColorRGBf)
+
+protected:
 	float		Temperature;
 	ColorRGBf	Color;
 };
@@ -193,10 +197,10 @@ inline ColorRGBf KelvinToColorRGBf(const float& Kelvin)
 	const KelvinRgb S1 = gKelvinRgb[(int)floorf(CorrectedKelvin / 100.0f)];
 	const KelvinRgb S2 = gKelvinRgb[(int)ceilf(CorrectedKelvin / 100.0f)];
 
-	const float L1 = 1.0f - ((Kelvin - S1.Temperature) / 100.0f);
+	const float L1 = 1.0f - ((Kelvin - S1.GetTemperature()) / 100.0f);
 	const float L2 = 1.0f - L1;
 
-	return ColorRGBf(L1 * S1.Color[0] + L2 * S2.Color[0], L1 * S1.Color[1] + L2 * S2.Color[1], L1 * S1.Color[2] + L2 * S2.Color[2]);
+	return ColorRGBf(L1 * S1.GetColor()[0] + L2 * S2.GetColor()[0], L1 * S1.GetColor()[1] + L2 * S2.GetColor()[1], L1 * S1.GetColor()[2] + L2 * S2.GetColor()[2]);
 }
 
 /*! Converts a Kelvin temperature into CIE XYZ color

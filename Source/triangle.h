@@ -21,14 +21,23 @@
 namespace ExposureRender
 {
 
+/*! Triangle filter */
 class TriangleFilter : public Filter
 {
 public:
+	/*! Constructor
+		@param Size Size of the filter
+	*/
 	HOST_DEVICE TriangleFilter(const Vec2f& Size = Vec2f(2.0f)) :
 		Filter(Size)
 	{
 	}
-	
+		
+	/*! Evaluates the triangle filter
+		@param[in] X X position
+		@param[in] Y Y position
+		@return Triangle filter weight
+	*/
 	HOST_DEVICE float Evaluate(const float& X, const float& Y) const
 	{
 		return max(0.0f, this->Size[0] - fabsf(X)) * max(0.0f, this->Size[1] - fabsf(Y));

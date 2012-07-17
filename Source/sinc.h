@@ -19,24 +19,35 @@
 namespace ExposureRender
 {
 
+/*! Lanczos-Sinc filter */
 class LanczosSincFilter : public Filter
 {
 public:
+	/*! Constructor
+		@param Size Size of the filter
+		@param Tau Filter setting
+	*/
 	HOST_DEVICE LanczosSincFilter(const Vec2f& Size = Vec2f(4.0f), const float& Tau = 3.0f) :
 		Filter(Size),
 		Tau(Tau)
 	{
 	}
 	
+	/*! Evaluates the Lanczos-Sinc filter
+		@param[in] X X position
+		@param[in] Y Y position
+		@return Lanczos-Sinc filter weight
+	*/
 	HOST_DEVICE float Evaluate(const float& X, const float& Y) const
 	{
 		return Sinc1D(X * this->InvSize[0]) * Sinc1D(Y * this->InvSize[1]);
 	}
 
-
-private:
-	float Tau;
-	
+protected:
+	/*! Evaluates the one-dimensional Sinc filter
+		@param[in] X Position
+		@return Sinc filter weight
+	*/
 	HOST_DEVICE float Sinc1D(const float& X) const
 	{
 		float x = fabsf(X);
@@ -53,6 +64,8 @@ private:
 
 		return Sinc * Lanczos;
 	}
+
+	float Tau;		/*! Tau filter setting */
 };
 
 }
