@@ -92,6 +92,14 @@ public:
 	GET_REF_MACRO(HOST, Camera, Camera)
 	SET_TS_MACRO(HOST, Camera, Camera)
 
+	GET_MACRO(HOST, Camera, Camera)
+	GET_REF_MACRO(HOST, Camera, Camera)
+	SET_TS_MACRO(HOST, Camera, Camera)
+
+	GET_MACRO(HOST, Camera, Camera)
+	GET_REF_MACRO(HOST, Camera, Camera)
+	SET_TS_MACRO(HOST, Camera, Camera)
+
 protected:
 	Enums::RenderMode	RenderMode;
 	VolumeProperty		VolumeProperty;
