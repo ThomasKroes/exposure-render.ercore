@@ -28,10 +28,11 @@ using namespace std;
 namespace ExposureRender
 {
 
-
+/*! Exposure Render host tracer class */
 class EXPOSURE_RENDER_DLL HostTracer : public HostBase
 {
 public:
+	/*! Default constructor */
 	HOST HostTracer() :
 		HostBase(),
 		RenderMode(Enums::StochasticRayCasting),
@@ -45,6 +46,9 @@ public:
 	{
 	}
 
+	/*! Copy constructor
+		@param[in] Other Host tracer to copy
+	*/
 	HOST HostTracer(const HostTracer& Other) :
 		HostBase(),
 		RenderMode(Enums::StochasticRayCasting),
@@ -59,6 +63,10 @@ public:
 		*this = Other;
 	}
 
+	/*! Assignment operator
+		@param[in] Other Host tracer to copy
+		@return Copied host tracer
+	*/
 	HOST HostTracer& HostTracer::operator = (const HostTracer& Other)
 	{
 		HostBase::operator = (Other);
@@ -75,6 +83,16 @@ public:
 		return *this;
 	}
 
+	GET_SET_TS_MACRO(HOST, RenderMode, Enums::RenderMode)
+	GET_MACRO(HOST, VolumeProperty, VolumeProperty)
+	GET_REF_MACRO(HOST, VolumeProperty, VolumeProperty)
+	SET_TS_MACRO(HOST, VolumeProperty, VolumeProperty)
+	
+	GET_MACRO(HOST, Camera, Camera)
+	GET_REF_MACRO(HOST, Camera, Camera)
+	SET_TS_MACRO(HOST, Camera, Camera)
+
+protected:
 	Enums::RenderMode	RenderMode;
 	VolumeProperty		VolumeProperty;
 	Camera				Camera;
