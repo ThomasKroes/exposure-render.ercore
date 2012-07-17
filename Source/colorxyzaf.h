@@ -58,12 +58,17 @@ public:
 		for (int i = 0; i < 4; ++i)
 			this->D[i] = Other[i];
 	}
-
+	
+	/*! Constructs a black XYZAf color */
 	static HOST_DEVICE ColorXYZAf Black()
 	{
 		return ColorXYZAf();
 	}
-
+	
+	/*! Initialize XYZA color from RGB float color
+		@param RGB RGB coefficients
+		@return XYZA color
+	*/
 	static HOST_DEVICE ColorXYZAf FromRGBf(const float RGB[3])
 	{
 		ColorXYZAf Result;
@@ -75,7 +80,11 @@ public:
 
 		return Result;
 	}
-
+	
+	/*! Initialize XYZA color from RGB unsigned char color
+		@param RGB RGB coefficients
+		@return XYZA color
+	*/
 	static HOST_DEVICE ColorXYZAf FromRGBuc(const unsigned char RGB[3])
 	{
 		ColorXYZAf Result;
@@ -94,7 +103,11 @@ public:
 
 		return Result;
 	}
-
+	
+	/*! Initialize XYZA color from RGBA unsigned char color
+		@param RGBA RGBA coefficients
+		@return XYZA color
+	*/
 	static HOST_DEVICE ColorXYZAf FromRGBAuc(const unsigned char RGBA[4])
 	{
 		ColorXYZAf Result;
@@ -113,7 +126,10 @@ public:
 
 		return Result;
 	}
-
+	
+	/*! Tone maps the color
+		@param Exposure Exposure
+	*/
 	HOST_DEVICE void ToneMap(const float& Exposure)
 	{
 		// Compute reciprocal, which is slightly faster
@@ -123,7 +139,10 @@ public:
 		for (int i = 0; i < 3; i++)
 			this->D[i] = ExposureRender::Clamp(1.0f - expf(-this->D[i] * InvExposure), 0.0f, 1.0f);
 	}
-
+	
+	/*! Test whether the color is black
+		@param Black
+	*/
 	HOST_DEVICE bool IsBlack() const
 	{
 		for (int i = 0; i < 3; i++)
@@ -132,7 +151,10 @@ public:
 												
 		return true;
 	}
-
+	
+	/*! Return the Y component of the XYZ, which is equivalent with luminance
+		@return Y
+	*/
 	HOST_DEVICE float Y() const
 	{
 		float Weight[3] =

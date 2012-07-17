@@ -58,12 +58,17 @@ public:
 		for (int i = 0; i < 4; ++i)
 			this->D[i] = Other[i];
 	}
-
+	
+	/*! Constructs a black RGBAuc color */
 	static HOST_DEVICE ColorRGBAuc Black()
 	{
 		return ColorRGBAuc();
 	}
-
+	
+	/*! Initialize RGBAuc color from XYZf color
+		@param XYZ XYZ coefficients
+		@return RGBAuc color
+	*/
 	static HOST_DEVICE ColorRGBAuc FromXYZf(const float XYZ[3])
 	{
 		ColorRGBAuc Result;
@@ -86,7 +91,11 @@ public:
 
 		return Result;
 	}
-
+	
+	/*! Initialize RGBAuc color from XYZAf color
+		@param XYZA XYZA coefficients
+		@return RGBAuc color
+	*/
 	static HOST_DEVICE ColorRGBAuc FromXYZAf(const float XYZA[4])
 	{
 		ColorRGBAuc Result;
@@ -110,7 +119,10 @@ public:
 
 		return Result;
 	}
-
+	
+	/*! Gamma correct the RGBA color
+		@param Gamma Gamma coefficient
+	*/
 	HOST_DEVICE void GammaCorrect(const float& Gamma)
 	{
 		const float InvGamma = 1.0f / Gamma;
@@ -120,6 +132,9 @@ public:
 		this->D[2] = (unsigned char)powf((float)this->D[2], InvGamma);
 	}
 
+	/*! Test whether the color is black
+		@param Black
+	*/
 	HOST_DEVICE bool IsBlack()
 	{
 		for (int i = 0; i < 3; i++)
@@ -128,12 +143,20 @@ public:
 												
 		return true;
 	}
-
+	
+	/*! Determine the luminance
+		@return Luminance
+	*/
 	HOST_DEVICE float Luminance() const
 	{
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
 	}
 
+	/*! Blend \a Foreground with \a Background
+		@param Background Background color
+		@param Foreground Foreground color
+		@return Blended color
+	*/
 	static HOST_DEVICE ColorRGBAuc Blend(const ColorRGBAuc& Background, const ColorRGBAuc& Foreground)
 	{
 		// http://paulbourke.net/oldstuff/composite/
@@ -171,12 +194,18 @@ public:
 
 		return Blend;
 	}
-
+	
+	/*! Blend \a Foreground with \a Background
+		@param Foreground Foreground color
+	*/
 	HOST_DEVICE void BlendWithForeground(const ColorRGBAuc& Foreground)
 	{
 		*this = ColorRGBAuc::Blend(*this, Foreground);
 	}
 
+	/*! Blend \a Background with \a Foreground
+		@param Background Background color
+	*/
 	HOST_DEVICE void BlendWithBackground(const ColorRGBAuc& Background)
 	{
 		*this = ColorRGBAuc::Blend(Background, *this);

@@ -58,12 +58,17 @@ public:
 		for (int i = 0; i < 4; ++i)
 			this->D[i] = Other[i];
 	}
-
+	
+	/*! Constructs a black RGBAf color */
 	static HOST_DEVICE ColorRGBAf Black()
 	{
 		return ColorRGBAf();
 	}
 
+	/*! Initialize RGBAf color from XYZf color
+		@param XYZ XYZ coefficients
+		@return RGBAf color
+	*/
 	static HOST_DEVICE ColorRGBAf FromXYZf(const float XYZ[3])
 	{
 		ColorRGBAf Result;
@@ -74,7 +79,11 @@ public:
 
 		return Result;
 	};
-
+	
+	/*! Initialize RGBAf color from XYZAf color
+		@param XYZA XYZA coefficients
+		@return RGBAf color
+	*/
 	static HOST_DEVICE ColorRGBAf FromXYZAf(const float XYZA[4])
 	{
 		ColorRGBAf Result;
@@ -86,6 +95,9 @@ public:
 		return Result;
 	};
 
+	/*! Test whether the color is black
+		@param Black
+	*/
 	HOST_DEVICE bool IsBlack()
 	{
 		for (int i = 0; i < 3; i++)
@@ -94,7 +106,10 @@ public:
 												
 		return true;
 	}
-
+	
+	/*! Determine the luminance
+		@return Luminance
+	*/
 	HOST_DEVICE float Luminance() const
 	{
 		return 0.3f * D[0] + 0.59f * D[1]+ 0.11f * D[2];
