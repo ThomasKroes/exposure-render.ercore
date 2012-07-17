@@ -109,10 +109,10 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 	if (!TextureDataOut)
 		return 0;
 
-	TextureDataOut->Bindable.Type			= this->GetTextureType();
-	TextureDataOut->Bindable.OutputLevel	= this->GetOutputLevel();
+	TextureDataOut->Bindable.SetType(this->GetTextureType());
+	TextureDataOut->Bindable.SetOutputLevel(this->GetOutputLevel());
 	
-	ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.Procedural;
+	ExposureRender::Procedural& Procedural = TextureDataOut->Bindable.GetProcedural();
 
 	Procedural.SetType(this->GetProceduralType());
 	Procedural.SetUniformColor(ColorXYZf::FromRGBf(ColorRGBf(this->GetUniformColor()[0], this->GetUniformColor()[1], this->GetUniformColor()[2]).D));
@@ -128,10 +128,10 @@ int vtkErTexture::RequestData(vtkInformation* Request, vtkInformationVector** In
 		Procedural.GetGradient().AddNode(NodeValue[0], RGBfToXYZf(ColorRGBf(NodeValue[1], NodeValue[2], NodeValue[3])));
 	}
 
-	TextureDataOut->Bindable.Offset		= Vec2f(this->GetOffset()[0], this->GetOffset()[1]);
-	TextureDataOut->Bindable.Repeat		= Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]);
-	TextureDataOut->Bindable.Flip		= Vec2i(this->GetFlip()[0], this->GetFlip()[1]);
-	TextureDataOut->Bindable.BitmapID	= InInfo ? vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()))->Bindable.ID : -1;
+	TextureDataOut->Bindable.SetOffset(Vec2f(this->GetOffset()[0], this->GetOffset()[1]));
+	TextureDataOut->Bindable.SetRepeat(Vec2f(this->GetRepeat()[0], this->GetRepeat()[1]));
+	TextureDataOut->Bindable.SetFlip(Vec2i(this->GetFlip()[0], this->GetFlip()[1]));
+	TextureDataOut->Bindable.SetBitmapID(InInfo ? vtkErBitmapData::SafeDownCast(InInfo->Get(vtkDataObject::DATA_OBJECT()))->Bindable.ID : -1);
 
 	TextureDataOut->Bind();
 

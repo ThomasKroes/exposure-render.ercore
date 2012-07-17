@@ -62,13 +62,13 @@ public:
 	{
 		TimeStamp::operator = (Other);
 
-		this->Type			= Other.Type;
-		this->OutputLevel	= Other.OutputLevel;
+		this->Type			= Other.GetType();
+		this->OutputLevel	= Other.GetOutputLevel();
 
-		if (Other.BitmapID >= 0)
+		if (Other.GetBitmapID() >= 0)
 		{
-			if (gBitmapsHashMap.find(Other.BitmapID) != gBitmapsHashMap.end())
-				this->BitmapID = gBitmapsHashMap[Other.BitmapID];
+			if (gBitmapsHashMap.find(Other.GetBitmapID()) != gBitmapsHashMap.end())
+				this->BitmapID = gBitmapsHashMap[Other.GetBitmapID()];
 			else
 				throw(Exception(Enums::Fatal, "Bitmap not found!"));
 		}
@@ -77,10 +77,10 @@ public:
 			this->BitmapID = -1;
 		}
 
-		this->Procedural	= Other.Procedural;
-		this->Offset		= Other.Offset;
-		this->Repeat		= Other.Repeat;
-		this->Flip			= Other.Flip;
+		this->Procedural	= Other.GetProcedural();
+		this->Offset		= Other.GetOffset();
+		this->Repeat		= Other.GetRepeat();
+		this->Flip			= Other.GetFlip();
 		
 		return *this;
 	}
