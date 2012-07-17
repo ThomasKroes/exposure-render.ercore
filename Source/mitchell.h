@@ -21,25 +21,40 @@
 namespace ExposureRender
 {
 
+/*! Mitchell filter */
 class MitchellFilter : public Filter
 {
 public:
+	/*! Constructor
+		@param B Filter setting
+		@param C Filter setting
+		@param Size Size of the filter
+	*/
 	HOST_DEVICE MitchellFilter(const float& B = 1.0f / 3.0f, const float& C = 1.0f / 3.0f, const Vec2f& Size = Vec2f(1.0f)) :
 		Filter(Size),
 		B(B),
 		C(C)
 	{
 	}
-
+	
+	/*! Evaluates the Mitchell filter
+		@param[in] X X position
+		@param[in] Y Y position
+		@return Mitchell filter weight
+	*/
 	HOST_DEVICE float MitchellFilter::Evaluate(const float& X, const float& Y) const
 	{
 		return Mitchell1D(X * this->InvSize[0]) * Mitchell1D(Y * this->InvSize[1]);
 	}
 	
-private:
-	HOST_DEVICE float Mitchell1D(const float& v) const
+protected:
+	/*! Evaluates the one-dimensional Mitchell filter
+		@param[in] V V
+		@return Mitchell filter weight
+	*/
+	HOST_DEVICE float Mitchell1D(const float& V) const
 	{
-		float av = ::fabsf(v);
+		float av = ::fabsf(V);
         if (av > 1.0f)
         {
             return ((-this->B - this->C * 6.0f) * av * av * av +
@@ -55,8 +70,8 @@ private:
         }
 	}
 	
-	const float B;
-	const float C;
+	const float B;		/*! Internal precomputed quantity */
+	const float C;		/*! Internal precomputed quantity */
 };
 
 }

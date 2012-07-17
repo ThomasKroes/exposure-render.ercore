@@ -21,17 +21,45 @@
 namespace ExposureRender
 {
 
+/*! Base filter class */
 class Filter
 {
 public:
+	/*! Constructor
+		@param Size Size of the filter
+	*/
 	HOST_DEVICE Filter(const Vec2f& Size) :
 		Size(Size),
 		InvSize(1.0f / Size[0], 1.0f / Size[1])
 	{
 	}
 	
-	const Vec2f Size;
-	const Vec2f InvSize;
+	/*! Copy constructor
+		@param[in] Other Filter to copy
+	*/
+	HOST Filter(const Filter& Other)
+	{
+		*this = Other;
+	}
+	
+	/*! Assignment operator
+		@param[in] Other Filter to copy
+		@return Copied filter
+	*/
+	HOST Filter& operator = (const Filter& Other)
+	{
+		this->Size		= Other.Size;
+		this->InvSize	= Other.InvSize;
+
+		return *this;
+	}
+
+	GET_MACRO(HOST_DEVICE, Size, Vec2f)
+	GET_MACRO(HOST_DEVICE, InvSize, Vec2f)
+
+protected:
+	Vec2f Size;			/*! Size of the filter */
+	Vec2f InvSize;		/*! Inverse size of the filter */
 };
 
 }
