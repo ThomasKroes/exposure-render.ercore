@@ -104,6 +104,13 @@ scope type& Get##name()														\
 	return this->name;														\
 }
 
+/*! Adds a function to a class that returns a reference to member a\ name of \a type */
+#define GET_PTR_MACRO(scope,name,type)										\
+scope type* Get##name()														\
+{																			\
+	return &(this->name);													\
+}
+
 /*! Adds a function to a class that sets member a\ name of \a type */
 #define SET_MACRO(scope,name,type)											\
 scope void Set##name(const type& Arg)										\

@@ -86,11 +86,11 @@ int vtkErTracer::FillOutputPortInformation(int Port, vtkInformation* Info)
 
 void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 {
-	this->Tracer.RenderMode	= this->GetRenderMode();
+	this->Tracer.SetRenderMode(this->GetRenderMode());
 
 	if (this->VolumePropertyTimeStamp < this->VolumeProperty->GetMTime())
 	{
-		this->VolumeProperty->RequestData(this->Tracer.VolumeProperty);
+		this->VolumeProperty->RequestData(this->Tracer.GetVolumeProperty());
 		
 		this->VolumePropertyTimeStamp = this->VolumeProperty->GetMTime();
 		this->Tracer.SetDirty(true);
@@ -105,7 +105,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		delete[] this->ImageBuffer;
 		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->LastRenderSize[0] * this->LastRenderSize[1]];
 
-		this->Tracer.Camera.SetFilmSize(this->LastRenderSize);
+		this->Tracer.GetCamera().SetFilmSize(this->LastRenderSize);
 		this->Tracer.SetDirty(true);
 	}
 
@@ -113,7 +113,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	
 	if (Camera && Camera->GetMTime() != this->CameraTimeStamp)
 	{
-		Camera->RequestData(this->Tracer.Camera);
+		Camera->RequestData(this->Tracer.GetCamera());
 
 		this->CameraTimeStamp = Camera->GetMTime();
 		this->Tracer.SetDirty(true);
@@ -121,21 +121,21 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	
 	const int NoVolumes = this->GetNumberOfInputConnections(VolumesPort);
 
-	this->Tracer.VolumeIDs.Reset();
+	this->Tracer.GetVolumeIDs().Reset();
 
 	for (int i = 0; i < NoVolumes; i++)
 	{
 		vtkErVolumeData* VolumeData = vtkErVolumeData::SafeDownCast(this->GetInputDataObject(VolumesPort, i));
 
 		if (VolumeData)
-			this->Tracer.VolumeIDs.Add(VolumeData->Bindable.ID);
+			this->Tracer.GetVolumeIDs().Add(VolumeData->Bindable.ID);
 	}
 
 	const int NoObjects = this->GetNumberOfInputConnections(ObjectsPort);
 
-	this->Tracer.ObjectIDs.Reset();
-	this->Tracer.LightIDs.Reset();
-	this->Tracer.ClippingObjectIDs.Reset();
+	this->Tracer.GetObjectIDs().Reset();
+	this->Tracer.GetLightIDs().Reset();
+	this->Tracer.GetClippingObjectIDs().Reset();
 
 	for (int i = 0; i < NoObjects; i++)
 	{
@@ -143,23 +143,23 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 
 		if (ObjectData && ObjectData->Bindable.Enabled)
 		{
-			this->Tracer.ObjectIDs.Add(ObjectData->Bindable.ID);
+			this->Tracer.GetObjectIDs().Add(ObjectData->Bindable.ID);
 
 			if (ObjectData->Bindable.GetEmitter())
-				this->Tracer.LightIDs.Add(ObjectData->Bindable.ID);
+				this->Tracer.GetLightIDs().Add(ObjectData->Bindable.ID);
 
 			if (ObjectData->Bindable.GetClip())
-				this->Tracer.ClippingObjectIDs.Add(ObjectData->Bindable.ID);
+				this->Tracer.GetClippingObjectIDs().Add(ObjectData->Bindable.ID);
 
 			ObjectData->Object->GetCameraOffset(Camera, ObjectData->Bindable.GetShape().GetAlignment().GetOffsetTM());
 			ObjectData->Bind();
 		}
 	}
 
-	if (this->Tracer.NoiseReduction != this->NoiseReduction)
+	if (this->Tracer.GetNoiseReduction() != this->NoiseReduction)
 		this->Tracer.SetDirty(true);
 
-	this->Tracer.NoiseReduction = this->NoiseReduction;
+	this->Tracer.SetNoiseReduction(this->NoiseReduction);
 
 	if (this->Tracer.GetDirty())
 	{

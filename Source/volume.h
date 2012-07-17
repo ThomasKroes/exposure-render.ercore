@@ -73,9 +73,9 @@ public:
 	{
 		TimeStamp::operator = (Other);
 
-		this->Transform			= Other.Alignment.GetTransform();
+		this->Transform			= Other.GetAlignment().GetTransform();
 		this->Voxels			= Other.Voxels;
-		this->AcceleratorType	= Other.AcceleratorType;
+		this->AcceleratorType	= Other.GetAcceleratorType();
 
 		const int NoElements = this->Voxels.GetResolution().CumulativeProduct();
 
@@ -83,13 +83,13 @@ public:
 		{
 			float Scale = 0.0f;
 
-			if (Other.NormalizeSize)
+			if (Other.GetNormalizeSize())
 			{
-				const Vec3f PhysicalSize = Vec3f((float)this->Voxels.GetResolution()[0], (float)this->Voxels.GetResolution()[1], (float)this->Voxels.GetResolution()[2]) * Other.Spacing;
+				const Vec3f PhysicalSize = Vec3f((float)this->Voxels.GetResolution()[0], (float)this->Voxels.GetResolution()[1], (float)this->Voxels.GetResolution()[2]) * Other.GetSpacing();
 				Scale = 1.0f / max(PhysicalSize[0], max(PhysicalSize[1], PhysicalSize[2]));
 			}
 
-			this->Spacing		= Scale * Other.Spacing;
+			this->Spacing		= Scale * Other.GetSpacing();
 			this->InvSpacing	= 1.0f / this->Spacing;
 			this->Size			= Vec3f((float)this->Voxels.GetResolution()[0] * this->Spacing[0], (float)this->Voxels.GetResolution()[1] *this->Spacing[1], (float)this->Voxels.GetResolution()[2] * this->Spacing[2]);
 			this->InvSize		= 1.0f / this->Size;

@@ -24,9 +24,11 @@
 namespace ExposureRender
 {
 
+/*! Exposure Render host volume class */
 class EXPOSURE_RENDER_DLL HostVolume : public HostBase
 {
 public:
+	/*! Default constructor */
 	HOST HostVolume() :
 		HostBase(),
 		Alignment(),
@@ -36,7 +38,10 @@ public:
 		AcceleratorType(Enums::Octree)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Host volume to copy
+	*/
 	HOST HostVolume(const HostVolume& Other) :
 		HostBase(),
 		Alignment(),
@@ -47,7 +52,11 @@ public:
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Host volume to copy
+		@return Copied host volume
+	*/
 	HOST HostVolume& HostVolume::operator = (const HostVolume& Other)
 	{
 		HostBase::operator = (Other);
@@ -60,7 +69,13 @@ public:
 
 		return *this;
 	}
-
+	
+	/*! Binds voxels to the volume
+		@param[in] Resolution Resolution of the volume
+		@param[in] Spacing Spacing of the volume
+		@param[in] Voxels Voxels of the volume
+		@param[in] NormalizeSize Whether access is normalized
+	*/
 	HOST void BindVoxels(const Vec3i& Resolution, const Vec3f& Spacing, unsigned short* Voxels, const bool& NormalizeSize = false)
 	{
 		this->Voxels.Set(Enums::Host, Resolution, Voxels);
@@ -69,6 +84,9 @@ public:
 		this->Spacing		= Spacing;
 	}
 
+	/*! Computes the maximum gradient magnitude
+		@return Maximum gradient magnitude
+	*/
 	HOST float GetMaximumGradientMagnitude() const
 	{
 		float MaximumGradientMagnitude = 0.0f;
@@ -106,12 +124,23 @@ public:
 		
 		return MaximumGradientMagnitude;
 	}
+	
+	GET_MACRO(HOST, Alignment, Alignment)
+	GET_REF_MACRO(HOST, Alignment, Alignment)
+	SET_TS_MACRO(HOST, Alignment, Alignment)
+	GET_REF_MACRO(HOST, Voxels, Buffer3D<unsigned short>)
+	GET_SET_TS_MACRO(HOST, NormalizeSize, bool)
+	GET_SET_TS_MACRO(HOST, Spacing, Vec3f)
+	GET_SET_TS_MACRO(HOST, AcceleratorType, Enums::AcceleratorType)
 
-	Alignment					Alignment;
-	Buffer3D<unsigned short>	Voxels;
-	bool						NormalizeSize;
-	Vec3f						Spacing;
-	Enums::AcceleratorType		AcceleratorType;
+protected:
+	Alignment					Alignment;				/*! Alignment */
+	Buffer3D<unsigned short>	Voxels;					/*! Voxels */
+	bool						NormalizeSize;			/*! Normalized access */
+	Vec3f						Spacing;				/*! Spacing */
+	Enums::AcceleratorType		AcceleratorType;		/*! Accelerator type */
+
+	friend class Volume;
 };
 
 }

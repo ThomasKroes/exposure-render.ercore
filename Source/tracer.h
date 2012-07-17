@@ -77,52 +77,52 @@ public:
 	{
 		TimeStamp::operator = (Other);
 
-		this->RenderMode		= Other.RenderMode;
-		this->Camera			= Other.Camera;
+		this->RenderMode		= Other.GetRenderMode();
+		this->Camera			= Other.GetCamera();
 
 		this->VolumeIDs.Reset();
 
-		for (int i = 0; i < Other.VolumeIDs.GetNoIndices(); i++)
+		for (int i = 0; i < Other.GetVolumeIDs().GetNoIndices(); i++)
 		{
-			if (gVolumesHashMap.find(Other.VolumeIDs[i]) != gVolumesHashMap.end())
-				this->VolumeIDs.Add(gVolumesHashMap[Other.VolumeIDs[i]]);
+			if (gVolumesHashMap.find(Other.GetVolumeIDs()[i]) != gVolumesHashMap.end())
+				this->VolumeIDs.Add(gVolumesHashMap[Other.GetVolumeIDs()[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Volume not found!"));
 		}
 		
 		this->LightIDs.Reset();
 
-		for (int i = 0; i < Other.LightIDs.GetNoIndices(); i++)
+		for (int i = 0; i < Other.GetLightIDs().GetNoIndices(); i++)
 		{
-			if (gObjectsHashMap.find(Other.LightIDs[i]) != gObjectsHashMap.end())
-				this->LightIDs.Add(gObjectsHashMap[Other.LightIDs[i]]);
+			if (gObjectsHashMap.find(Other.GetLightIDs()[i]) != gObjectsHashMap.end())
+				this->LightIDs.Add(gObjectsHashMap[Other.GetLightIDs()[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Emitter object not found!"));
 		}
 		
 		this->ObjectIDs.Reset();
 
-		for (int i = 0; i < Other.ObjectIDs.GetNoIndices(); i++)
+		for (int i = 0; i < Other.GetObjectIDs().GetNoIndices(); i++)
 		{
-			if (gObjectsHashMap.find(Other.ObjectIDs[i]) != gObjectsHashMap.end())
-				this->ObjectIDs.Add(gObjectsHashMap[Other.ObjectIDs[i]]);
+			if (gObjectsHashMap.find(Other.GetObjectIDs()[i]) != gObjectsHashMap.end())
+				this->ObjectIDs.Add(gObjectsHashMap[Other.GetObjectIDs()[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Object not found!"));
 		}
 
 		this->ClippingObjectIDs.Reset();
 
-		for (int i = 0; i < Other.ClippingObjectIDs.GetNoIndices(); i++)
+		for (int i = 0; i < Other.GetClippingObjectIDs().GetNoIndices(); i++)
 		{
-			if (gClippingObjectsHashMap.find(Other.ClippingObjectIDs[i]) != gClippingObjectsHashMap.end())
-				this->ClippingObjectIDs.Add(gClippingObjectsHashMap[Other.ClippingObjectIDs[i]]);
+			if (gClippingObjectsHashMap.find(Other.GetClippingObjectIDs()[i]) != gClippingObjectsHashMap.end())
+				this->ClippingObjectIDs.Add(gClippingObjectsHashMap[Other.GetClippingObjectIDs()[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Clipping object not found!"));
 		}
 
-		if (this->FrameBuffer.Resolution != Other.Camera.GetFilmSize() || Other.GetDirty())
+		if (this->FrameBuffer.Resolution != Other.GetCamera().GetFilmSize() || Other.GetDirty())
 		{
-			this->FrameBuffer.Resize(Other.Camera.GetFilmSize());
+			this->FrameBuffer.Resize(Other.GetCamera().GetFilmSize());
 
 			this->NoEstimates = 0;
 			
@@ -136,9 +136,8 @@ public:
 			*/
 		}
 
-		this->NoiseReduction = Other.NoiseReduction;
-
-		this->VolumeProperty = Other.VolumeProperty;
+		this->NoiseReduction = Other.GetNoiseReduction();
+		this->VolumeProperty = Other.GetVolumeProperty();
 
 		return *this;
 	}
