@@ -21,6 +21,7 @@
 namespace ExposureRender
 {
 
+/*! 2D Cuda texture class */
 template<class T>
 class EXPOSURE_RENDER_DLL CudaTexture2D : public CudaTexture<T, 2>
 {

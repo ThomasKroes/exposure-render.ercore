@@ -133,7 +133,7 @@ public:
 	}
 	
 	/*! Computes the surface area of the disk
-		@param[in] Surface area
+		@return Surface area
 	*/
 	HOST_DEVICE float GetArea() const
 	{

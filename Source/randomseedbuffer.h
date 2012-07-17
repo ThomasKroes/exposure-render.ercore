@@ -21,9 +21,7 @@
 namespace ExposureRender
 {
 
-/*! \class Random seed buffer
- * \brief Random seed buffer base template class
- */
+/*! Random seed buffer */
 template<int NoDimensions>
 class RandomSeedBuffer : public Buffer<unsigned int, NoDimensions>
 {

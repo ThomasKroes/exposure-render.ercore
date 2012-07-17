@@ -22,9 +22,7 @@
 namespace ExposureRender
 {
 
-/*! \class Piecewise function
- * \brief Piecewise function base template class
- */
+/*! Piecewise function class */
 template<class T, int Size>
 class EXPOSURE_RENDER_DLL PiecewiseFunction : public TimeStamp
 {

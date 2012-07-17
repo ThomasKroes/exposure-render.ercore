@@ -21,9 +21,7 @@
 namespace ExposureRender
 {
 
-/*! \class 2D Random seed buffer
- * \brief Two-dimensional random seed buffer
- */
+/*! 2D Random seed buffer class */
 class RandomSeedBuffer2D : public RandomSeedBuffer<2>
 {
 public:

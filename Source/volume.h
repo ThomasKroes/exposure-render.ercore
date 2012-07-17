@@ -123,10 +123,11 @@ public:
 		return 0;
 	}
 	
-	/*! Gets voxel data at (\aX,\aY,\aX)
-		@param[in] XYZ Position
-		@param[in] TextureID CUDA texture ID
-		@return Data at \a XYZ volume
+	/*! Gets voxel data at (\a X,\a Y,\a Z)
+		@param[in] X Position
+		@param[in] Y Position
+		@param[in] Z Position
+		@return Data at \a X,\a Y,\a Z
 	*/
 	DEVICE unsigned short operator()(const int& X, const int& Y, const int& Z)
 	{

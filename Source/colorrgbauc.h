@@ -133,7 +133,7 @@ public:
 	}
 
 	/*! Test whether the color is black
-		@param Black
+		@return Black
 	*/
 	HOST_DEVICE bool IsBlack()
 	{

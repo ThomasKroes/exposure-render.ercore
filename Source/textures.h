@@ -22,6 +22,7 @@ namespace ExposureRender
 {
 
 /*! Evaluates texture with \a ID
+	@param[in] ID ID of the texture to evaluate
 	@param[in] UV UV coordinates
 	@return Evaluated color
 */
