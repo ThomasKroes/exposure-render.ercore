@@ -87,28 +87,32 @@ public:
 	GET_MACRO(HOST, VolumeProperty, VolumeProperty)
 	GET_REF_MACRO(HOST, VolumeProperty, VolumeProperty)
 	SET_TS_MACRO(HOST, VolumeProperty, VolumeProperty)
-	
 	GET_MACRO(HOST, Camera, Camera)
 	GET_REF_MACRO(HOST, Camera, Camera)
 	SET_TS_MACRO(HOST, Camera, Camera)
-
-	GET_MACRO(HOST, Camera, Camera)
-	GET_REF_MACRO(HOST, Camera, Camera)
-	SET_TS_MACRO(HOST, Camera, Camera)
-
-	GET_MACRO(HOST, Camera, Camera)
-	GET_REF_MACRO(HOST, Camera, Camera)
-	SET_TS_MACRO(HOST, Camera, Camera)
+	GET_MACRO(HOST, VolumeIDs, Indices<64>)
+	GET_REF_MACRO(HOST, VolumeIDs, Indices<64>)
+	SET_TS_MACRO(HOST, VolumeIDs, Indices<64>)
+	GET_MACRO(HOST, LightIDs, Indices<64>)
+	GET_REF_MACRO(HOST, LightIDs, Indices<64>)
+	SET_TS_MACRO(HOST, LightIDs, Indices<64>)
+	GET_MACRO(HOST, ObjectIDs, Indices<64>)
+	GET_REF_MACRO(HOST, ObjectIDs, Indices<64>)
+	SET_TS_MACRO(HOST, ObjectIDs, Indices<64>)
+	GET_MACRO(HOST, ClippingObjectIDs, Indices<64>)
+	GET_REF_MACRO(HOST, ClippingObjectIDs, Indices<64>)
+	SET_TS_MACRO(HOST, ClippingObjectIDs, Indices<64>)
+	GET_SET_MACRO(HOST, NoiseReduction, bool)
 
 protected:
-	Enums::RenderMode	RenderMode;
-	VolumeProperty		VolumeProperty;
-	Camera				Camera;
-	Indices<64>			VolumeIDs;
-	Indices<64>			LightIDs;
-	Indices<64>			ObjectIDs;
-	Indices<64>			ClippingObjectIDs;
-	bool				NoiseReduction;
+	Enums::RenderMode	RenderMode;				/*! Buffer for pixels */
+	VolumeProperty		VolumeProperty;			/*! Volume property */
+	Camera				Camera;					/*! Camera */
+	Indices<64>			VolumeIDs;				/*! Volume IDs */
+	Indices<64>			LightIDs;				/*! Light IDs */
+	Indices<64>			ObjectIDs;				/*! Object IDs */
+	Indices<64>			ClippingObjectIDs;		/*! Clipping object IDs */
+	bool				NoiseReduction;			/*! Noise reduction */
 };
 
 }
