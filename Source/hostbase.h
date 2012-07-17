@@ -24,7 +24,7 @@
 namespace ExposureRender
 {
 
-/*! Exposure Render bindable base class */
+/*! Exposure Render base class */
 class EXPOSURE_RENDER_DLL HostBase : public TimeStamp
 {
 public:
@@ -32,8 +32,7 @@ public:
 	HOST HostBase() :
 		TimeStamp(),
 		ID(-1),
-		Enabled(true),
-		Dirty(false)
+		Enabled(true)
 	{
 	}
 	
@@ -48,8 +47,7 @@ public:
 	HOST HostBase(const HostBase& Other) :
 		TimeStamp(),
 		ID(-1),
-		Enabled(true),
-		Dirty(false)
+		Enabled(true)
 	{
 		*this = Other;
 	}
@@ -64,18 +62,16 @@ public:
 
 		this->ID		= Other.ID;
 		this->Enabled	= Other.Enabled;
-		this->Dirty		= Other.Dirty;
 
 		return *this;
 	}
 
-	GET_SET_MACRO(HOST, Dirty, bool)
+	GET_SET_MACRO(HOST_DEVICE, Enabled, bool)
 
 	mutable int		ID;				/*! ID of the bindable */
-	bool			Enabled;		/*! Whether enabled or not */
-
+	
 protected:
-	bool			Dirty;			/*! Whether bindable is dirty or not */
+	bool			Enabled;		/*! Whether enabled or not */
 };
 
 }

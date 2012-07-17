@@ -59,6 +59,7 @@ public:
 
 	HOST_DEVICE void AddPixel(const ColorRGBAuc& Pixel)
 	{
+		/*
 		if (this->NoPixels > 1)
 		{
 			for (int i = this->NoPixels - 1; i > 0; i--)
@@ -73,7 +74,7 @@ public:
 
 		const int Radius = 8;
 
-		/*
+		
 		ColorRGBAuc FilteredPixels[NO_PIXELS];
 
 		// First filter the pixels

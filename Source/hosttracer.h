@@ -83,25 +83,25 @@ public:
 		return *this;
 	}
 
-	GET_SET_TS_MACRO(HOST, RenderMode, Enums::RenderMode)
+	GET_SET_MACRO(HOST, RenderMode, Enums::RenderMode)
 	GET_MACRO(HOST, VolumeProperty, VolumeProperty)
 	GET_REF_MACRO(HOST, VolumeProperty, VolumeProperty)
-	SET_TS_MACRO(HOST, VolumeProperty, VolumeProperty)
+	SET_MACRO(HOST, VolumeProperty, VolumeProperty)
 	GET_MACRO(HOST, Camera, Camera)
 	GET_REF_MACRO(HOST, Camera, Camera)
-	SET_TS_MACRO(HOST, Camera, Camera)
+	SET_MACRO(HOST, Camera, Camera)
 	GET_MACRO(HOST, VolumeIDs, Indices<64>)
 	GET_REF_MACRO(HOST, VolumeIDs, Indices<64>)
-	SET_TS_MACRO(HOST, VolumeIDs, Indices<64>)
+	SET_MACRO(HOST, VolumeIDs, Indices<64>)
 	GET_MACRO(HOST, LightIDs, Indices<64>)
 	GET_REF_MACRO(HOST, LightIDs, Indices<64>)
-	SET_TS_MACRO(HOST, LightIDs, Indices<64>)
+	SET_MACRO(HOST, LightIDs, Indices<64>)
 	GET_MACRO(HOST, ObjectIDs, Indices<64>)
 	GET_REF_MACRO(HOST, ObjectIDs, Indices<64>)
-	SET_TS_MACRO(HOST, ObjectIDs, Indices<64>)
+	SET_MACRO(HOST, ObjectIDs, Indices<64>)
 	GET_MACRO(HOST, ClippingObjectIDs, Indices<64>)
 	GET_REF_MACRO(HOST, ClippingObjectIDs, Indices<64>)
-	SET_TS_MACRO(HOST, ClippingObjectIDs, Indices<64>)
+	SET_MACRO(HOST, ClippingObjectIDs, Indices<64>)
 	GET_SET_MACRO(HOST, NoiseReduction, bool)
 
 protected:

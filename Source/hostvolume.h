@@ -127,11 +127,11 @@ public:
 	
 	GET_MACRO(HOST, Alignment, Alignment)
 	GET_REF_MACRO(HOST, Alignment, Alignment)
-	SET_TS_MACRO(HOST, Alignment, Alignment)
+	SET_MACRO(HOST, Alignment, Alignment)
 	GET_REF_MACRO(HOST, Voxels, Buffer3D<unsigned short>)
-	GET_SET_TS_MACRO(HOST, NormalizeSize, bool)
-	GET_SET_TS_MACRO(HOST, Spacing, Vec3f)
-	GET_SET_TS_MACRO(HOST, AcceleratorType, Enums::AcceleratorType)
+	GET_SET_MACRO(HOST, NormalizeSize, bool)
+	GET_SET_MACRO(HOST, Spacing, Vec3f)
+	GET_SET_MACRO(HOST, AcceleratorType, Enums::AcceleratorType)
 
 protected:
 	Alignment					Alignment;				/*! Alignment */

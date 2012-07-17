@@ -42,12 +42,13 @@ vtkErTracer::vtkErTracer(void)
 	this->CameraTimeStamp			= 0;
 	this->VolumeProperty			= vtkSmartPointer<vtkErVolumeProperty>::New();
 	this->VolumePropertyTimeStamp	= 0;
+	this->TracerTimeStamp			= 0;
 
 	this->SetRenderMode(Enums::StochasticRayCasting);
 	this->SetNoiseReduction(true);
 	this->SetShowStatistics(true);
 
-	this->Tracer.SetDirty(true);
+	this->Tracer.Modified();
 }
 
 vtkErTracer::~vtkErTracer(void)
@@ -93,7 +94,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->VolumeProperty->RequestData(this->Tracer.GetVolumeProperty());
 		
 		this->VolumePropertyTimeStamp = this->VolumeProperty->GetMTime();
-		this->Tracer.SetDirty(true);
+		this->Tracer.Modified();
 	}
 
 	const Vec2i CurrentRenderSize = Vec2i(Renderer->GetRenderWindow()->GetSize()[0], Renderer->GetRenderWindow()->GetSize()[1]);
@@ -106,7 +107,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->ImageBuffer = new ExposureRender::ColorRGBAuc[this->LastRenderSize[0] * this->LastRenderSize[1]];
 
 		this->Tracer.GetCamera().SetFilmSize(this->LastRenderSize);
-		this->Tracer.SetDirty(true);
+		this->Tracer.Modified();
 	}
 
 	vtkErCamera* Camera = dynamic_cast<vtkErCamera*>(Renderer->GetActiveCamera());
@@ -116,7 +117,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		Camera->RequestData(this->Tracer.GetCamera());
 
 		this->CameraTimeStamp = Camera->GetMTime();
-		this->Tracer.SetDirty(true);
+		this->Tracer.Modified();
 	}
 	
 	const int NoVolumes = this->GetNumberOfInputConnections(VolumesPort);
@@ -141,7 +142,7 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 	{
 		vtkErObjectData* ObjectData = vtkErObjectData::SafeDownCast(this->GetInputDataObject(ObjectsPort, i));
 
-		if (ObjectData && ObjectData->Bindable.Enabled)
+		if (ObjectData && ObjectData->Bindable.GetEnabled())
 		{
 			this->Tracer.GetObjectIDs().Add(ObjectData->Bindable.ID);
 
@@ -156,15 +157,15 @@ void vtkErTracer::BeforeRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		}
 	}
 
-	if (this->Tracer.GetNoiseReduction() != this->NoiseReduction)
-		this->Tracer.SetDirty(true);
+//	if (this->Tracer.GetNoiseReduction() != this->NoiseReduction)
+//		this->Tracer.Modified();
 
 	this->Tracer.SetNoiseReduction(this->NoiseReduction);
 
-	if (this->Tracer.GetDirty())
+	if (this->TracerTimeStamp != this->Tracer.GetModifiedTime())
 	{
 		ER_CALL(ExposureRender::BindTracer(this->Tracer));
-		this->Tracer.SetDirty(false);
+		this->TracerTimeStamp = this->Tracer.GetModifiedTime();
 	}
 }
 

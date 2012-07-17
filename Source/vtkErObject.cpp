@@ -151,7 +151,7 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	if (Emission)
 		ObjectDataOut->Bindable.SetEmissionTextureID(Emission->Bindable.ID);
 	
-	ObjectDataOut->Bindable.Enabled			= this->GetEnabled();
+	ObjectDataOut->Bindable.SetEnabled(this->GetEnabled());
 	ObjectDataOut->Bindable.SetVisible(this->GetVisible());
 	ObjectDataOut->Bindable.SetEmitter(this->GetEmitter());
 	ObjectDataOut->Bindable.SetMultiplier(this->GetMultiplier());
