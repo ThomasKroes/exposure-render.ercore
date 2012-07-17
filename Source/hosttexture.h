@@ -22,9 +22,11 @@
 namespace ExposureRender
 {
 
+/*! Exposure Render host texture class */
 class EXPOSURE_RENDER_DLL HostTexture : public HostBase
 {
 public:
+	/*! Default constructor */
 	HOST HostTexture() :
 		HostBase(),
 		Type(Enums::Procedural),
@@ -36,7 +38,10 @@ public:
 		Flip(0)
 	{
 	}
-
+	
+	/*! Copy constructor
+		@param[in] Other Host texture to copy
+	*/
 	HOST HostTexture(const HostTexture& Other) :
 		HostBase(),
 		Type(Enums::Procedural),
@@ -49,7 +54,11 @@ public:
 	{
 		*this = Other;
 	}
-
+	
+	/*! Assignment operator
+		@param[in] Other Host texture to copy
+		@return Copied host texture
+	*/
 	HOST HostTexture& operator = (const HostTexture& Other)
 	{
 		HostBase::operator = (Other);
@@ -64,14 +73,25 @@ public:
 		
 		return *this;
 	}
+	
+	GET_SET_TS_MACRO(HOST, Type, Enums::TextureType)
+	GET_SET_TS_MACRO(HOST, OutputLevel, float)
+	GET_SET_TS_MACRO(HOST, BitmapID, int)
+	GET_MACRO(HOST, Procedural, Procedural)
+	GET_REF_MACRO(HOST, Procedural, Procedural)
+	SET_TS_MACRO(HOST, Procedural, Procedural)
+	GET_SET_TS_MACRO(HOST, Offset, Vec2f)
+	GET_SET_TS_MACRO(HOST, Repeat, Vec2f)
+	GET_SET_TS_MACRO(HOST, Flip, Vec2i)
 
-	Enums::TextureType	Type;
-	float				OutputLevel;
-	int					BitmapID;
-	Procedural			Procedural;
-	Vec2f				Offset;
-	Vec2f				Repeat;
-	Vec2i				Flip;
+protected:
+	Enums::TextureType		Type;				/*! Texture type */
+	float					OutputLevel;		/*! Output level */
+	int						BitmapID;			/*! Bitmap ID */
+	Procedural				Procedural;			/*! Procedural */
+	Vec2f					Offset;				/*! UV offset coordinates */
+	Vec2f					Repeat;				/*! UV repeat coordinates */
+	Vec2i					Flip;				/*! UV flip coordinates */
 };
 
 }
