@@ -87,6 +87,7 @@ private:
 	Enums::RenderMode						RenderMode;
 	vtkSmartPointer<vtkErVolumeProperty>	VolumeProperty;
 	unsigned long							VolumePropertyTimeStamp;
+	unsigned long							TracerTimeStamp;
 	HostTracer								Tracer;
 	bool									NoiseReduction;
 	bool									ShowStatistics;

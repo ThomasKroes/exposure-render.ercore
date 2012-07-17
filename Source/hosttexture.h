@@ -74,15 +74,15 @@ public:
 		return *this;
 	}
 	
-	GET_SET_TS_MACRO(HOST, Type, Enums::TextureType)
-	GET_SET_TS_MACRO(HOST, OutputLevel, float)
-	GET_SET_TS_MACRO(HOST, BitmapID, int)
+	GET_SET_MACRO(HOST, Type, Enums::TextureType)
+	GET_SET_MACRO(HOST, OutputLevel, float)
+	GET_SET_MACRO(HOST, BitmapID, int)
 	GET_MACRO(HOST, Procedural, Procedural)
 	GET_REF_MACRO(HOST, Procedural, Procedural)
-	SET_TS_MACRO(HOST, Procedural, Procedural)
-	GET_SET_TS_MACRO(HOST, Offset, Vec2f)
-	GET_SET_TS_MACRO(HOST, Repeat, Vec2f)
-	GET_SET_TS_MACRO(HOST, Flip, Vec2i)
+	SET_MACRO(HOST, Procedural, Procedural)
+	GET_SET_MACRO(HOST, Offset, Vec2f)
+	GET_SET_MACRO(HOST, Repeat, Vec2f)
+	GET_SET_MACRO(HOST, Flip, Vec2i)
 
 protected:
 	Enums::TextureType		Type;				/*! Texture type */

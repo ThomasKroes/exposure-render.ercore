@@ -84,18 +84,18 @@ public:
 		return *this;
 	}
 
-	GET_SET_TS_MACRO(HOST, Shape, Shape)
+	GET_SET_MACRO(HOST, Shape, Shape)
 	GET_REF_MACRO(HOST, Shape, Shape)
-	GET_SET_TS_MACRO(HOST, Visible, bool)
-	GET_SET_TS_MACRO(HOST, DiffuseTextureID, int)
-	GET_SET_TS_MACRO(HOST, SpecularTextureID, int)
-	GET_SET_TS_MACRO(HOST, GlossinessTextureID, int)
-	GET_SET_TS_MACRO(HOST, EmissionTextureID, int)
-	GET_SET_TS_MACRO(HOST, IndexOfReflection, float)
-	GET_SET_TS_MACRO(HOST, Emitter, bool)
-	GET_SET_TS_MACRO(HOST, Multiplier, float)
-	GET_SET_TS_MACRO(HOST, EmissionUnit, Enums::EmissionUnit)
-	GET_SET_TS_MACRO(HOST, Clip, bool)
+	GET_SET_MACRO(HOST, Visible, bool)
+	GET_SET_MACRO(HOST, DiffuseTextureID, int)
+	GET_SET_MACRO(HOST, SpecularTextureID, int)
+	GET_SET_MACRO(HOST, GlossinessTextureID, int)
+	GET_SET_MACRO(HOST, EmissionTextureID, int)
+	GET_SET_MACRO(HOST, IndexOfReflection, float)
+	GET_SET_MACRO(HOST, Emitter, bool)
+	GET_SET_MACRO(HOST, Multiplier, float)
+	GET_SET_MACRO(HOST, EmissionUnit, Enums::EmissionUnit)
+	GET_SET_MACRO(HOST, Clip, bool)
 
 protected:
 	Shape					Shape;						/*! Object shape */

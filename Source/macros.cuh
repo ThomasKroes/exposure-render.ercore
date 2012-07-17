@@ -72,7 +72,6 @@ namespace Cuda
 
 #define KERNEL_1D(width)																					\
 	const int IDx 	= blockIdx.x * blockDim.x + threadIdx.x;												\
-	const int IDt	= threadIdx.x;																			\
 	const int IDk	= IDx;																					\
 																											\
 	if (IDx >= width)																						\
@@ -81,7 +80,6 @@ namespace Cuda
 #define KERNEL_2D(width, height)																			\
 	const int IDx 	= blockIdx.x * blockDim.x + threadIdx.x;												\
 	const int IDy 	= blockIdx.y * blockDim.y + threadIdx.y;												\
-	const int IDt	= threadIdx.y * blockDim.x + threadIdx.x;												\
 	const int IDk	= IDy * width + IDx;																	\
 																											\
 	if (IDx >= width || IDy >= height)																		\
@@ -91,11 +89,20 @@ namespace Cuda
 	const int IDx 	= blockIdx.x * blockDim.x + threadIdx.x;												\
 	const int IDy 	= blockIdx.y * blockDim.y + threadIdx.y;												\
 	const int IDz 	= blockIdx.z * blockDim.z + threadIdx.z;												\
-	const int IDt	= threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;		\
+																											\
 	const int IDk	= IDz * width * height + IDy * width + IDx;												\
 																											\
 	if (IDx >= width || IDy >= height || IDz >= depth)														\
 		return;
+
+#define THREAD_ID_1D()																						\
+const int IDt	= threadIdx.x;
+
+#define THREAD_ID_2D()																						\
+const int IDt	= threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+
+#define THREAD_ID_3D()																						\
+const int IDt	= threadIdx.y * blockDim.x + threadIdx.x;
 
 }
 

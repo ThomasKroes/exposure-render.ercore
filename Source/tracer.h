@@ -75,8 +75,6 @@ public:
 	*/
 	HOST Tracer& Tracer::operator = (const HostTracer& Other)
 	{
-		TimeStamp::operator = (Other);
-
 		this->RenderMode		= Other.GetRenderMode();
 		this->Camera			= Other.GetCamera();
 
@@ -120,7 +118,7 @@ public:
 				throw(Exception(Enums::Fatal, "Clipping object not found!"));
 		}
 
-		if (this->FrameBuffer.Resolution != Other.GetCamera().GetFilmSize() || Other.GetDirty())
+		if (this->FrameBuffer.Resolution != Other.GetCamera().GetFilmSize() || *this != Other)
 		{
 			this->FrameBuffer.Resize(Other.GetCamera().GetFilmSize());
 
@@ -128,16 +126,16 @@ public:
 			
 //			this->FrameBuffer.RunningEstimateXYZ.Reset();
 			
-			/*
 			this->FrameBuffer.RandomSeedsCopy1.Modified();
 			this->FrameBuffer.RandomSeedsCopy2.Modified();
 			this->FrameBuffer.RandomSeeds1 = this->FrameBuffer.RandomSeedsCopy1;
 			this->FrameBuffer.RandomSeeds2 = this->FrameBuffer.RandomSeedsCopy2;
-			*/
 		}
 
 		this->NoiseReduction = Other.GetNoiseReduction();
 		this->VolumeProperty = Other.GetVolumeProperty();
+
+		TimeStamp::operator = (Other);
 
 		return *this;
 	}
@@ -152,7 +150,7 @@ public:
 	FrameBuffer					FrameBuffer;				/*! Frame buffer */
 	int							NoEstimates;				/*! Number of estimates rendered so far */
 	bool						NoiseReduction;				/*! Whether noise reduction is on/off */
-	GaussianFilterTables		GaussianFilterTables;		/*! Pre-computed Gaussian filter weights */
+	GaussianFilterTables		GaussianFilterTables;		/*! Precomputed Gaussian filter weights */
 };
 
 }
