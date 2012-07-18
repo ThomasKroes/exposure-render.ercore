@@ -44,6 +44,10 @@ vtkErTracer::vtkErTracer(void)
 	this->VolumePropertyTimeStamp	= 0;
 	this->TracerTimeStamp			= 0;
 
+	this->NameTextActor				= NULL;
+	this->ValueTextActor				= NULL;
+	this->UnitTextActor				= NULL;
+
 	this->SetRenderMode(Enums::StochasticRayCasting);
 	this->SetNoiseReduction(true);
 	this->SetShowStatistics(true);
@@ -200,38 +204,57 @@ void vtkErTracer::AfterRender(vtkRenderer* Renderer, vtkVolume* Volume)
 		this->NameTextActor->GetTextProperty()->SetLineSpacing(1.3);
 	}
 	
-	if (this->DurationTextActor.GetPointer() == NULL)
+	if (this->ValueTextActor.GetPointer() == NULL)
 	{
-		this->DurationTextActor = vtkSmartPointer<vtkTextActor>::New();
+		this->ValueTextActor = vtkSmartPointer<vtkTextActor>::New();
 
-		this->DurationTextActor->GetTextProperty()->SetFontSize(10);
-		this->DurationTextActor->SetPosition(250, 20);
+		this->ValueTextActor->GetTextProperty()->SetFontSize(10);
+		this->ValueTextActor->SetPosition(200, 20);
 
-		Renderer->AddActor2D(this->DurationTextActor);
+		Renderer->AddActor2D(this->ValueTextActor);
 
-		this->DurationTextActor->GetTextProperty()->SetColor(0.9, 0.6, 0.2);
-		this->DurationTextActor->GetTextProperty()->SetLineSpacing(1.3);
+		this->ValueTextActor->GetTextProperty()->SetColor(0.9, 0.6, 0.2);
+		this->ValueTextActor->GetTextProperty()->SetLineSpacing(1.3);
+	}
+
+	if (this->UnitTextActor.GetPointer() == NULL)
+	{
+		this->UnitTextActor = vtkSmartPointer<vtkTextActor>::New();
+
+		this->UnitTextActor->GetTextProperty()->SetFontSize(10);
+		this->UnitTextActor->SetPosition(250, 20);
+
+		Renderer->AddActor2D(this->UnitTextActor);
+
+		this->UnitTextActor->GetTextProperty()->SetColor(0.9, 0.6, 0.2);
+		this->UnitTextActor->GetTextProperty()->SetLineSpacing(1.3);
 	}
 	
 	if (this->ShowStatistics)
 	{
-		std::string NameString, DurationString;
+		std::string NameString, ValueString, UnitString;
 	
-		for (int i = 0; i < this->Statistics.Count; i++)
+		for (int i = 0; i < this->Statistics.GetCount(); i++)
 		{
-			NameString.append(this->Statistics.Timings[i].GetName());
+			Statistic Stat = this->Statistics.GetStatistic(i);
+
+			NameString.append(Stat.GetName());
 			NameString.append("\n");
 
-			char Duration[256];
+			char Value[MAX_CHAR_SIZE];
+						
+			sprintf_s(Value, MAX_CHAR_SIZE, Stat.GetValueFormat(), Stat.GetValue());
 
-			sprintf_s(Duration, 256, "%0.2f", this->Statistics.Timings[i].GetDuration());
+			ValueString.append(Value);
+			ValueString.append("\n");
 
-			DurationString.append(Duration);
-			DurationString.append("\n");
+			UnitString.append(Stat.GetUnit());
+			UnitString.append("\n");
 		}
 		
 		this->NameTextActor->SetInput(NameString.c_str());
-		this->DurationTextActor->SetInput(DurationString.c_str());
+		this->ValueTextActor->SetInput(ValueString.c_str());
+		this->UnitTextActor->SetInput(UnitString.c_str());
 	}
 }
 

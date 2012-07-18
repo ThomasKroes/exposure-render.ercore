@@ -186,12 +186,6 @@ namespace Enums
 		StochasticRayCasting		// Stochastic direct volume rendering
 	};
 
-	//! Timing unit
-	enum RenderMode
-	{
-		MilliSecond,	// Milli second
-		Second			// Second
-	};
 }
 
 }

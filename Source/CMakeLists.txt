@@ -69,7 +69,6 @@ SET(General
 	procedural.h
 	matrix.h
 	boundingbox.h
-	timing.h
 	exception.h
 	timestamp.h
 	enums.h
@@ -77,6 +76,7 @@ SET(General
 	exposurerender.cpp
 	range.h
 	tracer.h
+	statistic.h
 	statistics.h
 	volume.h
 	intersection.h
@@ -207,6 +207,7 @@ SET(Vector
 	vec4i.h
 	vec4f.h
 	indices.h
+	hysteresis.h
 	vector.h
 )
 

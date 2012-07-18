@@ -16,84 +16,83 @@
 
 #pragma once
 
-#include "statistic.h"
+#include "vec.h"
 
 namespace ExposureRender
 {
 
-/*! Statistics class */
-class EXPOSURE_RENDER_DLL Statistics
+/*! Hysteresis class */
+template<class T, int NoSamples>
+class EXPOSURE_RENDER_DLL Hysteresis : public Vec<T, NoSamples>
 {
 public:
 	/*! Default constructor */
-	HOST Statistics() :
-		Count(0)
+	HOST_DEVICE Hysteresis() :
+		Vec<T, NoSamples>()
 	{
 	}
-	
-	/*! Copy constructor
-		@param[in] Other Statistics to copy
-	*/
-	HOST Statistics(const Statistics& Other) :
-		Count(0)
+
+	/*! Copy constructor */
+	HOST_DEVICE Hysteresis(const Hysteresis& Other)
 	{
 		*this = Other;
 	}
-
+	
 	/*! Assignment operator
-		@param[in] Other Statistics to copy
-		@return Copied statistics
+		@param[in] Other Host Hysteresis to copy
+		@return Copied hysteresis
 	*/
-	HOST Statistics& operator = (const Statistics& Other)
+	HOST Hysteresis& operator = (const Hysteresis& Other)
 	{
-		for (int i = 0; i < MAX_NO_TIMINGS; i++)
-			this->Statistic[i] = Other.Statistic[i];
+		Vec<T, NoSamples>::operator = (Other);
 
-		this->Count = Other.Count;
+		this->FilteredValue	= Other.FilteredValue;
+		this->NoValues		= Other.NoValues;
 
 		return *this;
 	}
-	
-	/*! Assignment operator
-		@param[in] Name Name of the statistic
-		@param[in] Value 
+
+	/*! Adds a value and computes the new filtered value
+		@param[in] Value Value to add
 	*/
-	HOST void SetStatistic(const char* Name, const char* ValueFormat, const char* Unit, const float& Value)
+	HOST void AddValue(const T& Value)
 	{
-		int ID = -1;
-
-		for (int i = 0; i < MAX_NO_TIMINGS; i++)
+		if (this->NoValues > 1)
 		{
-			if (strcmp(this->Statistic[i].GetName(), Name) == 0)
-				ID = i;
+			for (int i = this->NoValues - 1; i > 0; i--)
+				D[i] = D[i - 1];
 		}
 
-		if (ID >= 0)
-		{
-			this->Statistic[ID].AddValue(Value);
-		}
-		else
-		{
-			if (this->Count < MAX_NO_TIMINGS)
-			{
-				this->Statistic[this->Count].Reset();
-				this->Statistic[this->Count].AddValue(Value, Name, ValueFormat, Unit);
+		D[0] = Value;
+		
+		this->NoValues++;
+		
+		this->NoValues = ExposureRender::Clamp(this->NoValues, 0, NoSamples);
 
-				this->Count++;
-			}
-		}
+		T Sum = 0.0f;
+
+		for (int i = 0; i < this->NoValues; i++)
+			Sum += this->D[i];
+		
+		this->FilteredValue = Sum / (float)this->NoValues;
 	}
 	
-	GET_MACRO(HOST, Count, int);
-	
-	HOST Statistic GetStatistic(const int& Index) const
+	/*! Resets the hysteresis */
+	HOST void Reset()
 	{
-		return this->Statistic[Index];
+		this->FilteredValue = T();
+
+		for (int i = 0; i < NoSamples; i++)
+			this->D[i] = T();
+
+		this->NoValues = 0;
 	}
+
+	GET_MACRO(HOST_DEVICE, FilteredValue, T);
 
 protected:
-	Statistic		Statistic[MAX_NO_TIMINGS];		/*! Statistic array */
-	int				Count;							/*! Number of timings */
+	T		FilteredValue;			/*! Filtered value */
+	int		NoValues;				/*! Number of values */
 };
 
 }

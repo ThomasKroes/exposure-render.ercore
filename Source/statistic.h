@@ -16,12 +16,7 @@
 
 #pragma once
 
-#include "defines.h"
-#include "enums.h"
-
-#include <vector>
-
-using namespace std;
+#include "hysteresis.h"
 
 namespace ExposureRender
 {
@@ -31,35 +26,15 @@ class EXPOSURE_RENDER_DLL Statistic
 {
 public:
 	/*! Default constructor */
-	HOST Statistic() :
-		Duration(0.0f),
-		NoDurations(0)
+	HOST Statistic()
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, "Untitled");
-
 		this->Reset();
 	}
 
-	/*! Constructor
-		@param[in] Name Timing name
-		@param[in] Duration Duration of the event
-	*/
-	HOST Statistic(const char* Name, const float& Duration) :
-		Duration(0.0f),
-		NoDurations(0)
-	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, Name);
-
-		this->Reset();
-		this->AddDuration(Duration);
-	}
-	
 	/*! Copy constructor
 		@param[in] Other Timing to copy
 	*/
-	HOST Statistic(const Statistic& Other) :
-		Duration(0.0f),
-		NoDurations(0)
+	HOST Statistic(const Statistic& Other)
 	{
 		*this = Other;
 	}
@@ -70,69 +45,81 @@ public:
 	*/
 	HOST Statistic& operator = (const Statistic& Other)
 	{
-		sprintf_s(this->Name, MAX_CHAR_SIZE, Other.Name);
+		strcpy_s(this->Name, MAX_CHAR_SIZE, Other.Name);
+		strcpy_s(this->ValueFormat, MAX_CHAR_SIZE, Other.ValueFormat);
+		strcpy_s(this->Unit, MAX_CHAR_SIZE, Other.Unit);
 		
-		this->Duration = Other.Duration;
-		
-		for (int i = 0; i < MAX_NO_TIMINGS; i++)
-			this->AddDuration(Other.Durations[i]);
-		
-		this->NoDurations = Other.NoDurations;
+		this->Hysteresis	= Other.Hysteresis;
+		this->Filtered		= Other.Filtered;
 
 		return *this;
 	}
 	
-	/*! Adds a duration
-		@param[in] Duration Duration of the event
-	*/
-	HOST void AddDuration(const float& Duration)
+	HOST void AddValue(const float& Value, const char* Name, const char* ValueFormat, const char* Unit)
 	{
-		if (this->NoDurations > 1)
-		{
-			for (int i = this->NoDurations - 1; i > 0; i--)
-				Durations[i] = Durations[i - 1];
-		}
+		this->Hysteresis.AddValue(Value);
 
-		Durations[0] = Duration;
-		
-		this->NoDurations++;
-		
-		this->NoDurations = Clamp(this->NoDurations, 0, MAX_NO_TIMING_SAMPLES - 1);
-
-		float Sum = 0.0f;
-
-		for (int i = 0; i < this->NoDurations; i++)
-			Sum += this->Durations[i];
-		
-		this->Duration = Sum / (float)this->NoDurations;
-	}
-	
-	/*! Resets the timing */
-	HOST void Reset()
-	{
-		this->Duration = 0.0f;
-
-		for (int i = 0; i < MAX_NO_TIMINGS; i++)
-			this->Durations[i] = 0.0f;
-
-		this->NoDurations = 0;
+		strcpy_s(this->Name, MAX_CHAR_SIZE, Name);
+		strcpy_s(this->ValueFormat, MAX_CHAR_SIZE, ValueFormat);
+		strcpy_s(this->Unit, MAX_CHAR_SIZE, Unit);
 	}
 
-	/*! Get the name of the timing
-		@return Name
-	*/
+	HOST void AddValue(const float& Value)
+	{
+		this->Hysteresis.AddValue(Value);
+	}
+
 	HOST const char* GetName() const
 	{
 		return this->Name;
 	}
 
-	GET_MACRO(HOST, Duration, float)
+	HOST void SetName(const char* Name)
+	{
+		sprintf_s(this->Name, MAX_CHAR_SIZE, Name);
+	}
+
+	HOST const char* GetValueFormat() const
+	{
+		return this->ValueFormat;
+	}
+
+	HOST void SetValueFormat(const char* ValueFormat)
+	{
+		sprintf_s(this->ValueFormat, MAX_CHAR_SIZE, ValueFormat);
+	}
+
+	HOST const char* GetUnit() const
+	{
+		return this->Unit;
+	}
+
+	HOST void SetUnit(const char* Unit)
+	{
+		sprintf_s(this->Unit, MAX_CHAR_SIZE, Unit);
+	}
+
+	/*! Resets the statistic */
+	HOST void Reset()
+	{
+		this->SetName("Untitled");
+		this->SetValueFormat("%.2f");
+		this->SetUnit("no unit");
+
+		this->Hysteresis.Reset();
+	}
+
+	HOST float GetValue() const
+	{
+		return this->Hysteresis.GetFilteredValue();
+	}
 
 protected:
-	char	Name[MAX_CHAR_SIZE];					/*! Name */
-	float	Duration;								/*! Smoothed duration */
-	float	Durations[MAX_NO_TIMING_SAMPLES];		/*! Durations */
-	int		NoDurations;							/*! Number of durations */
+	char						Name[MAX_CHAR_SIZE];				/*! Name string */
+	char						ValueFormat[MAX_CHAR_SIZE];			/*! Value format */
+	char						Unit[MAX_CHAR_SIZE];				/*! Unit */
+	Hysteresis<float, 64>		Hysteresis;							/*! Hysteresis */
+	bool						Filtered;							/*! Filtering on/off */
 };
 
 }

@@ -56,7 +56,7 @@ namespace Cuda
 																											\
 	Cuda::HandleCudaError(cudaEventElapsedTime(&TimeDelta, EventStart, EventStop), title);					\
 																											\
-	Statistics = Statistic(title, TimeDelta);																	\
+	Statistics.SetStatistic(title, "%0.2f", "ms", TimeDelta);												\
 																											\
 	Cuda::HandleCudaError(cudaEventDestroy(EventStart));													\
 	Cuda::HandleCudaError(cudaEventDestroy(EventStop));														\
