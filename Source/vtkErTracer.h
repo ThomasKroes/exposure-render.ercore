@@ -92,6 +92,7 @@ private:
 	bool									NoiseReduction;
 	bool									ShowStatistics;
 	vtkSmartPointer<vtkTextActor>			NameTextActor;
-	vtkSmartPointer<vtkTextActor>			DurationTextActor;
+	vtkSmartPointer<vtkTextActor>			ValueTextActor;
+	vtkSmartPointer<vtkTextActor>			UnitTextActor;
 	Statistics								Statistics;
 };

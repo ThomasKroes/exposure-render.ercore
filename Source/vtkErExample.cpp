@@ -41,7 +41,7 @@
 #include "vtkErInteractorStyleTrackballCamera.h"
 
 // Specify volume file her (*.mhd)
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\engine.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
@@ -89,7 +89,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
 	RenderWindow->Render();
-	RenderWindow->SetSize(600, 600);
+	RenderWindow->SetSize(512, 512);
 	RenderWindow->SetWindowName("Exposure Render - VTK wrapping example");
 
 	ConfigureER(Renderer);
@@ -129,8 +129,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
-	VolumeProperty->SetStepFactorPrimary(5.0f);
-	VolumeProperty->SetStepFactorShadow(10.0f);
+	VolumeProperty->SetStepFactorPrimary(2.0f);
+	VolumeProperty->SetStepFactorShadow(5.0f);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(10);
 	VolumeProperty->SetGradientFactor(1.0f);
@@ -244,17 +244,17 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 10.1f;
+	const float KeyLightSize = 0.1f;
 
 	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetVisible(true);
-	KeyLight->SetElevation(0.0f);
-	KeyLight->SetAzimuth(90.0f);
+	KeyLight->SetElevation(45.0f);
+	KeyLight->SetAzimuth(-45.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(100.0f);
+	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 	KeyLight->SetRelativeToCamera(true);

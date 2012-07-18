@@ -72,6 +72,8 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 		case Enums::StochasticRayCasting:
 		{
 			SampleCamera(Tracer, Statistics);
+			
+			Statistics.SetStatistic("No. camera rays", "%.2f", "mrays/frame", (float)Tracer.FrameBuffer.Resolution.CumulativeProduct() / 1000000.0f);
 
 			int NoSamples = 0;
 
@@ -81,6 +83,8 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 			{
 				if (NoSamples > 0)
 				{
+					Statistics.SetStatistic("No. light rays", "%.2f", "mrays/frame", (float)(NoSamples * 2) / 1000000.0f);
+
 #ifdef SAMPLE_LIGHT
 					SampleLight(Tracer, Statistics, i + 1, NoSamples);
 #endif
