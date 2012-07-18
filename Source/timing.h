@@ -27,11 +27,11 @@ namespace ExposureRender
 {
 
 /*! Timing class */
-class EXPOSURE_RENDER_DLL Timing
+class EXPOSURE_RENDER_DLL Statistic
 {
 public:
 	/*! Default constructor */
-	HOST Timing() :
+	HOST Statistic() :
 		Duration(0.0f),
 		NoDurations(0)
 	{
@@ -44,7 +44,7 @@ public:
 		@param[in] Name Timing name
 		@param[in] Duration Duration of the event
 	*/
-	HOST Timing(const char* Name, const float& Duration) :
+	HOST Statistic(const char* Name, const float& Duration) :
 		Duration(0.0f),
 		NoDurations(0)
 	{
@@ -57,7 +57,7 @@ public:
 	/*! Copy constructor
 		@param[in] Other Timing to copy
 	*/
-	HOST Timing(const Timing& Other) :
+	HOST Statistic(const Statistic& Other) :
 		Duration(0.0f),
 		NoDurations(0)
 	{
@@ -68,7 +68,7 @@ public:
 		@param[in] Other Timing to copy
 		@return Copied timing
 	*/
-	HOST Timing& operator = (const Timing& Other)
+	HOST Statistic& operator = (const Statistic& Other)
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, Other.Name);
 		

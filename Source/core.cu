@@ -167,7 +167,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 																							
 	Cuda::HandleCudaError(cudaEventElapsedTime(&TimeDelta, EventStart, EventStop), "cudaEventElapsedTime");
 	
-	Statistics = Timing("FPS", 1000.0f / TimeDelta);
+	Statistics = Statistic("FPS", 1000.0f / TimeDelta);
 														
 	Cuda::HandleCudaError(cudaEventDestroy(EventStart));
 	Cuda::HandleCudaError(cudaEventDestroy(EventStop));										
