@@ -58,7 +58,7 @@ public:
 		@param[in] Other Timing to copy
 		@return Copied statistics
 	*/
-	HOST Statistics& operator = (const Timing& Other)
+	HOST Statistics& operator = (const Statistic& Other)
 	{
 		int ID = -1;
 
@@ -84,7 +84,7 @@ public:
 		return *this;
 	}
 
-	Timing		Timings[MAX_NO_TIMINGS];		/*! Timings */
+	Statistic		Timings[MAX_NO_TIMINGS];		/*! Timings */
 	int			Count;							/*! Number of timings */
 };
 

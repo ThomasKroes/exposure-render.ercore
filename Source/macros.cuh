@@ -56,7 +56,7 @@ namespace Cuda
 																											\
 	Cuda::HandleCudaError(cudaEventElapsedTime(&TimeDelta, EventStart, EventStop), title);					\
 																											\
-	Statistics = Timing(title, TimeDelta);																	\
+	Statistics = Statistic(title, TimeDelta);																	\
 																											\
 	Cuda::HandleCudaError(cudaEventDestroy(EventStart));													\
 	Cuda::HandleCudaError(cudaEventDestroy(EventStop));														\
