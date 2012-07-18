@@ -45,7 +45,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
-#define RIM_LIGHT_ON
+//#define RIM_LIGHT_ON
 //#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
@@ -89,7 +89,7 @@ int main(int, char *[])
 	RenderWindowInteractor->SetInteractorStyle(InteractorStyle);
 
 	RenderWindow->Render();
-	RenderWindow->SetSize(512, 512);
+	RenderWindow->SetSize(600, 600);
 	RenderWindow->SetWindowName("Exposure Render - VTK wrapping example");
 
 	ConfigureER(Renderer);
@@ -129,16 +129,16 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
-	VolumeProperty->SetStepFactorPrimary(StepSize);
-	VolumeProperty->SetStepFactorShadow(StepSize);
+	VolumeProperty->SetStepFactorPrimary(5.0f);
+	VolumeProperty->SetStepFactorShadow(10.0f);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(1000);
+	VolumeProperty->SetDensityScale(10);
 	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(150, 0);
+	Opacity->AddPoint(10, 0);
 	Opacity->AddPoint(151, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
@@ -244,17 +244,17 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErObject> KeyLight = vtkSmartPointer<vtkErObject>::New();
 
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 10.1f;
 
 	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
-	KeyLight->SetOneSided(true);
+	KeyLight->SetOneSided(false);
 	KeyLight->SetVisible(true);
 	KeyLight->SetElevation(0.0f);
-	KeyLight->SetAzimuth(45.0f);
+	KeyLight->SetAzimuth(90.0f);
 	KeyLight->SetOffset(1.5f);
-	KeyLight->SetMultiplier(10.0f);
+	KeyLight->SetMultiplier(100.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
 	KeyLight->SetEmissionUnit(Enums::Power);
 	KeyLight->SetRelativeToCamera(true);
@@ -267,7 +267,7 @@ void CreateLighting(vtkErTracer* Tracer)
 
 	KeyLightTexture->SetTextureType(Enums::Procedural);
 	KeyLightTexture->SetProceduralType(Enums::Uniform);
-	KeyLightTexture->SetUniformColor(5000);
+	KeyLightTexture->SetUniformColor(15000);
 	
 	KeyLight->SetInputConnection(vtkErObject::EmissionTexturePort, KeyLightTexture->GetOutputPort());
 #endif
@@ -313,7 +313,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(true);
 	EnvironmentLight->SetRadius(5.0f);
-	EnvironmentLight->SetMultiplier(5.0f);
+	EnvironmentLight->SetMultiplier(5000.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -349,7 +349,7 @@ void CreateLighting(vtkErTracer* Tracer)
 		printf("%s cannot be loaded, reverting to gradient background.", gEnvironmentBitmap);
 
 		EnvironmentLightTexture->SetTextureType(Enums::Procedural);
-		EnvironmentLightTexture->SetProceduralType(Enums::Gradient);
+		EnvironmentLightTexture->SetProceduralType(Enums::Uniform);
 
 		vtkSmartPointer<vtkColorTransferFunction> Gradient = vtkSmartPointer<vtkColorTransferFunction>::New();
 		
