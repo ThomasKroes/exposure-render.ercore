@@ -28,11 +28,20 @@ KERNEL void KrnlBlendRGBAuc(Buffer2D<ColorRGBAuc>* pInputA, Buffer2D<ColorRGBAuc
 	
 	const Vec2f NormalizedUV((float)IDx / (float)pInputB->GetResolution()[0], (float)IDy / (float)pInputB->GetResolution()[1]);
 
-	(*pInputA)(IDx, IDy).BlendWithForeground((*pInputB)(NormalizedUV, true));
+	(*pInputA)(IDx, IDy).BlendWithForeground((*pInputB)(IDx, IDy));
 }
 
 void BlendRGBAuc(Statistics& Statistics, Buffer2D<ColorRGBAuc>& InputA, Buffer2D<ColorRGBAuc>& InputB)
 {
+	if (InputA.GetResolution() != InputB.GetResolution())
+	{
+		char Message[MAX_CHAR_SIZE];
+
+		sprintf_s(Message, MAX_CHAR_SIZE, "%s failed, InputA and InputB must have the same resolution", __FUNCTION__);
+
+		throw(Exception(Enums::Warning, Message));
+	}
+
 	LAUNCH_DIMENSIONS(InputA.GetResolution()[0], InputA.GetResolution()[1], 1, BLOCK_W, BLOCK_H, 1)
 	
 	Buffer2D<ColorRGBAuc>* pInputA = NULL;
