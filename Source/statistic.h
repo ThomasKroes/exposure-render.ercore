@@ -40,8 +40,8 @@ public:
 	}
 	
 	/*! Assignment operator
-		@param[in] Other Timing to copy
-		@return Copied timing
+		@param[in] Other Statistic to copy
+		@return Copied statistic
 	*/
 	HOST Statistic& operator = (const Statistic& Other)
 	{
@@ -49,12 +49,17 @@ public:
 		strcpy_s(this->ValueFormat, MAX_CHAR_SIZE, Other.ValueFormat);
 		strcpy_s(this->Unit, MAX_CHAR_SIZE, Other.Unit);
 		
-		this->Hysteresis	= Other.Hysteresis;
-		this->Filtered		= Other.Filtered;
+		this->Hysteresis = Other.Hysteresis;
 
 		return *this;
 	}
 	
+	/*! Adds a value 
+		@param[in] Value Value
+		@param[in] Name Name
+		@param[in] ValueFormat ValueFormat
+		@param[in] Unit Unit
+	*/
 	HOST void AddValue(const float& Value, const char* Name, const char* ValueFormat, const char* Unit)
 	{
 		this->Hysteresis.AddValue(Value);
@@ -64,36 +69,57 @@ public:
 		strcpy_s(this->Unit, MAX_CHAR_SIZE, Unit);
 	}
 
+	/*! Adds a value 
+		@param[in] Value Value
+	*/
 	HOST void AddValue(const float& Value)
 	{
 		this->Hysteresis.AddValue(Value);
 	}
 
+	/*! Gets the name string
+		@return Name string
+	*/
 	HOST const char* GetName() const
 	{
 		return this->Name;
 	}
-
+	
+	/*! Sets the name string
+		@param[in] Name string
+	*/
 	HOST void SetName(const char* Name)
 	{
 		sprintf_s(this->Name, MAX_CHAR_SIZE, Name);
 	}
-
+	
+	/*! Gets the value format string
+		@return Value format string
+	*/
 	HOST const char* GetValueFormat() const
 	{
 		return this->ValueFormat;
 	}
-
+	
+	/*! Sets the value format string
+		@param[in] Value format string
+	*/
 	HOST void SetValueFormat(const char* ValueFormat)
 	{
 		sprintf_s(this->ValueFormat, MAX_CHAR_SIZE, ValueFormat);
 	}
-
+	
+	/*! Gets the unit string
+		@return Unit string
+	*/
 	HOST const char* GetUnit() const
 	{
 		return this->Unit;
 	}
-
+	
+	/*! Sets the unit string
+		@param[in] Unit string
+	*/
 	HOST void SetUnit(const char* Unit)
 	{
 		sprintf_s(this->Unit, MAX_CHAR_SIZE, Unit);
@@ -109,6 +135,9 @@ public:
 		this->Hysteresis.Reset();
 	}
 
+	/*! Gets the filtered value
+		@return Filtered value
+	*/
 	HOST float GetValue() const
 	{
 		return this->Hysteresis.GetFilteredValue();
@@ -119,7 +148,6 @@ protected:
 	char						ValueFormat[MAX_CHAR_SIZE];			/*! Value format */
 	char						Unit[MAX_CHAR_SIZE];				/*! Unit */
 	Hysteresis<float, 64>		Hysteresis;							/*! Hysteresis */
-	bool						Filtered;							/*! Filtering on/off */
 };
 
 }

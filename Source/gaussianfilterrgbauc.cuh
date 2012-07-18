@@ -112,8 +112,8 @@ void GaussianFilterRGBAuc(Statistics& Statistics, int Radius, Buffer2D<ColorRGBA
 	Cuda::MemCopyHostToDevice(&Input, pInput);
 	Cuda::MemCopyHostToDevice(&Output, pOutput);
 
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterHorizontalRGBAuc<<<GridDim, BlockDim>>>(Radius, pInput, pOutput)), "Gaussian filter horizontal");
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterVerticalRGBAuc<<<GridDim, BlockDim>>>(Radius, pOutput, pInput)), "Gaussian filter vertical");
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterHorizontalRGBAuc<<<GridDim, BlockDim>>>(Radius, pInput, pOutput)), "GaussianFilterRGBAuc (horizontal)");
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlGaussianFilterVerticalRGBAuc<<<GridDim, BlockDim>>>(Radius, pOutput, pInput)), "GaussianFilterRGBAuc (vertical)");
 
 	Cuda::Free(pInput);
 	Cuda::Free(pOutput);
