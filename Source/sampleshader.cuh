@@ -124,15 +124,10 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 	}
 }
 
-void SampleShader(Tracer& Tracer, Statistics& Statistics, int Bounce, int NoSamples)
+void SampleShader(Tracer& Tracer, Statistics& Statistics, int NoSamples)
 {
 	LAUNCH_DIMENSIONS(Tracer.FrameBuffer.Resolution[0], Tracer.FrameBuffer.Resolution[1], 1, BLOCK_W, BLOCK_H, 1)
-
-	char Message[MAX_CHAR_SIZE];
-
-	sprintf_s(Message, MAX_CHAR_SIZE, "Sample shader (%d bounces)", Bounce);
-
-	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleBrdf<<<GridDim, BlockDim>>>(NoSamples)), Message); 
+	LAUNCH_CUDA_KERNEL_TIMED((KrnlSampleBrdf<<<GridDim, BlockDim>>>(NoSamples)), "Sample shader"); 
 }
 
 }

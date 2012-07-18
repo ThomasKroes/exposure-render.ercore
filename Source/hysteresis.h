@@ -52,7 +52,7 @@ public:
 		return *this;
 	}
 
-	/*! Adds a value and computes the new filtered value
+	/*! Adds a new value and computes the filtered value
 		@param[in] Value Value to add
 	*/
 	HOST void AddValue(const T& Value)

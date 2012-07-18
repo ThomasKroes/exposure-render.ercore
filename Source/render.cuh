@@ -79,20 +79,17 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 
 			RemoveRedundantSamples(Tracer, NoSamples);
 
-			for (int i = 0; i < 1; i++)
+			if (NoSamples > 0)
 			{
-				if (NoSamples > 0)
-				{
-					Statistics.SetStatistic("No. light rays", "%.2f", "mrays/frame", (float)(NoSamples * 2) / 1000000.0f);
+				Statistics.SetStatistic("No. light rays", "%.2f", "mrays/frame", (float)(NoSamples * 2) / 1000000.0f);
 
 #ifdef SAMPLE_LIGHT
-					SampleLight(Tracer, Statistics, i + 1, NoSamples);
+				SampleLight(Tracer, Statistics, NoSamples);
 #endif
 
 #ifdef SAMPLE_SHADER
-					SampleShader(Tracer, Statistics, i + 1, NoSamples);
+				SampleShader(Tracer, Statistics, NoSamples);
 #endif
-				}
 			}
 
 			GaussianFilterXYZAf(Statistics, 1, Tracer.FrameBuffer.FrameEstimate);
