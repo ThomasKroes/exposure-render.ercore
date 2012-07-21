@@ -85,7 +85,6 @@ SET(General
 	bitmap.h
 	alignment.h
 	transform.h
-	octree.h
 	transport.h
 	volumeproperty.h
 )
@@ -213,6 +212,14 @@ SET(Vector
 
 SOURCE_GROUP("Vector" FILES ${Vector})
 
+SET(Accelerator
+	accelerator.h
+	grid.h
+	octree.h
+)
+
+SOURCE_GROUP("Accelerator" FILES ${Accelerator})
+
 SET(Cuda
 	estimate.cuh
 	filtering.cuh
@@ -236,7 +243,7 @@ SET(Cuda
 SOURCE_GROUP("Cuda" FILES ${Cuda})
 
 # Create the ErCore project as a shared library (DLL)
-CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Sample} ${API} ${Filter} ${Color} ${Vector} ${Cuda} SHARED)
+CUDA_ADD_LIBRARY(ErCore ${General} ${Buffer} ${TransferFunction} ${Shading} ${Shapes} ${Sample} ${API} ${Filter} ${Color} ${Vector} ${Accelerator} ${Cuda} SHARED)
 
 IF(ER_VTK)
 

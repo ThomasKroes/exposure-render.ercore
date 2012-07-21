@@ -16,67 +16,14 @@
 
 #pragma once
 
-#include "cudatexture.h"
+#include "defines.h"
+#include "enums.h"
 
 namespace ExposureRender
 {
 
-/*! 2D Cuda texture class */
-template<class T>
-class EXPOSURE_RENDER_DLL CudaTexture2D : public CudaTexture<T, 2>
+class EXPOSURE_RENDER_DLL Accelerator
 {
-public:
-	/*! Constructor
-		@param[in] Normalized Normalized element access
-		@param[in] FilterMode Type of filtering
-		@param[in] AddressMode Type of addressing near edges
-	*/
-	HOST CudaTexture2D(const bool& Normalized = true, const Enums::FilterMode& FilterMode = Enums::Linear, const Enums::AddressMode& AddressMode = Enums::Clamp) :
-		CudaTexture<T, 2>(Normalized, FilterMode, AddressMode)
-	{
-	}
-
-	/*! Assignment operator
-		@param[in] Other Buffer to copy from
-		@return Copied cuda texture by reference
-	*/
-	HOST CudaTexture2D& operator = (const Buffer2D<T>& Other)
-	{
-		this->Resize(Other.GetResolution());
-		
-		const int NoElements = this->Resolution.CumulativeProduct();
-
-		if (NoElements <= 0)
-			return *this;
-
-#ifdef __CUDACC__
-		Cuda::MemcpyToArray(this->Array, 0, 0, Other.GetData(), Other.GetNoBytes(), cudaMemcpyHostToDevice);
-#endif
-
-		return *this;
-	}
-
-	/*! Resize the buffer
-		@param[in] Resolution Resolution of the buffer
-	*/
-	HOST void Resize(const Vec<int, 2>& Resolution)
-	{
-		if (this->Resolution == Resolution)
-			return;
-		else
-			this->Free();
-		
-		this->Resolution = Resolution;
-		
-		const int NoElements = this->Resolution.CumulativeProduct();
-
-		if (NoElements <= 0)
-			throw (Exception(Enums::Error, "No. elements is zero!"));
-
-#ifdef __CUDACC__
-		Cuda::MallocArray(&this->Array, cudaCreateChannelDesc<T>(), Resolution);
-#endif
-	}
 };
 
 }

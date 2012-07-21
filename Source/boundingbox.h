@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "vector.h"
+#include "ray.h"
 
 namespace ExposureRender
 {

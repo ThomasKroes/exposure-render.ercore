@@ -18,7 +18,6 @@
 
 #include "hostvolume.h"
 #include "boundingbox.h"
-#include "octree.h"
 #include "cudatexture3d.h"
 #include "utilities.h"
 #include "transform.h"
@@ -40,6 +39,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
+		HostVoxels("Host Voxels", Enums::Host),
 		Voxels(),
 		AcceleratorType(Enums::Octree),
 		MaxGradientMagnitude(0.0f)
@@ -58,6 +58,7 @@ public:
 		Size(1.0f),
 		InvSize(1.0f),
 		MinStep(1.0f),
+		HostVoxels("Host Voxels", Enums::Host),
 		Voxels(),
 		AcceleratorType(Enums::Octree),
 		MaxGradientMagnitude(0.0f)
@@ -74,6 +75,7 @@ public:
 		TimeStamp::operator = (Other);
 
 		this->Transform			= Other.GetAlignment().GetTransform();
+		this->HostVoxels		= Other.Voxels;
 		this->Voxels			= Other.Voxels;
 		this->AcceleratorType	= Other.GetAcceleratorType();
 
@@ -258,7 +260,8 @@ public:
 	Vec3f							Size;						/*! Volume size */
 	Vec3f							InvSize;					/*! Inverse volume size */
 	float							MinStep;					/*! Minimum step size */
-	CudaTexture3D<unsigned short>	Voxels;						/*! Voxel 3D buffer */
+	Buffer3D<unsigned short>		HostVoxels;					/*! Host voxels */
+	CudaTexture3D<unsigned short>	Voxels;						/*! Voxel texture */
 	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
 	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
 };
