@@ -82,12 +82,14 @@ public:
 	HOST_DEVICE void AddNode(const float& Position, const T& Value)
 	{
 		this->PLF.AddNode(Position, Value);
+		this->Modified();
 	}
 
 	/*! Resets the content of the piecewise linear function */
 	HOST_DEVICE void Reset()
 	{
 		this->PLF.Reset();
+		this->Modified();
 	}
 	
 	/*! Evaluates the transfer function at \a Position

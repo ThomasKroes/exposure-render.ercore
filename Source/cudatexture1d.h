@@ -43,9 +43,6 @@ public:
 	HOST CudaTexture1D& operator = (const Buffer1D<T>& Other)
 	{
 		this->Resize(Other.GetResolution());
-		
-		this->FilterMode	= Other.GetFilterMode();
-		this->AddressMode	= Other.GetAddressMode();
 
 		const int NoElements = this->Resolution.CumulativeProduct();
 

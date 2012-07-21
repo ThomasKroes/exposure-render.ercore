@@ -20,6 +20,7 @@
 #include "framebuffer.h"
 #include "buffer3d.h"
 #include "gaussian.h"
+#include "grid.h"
 
 #include <map>
 
@@ -36,6 +37,7 @@ public:
 	HOST Tracer() :
 		TimeStamp(),
 		RenderMode(Enums::StochasticRayCasting),
+		Grid(),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -55,6 +57,7 @@ public:
 	HOST Tracer(const HostTracer& Other) :
 		TimeStamp(),
 		RenderMode(Enums::StochasticRayCasting),
+		Grid(),
 		VolumeProperty(),
 		Camera(),
 		VolumeIDs(),
@@ -133,7 +136,21 @@ public:
 		}
 
 		this->NoiseReduction = Other.GetNoiseReduction();
+
+		const bool BuildGrid = this->VolumeProperty.GetOpacity1D() != Other.GetVolumeProperty().GetOpacity1D();
+
 		this->VolumeProperty = Other.GetVolumeProperty();
+
+		if (BuildGrid)
+		{
+			printf("Grid should be re-built!\n\n");
+
+			Volume& Volume = gVolumes[this->VolumeIDs[0]];
+
+			this->Grid.Build(Volume, this->VolumeProperty.GetOpacity1D());
+
+//			this->Octree.SetVolume(Volume.HostVoxels, Volume.Spacing, Volume.BoundingBox, Volume.InvSize, this->VolumeProperty);
+		}
 
 		TimeStamp::operator = (Other);
 
@@ -141,6 +158,7 @@ public:
 	}
 
 	Enums::RenderMode			RenderMode;					/*! Type of rendering */
+	Grid						Grid;						/*! Grid accelerator */
 	VolumeProperty				VolumeProperty;				/*! Volume property */
 	Camera						Camera;						/*! Camera */
 	Indices<64>					VolumeIDs;					/*! Volume IDs */

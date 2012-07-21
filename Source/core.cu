@@ -20,6 +20,7 @@ using namespace std;
 
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
+texture<bool, 3, cudaReadModeElementType>				TexGrid;
 
 #include "color.h"
 
@@ -35,25 +36,30 @@ CONSTANT_DEVICE float gStepFactorPrimary	= 0.0f;
 CONSTANT_DEVICE float gStepFactorShadow		= 0.0f;
 
 #include "statistics.h"
-#include "tracer.h"
+
 #include "volume.h"
+#include "list.cuh"
+
+ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::HostVolume>		gVolumes("gpVolumes");
+
+#include "tracer.h"
+
 #include "object.h"
 #include "texture.h"
 #include "bitmap.h"
 
-DEVICE ExposureRender::Tracer*			gpTracer			= NULL;
-DEVICE ExposureRender::Volume* 			gpVolumes			= NULL;
-DEVICE ExposureRender::Object*			gpObjects			= NULL;
-DEVICE ExposureRender::Texture*			gpTextures			= NULL;
-DEVICE ExposureRender::Bitmap*			gpBitmaps			= NULL;
+DEVICE ExposureRender::Tracer*	gpTracer	= NULL;
+DEVICE ExposureRender::Volume* 	gpVolumes	= NULL;
+DEVICE ExposureRender::Object*	gpObjects	= NULL;
+DEVICE ExposureRender::Texture*	gpTextures	= NULL;
+DEVICE ExposureRender::Bitmap*	gpBitmaps	= NULL;
 
-#include "list.cuh"
 
-ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::HostTracer>					gTracers("gpTracer");
-ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::HostVolume>					gVolumes("gpVolumes");
-ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::HostObject>					gObjects("gpObjects");
-ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::HostTexture>				gTextures("gpTextures");
-ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::HostBitmap>					gBitmaps("gpBitmaps");
+
+ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::HostTracer>		gTracers("gpTracer");
+ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::HostObject>		gObjects("gpObjects");
+ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::HostTexture>	gTextures("gpTextures");
+ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::HostBitmap>		gBitmaps("gpBitmaps");
 
 #include "autofocus.cuh"
 #include "render.cuh"
@@ -152,6 +158,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 
 	if (Tracer.VolumeIDs[1] >= 0)
 		gVolumes[Tracer.VolumeIDs[1]].Voxels.Bind(TexVolume1);
+
+	Tracer.Grid.Voxels.Bind(TexGrid);
 
 	Render(Tracer, Statistics);
 		
