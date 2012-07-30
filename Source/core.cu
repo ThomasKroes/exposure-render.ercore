@@ -67,6 +67,22 @@ ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::HostBitmap>		
 namespace ExposureRender
 {
 
+// bool Initialized = false;
+
+EXPOSURE_RENDER_DLL void Initialize(const int& DeviceID /*= 0*/)
+{
+	Log("Initializing Exposure Render");
+
+	Cuda::DeviceInit(DeviceID);
+}
+
+EXPOSURE_RENDER_DLL void DeInitialize()
+{
+	Log("De-initializing Exposure Render");
+	
+	Cuda::DeviceReset();
+}
+
 EXPOSURE_RENDER_DLL void BindTracer(const HostTracer& Tracer, const bool& Bind /*= true*/)
 {
 	if (Bind)

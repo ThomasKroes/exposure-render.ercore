@@ -21,8 +21,6 @@
 #include "exception.h"
 #include "timestamp.h"
 
-#include <cuda_runtime.h>
-
 namespace ExposureRender
 {
 

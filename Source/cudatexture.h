@@ -83,11 +83,9 @@ public:
 
 		const cudaChannelFormatDesc ChannelFormatDescription = cudaCreateChannelDesc<T>();
 
-#ifdef __CUDACC__
 		Cuda::BindTextureToArray(&TextureReference, this->Array, &ChannelFormatDescription);
-#endif
 	}
-	
+
 	/*! Gets the resolution
 		@return Resolution
 	*/
