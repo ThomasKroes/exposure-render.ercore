@@ -53,7 +53,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\shark_01_cropped.mhd";
 #endif
 
 #ifdef ENVIRONMENT_ON
-	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\environment.png";
+	char gEnvironmentBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\risk_depth.png";
 #endif
 
 void ConfigureER(vtkRenderer* Renderer);
@@ -316,7 +316,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetShapeType(Enums::Sphere);
 	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(5.0f);
-	EnvironmentLight->SetMultiplier(5000.0f);
+	EnvironmentLight->SetMultiplier(1.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
 	EnvironmentLight->SetEnabled(true);
 
@@ -333,17 +333,10 @@ void CreateLighting(vtkErTracer* Tracer)
 		ImageReader->SetFileName(gEnvironmentBitmap);
 		ImageReader->Update();
 
-		vtkSmartPointer<vtkImageGaussianSmooth> ImageGaussianSmooth = vtkSmartPointer<vtkImageGaussianSmooth>::New();
-		
-		ImageGaussianSmooth->SetInputConnection(ImageReader->GetOutputPort());
-		ImageGaussianSmooth->SetRadiusFactor(2);
-		ImageGaussianSmooth->SetStandardDeviation(2);
-		ImageGaussianSmooth->Update();
-
 		vtkSmartPointer<vtkErBitmap> Bitmap = vtkSmartPointer<vtkErBitmap>::New();
 	
-		Bitmap->SetFilterMode(Enums::Linear);
-		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageGaussianSmooth->GetOutputPort());
+		Bitmap->SetFilterMode(Enums::NearestNeighbour);
+		Bitmap->SetInputConnection(vtkErBitmap::ImageDataPort, ImageReader->GetOutputPort());
 
 		EnvironmentLightTexture->SetInputConnection(vtkErTexture::ImageDataPort, Bitmap->GetOutputPort());
 	}
@@ -352,7 +345,7 @@ void CreateLighting(vtkErTracer* Tracer)
 		printf("%s cannot be loaded, reverting to gradient background.", gEnvironmentBitmap);
 
 		EnvironmentLightTexture->SetTextureType(Enums::Procedural);
-		EnvironmentLightTexture->SetProceduralType(Enums::Uniform);
+		EnvironmentLightTexture->SetProceduralType(Enums::Gradient);
 
 		vtkSmartPointer<vtkColorTransferFunction> Gradient = vtkSmartPointer<vtkColorTransferFunction>::New();
 		
