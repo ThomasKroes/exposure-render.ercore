@@ -23,6 +23,7 @@
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+
 #include <map>
 
 using namespace std;
@@ -41,6 +42,154 @@ static inline void HandleCudaError(const cudaError_t& CudaError, const char* pTi
 
 	if (CudaError != cudaSuccess)
 		throw(Exception(Enums::Error, Message));
+}
+
+static inline void GetDeviceCount(int& DeviceCount)
+{
+	Cuda::HandleCudaError(cudaGetDeviceCount(&DeviceCount));
+}
+
+static inline void GetDeviceProperties(cudaDeviceProp& DeviceProperties, int DeviceID)
+{
+	Cuda::HandleCudaError(cudaGetDeviceProperties(&DeviceProperties, DeviceID));
+}
+
+static inline void SetDevice(const int& DeviceID)
+{
+	Cuda::HandleCudaError(cudaSetDevice(DeviceID));
+}
+
+static inline int ConvertSmVer2Cores(const int& major, const int& minor)
+{
+    // Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
+    typedef struct
+	{
+       int SM; // 0xMm (hexidecimal notation), M = SM Major version, and m = SM minor version
+       int Cores;
+    } sSMtoCores;
+
+    sSMtoCores nGpuArchCoresPerSM[] = 
+    { { 0x10,  8 }, // Tesla Generation (SM 1.0) G80 class
+      { 0x11,  8 }, // Tesla Generation (SM 1.1) G8x class
+      { 0x12,  8 }, // Tesla Generation (SM 1.2) G9x class
+      { 0x13,  8 }, // Tesla Generation (SM 1.3) GT200 class
+      { 0x20, 32 }, // Fermi Generation (SM 2.0) GF100 class
+      { 0x21, 48 }, // Fermi Generation (SM 2.1) GF10x class
+      {   -1, -1 }
+    };
+
+    int index = 0;
+    while (nGpuArchCoresPerSM[index].SM != -1) {
+       if (nGpuArchCoresPerSM[index].SM == ((major << 4) + minor) ) {
+          return nGpuArchCoresPerSM[index].Cores;
+       }	
+       index++;
+    }
+    printf("MapSMtoCores undefined SM %d.%d is undefined (please update to the latest SDK)!\n", major, minor);
+    return -1;
+}
+
+static int GetOptimalDeviceID()
+{
+    int CurrentDevice			= 0;
+	int SmPerMultiprocessor		= 0;
+    int MaxComputePerformance	= 0;
+	int MaxPerformanceDevice	= 0;
+    int DeviceCount				= 0;
+	int BestSmArchitecture		= 0;
+
+    cudaDeviceProp DeviceProperties;
+
+    GetDeviceCount(DeviceCount);
+
+    // Find the best major SM Architecture GPU device
+    while (CurrentDevice < DeviceCount)
+	{
+	    GetDeviceProperties(DeviceProperties, CurrentDevice);
+
+	    if (DeviceProperties.major > 0 && DeviceProperties.major < 9999)
+		{
+		    BestSmArchitecture = max(BestSmArchitecture, DeviceProperties.major);
+	    }
+
+	    CurrentDevice++;
+    }
+
+    // Find the best CUDA capable GPU device
+    CurrentDevice = 0;
+
+    while (CurrentDevice < DeviceCount)
+	{
+       GetDeviceProperties(DeviceProperties, CurrentDevice);
+
+       if (DeviceProperties.major == 9999 && DeviceProperties.minor == 9999)
+	   {
+           SmPerMultiprocessor = 1;
+	   }
+	   else
+	   {
+           SmPerMultiprocessor = ConvertSmVer2Cores(DeviceProperties.major, DeviceProperties.minor);
+       }
+
+       int ComputePerformance  = DeviceProperties.multiProcessorCount * SmPerMultiprocessor * DeviceProperties.clockRate;
+
+       if (ComputePerformance  > MaxComputePerformance)
+	   {
+           // If we find GPU with SM major > 2, search only these
+           if (BestSmArchitecture > 2)
+		   {
+               // If our device == dest_SM_arch, choose this, or else pass
+               if (DeviceProperties.major == BestSmArchitecture)
+			   {	
+                   MaxComputePerformance  = ComputePerformance;
+                   MaxPerformanceDevice   = CurrentDevice;
+               }
+           }
+		   else
+		   {
+               MaxComputePerformance  = ComputePerformance;
+               MaxPerformanceDevice   = CurrentDevice;
+           }
+       }
+
+       ++CurrentDevice;
+    }
+
+    return MaxPerformanceDevice;
+}
+
+static inline void DeviceInit(int DeviceID)
+{
+	int DeviceCount;
+    
+	Cuda::GetDeviceCount(DeviceCount);
+
+	if (DeviceCount == 0)
+		throw(Exception(Enums::Fatal, "No CUDA capable hardware found"));
+	
+	Log("Found %d capable CUDA devices", DeviceCount);
+
+	cudaDeviceProp DeviceProperties;
+
+	if (DeviceID == -1)
+		DeviceID = GetOptimalDeviceID();
+
+    if (DeviceID > DeviceCount - 1)
+		throw(Exception(Enums::Fatal, "Specified CUDA device does not exist"));
+
+    Cuda::GetDeviceProperties(DeviceProperties, DeviceID);
+
+    if (DeviceProperties.major < 2)
+        throw(Exception(Enums::Fatal, "Exposure Render does not support older CUDA streaming architectures (< 2.0)"));
+
+	Cuda::SetDevice(DeviceID);
+
+	Log("Running Exposure Render on device %d: %s", DeviceID, DeviceProperties.name);
+}
+
+static inline void DeviceReset()
+{
+	Cuda::HandleCudaError(cudaDeviceReset());
 }
 
 static inline void ThreadSynchronize()

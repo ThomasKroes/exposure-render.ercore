@@ -18,7 +18,6 @@
 
 #include "transferfunction.h"
 #include "piecewiselinearfunction.h"
-#include "cudatexture1d.h"
 #include "color.h"
 
 namespace ExposureRender

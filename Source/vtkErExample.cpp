@@ -41,7 +41,7 @@
 #include "vtkErInteractorStyleTrackballCamera.h"
 
 // Specify volume file her (*.mhd)
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\engine.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\shark_01_cropped.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
@@ -67,6 +67,8 @@ using namespace ExposureRender;
 
 int main(int, char *[])
 {
+	ER_CALL(Initialize(0));
+
 	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 
 	vtkSmartPointer<vtkRenderer> Renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -97,6 +99,8 @@ int main(int, char *[])
 	Renderer->ResetCamera();
 
 	RenderWindowInteractor->Start();
+	
+	ER_CALL(DeInitialize());
 
 	return EXIT_SUCCESS;
 }
@@ -132,14 +136,13 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	VolumeProperty->SetStepFactorPrimary(2.0f);
 	VolumeProperty->SetStepFactorShadow(5.0f);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
-	VolumeProperty->SetDensityScale(10);
+	VolumeProperty->SetDensityScale(100);
 	VolumeProperty->SetGradientFactor(1.0f);
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
 	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(10, 0);
-	Opacity->AddPoint(151, 1);
+	Opacity->AddPoint(1, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 

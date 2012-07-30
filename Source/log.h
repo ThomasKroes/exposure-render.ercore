@@ -37,4 +37,19 @@ HOST inline void DebugLog(const char* format, ...)
 	/**/
 }
 
+/*! Log function */
+HOST inline void Log(const char* format, ...)
+{
+	//	return;
+	va_list fmtargs;
+	char buffer[1024];
+
+	va_start(fmtargs,format);
+	vsnprintf_s(buffer, 1024, sizeof(buffer) - 1, format,fmtargs);
+	va_end(fmtargs);
+
+	printf("%s\n", buffer);
+	/**/
+}
+
 }

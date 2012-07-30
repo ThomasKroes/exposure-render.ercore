@@ -26,6 +26,15 @@
 namespace ExposureRender
 {
 
+/*! Initializes Exposure Render
+	@param[in] DeviceID Device ID to use for rendering (-1 to let Exposure Render choose the best device)
+*/
+EXPOSURE_RENDER_DLL void Initialize(const int& DeviceID = -1);
+
+/*! De-initializes Exposure Render
+*/
+EXPOSURE_RENDER_DLL void DeInitialize();
+
 /*! Bind/unbind a tracer
 	@param[in] Tracer Tracer to bind/unbind
 	@param[in] Bind whether to bind/unbind
