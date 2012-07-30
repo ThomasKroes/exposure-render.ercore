@@ -67,7 +67,7 @@ using namespace ExposureRender;
 
 int main(int, char *[])
 {
-	ER_CALL(Initialize(0));
+	ER_CALL(Initialize());
 
 	vtkSmartPointer<vtkRenderWindow> RenderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 

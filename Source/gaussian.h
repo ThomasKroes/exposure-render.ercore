@@ -137,8 +137,6 @@ public:
 				this->Weight[i][j] = Gauss2D(0.75f * FilterRadius, UV[0], UV[1]);
 			}
 		}
-
-		this->PrintSelf();
 	}
 
 	/*! Prints the Gaussian filter table weights */
