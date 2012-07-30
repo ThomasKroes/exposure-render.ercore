@@ -46,7 +46,7 @@ char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\shark_01_cropped.mhd";
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
 //#define RIM_LIGHT_ON
-//#define ENVIRONMENT_ON
+#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -141,8 +141,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(0, 0);
-	Opacity->AddPoint(1, 1);
+	Opacity->AddPoint(1500, 0);
+	Opacity->AddPoint(2001, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);
 
@@ -161,8 +161,8 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	Diffuse->AddRGBPoint(2048, DiffuseLevel, DiffuseLevel, DiffuseLevel);
 	*/
 	
-	Diffuse->AddRGBPoint(50, .8f, 0.1f, 0.1f);
-	Diffuse->AddRGBPoint(2048, 0.7, 0.5, 0.2);
+	Diffuse->AddRGBPoint(0, .8f, 0.1f, 0.1f);
+	Diffuse->AddRGBPoint(4096, 0.7, 0.5, 0.2);
 	
 
 	VolumeProperty->SetDiffuse(Diffuse);
@@ -314,7 +314,7 @@ void CreateLighting(vtkErTracer* Tracer)
 	EnvironmentLight->SetAxis(ExposureRender::Enums::Y);
 	EnvironmentLight->SetPosition(0, 0, 0);
 	EnvironmentLight->SetShapeType(Enums::Sphere);
-	EnvironmentLight->SetOneSided(true);
+	EnvironmentLight->SetOneSided(false);
 	EnvironmentLight->SetRadius(5.0f);
 	EnvironmentLight->SetMultiplier(5000.0f);
 	EnvironmentLight->SetEmissionUnit(Enums::Lux);
