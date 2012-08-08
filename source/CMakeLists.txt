@@ -305,8 +305,6 @@ IF(ER_VTK)
 		vtkErShape.cpp
 		vtkErAlignment.h
 		vtkErAlignment.cpp
-		vtkErLight.h
-		vtkErLight.cpp
 		vtkErObject.h
 		vtkErObject.cpp
 		vtkErVolume.h

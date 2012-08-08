@@ -96,8 +96,8 @@ public:
 			this->Size			= Vec3f((float)this->Voxels.GetResolution()[0] * this->Spacing[0], (float)this->Voxels.GetResolution()[1] *this->Spacing[1], (float)this->Voxels.GetResolution()[2] * this->Spacing[2]);
 			this->InvSize		= 1.0f / this->Size;
 
-			this->BoundingBox.SetMinP(Vec3f(0.0f));
-			this->BoundingBox.SetMaxP(Size);
+			this->BoundingBox.SetMinP(-0.5f * Size);
+			this->BoundingBox.SetMaxP(0.5f * Size);
 
 			this->MinStep = min(this->Spacing[0], min(this->Spacing[1], this->Spacing[2]));
 
