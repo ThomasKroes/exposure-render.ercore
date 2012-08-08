@@ -40,13 +40,12 @@
 #include "vtkErVolumeProperty.h"
 #include "vtkErInteractorStyleTrackballCamera.h"
 
-// Specify volume file her (*.mhd)
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\shark_01_cropped.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
 //#define RIM_LIGHT_ON
-#define ENVIRONMENT_ON
+//#define ENVIRONMENT_ON
 
 #ifdef BACK_PLANE_ON
 	char gBackPlaneBitmap[] = "C:\\Dropbox\\Work\\Data\\Bitmaps\\back_plane.png";
@@ -117,6 +116,7 @@ void ConfigureER(vtkRenderer* Renderer)
 
 	Tracer->SetNoiseReduction(false);
 	Tracer->Update();
+	Tracer->SetRenderMode(Enums::StochasticRayCasting);
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
 	
@@ -141,7 +141,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkPiecewiseFunction> Opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 	
-	Opacity->AddPoint(1500, 0);
+	Opacity->AddPoint(0, 0);
 	Opacity->AddPoint(2001, 1);
 	
 	VolumeProperty->SetOpacity(Opacity);

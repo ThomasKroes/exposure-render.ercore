@@ -20,7 +20,7 @@ using namespace std;
 
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
 texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
-texture<bool, 3, cudaReadModeElementType>				TexGrid;
+texture<int, 3, cudaReadModeElementType>				TexGrid;
 
 #include "color.h"
 
@@ -167,6 +167,8 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 	}
 	*/
 
+	Tracer.Grid.Voxels.Bind(TexGrid);
+
 	gTracers.Synchronize(TracerID);
 
 	if (Tracer.VolumeIDs[0] >= 0)
@@ -174,8 +176,6 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 
 	if (Tracer.VolumeIDs[1] >= 0)
 		gVolumes[Tracer.VolumeIDs[1]].Voxels.Bind(TexVolume1);
-
-	Tracer.Grid.Voxels.Bind(TexGrid);
 
 	Render(Tracer, Statistics);
 		

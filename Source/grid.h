@@ -24,7 +24,7 @@
 namespace ExposureRender
 {
 
-#define GRID_EPSILON (0.000001f)
+#define GRID_EPSILON (0.01f)
 
 /*! Grid accelerator class */
 class EXPOSURE_RENDER_DLL Grid : public TimeStamp
@@ -88,7 +88,7 @@ public:
 			{
 				for (int GridZ = 0; GridZ < GridSize[2]; ++GridZ)
 				{
-					EmptySpace(Vec3i(GridX, GridY, GridZ)) = 1;
+					EmptySpace(Vec3i(GridX, GridY, GridZ)) = 0;
 
 					for (int VoxelX = 0; VoxelX < this->GetMacroCellSize(); ++VoxelX)
 					{
@@ -103,7 +103,7 @@ public:
 								VoxelCoord[2] = GridZ * this->GetMacroCellSize() + VoxelZ;
 
 								if (Opacity1D.Evaluate(Volume.HostVoxels(VoxelCoord)) > 0.0f)
-									EmptySpace(Vec3i(GridX, GridY, GridZ)) = 0;
+									EmptySpace(Vec3i(GridX, GridY, GridZ)) = 1;
 							}
 						}
 					}
@@ -114,24 +114,33 @@ public:
 		this->Voxels = EmptySpace;
 	}
 
-	DEVICE void GetNextBoundary(const Vec3f& Position, const Vec3f& Direction, float& NexT)
+	DEVICE void GetNextBoundary(const Vec3f& Position, const Vec3f& Direction, float& NexT, int& EmptySpace)
 	{
-		const Vec3f CellIndex;
+		Vec3f CellIndex, GridSpaceP;
 		
-		for (int i = 0; i < 3; ++i)
-			floor((Position[i] - this->BoundingBox.GetMinP()[i]) / this->Spacing[i]);
+		for (int i = 0; i < 3; i++)
+			GridSpaceP[i] = Position[i] - this->BoundingBox.GetMinP()[i];
+
+		for (int i = 0; i < 3; i++)
+			CellIndex[i] = (int)floor(GridSpaceP[i] / this->Spacing[i]);
 
 		Vec3f T;
 
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 3; i++)
 		{
 			if (Direction[i] > GRID_EPSILON)
 			{
-				T[i] = (this->BoundingBox.GetMinP()[i] + (CellIndex[i] + 1.0f) * this->Spacing[i] - Position[i]) / Direction[i];
+				const float CellP = this->BoundingBox.GetMinP()[i] + ((CellIndex[i] + 1) * this->Spacing[i]);
+				const float D = CellP - GridSpaceP[i];
+
+				T[i] = D / Direction[i];
 			}
 			else if (Direction[i] < -GRID_EPSILON)
 			{
-				T[i] = (this->BoundingBox.GetMinP()[i] + CellIndex[i] * this->Spacing[i] - Position[i]) / Direction[i];
+				const float CellP = this->BoundingBox.GetMinP()[i] + (CellIndex[i] * this->Spacing[i]);
+				const float D = CellP - GridSpaceP[i];
+
+				T[i] = D / Direction[i];
 			}
 			else
 			{
@@ -139,12 +148,15 @@ public:
 			}
 		}
 
-		NexT = min(T[0], min(T[1], T[2]));
+		NexT = fminf(T[0], fminf(T[1], T[2]));
+
+		EmptySpace = tex3D(TexGrid, CellIndex[0], CellIndex[1], CellIndex[2]);
 	}
 
 	GET_SET_MACRO(HOST_DEVICE, MacroCellSize, int)
 	GET_SET_MACRO(HOST_DEVICE, Spacing, Vec3f)
-	
+	GET_SET_MACRO(HOST_DEVICE, BoundingBox, BoundingBox)
+
 	CudaTexture3D<int>		Voxels;				/*! Voxel texture */
 
 protected:
