@@ -3,3 +3,9 @@ Build/**
 build
 CMakeFiles
 CMakeCache.txt
+*.pyc
+*.idea
+ui/.idea
+Docs
+build
+build/**

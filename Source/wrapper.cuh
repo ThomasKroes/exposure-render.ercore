@@ -167,7 +167,7 @@ static inline void DeviceInit(int DeviceID)
 	if (DeviceCount == 0)
 		throw(Exception(Enums::Fatal, "No CUDA capable hardware found"));
 	
-	Log("Found %d capable CUDA devices", DeviceCount);
+	Log("Found %d capable CUDA device(s)", DeviceCount);
 
 	cudaDeviceProp DeviceProperties;
 

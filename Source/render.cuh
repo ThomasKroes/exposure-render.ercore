@@ -59,13 +59,14 @@ void Render(Tracer& Tracer, Statistics& Statistics)
 	{
 		case Enums::StandardRayCasting:
 		{
-			if (Tracer.NoEstimates > 0)
-				return;
+			if (Tracer.NoEstimates == 0)
+			{
+				DvrSimple(Tracer, Statistics);
+				GaussianFilterRGBAuc(Statistics, 1, Tracer.FrameBuffer.DVR);
+			}
 			
-			Dvr(Tracer, Statistics);
-			GaussianFilterRGBAuc(Statistics, 1, Tracer.FrameBuffer.DVR);
 			BlendRGBAuc(Statistics, Tracer.FrameBuffer.DisplayEstimate, Tracer.FrameBuffer.DVR);
-
+			
 			break;
 		}
 		
