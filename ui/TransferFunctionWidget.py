@@ -15,4 +15,3 @@ class TransferFunctionWidget(QWidget):
 
         self.TransferFunctionTabWidget.addTab(self._TransferFunction1DWidget, "1D Transfer Function")
         self.TransferFunctionTabWidget.addTab(self._TransferFunction2DWidget, "2D Transfer Function")
-        #self.layout().addWidget(self._TransferFunction2DWidget)
