@@ -24,3 +24,5 @@ class MainWindow(QMainWindow):
         self.CameraDockWidget.setWidget(self._CameraWidget)
         self.StatisticsDockWidget.setWidget(self._StatisticsWidget)
         self.LogDockWidget.setWidget(self._LogWidget)
+
+        #self._SimulationCore.BoneGeometry().AddObserver('change:light', self._OnBoneGeometryChange)
