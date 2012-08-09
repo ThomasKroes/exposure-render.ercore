@@ -15,8 +15,8 @@ def Main():
     MW = MainWindow()
     MW.show()
 
-    RD = RenderDialog()
-    RD.show()
+    #RD = RenderDialog()
+    #RD.show()
     sys.exit(App.exec_())
 
 if __name__ == '__main__':
