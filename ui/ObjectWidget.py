@@ -2,6 +2,7 @@
 from PyQt import *
 
 from SubjectMixin import *
+from AlignmentWidget import *
 from ShapeWidget import *
 from EmitterWidget import *
 
@@ -15,6 +16,8 @@ class ObjectWidget(QWidget, SubjectMixin):
         self._AlignmentWidget   = AlignmentWidget()
         self._ShapeWidget       = ShapeWidget()
         self._EmitterWidget     = EmitterWidget()
+
+        self.layout().setContentsMargins(0, 0, 0, 0)
 
         self.layout().addWidget(self._AlignmentWidget)
         self.layout().addWidget(self._ShapeWidget)

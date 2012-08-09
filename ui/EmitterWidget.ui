@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EmitterWidget</class>
- <widget class="QWidget" name="EmitterWidget">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,13 +11,19 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Emitter</string>
+   <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
-    <widget class="QGroupBox" name="EmitterGroupBox">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Emitter</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
