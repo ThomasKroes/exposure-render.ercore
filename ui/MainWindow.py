@@ -1,7 +1,7 @@
 
 from PyQt import *
 
-from LightsWidget import *
+from ObjectsWidget import *
 from VolumePropertyWidget import *
 from CameraWidget import *
 from StatisticsWidget import *
@@ -13,13 +13,13 @@ class MainWindow(QMainWindow):
 
         uic.loadUi('MainWindow.ui', self)
 
-        self._LightsWidget          = LightsWidget()
+        self._ObjectsWidget         = ObjectsWidget()
         self._VolumePropertyWidget  = VolumePropertyWidget()
         self._CameraWidget          = CameraWidget()
         self._StatisticsWidget      = StatisticsWidget()
         self._LogWidget             = LogWidget()
 
-        self.LightsDockWidget.setWidget(self._LightsWidget)
+        self.ObjectsDockWidget.setWidget(self._ObjectsWidget)
         self.VolumePropertyDockWidget.setWidget(self._VolumePropertyWidget)
         self.CameraDockWidget.setWidget(self._CameraWidget)
         self.StatisticsDockWidget.setWidget(self._StatisticsWidget)

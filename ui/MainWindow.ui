@@ -58,9 +58,9 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2"/>
   </widget>
-  <widget class="QDockWidget" name="LightsDockWidget">
+  <widget class="QDockWidget" name="ObjectsDockWidget">
    <property name="windowTitle">
-    <string>Lights</string>
+    <string>Objects</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
