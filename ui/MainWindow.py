@@ -1,7 +1,7 @@
 
 from PyQt import *
 
-from ObjectsWidget import *
+from PropsWidget import *
 from VolumePropertyWidget import *
 from CameraWidget import *
 from StatisticsWidget import *
@@ -13,16 +13,14 @@ class MainWindow(QMainWindow):
 
         uic.loadUi('MainWindow.ui', self)
 
-        self._ObjectsWidget         = ObjectsWidget()
+        self._PropsWidget         = ObjectsWidget()
         self._VolumePropertyWidget  = VolumePropertyWidget()
         self._CameraWidget          = CameraWidget()
         self._StatisticsWidget      = StatisticsWidget()
         self._LogWidget             = LogWidget()
 
-        self.ObjectsDockWidget.setWidget(self._ObjectsWidget)
+        self.PropsDockWidget.setWidget(self._PropsWidget)
         self.VolumePropertyDockWidget.setWidget(self._VolumePropertyWidget)
         self.CameraDockWidget.setWidget(self._CameraWidget)
         self.StatisticsDockWidget.setWidget(self._StatisticsWidget)
         self.LogDockWidget.setWidget(self._LogWidget)
-
-        #self._SimulationCore.BoneGeometry().AddObserver('change:light', self._OnBoneGeometryChange)

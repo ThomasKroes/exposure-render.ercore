@@ -34,11 +34,11 @@ public:
 
 	void RequestData(ExposureRender::Alignment& Alignment);
 
-	vtkGetMacro(AlignmentType, Enums::AlignmentType);
-	vtkSetMacro(AlignmentType, Enums::AlignmentType);
+	vtkGetMacro(AlignmentType, int);
+	vtkSetMacro(AlignmentType, int);
 
-	vtkGetMacro(Axis, Enums::Axis);
-	vtkSetMacro(Axis, Enums::Axis);
+	vtkGetMacro(Axis, int);
+	vtkSetMacro(Axis, int);
 
 	vtkGetMacro(AutoFlip, bool);
 	vtkSetMacro(AutoFlip, bool);
@@ -79,8 +79,8 @@ private:
 	vtkErAlignment(const vtkErAlignment& Other);	// Not implemented
     void operator = (const vtkErAlignment& Other);	// Not implemented
 
-	Enums::AlignmentType			AlignmentType;
-	Enums::Axis						Axis;
+	int								AlignmentType;
+	int								Axis;
 	bool							AutoFlip;
 	float							Position[3];
 	float							Target[3];

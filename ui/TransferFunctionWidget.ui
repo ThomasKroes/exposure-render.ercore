@@ -15,10 +15,19 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="TransferFunctionTabWidget">
-     <property name="currentIndex">
-      <number>-1</number>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Transfer function</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTabWidget" name="TransferFunctionTabWidget">
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

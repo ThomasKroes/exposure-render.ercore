@@ -54,6 +54,9 @@ public:
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
+	vtkGetMacro(Name, vtkStdString);
+	vtkSetMacro(Name, vtkStdString);
+
 	vtkGetMacro(TextureType, Enums::TextureType);
 	vtkSetMacro(TextureType, Enums::TextureType);
 
@@ -103,6 +106,7 @@ private:
 	vtkErTexture(const vtkErTexture& Other);			// Not implemented
     void operator = (const vtkErTexture& Other);		// Not implemented
 
+	vtkStdString								Name;
 	Enums::TextureType							TextureType;
 	float										OutputLevel;
 	Enums::ProceduralType						ProceduralType;

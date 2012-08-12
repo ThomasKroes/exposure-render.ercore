@@ -55,6 +55,9 @@ public:
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
+	vtkGetMacro(Name, vtkStdString);
+	vtkSetMacro(Name, vtkStdString);
+
 	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
 	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
 
@@ -72,4 +75,6 @@ protected:
 private:
 	vtkErBitmap(const vtkErBitmap& Other);			// Not implemented
     void operator = (const vtkErBitmap& Other);		// Not implemented
+
+	vtkStdString			Name;
 };

@@ -48,6 +48,9 @@ public:
 		ImageDataPort = 0
 	};
 
+	vtkGetMacro(Name, vtkStdString);
+	vtkSetMacro(Name, vtkStdString);
+
 	vtkGetMacro(FilterMode, Enums::FilterMode);
 	vtkSetMacro(FilterMode, Enums::FilterMode);
 
@@ -67,6 +70,7 @@ protected:
 	vtkErVolume();
     virtual ~vtkErVolume();
 
+	vtkStdString				Name;
 	Enums::FilterMode			FilterMode;
 	Enums::AcceleratorType		AcceleratorType;
 };

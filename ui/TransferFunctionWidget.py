@@ -10,8 +10,10 @@ class TransferFunctionWidget(QWidget):
 
         uic.loadUi('TransferFunctionWidget.ui', self)
 
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
         self._TransferFunction1DWidget = TransferFunction1DWidget()
         self._TransferFunction2DWidget = TransferFunction2DWidget()
 
-        self.TransferFunctionTabWidget.addTab(self._TransferFunction1DWidget, "1D Transfer Function")
-        self.TransferFunctionTabWidget.addTab(self._TransferFunction2DWidget, "2D Transfer Function")
+        self.TransferFunctionTabWidget.addTab(self._TransferFunction1DWidget, "1D")
+        self.TransferFunctionTabWidget.addTab(self._TransferFunction2DWidget, "2D")

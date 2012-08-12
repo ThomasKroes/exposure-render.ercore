@@ -1,164 +1,183 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>AlignmentWidget</class>
+ <widget class="QWidget" name="AlignmentWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>538</width>
-    <height>654</height>
+    <width>618</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="margin">
-    <number>0</number>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
    </property>
    <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="AlignmentGroupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
       <string>Alignment</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <property name="spacing">
-       <number>1</number>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
       </property>
-      <item row="7" column="0">
-       <widget class="QLabel" name="AzimuthLabel">
-        <property name="text">
-         <string>Azimuth</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
+      <item row="17" column="2">
        <widget class="QPushButton" name="pushButton">
         <property name="text">
          <string>Reset</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1" colspan="3">
-       <widget class="QSlider" name="ElevationSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="4">
-       <widget class="QDoubleSpinBox" name="PositionXSpinBox">
+      <item row="6" column="6">
+       <widget class="QDoubleSpinBox" name="AzimuthSpinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="OffsetLabel">
-        <property name="text">
-         <string>Offset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <spacer name="horizontalSpacer">
+      <item row="8" column="1" colspan="5">
+       <widget class="QSlider" name="PositionXSlider">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
+       </widget>
+      </item>
+      <item row="14" column="0" rowspan="3">
+       <widget class="QLabel" name="UpLabel">
+        <property name="text">
+         <string>Up</string>
+        </property>
+       </widget>
+      </item>
+      <item row="16" column="1" colspan="5">
+       <widget class="QSlider" name="UpZSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="1" colspan="5">
+       <widget class="QSlider" name="TargetZSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="6">
+       <widget class="QDoubleSpinBox" name="TargetYSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="6">
+       <widget class="QDoubleSpinBox" name="TargetXSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="ElevationLabel">
+        <property name="text">
+         <string>Elevation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="5">
+       <widget class="QCheckBox" name="AutoFlipCheckBox">
+        <property name="text">
+         <string>Auto flip</string>
+        </property>
+       </widget>
+      </item>
+      <item row="16" column="6">
+       <widget class="QDoubleSpinBox" name="UpZSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="14" column="1" colspan="5">
+       <widget class="QSlider" name="UpXSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="4">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>27</width>
-          <height>22</height>
+          <width>242</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item row="8" column="4">
-       <widget class="QDoubleSpinBox" name="OffsetSpinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="3">
-       <widget class="QCheckBox" name="UseCameraFocalPointCheckBox">
-        <property name="text">
-         <string>Use camera focal point</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="4">
-       <widget class="QDoubleSpinBox" name="PositionYSpinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1" colspan="3">
-       <widget class="QSlider" name="OffsetSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="1" colspan="3">
-       <widget class="QSlider" name="PositionYSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1" colspan="4">
-       <widget class="QComboBox" name="AlignToComboBox">
+      <item row="3" column="0">
+       <widget class="QLabel" name="AxisLabel">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <item>
-         <property name="text">
-          <string>X-Axis</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Y-Axis</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Z-Axis</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="3">
-       <widget class="QCheckBox" name="RelativeToCameraCheckBox">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Relative to camera</string>
+         <string>Align to</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="1" colspan="3">
-       <widget class="QSlider" name="AzimuthSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0" rowspan="3">
-       <widget class="QLabel" name="PositionLabel">
+      <item row="17" column="3">
+       <widget class="QPushButton" name="pushButton_2">
         <property name="text">
-         <string>Position</string>
+         <string>Load</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="10" column="6">
+       <widget class="QDoubleSpinBox" name="PositionZSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
        <widget class="QLabel" name="TypeLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -177,83 +196,14 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="1" colspan="3">
-       <widget class="QSlider" name="PositionXSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="16" column="1" colspan="3">
-       <widget class="QSlider" name="UpYSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="17" column="4">
-       <widget class="QDoubleSpinBox" name="UpZSpinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="15" column="1" colspan="3">
-       <widget class="QSlider" name="UpXSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="14" column="4">
+      <item row="13" column="6">
        <widget class="QDoubleSpinBox" name="TargetZSpinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="15" column="4">
-       <widget class="QDoubleSpinBox" name="UpXSpinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="17" column="1" colspan="3">
-       <widget class="QSlider" name="UpZSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="15" column="0" rowspan="3">
-       <widget class="QLabel" name="UpLabel">
-        <property name="text">
-         <string>Up</string>
-        </property>
-       </widget>
-      </item>
-      <item row="16" column="4">
-       <widget class="QDoubleSpinBox" name="UpYSpinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>242</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="1" colspan="4">
+      <item row="0" column="1" colspan="6">
        <widget class="QComboBox" name="TypeComboBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -278,113 +228,168 @@
         </item>
        </widget>
       </item>
-      <item row="14" column="1" colspan="3">
-       <widget class="QSlider" name="TargetZSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="4">
-       <widget class="QDoubleSpinBox" name="TargetYSpinBox">
+      <item row="14" column="6">
+       <widget class="QDoubleSpinBox" name="UpXSpinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="13" column="1" colspan="3">
-       <widget class="QSlider" name="TargetYSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="15" column="6">
+       <widget class="QDoubleSpinBox" name="UpYSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="11" column="1" colspan="3">
-       <widget class="QSlider" name="PositionZSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="1" colspan="3">
-       <widget class="QSlider" name="TargetXSlider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="0" rowspan="3">
-       <widget class="QLabel" name="TargetLabel">
-        <property name="text">
-         <string>Target</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="4">
+      <item row="5" column="6">
        <widget class="QDoubleSpinBox" name="ElevationSpinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
+      <item row="11" column="1" colspan="5">
+       <widget class="QSlider" name="TargetXSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0" rowspan="3">
+       <widget class="QLabel" name="TargetLabel">
+        <property name="text">
+         <string>Target</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="1" colspan="5">
+       <widget class="QSlider" name="TargetYSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1" colspan="5">
+       <widget class="QSlider" name="PositionZSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0" rowspan="3">
+       <widget class="QLabel" name="PositionLabel">
+        <property name="text">
+         <string>Position</string>
+        </property>
+       </widget>
+      </item>
       <item row="6" column="0">
-       <widget class="QLabel" name="ElevationLabel">
+       <widget class="QLabel" name="AzimuthLabel">
         <property name="text">
-         <string>Elevation</string>
+         <string>Azimuth</string>
         </property>
        </widget>
       </item>
-      <item row="12" column="4">
-       <widget class="QDoubleSpinBox" name="TargetXSpinBox">
+      <item row="5" column="1" colspan="5">
+       <widget class="QSlider" name="ElevationSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="6">
+       <widget class="QDoubleSpinBox" name="PositionXSpinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="7" column="4">
-       <widget class="QDoubleSpinBox" name="AzimuthSpinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1" colspan="3">
-       <widget class="QCheckBox" name="AutoFlipCheckBox">
+      <item row="7" column="0">
+       <widget class="QLabel" name="OffsetLabel">
         <property name="text">
-         <string>Auto flip</string>
+         <string>Offset</string>
         </property>
        </widget>
       </item>
-      <item row="11" column="4">
-       <widget class="QDoubleSpinBox" name="PositionZSpinBox">
+      <item row="7" column="6">
+       <widget class="QDoubleSpinBox" name="OffsetSpinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="AlignToLabel">
+      <item row="2" column="1" colspan="6">
+       <widget class="QCheckBox" name="UseCameraFocalPointCheckBox">
+        <property name="text">
+         <string>Use camera focal point</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="6">
+       <widget class="QDoubleSpinBox" name="PositionYSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="5">
+       <widget class="QSlider" name="OffsetSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1" colspan="5">
+       <widget class="QSlider" name="PositionYSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="6">
+       <widget class="QComboBox" name="AxisComboBox">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>70</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Align to</string>
+        <item>
+         <property name="text">
+          <string>X-Axis</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Y-Axis</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Z-Axis</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="5">
+       <widget class="QSlider" name="AzimuthSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="pushButton_2">
+      <item row="15" column="1" colspan="5">
+       <widget class="QSlider" name="UpYSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="RelativeToCameraCheckBox">
         <property name="text">
-         <string>Load</string>
+         <string>Relative to camera</string>
         </property>
        </widget>
       </item>

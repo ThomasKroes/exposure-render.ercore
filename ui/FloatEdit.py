@@ -2,7 +2,12 @@
 from PyQt import *
 
 class FloatEdit:
-    def __init__(self, parent, name, minimum, maximum, precision = 1000, decimals = 3, prefix = "", suffix = ""):
+    def __init__(self, parent, name, minimum, maximum, setter, value = 0, precision = 1000, decimals = 3, prefix = "", suffix = ""):
+
+        self._Value = 0
+
+        self._Setter = setter
+
         self._Label     = parent.findChild(QLabel, name + "Label")
         self._Slider    = parent.findChild(QSlider, name + "Slider")
         self._SpinBox   = parent.findChild(QDoubleSpinBox, name + "SpinBox")
@@ -13,15 +18,30 @@ class FloatEdit:
         self.SetDecimals(decimals)
         self.SetPrefix(prefix)
         self.SetSuffix(suffix)
+        self.SetValue(value)
 
         self._Slider.valueChanged.connect(self._OnSliderValueChanged)
         self._SpinBox.valueChanged.connect(self._OnSpinBoxValueChanged)
 
     def _OnSliderValueChanged(self, value):
-        self._SpinBox.setValue(value / float(self._Precision))
+        self.SetValue(value / float(self._Precision))
 
     def _OnSpinBoxValueChanged(self, value):
-        self._Slider.setValue(value * float(self._Precision))
+        self.SetValue(value)
+
+    def GetValue(self):
+        return self._Value
+
+    def SetValue(self, value):
+        self._Value = value
+        self._UpdateUI()
+
+        if self._Setter is not None:
+            self._Setter(self._Value)
+
+    def _UpdateUI(self):
+        self._SpinBox.setValue(self._Value)
+        self._Slider.setValue(self._Value * float(self._Precision))
 
     def SetVisible(self, visible):
         if self._Label is not None:
