@@ -2,7 +2,11 @@
 from PyQt import *
 
 class Float3Edit:
-    def __init__(self, parent, name, minimum, maximum, precision = 1000, decimals = 3, prefix = "", suffix = ""):
+    def __init__(self, parent, name, minimum, maximum, setter, value = [0, 0, 0], precision = 1000, decimals = 3, prefix = "", suffix = ""):
+
+        self._Setter = setter
+        self._Value = [0, 0, 0]
+
         self._Label = parent.findChild(QLabel, name + "Label")
 
         self._Lock = False
@@ -28,6 +32,7 @@ class Float3Edit:
         self.SetDecimals(decimals)
         self.SetPrefix(prefix)
         self.SetSuffix(suffix)
+        self.SetValue(value)
 
         self._Sliders["X"].valueChanged.connect(self._OnSliderXValueChanged)
         self._Sliders["Y"].valueChanged.connect(self._OnSliderYValueChanged)
@@ -41,62 +46,78 @@ class Float3Edit:
             self._SizeLockCheckBox.stateChanged.connect(self._OnLock)
 
     def _OnSliderXValueChanged(self, value):
+        Value = value / float(self._Precision)
+
         if self._Lock is True:
-            self._SetSliderValue("XYZ", value)
-            self._SetSpinBoxValue("XYZ", value / float(self._Precision))
+            self.SetValue([Value, Value, Value])
         else:
-            self._SetSpinBoxValue("X", value / float(self._Precision))
+            self.SetValueDim("X", Value)
 
     def _OnSliderYValueChanged(self, value):
+        Value = value / float(self._Precision)
+
         if self._Lock is True:
-            self._SetSliderValue("XYZ", value)
-            self._SetSpinBoxValue("XYZ", value / float(self._Precision))
+            self.SetValue([Value, Value, Value])
         else:
-            self._SetSpinBoxValue("Y", value / float(self._Precision))
+            self.SetValueDim("Y", Value)
 
     def _OnSliderZValueChanged(self, value):
+        Value = value / float(self._Precision)
+
         if self._Lock is True:
-            self._SetSliderValue("XYZ", value)
-            self._SetSpinBoxValue("XYZ", value / float(self._Precision))
+            self.SetValue([Value, Value, Value])
         else:
-            self._SetSpinBoxValue("Z", value / float(self._Precision))
+            self.SetValueDim("Z", Value)
 
     def _OnSpinBoxXValueChanged(self, value):
         if self._Lock is True:
-            self._SetSpinBoxValue("XYZ", value)
-            self._SetSliderValue("XYZ", value * float(self._Precision))
+            self.SetValue([value, value, value])
         else:
-            self._SetSliderValue("X", value * float(self._Precision))
+            self.SetValueDim("X", value)
 
     def _OnSpinBoxYValueChanged(self, value):
         if self._Lock is True:
-            self._SetSpinBoxValue("XYZ", value)
-            self._SetSliderValue("XYZ", value * float(self._Precision))
+            self.SetValue([value, value, value])
         else:
-            self._SetSliderValue("Y", value * float(self._Precision))
+            self.SetValueDim("Y", value)
 
     def _OnSpinBoxZValueChanged(self, value):
         if self._Lock is True:
-            self._SetSpinBoxValue("XYZ", value)
-            self._SetSliderValue("XYZ", value * float(self._Precision))
+            self.SetValue([value, value, value])
         else:
-            self._SetSliderValue("Z", value * float(self._Precision))
+            self.SetValueDim("Z", value)
 
-    def _SetSliderValue(self, dim, value):
-        if dim is "XYZ":
-            for k, v in self._Sliders.items():
-                v.setValue(value)
-        else:
-            if self._Sliders[dim] is not value:
-                self._Sliders[dim].setValue(value)
+    def GetValue(self):
+        return self._Value
 
-    def _SetSpinBoxValue(self, dim, value):
-        if dim is "XYZ":
-            for k, v in self._SpinBoxes.items():
-                v.setValue(value)
-        else:
-            if self._SpinBoxes[dim] is not value:
-                self._SpinBoxes[dim].setValue(value)
+    def SetValue(self, value):
+        self._Value = list(value)
+        self._UpdateUI()
+
+        if self._Setter is not None:
+            self._Setter(self._Value)
+
+    def SetValueDim(self, dim, value):
+        if dim is "X":
+            self._Value[0] = value
+        if dim is "Y":
+            self._Value[1] = value
+        if dim is "Z":
+            self._Value[2] = value
+
+        self._UpdateUI()
+
+        if self._Setter is not None:
+            self._Setter(self._Value)
+
+    def _UpdateUI(self):
+        self._SpinBoxes["X"].setValue(self._Value[0])
+        self._SpinBoxes["Y"].setValue(self._Value[1])
+        self._SpinBoxes["Z"].setValue(self._Value[2])
+
+        self._Sliders["X"].setValue(self._Value[0] * self._Precision)
+        self._Sliders["Y"].setValue(self._Value[1] * self._Precision)
+        self._Sliders["Z"].setValue(self._Value[2] * self._Precision)
 
     def SetVisible(self, visible):
         if self._Label is not None:

@@ -35,14 +35,14 @@ vtkErAlignment::vtkErAlignment()
 	this->SetElevation(45.0f);
 	this->SetAzimuth(180.0f);
 	this->SetOffset(1.0f);
-	this->SetRelativeToCamera(0);
-	this->SetUseCameraFocalPoint(1);
+	this->SetRelativeToCamera(false);
+	this->SetUseCameraFocalPoint(true);
 }
 
 void vtkErAlignment::RequestData(ExposureRender::Alignment& Alignment)
 {
-	Alignment.SetType(this->GetAlignmentType());
-	Alignment.SetAxis(this->GetAxis());
+	Alignment.SetType((Enums::AlignmentType)this->GetAlignmentType());
+	Alignment.SetAxis((Enums::Axis)this->GetAxis());
 	Alignment.SetAutoFlip(this->GetAutoFlip());
 	Alignment.SetPosition(Vec3f(this->GetPosition()[0], this->GetPosition()[1], this->GetPosition()[2]));
 	Alignment.SetTarget(Vec3f(this->GetTarget()[0], this->GetTarget()[1], this->GetTarget()[2]));

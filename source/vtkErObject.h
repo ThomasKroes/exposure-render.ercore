@@ -59,6 +59,9 @@ public:
 
 	virtual int ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector);
 
+	vtkGetMacro(Name, vtkStdString);
+	vtkSetMacro(Name, vtkStdString);
+
 	vtkGetMacro(Enabled, bool);
 	vtkSetMacro(Enabled, bool);
 
@@ -93,6 +96,7 @@ private:
 	vtkErObject(const vtkErObject& Other);			// Not implemented
     void operator = (const vtkErObject& Other);		// Not implemented
 
+	vtkStdString			Name;
 	bool					Enabled;
 	bool					Visible;
 	bool					Emitter;

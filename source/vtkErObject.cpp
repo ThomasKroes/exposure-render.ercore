@@ -31,6 +31,7 @@ vtkErObject::vtkErObject(void)
 	this->SetNumberOfInputPorts(5);
 	this->SetNumberOfOutputPorts(1);
 
+	this->SetName("Prop");
 	this->SetEnabled(true);
 	this->SetVisible(true);
 	this->SetEmitter(false);

@@ -31,8 +31,8 @@ public:
 	vtkGetMacro(OneSided, bool);
 	vtkSetMacro(OneSided, bool);
 
-	vtkGetMacro(ShapeType, Enums::ShapeType);
-	vtkSetMacro(ShapeType, Enums::ShapeType);
+	vtkGetMacro(ShapeType, int);
+	vtkSetMacro(ShapeType, int);
 
 	vtkGetVector3Macro(Size, float);
 	vtkSetVector3Macro(Size, float);
@@ -54,10 +54,10 @@ private:
 	vtkErShape(const vtkErShape& Other);		// Not implemented
     void operator = (const vtkErShape& Other);  // Not implemented
 
-	bool				OneSided;
-	Enums::ShapeType	ShapeType;
-	float				Size[3];
-	float				Radius;
-	float				InnerRadius;
-	float				OuterRadius;
+	bool		OneSided;
+	int			ShapeType;
+	float		Size[3];
+	float		Radius;
+	float		InnerRadius;
+	float		OuterRadius;
 };

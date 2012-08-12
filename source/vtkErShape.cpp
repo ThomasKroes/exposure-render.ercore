@@ -36,7 +36,7 @@ void vtkErShape::RequestData(ExposureRender::Shape& Shape)
 {
 	vtkErAlignment::RequestData(Shape.GetAlignment());
 
-	Shape.SetType(this->GetShapeType());
+	Shape.SetType((Enums::ShapeType)this->GetShapeType());
 
 	switch (this->GetShapeType())
 	{

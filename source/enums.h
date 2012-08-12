@@ -60,7 +60,8 @@ namespace Enums
 		Box,			// Box
 		Sphere,			// Sphere
 		Cylinder,		// Cylinder
-		Cone			// Cone
+		Cone,			// Cone
+		TriangleMesh	// Triangle mesh
 	};
 	
 	//! Type of shading

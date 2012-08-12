@@ -13,7 +13,165 @@
   <property name="windowTitle">
    <string>Volume property</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout"/>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="TraversalGroupBox">
+     <property name="title">
+      <string>Traversal</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="PrimaryStepFactorLabel">
+        <property name="text">
+         <string>Primary step factor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="SecondaryStepFactorLabel">
+        <property name="text">
+         <string>Secondary step factor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSlider" name="SecondaryStepFactorSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="SecondaryStepFactorSpinBox"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSlider" name="PrimaryStepFactorSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QDoubleSpinBox" name="PrimaryStepFactorSpinBox"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="ShadowsCheckBox">
+        <property name="text">
+         <string>Shadows</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Shading</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="ShadingTypeLabel">
+        <property name="text">
+         <string>Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSlider" name="DensityScaleSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="ShadingTypeComboBox">
+        <item>
+         <property name="text">
+          <string>BRDF only</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Phase function only</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hybrid</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Modulation</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="DensityScaleLabel">
+        <property name="text">
+         <string>Density scale</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QDoubleSpinBox" name="GradientFactorSpinBox"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="DensityScaleSpinBox"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="GradientFactorLabel">
+        <property name="text">
+         <string>Gradient factor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="OpacityModulatedCheckBox">
+        <property name="text">
+         <string>Opacity modulated</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSlider" name="GradientFactorSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="GradientComputationLabel">
+        <property name="text">
+         <string>Gradient computation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="GradientComputationComboBox">
+        <item>
+         <property name="text">
+          <string>Forward differences</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Central differences</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Filtered central differences</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

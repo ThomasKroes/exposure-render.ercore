@@ -59,6 +59,9 @@ public:
 	vtkErVolumeProperty* GetVolumeProperty()						{	return this->VolumeProperty.GetPointer();										};
 	void SetVolumeProperty(vtkErVolumeProperty* VolumeProperty)		{	this->VolumeProperty = VolumeProperty; this->VolumeProperty->Modified();		};
 	
+	vtkGetMacro(Name, vtkStdString);
+	vtkSetMacro(Name, vtkStdString);
+
 	vtkGetMacro(RenderMode, Enums::RenderMode);
 	vtkSetMacro(RenderMode, Enums::RenderMode);
 
@@ -80,6 +83,7 @@ protected:
 	virtual void AfterRender(vtkRenderer* Renderer, vtkVolume* Volume);
 
 private:
+	vtkStdString							Name;
 	unsigned int							TextureID;
 	ExposureRender::ColorRGBAuc*			ImageBuffer;
 	Vec2i									LastRenderSize;
