@@ -1,8 +1,8 @@
 
 from PyQt import *
 
-from PropsWidget import *
-from VolumePropertyWidget import *
+from Props.PropsWidget import *
+from VolumeProperty.VolumePropertyWidget import *
 from CameraWidget import *
 from StatisticsWidget import *
 from LogWidget import *
@@ -11,9 +11,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        uic.loadUi('MainWindow.ui', self)
+        uic.loadUi("Designer/MainWindow.ui", self)
 
-        self._PropsWidget         = ObjectsWidget()
+        self._PropsWidget           = PropsWidget()
         self._VolumePropertyWidget  = VolumePropertyWidget()
         self._CameraWidget          = CameraWidget()
         self._StatisticsWidget      = StatisticsWidget()
