@@ -22,7 +22,7 @@
 namespace ExposureRender
 {
 
-DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& ScatterTypes = Enums::Object | Enums::Light)
+DEVICE void IntersectProps(const Ray& R, Intersection& Int, const int& ScatterTypes = Enums::Object | Enums::Light)
 {
 	float NearestT = FLT_MAX;
 
@@ -30,26 +30,26 @@ DEVICE void IntersectObjects(const Ray& R, Intersection& Int, const int& Scatter
 
 	for (int i = 0; i < gpTracer->ObjectIDs.GetNoIndices(); i++)
 	{
-		const Object& Object = gpObjects[i];
+		const Prop& P = gpProps[i];
 		
-		if (Object.Visible && Object.Shape.Intersect(R, LocalInt) && LocalInt.GetT() < NearestT)
+		if (P.Visible && P.Shape.Intersect(R, LocalInt) && LocalInt.GetT() < NearestT)
 		{
 			NearestT			= LocalInt.GetT();
 			Int					= LocalInt;
 
 			Int.SetValid(true);
-			Int.SetScatterType(Object.Emitter ? Enums::Light : Enums::Object);
+			Int.SetScatterType(P.Emitter ? Enums::Light : Enums::Object);
 			Int.SetID(i);
 			Int.SetWo(-R.D);
 		}
 	}
 }
 
-DEVICE bool IntersectsObjects(Ray R)
+DEVICE bool IntersectsProps(Ray R)
 {
 	for (int i = 0; i < gpTracer->ObjectIDs.GetNoIndices(); i++)
 	{
-		if (gpObjects[i].Shape.Intersects(R))
+		if (gpProps[i].Shape.Intersects(R))
 			return true;
 	}
 
@@ -61,7 +61,7 @@ DEVICE bool Intersect(Ray R, RNG& RNG, Intersection& Int, const int& ScatterType
 	Intersection Ints[2];
 	
 	if (ScatterTypes & Enums::Object || ScatterTypes & Enums::Light)
-		IntersectObjects(R, Ints[0], ScatterTypes);
+		IntersectProps(R, Ints[0], ScatterTypes);
 
 	if (ScatterTypes & Enums::Volume)
 		IntersectVolume(R, RNG, Ints[1]);
@@ -82,7 +82,7 @@ DEVICE bool Intersect(Ray R, RNG& RNG, Intersection& Int, const int& ScatterType
 
 DEVICE bool Intersects(Ray R, RNG& RNG)
 {
-	if (IntersectsObjects(R))
+	if (IntersectsProps(R))
 		return true;
 
 	if (IntersectsVolume(R, RNG))

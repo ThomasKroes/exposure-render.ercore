@@ -71,7 +71,7 @@ KERNEL void KrnlSampleBrdf(int NoSamples)
 			{
 				if (Int.GetID() == Sample.LightID)
 				{
-					Object& Light = gpObjects[Int.GetID()];
+					Prop& Light = gpProps[Int.GetID()];
 
 					ColorXYZf Li = Light.Multiplier * EvaluateTexture(Light.EmissionTextureID, Int.GetUV());
 

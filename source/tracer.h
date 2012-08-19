@@ -95,8 +95,8 @@ public:
 
 		for (int i = 0; i < Other.GetLightIDs().GetNoIndices(); i++)
 		{
-			if (gObjectsHashMap.find(Other.GetLightIDs()[i]) != gObjectsHashMap.end())
-				this->LightIDs.Add(gObjectsHashMap[Other.GetLightIDs()[i]]);
+			if (gPropsHashMap.find(Other.GetLightIDs()[i]) != gPropsHashMap.end())
+				this->LightIDs.Add(gPropsHashMap[Other.GetLightIDs()[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Emitter object not found!"));
 		}
@@ -105,8 +105,8 @@ public:
 
 		for (int i = 0; i < Other.GetObjectIDs().GetNoIndices(); i++)
 		{
-			if (gObjectsHashMap.find(Other.GetObjectIDs()[i]) != gObjectsHashMap.end())
-				this->ObjectIDs.Add(gObjectsHashMap[Other.GetObjectIDs()[i]]);
+			if (gPropsHashMap.find(Other.GetObjectIDs()[i]) != gPropsHashMap.end())
+				this->ObjectIDs.Add(gPropsHashMap[Other.GetObjectIDs()[i]]);
 			else
 				throw(Exception(Enums::Fatal, "Object not found!"));
 		}

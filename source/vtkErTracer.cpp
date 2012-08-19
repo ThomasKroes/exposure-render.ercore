@@ -20,7 +20,7 @@
 #include "vtkErTracer.h"
 #include "vtkErCamera.h"
 #include "vtkErVolume.h"
-#include "vtkErObject.h"
+#include "vtkErProp.h"
 
 #include "vtkgl.h"
 

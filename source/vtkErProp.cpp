@@ -17,16 +17,16 @@
 #pragma once
 
 #include "vtkErStable.h"
-#include "vtkErObject.h"
+#include "vtkErProp.h"
 #include "vtkErTexture.h"
 
 vtkStandardNewMacro(vtkErObjectData);
 vtkCxxRevisionMacro(vtkErObjectData, "$Revision: 1.0 $");
 
-vtkStandardNewMacro(vtkErObject);
-vtkCxxRevisionMacro(vtkErObject, "$Revision: 1.0 $");
+vtkStandardNewMacro(vtkErProp);
+vtkCxxRevisionMacro(vtkErProp, "$Revision: 1.0 $");
 
-vtkErObject::vtkErObject(void)
+vtkErProp::vtkErProp(void)
 {
 	this->SetNumberOfInputPorts(5);
 	this->SetNumberOfOutputPorts(1);
@@ -40,11 +40,11 @@ vtkErObject::vtkErObject(void)
 	this->SetClip(false);
 }
 
-vtkErObject::~vtkErObject(void)
+vtkErProp::~vtkErProp(void)
 {
 }
 
-int vtkErObject::FillInputPortInformation(int Port, vtkInformation* Info)
+int vtkErProp::FillInputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == DiffuseTexturePort)
 	{
@@ -84,7 +84,7 @@ int vtkErObject::FillInputPortInformation(int Port, vtkInformation* Info)
 	return 1;
 }
 
-int vtkErObject::FillOutputPortInformation(int Port, vtkInformation* Info)
+int vtkErProp::FillOutputPortInformation(int Port, vtkInformation* Info)
 {
 	if (Port == 0)
 	{
@@ -94,7 +94,7 @@ int vtkErObject::FillOutputPortInformation(int Port, vtkInformation* Info)
 	return 1;
 }
 
-int vtkErObject::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
+int vtkErProp::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* OutputVector)
 {
 	vtkInformation* OutInfo = OutputVector->GetInformationObject(0);
 	vtkErObjectData* Output = vtkErObjectData::SafeDownCast(OutInfo->Get(vtkDataObject::DATA_OBJECT()));
@@ -113,12 +113,12 @@ int vtkErObject::RequestDataObject(vtkInformation* vtkNotUsed(request), vtkInfor
 	return 1;
 }
 
-int vtkErObject::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErProp::RequestInformation(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	return 1;
 }
 
-int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErProp::RequestData(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	vtkInformation* OutInfo	= OutputVector->GetInformationObject(0);
 
@@ -164,12 +164,12 @@ int vtkErObject::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	return 1;
 }
 
-int vtkErObject::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
+int vtkErProp::RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector))
 {
 	return 1;
 }
 
-int vtkErObject::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
+int vtkErProp::ProcessRequest(vtkInformation* Request, vtkInformationVector** InputVector, vtkInformationVector* OutputVector)
 {
 	if (Request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT()))
 		return this->RequestDataObject(Request, InputVector, OutputVector);

@@ -26,7 +26,7 @@ texture<int, 3, cudaReadModeElementType>				TexGrid;
 
 map<int, int> gTracersHashMap;
 map<int, int> gVolumesHashMap;
-map<int, int> gObjectsHashMap;
+map<int, int> gPropsHashMap;
 map<int, int> gClippingObjectsHashMap;
 map<int, int> gTexturesHashMap;
 map<int, int> gBitmapsHashMap;
@@ -44,20 +44,20 @@ ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::HostVolume>		
 
 #include "tracer.h"
 
-#include "object.h"
+#include "prop.h"
 #include "texture.h"
 #include "bitmap.h"
 
 DEVICE ExposureRender::Tracer*	gpTracer	= NULL;
 DEVICE ExposureRender::Volume* 	gpVolumes	= NULL;
-DEVICE ExposureRender::Object*	gpObjects	= NULL;
+DEVICE ExposureRender::Prop*	gpProps	= NULL;
 DEVICE ExposureRender::Texture*	gpTextures	= NULL;
 DEVICE ExposureRender::Bitmap*	gpBitmaps	= NULL;
 
 
 
 ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::HostTracer>		gTracers("gpTracer");
-ExposureRender::Cuda::List<ExposureRender::Object, ExposureRender::HostObject>		gObjects("gpObjects");
+ExposureRender::Cuda::List<ExposureRender::Prop, ExposureRender::HostProp>			gProps("gpProps");
 ExposureRender::Cuda::List<ExposureRender::Texture, ExposureRender::HostTexture>	gTextures("gpTextures");
 ExposureRender::Cuda::List<ExposureRender::Bitmap, ExposureRender::HostBitmap>		gBitmaps("gpBitmaps");
 
@@ -103,14 +103,14 @@ EXPOSURE_RENDER_DLL void BindVolume(const HostVolume& Volume, const bool& Bind /
 	gVolumesHashMap = gVolumes.HashMap;
 }
 
-EXPOSURE_RENDER_DLL void BindObject(const HostObject& Object, const bool& Bind /*= true*/)
+EXPOSURE_RENDER_DLL void BindProp(const HostProp& Prop, const bool& Bind /*= true*/)
 {
 	if (Bind)
-		gObjects.Bind(Object);
+		gProps.Bind(Prop);
 	else
-		gObjects.Unbind(Object);
+		gProps.Unbind(Prop);
 
-	gObjectsHashMap = gObjects.HashMap;
+	gPropsHashMap = gProps.HashMap;
 }
 
 EXPOSURE_RENDER_DLL void BindTexture(const HostTexture& Texture, const bool& Bind /*= true*/)

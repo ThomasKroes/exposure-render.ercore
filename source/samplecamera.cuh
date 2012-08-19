@@ -59,10 +59,10 @@ KERNEL void KrnlSampleCamera()
 	{
 		if (Sample.Intersection.GetScatterType() == Enums::Light)
 		{
-			ColorXYZf Le = gpObjects[Sample.Intersection.GetID()].Multiplier * EvaluateTexture(gpObjects[Sample.Intersection.GetID()].EmissionTextureID, Sample.Intersection.GetUV());
+			ColorXYZf Le = gpProps[Sample.Intersection.GetID()].Multiplier * EvaluateTexture(gpProps[Sample.Intersection.GetID()].EmissionTextureID, Sample.Intersection.GetUV());
 		
-			if (gpObjects[Sample.Intersection.GetID()].EmissionUnit == Enums::Power)
-				Le /= gpObjects[Sample.Intersection.GetID()].Shape.GetArea();
+			if (gpProps[Sample.Intersection.GetID()].EmissionUnit == Enums::Power)
+				Le /= gpProps[Sample.Intersection.GetID()].Shape.GetArea();
 
 			FrameEstimate[0] = Le[0];
 			FrameEstimate[1] = Le[1];

@@ -22,12 +22,12 @@
 namespace ExposureRender
 {
 
-/*! Exposure Render host object class */
-class EXPOSURE_RENDER_DLL HostObject : public HostBase
+/*! Exposure Render host prop class */
+class EXPOSURE_RENDER_DLL HostProp : public HostBase
 {
 public:
 	/*! Default constructor */
-	HOST HostObject() :
+	HOST HostProp() :
 	  	HostBase(),
 		Visible(true),
 		Shape(),
@@ -43,9 +43,9 @@ public:
 	}
 	
 	/*! Copy constructor
-		@param[in] Other Host object to copy
+		@param[in] Other Host prop to copy
 	*/
-	HOST HostObject(const HostObject& Other) :
+	HOST HostProp(const HostProp& Other) :
 	  	HostBase(),
 		Visible(true),
 		Shape(),
@@ -62,10 +62,10 @@ public:
 	}
 	
 	/*! Assignment operator
-		@param[in] Other Host object to copy
-		@return Copied host object
+		@param[in] Other Host prop to copy
+		@return Copied host prop
 	*/
-	HOST HostObject& operator = (const HostObject& Other)
+	HOST HostProp& operator = (const HostProp& Other)
 	{
 		HostBase::operator = (Other);
 
@@ -98,17 +98,17 @@ public:
 	GET_SET_MACRO(HOST, Clip, bool)
 
 protected:
-	Shape					Shape;						/*! Object shape */
-	bool					Visible;					/*! Determines object visibility */
+	Shape					Shape;						/*! Prop shape */
+	bool					Visible;					/*! Determines prop visibility */
 	int						DiffuseTextureID;			/*! Diffuse texture ID */
 	int						SpecularTextureID;			/*! Specular texture ID */
 	int						GlossinessTextureID;		/*! Glossiness texture ID */
 	int						EmissionTextureID;			/*! Emission texture ID */
 	float					IndexOfReflection;			/*! Index of reflection */
-	bool					Emitter;					/*! Determines if the object acts as an emitter */
+	bool					Emitter;					/*! Determines if the prop acts as an emitter */
 	float					Multiplier;					/*! Emitter multiplier */
 	Enums::EmissionUnit		EmissionUnit;				/*! Emission unit */
-	bool					Clip;						/*! Determines whether the object acts as a clipping object */
+	bool					Clip;						/*! Determines whether the prop acts as a clipping object */
 };
 
 }

@@ -16,17 +16,17 @@
 
 #pragma once
 
-#include "hostobject.h"
+#include "hostprop.h"
 
 namespace ExposureRender
 {
 
-/*! Object class */
-class Object : public TimeStamp
+/*! Prop class */
+class Prop : public TimeStamp
 {
 public:
 	/*! Default constructor */
-	HOST Object() :
+	HOST Prop() :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
@@ -42,9 +42,9 @@ public:
 	}
 	
 	/*! Copy constructor
-		@param[in] Other Object to copy
+		@param[in] Other Prop to copy
 	*/
-	HOST Object(const HostObject& Other) :
+	HOST Prop(const HostProp& Other) :
 		TimeStamp(),
 		Visible(true),
 		Shape(),
@@ -61,10 +61,10 @@ public:
 	}
 	
 	/*! Assignment operator
-		@param[in] Other Object to copy
+		@param[in] Other Prop to copy
 		@return Object
 	*/
-	HOST Object& operator = (const HostObject& Other)
+	HOST Prop& operator = (const HostProp& Other)
 	{
 		TimeStamp::operator = (Other);
 
@@ -143,7 +143,7 @@ protected:*/
 
 	// FIXME: For some reason, using get/set function on this class has a significant impact on performance so for now we let them be public
 
-	bool					Visible;				/*! Whether the object is visible or not */
+	bool					Visible;				/*! Whether the prop is visible or not */
 	Shape					Shape;					/*! Shape representation */
 	int						DiffuseTextureID;		/*! Diffuse texture ID */
 	int						SpecularTextureID;		/*! Specular texture ID */
