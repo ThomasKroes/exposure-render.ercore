@@ -76,7 +76,7 @@ public:
 		@param[in] Voxels Voxels of the volume
 		@param[in] NormalizeSize Whether access is normalized
 	*/
-	HOST void BindVoxels(const Vec3i& Resolution, const Vec3f& Spacing, unsigned short* Voxels, const bool& NormalizeSize = false)
+	HOST void BindVoxels(const Vec3i& Resolution, const Vec3f& Spacing, short* Voxels, const bool& NormalizeSize = false)
 	{
 		this->Voxels.Set(Enums::Host, Resolution, Voxels);
 
@@ -93,7 +93,7 @@ public:
 
 		const Vec3i Resolution = this->Voxels.GetResolution();
 		
-		const int Coarseness = 3;
+		const int Coarseness = 6;
 		
 		const Vec3f HalfSpacing = 0.5f / this->Spacing;
 
@@ -128,14 +128,14 @@ public:
 	GET_MACRO(HOST, Alignment, Alignment)
 	GET_REF_MACRO(HOST, Alignment, Alignment)
 	SET_MACRO(HOST, Alignment, Alignment)
-	GET_REF_MACRO(HOST, Voxels, Buffer3D<unsigned short>)
+	GET_REF_MACRO(HOST, Voxels, Buffer3D<short>)
 	GET_SET_MACRO(HOST, NormalizeSize, bool)
 	GET_SET_MACRO(HOST, Spacing, Vec3f)
 	GET_SET_MACRO(HOST, AcceleratorType, Enums::AcceleratorType)
 
 protected:
 	Alignment					Alignment;				/*! Alignment */
-	Buffer3D<unsigned short>	Voxels;					/*! Voxels */
+	Buffer3D<short>				Voxels;					/*! Voxels */
 	bool						NormalizeSize;			/*! Normalized access */
 	Vec3f						Spacing;				/*! Spacing */
 	Enums::AcceleratorType		AcceleratorType;		/*! Accelerator type */
