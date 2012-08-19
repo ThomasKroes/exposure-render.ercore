@@ -22,5 +22,5 @@ class MainWindow(QMainWindow):
         self.PropsDockWidget.setWidget(self._PropsWidget)
         self.VolumePropertyDockWidget.setWidget(self._VolumePropertyWidget)
         self.CameraDockWidget.setWidget(self._CameraWidget)
-        self.StatisticsDockWidget.setWidget(self._StatisticsWidget)
-        self.LogDockWidget.setWidget(self._LogWidget)
+        #self.StatisticsDockWidget.setWidget(self._StatisticsWidget)
+        #self.LogDockWidget.setWidget(self._LogWidget)

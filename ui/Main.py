@@ -10,7 +10,7 @@ def Main():
     App = Application(sys.argv)
     App.setApplicationName('Exposure Render')
 
-    App.setStyle(QStyleFactory.create('Cleanlooks'))
+    App.setStyle(QStyleFactory.create("Cleanlooks"))
 
     MW = MainWindow()
     MW.show()
