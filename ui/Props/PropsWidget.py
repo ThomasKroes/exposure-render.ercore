@@ -7,12 +7,14 @@ from Edit.Editable import *
 class PropsWidget(QWidget, Editable):
     def __init__(self):
         QWidget.__init__(self)
-        Editable.__init__(self)
 
         uic.loadUi("Designer/PropsWidget.ui", self)
 
+        Editable.__init__(self)
+
         self.AddObjectPushButton.clicked.connect(self._OnAddObject)
         self.RemoveObjectPushButton.clicked.connect(self._OnRemoveObject)
+        self.AlignmentTypeComboBox.currentIndexChanged.connect(self._UpdateUI)
 
     def _OnAddObject(self):
         self.NotifyObservers("object:add", None)
@@ -25,7 +27,7 @@ class PropsWidget(QWidget, Editable):
         self._Edits["AlignmentType"]        = OptionEdit(self, "AlignmentType")
         self._Edits["RelativeToCamera"]     = BoolEdit(self, "RelativeToCamera")
         self._Edits["UseCameraFocalPoint"]  = BoolEdit(self, "UseCameraFocalPoint")
-        self._Edits["Axis"]                 = OptionEdit(self, "Axis")
+        self._Edits["AlignTo"]              = OptionEdit(self, "AlignTo")
         self._Edits["AutoFlip"]             = BoolEdit(self, "AutoFlip")
         self._Edits["Elevation"]            = FloatEdit(self, "Elevation", -90, 90)
         self._Edits["Azimuth"]              = FloatEdit(self, "Azimuth", -360, 360)
@@ -33,6 +35,13 @@ class PropsWidget(QWidget, Editable):
         self._Edits["Position"]             = Float3Edit(self, "Position", -10, 10)
         self._Edits["Target"]               = Float3Edit(self, "Target", -10, 10)
         self._Edits["Up"]                   = Float3Edit(self, "Up", -1, 1)
+
+        self._Edits["Elevation"].SetDelta(10)
+        self._Edits["Azimuth"].SetDelta(10)
+        self._Edits["Offset"].SetDelta(1)
+        self._Edits["Position"].SetDelta(1)
+        self._Edits["Target"].SetDelta(1)
+        self._Edits["Up"].SetDelta(0.1)
 
         self._Edits["Elevation"].SetSuffix(u" °")
         self._Edits["Azimuth"].SetSuffix(u" °")
@@ -52,6 +61,12 @@ class PropsWidget(QWidget, Editable):
         self._Edits["Target"].SetVisible(type is 1)
         self._Edits["Up"].SetVisible(type is 1)
 
-        self.AxisLabel.setVisible(type is 2)
-        self.AxisComboBox.setVisible(type is 2)
+        self.AlignToLabel.setVisible(type is 2)
+        self.AlignToComboBox.setVisible(type is 2)
         self.AutoFlipCheckBox.setVisible(type is 2)
+
+    def _Load(self):
+        pass
+
+    def _Save(self):
+        pass

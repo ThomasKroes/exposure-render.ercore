@@ -15,3 +15,5 @@ class Editable(SubjectMixin):
 
     def _SetupEdits(self):
         print "_SetupEdits() not implemented!"
+
+

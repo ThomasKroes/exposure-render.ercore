@@ -67,24 +67,6 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3"/>
   </widget>
-  <widget class="QDockWidget" name="LogDockWidget">
-   <property name="windowTitle">
-    <string>Log</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_4"/>
-  </widget>
-  <widget class="QDockWidget" name="StatisticsDockWidget">
-   <property name="windowTitle">
-    <string>Statistics</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_5"/>
-  </widget>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>

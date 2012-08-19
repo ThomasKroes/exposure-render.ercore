@@ -7,11 +7,11 @@ class BoolEdit(BaseEdit):
 
         self._Value = False
 
-        self._CheckBox = parent.findChild(QCheckBox, name + "CheckBox")
+        self._AddControl("CheckBox", parent.findChild(QCheckBox, name + "CheckBox"))
 
         self.SetValue(value)
 
-        self._CheckBox.stateChanged.connect(self._OnCheckboxStateChanged)
+        self._Controls["CheckBox"].stateChanged.connect(self._OnCheckboxStateChanged)
 
     def _OnCheckboxStateChanged(self, value):
         if value == Qt.Unchecked:
@@ -31,12 +31,6 @@ class BoolEdit(BaseEdit):
 
     def _UpdateUI(self):
         if self._Value == False:
-            self._CheckBox.setCheckState(Qt.Unchecked)
+            self._Controls["CheckBox"].setCheckState(Qt.Unchecked)
         if self._Value == True:
-            self._CheckBox.setCheckState(Qt.Checked)
-
-    def SetVisible(self, visible):
-        self._CheckBox.setVisible(visible)
-
-    def SetEnabled(self, enabled):
-        self._CheckBox.setEnabled(enabled)
+            self._Controls["CheckBox"].setCheckState(Qt.Checked)
