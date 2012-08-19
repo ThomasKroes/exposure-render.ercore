@@ -99,7 +99,7 @@ int main(int, char *[])
 
 	RenderWindowInteractor->Start();
 	
-	ER_CALL(DeInitialize());
+//	ER_CALL(DeInitialize());
 
 	return EXIT_SUCCESS;
 }
@@ -247,15 +247,15 @@ void CreateLighting(vtkErTracer* Tracer)
 #ifdef KEY_LIGHT_ON
 	vtkSmartPointer<vtkErProp> KeyLight = vtkSmartPointer<vtkErProp>::New();
 
-	const float KeyLightSize = 0.1f;
+	const float KeyLightSize = 0.5f;
 
 	KeyLight->SetEmitter(true);
 	KeyLight->SetAlignmentType(Enums::Spherical);
 	KeyLight->SetShapeType(Enums::Plane);
 	KeyLight->SetOneSided(false);
 	KeyLight->SetVisible(true);
-	KeyLight->SetElevation(45.0f);
-	KeyLight->SetAzimuth(-45.0f);
+	KeyLight->SetElevation(15.0f);
+	KeyLight->SetAzimuth(-0.0f);
 	KeyLight->SetOffset(1.5f);
 	KeyLight->SetMultiplier(10.0f);
 	KeyLight->SetSize(KeyLightSize, KeyLightSize, KeyLightSize);
