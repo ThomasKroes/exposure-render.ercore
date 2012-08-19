@@ -115,14 +115,7 @@ public:
 	DEVICE unsigned short operator()(const Vec3f& XYZ, const int& TextureID = 0)
 	{
 		const Vec3f NormalizedXYZ = (XYZ - this->BoundingBox.GetMinP()) * this->InvSize;
-		
-		switch (TextureID)
-		{
-			case 0: return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
-			case 1: return (float)USHRT_MAX * tex3D(TexVolume1, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
-		}
-
-		return 0;
+		return (float)SHRT_MAX * tex3D(TexVolume, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]); 
 	}
 	
 	/*! Gets voxel data at (\a X,\a Y,\a Z)
@@ -135,7 +128,7 @@ public:
 	{
 		const Vec3f NormalizedXYZ((float)X / (float)Voxels.GetResolution()[0], (float)X / (float)Voxels.GetResolution()[1], (float)X / (float)Voxels.GetResolution()[2]);
 		
-		return (float)USHRT_MAX * tex3D(TexVolume0, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
+		return (float)SHRT_MAX * tex3D(TexVolume, NormalizedXYZ[0], NormalizedXYZ[1], NormalizedXYZ[2]);
 	}
 	
 	/*! Gets the voxel data at \a P
@@ -260,8 +253,8 @@ public:
 	Vec3f							Size;						/*! Volume size */
 	Vec3f							InvSize;					/*! Inverse volume size */
 	float							MinStep;					/*! Minimum step size */
-	Buffer3D<unsigned short>		HostVoxels;					/*! Host voxels */
-	CudaTexture3D<unsigned short>	Voxels;						/*! Voxel texture */
+	Buffer3D<short>					HostVoxels;					/*! Host voxels */
+	CudaTexture3D<short>			Voxels;						/*! Voxel texture */
 	Enums::AcceleratorType			AcceleratorType;			/*! Type of ray traversal accelerator */
 	float							MaxGradientMagnitude;		/*! Maximum gradient magnitude */
 };

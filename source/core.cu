@@ -18,9 +18,8 @@
 
 using namespace std;
 
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume0;
-texture<unsigned short, 3, cudaReadModeNormalizedFloat> TexVolume1;
-texture<int, 3, cudaReadModeElementType>				TexGrid;
+texture<unsigned short, 3, cudaReadModeNormalizedFloat>		TexVolume;
+texture<int, 3, cudaReadModeElementType>					TexGrid;
 
 #include "color.h"
 
@@ -50,11 +49,9 @@ ExposureRender::Cuda::List<ExposureRender::Volume, ExposureRender::HostVolume>		
 
 DEVICE ExposureRender::Tracer*	gpTracer	= NULL;
 DEVICE ExposureRender::Volume* 	gpVolumes	= NULL;
-DEVICE ExposureRender::Prop*	gpProps	= NULL;
+DEVICE ExposureRender::Prop*	gpProps		= NULL;
 DEVICE ExposureRender::Texture*	gpTextures	= NULL;
 DEVICE ExposureRender::Bitmap*	gpBitmaps	= NULL;
-
-
 
 ExposureRender::Cuda::List<ExposureRender::Tracer, ExposureRender::HostTracer>		gTracers("gpTracer");
 ExposureRender::Cuda::List<ExposureRender::Prop, ExposureRender::HostProp>			gProps("gpProps");
@@ -172,10 +169,7 @@ EXPOSURE_RENDER_DLL void Render(int TracerID, Statistics& Statistics)
 	gTracers.Synchronize(TracerID);
 
 	if (Tracer.VolumeIDs[0] >= 0)
-		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume0);
-
-	if (Tracer.VolumeIDs[1] >= 0)
-		gVolumes[Tracer.VolumeIDs[1]].Voxels.Bind(TexVolume1);
+		gVolumes[Tracer.VolumeIDs[0]].Voxels.Bind(TexVolume);
 
 	Render(Tracer, Statistics);
 		

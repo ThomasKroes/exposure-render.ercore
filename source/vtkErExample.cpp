@@ -211,7 +211,7 @@ void LoadVolume(vtkErTracer* Tracer)
 
 	vtkSmartPointer<vtkImageCast> ImageCast = vtkSmartPointer<vtkImageCast>::New();
 	
-	ImageCast->SetOutputScalarTypeToUnsignedShort();
+	ImageCast->SetOutputScalarTypeToShort();
 	ImageCast->SetClampOverflow(1);
 	ImageCast->SetInputConnection(0, Reader->GetOutputPort());
 	ImageCast->Update();

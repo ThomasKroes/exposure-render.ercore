@@ -108,9 +108,9 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 		return 0;
 	}
 
-	if (ImageDataIn->GetScalarType() != VTK_UNSIGNED_SHORT)
+	if (ImageDataIn->GetScalarType() != VTK_SHORT)
 	{
-		vtkErrorMacro("vtkErVolume onlys works with unsigned short image data!");
+		vtkErrorMacro("vtkErVolume onlys works with short image data!");
 		return 0;
 	}
 
@@ -122,7 +122,7 @@ int vtkErVolume::RequestData(vtkInformation* Request, vtkInformationVector** Inp
 	const Vec3i Resolution(ImageDataIn->GetExtent()[1] + 1, ImageDataIn->GetExtent()[3] + 1, ImageDataIn->GetExtent()[5] + 1);
 	const Vec3f Spacing(ImageDataIn->GetSpacing()[0], ImageDataIn->GetSpacing()[1], ImageDataIn->GetSpacing()[2]);
 
-	VolumeDataOut->Bindable.BindVoxels(Resolution, Spacing, (unsigned short*)ImageDataIn->GetScalarPointer(), true);
+	VolumeDataOut->Bindable.BindVoxels(Resolution, Spacing, (short*)ImageDataIn->GetScalarPointer(), true);
 	VolumeDataOut->Bindable.GetVoxels().SetFilterMode(this->GetFilterMode());
 	VolumeDataOut->Bindable.SetAcceleratorType(this->GetAcceleratorType());
 	
