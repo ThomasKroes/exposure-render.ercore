@@ -222,7 +222,7 @@ KERNEL void KrnlDvrProgressive()
 		return;
 	
 	// Get the light
-	const Object& Light = gpObjects[Sample.LightID];
+	const Object& Light = gpProps[Sample.LightID];
 	
 	SurfaceSample SS;
 

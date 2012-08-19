@@ -80,7 +80,7 @@ SET(General
 	statistics.h
 	volume.h
 	intersection.h
-	object.h
+	prop.h
 	texture.h
 	bitmap.h
 	alignment.h
@@ -168,7 +168,7 @@ SET(API
 	hostbase.h
 	hosttracer.h
 	hostvolume.h
-	hostobject.h
+	hostprop.h
 	hosttexture.h
 	hostbitmap.h
 )
@@ -266,8 +266,8 @@ IF(ER_VTK)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_EXPORTING")
 
 	SET(General
-		vtkErObject.h
-		vtkErObject.cpp
+		vtkErProp.h
+		vtkErProp.cpp
 		vtkErVolume.h
 		vtkErVolume.cpp
 		vtkErTracer.h
@@ -305,8 +305,8 @@ IF(ER_VTK)
 		vtkErShape.cpp
 		vtkErAlignment.h
 		vtkErAlignment.cpp
-		vtkErObject.h
-		vtkErObject.cpp
+		vtkErProp.h
+		vtkErProp.cpp
 		vtkErVolume.h
 		vtkErVolume.cpp
 		vtkErTracer.h

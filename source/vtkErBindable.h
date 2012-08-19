@@ -54,6 +54,6 @@ public:																		\
 
 ER_BINDABLE(Tracer)
 ER_BINDABLE(Volume)
-ER_BINDABLE(Object)
+ER_BINDABLE(Prop)
 ER_BINDABLE(Texture)
 ER_BINDABLE(Bitmap)

@@ -52,7 +52,7 @@ KERNEL void KrnlSampleLight(int NoSamples)
 	ColorXYZAf& FrameEstimate = gpTracer->FrameBuffer.FrameEstimate(Sample.UV[0], Sample.UV[1]);
 
 	// Get the light
-	const Object& Light = gpObjects[Sample.LightID];
+	const Prop& Light = gpProps[Sample.LightID];
 	
 	SurfaceSample SS;
 

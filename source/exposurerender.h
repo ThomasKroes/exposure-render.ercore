@@ -18,7 +18,7 @@
 
 #include "hosttracer.h"
 #include "hostvolume.h"
-#include "hostobject.h"
+#include "hostprop.h"
 #include "hosttexture.h"
 #include "hostbitmap.h"
 #include "statistics.h"
@@ -51,7 +51,7 @@ EXPOSURE_RENDER_DLL void BindVolume(const HostVolume& Volume, const bool& Bind =
 	@param[in] Object Object to bind/unbind
 	@param[in] Bind whether to bind/unbind
 */
-EXPOSURE_RENDER_DLL void BindObject(const HostObject& Object, const bool& Bind = true);
+EXPOSURE_RENDER_DLL void BindProp(const HostProp& Prop, const bool& Bind = true);
 
 /*! Bind/unbind a texture
 	@param[in] Texture Texture to bind/unbind

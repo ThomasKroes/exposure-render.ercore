@@ -26,6 +26,14 @@
 
 using namespace ExposureRender;
 
+/*! 
+	@class vtkErAlignment
+	@brief Alignment class
+
+	This class is used to specify transformations in Exposure Render.
+
+	Currently there are four ways to specify the alignment: axis aligned(\a Axis, \a AutoFlip, \a Position), look-at (\a Position, \a Target, \a Up), spherical (\a Azimuth, \a Elevation, \a Offset) and manual (\a ManualTM)
+ */
 class VTK_ER_EXPORT vtkErAlignment : public vtkAlgorithm
 {
 public:
@@ -79,16 +87,16 @@ private:
 	vtkErAlignment(const vtkErAlignment& Other);	// Not implemented
     void operator = (const vtkErAlignment& Other);	// Not implemented
 
-	int								AlignmentType;
-	int								Axis;
-	bool							AutoFlip;
-	float							Position[3];
-	float							Target[3];
-	float							Up[3];
-	float							Elevation;
-	float							Azimuth;
-	float							Offset;
-	vtkSmartPointer<vtkMatrix4x4>	ManualTM;
-	bool							RelativeToCamera;
-	bool							UseCameraFocalPoint;
+	int								AlignmentType;				/*! Type of alignment e.g. axis aligned(\a Axis, \AutoFlip, \a Position), look-at, spherical and manual */
+	int								Axis;						/*! Axis to align to */
+	bool							AutoFlip;					/*! Whether auto flipping is enabled(Only valid when type is 'axis aligned') */
+	float							Position[3];				/*! Position */
+	float							Target[3];					/*! Target */
+	float							Up[3];						/*! Up-vector (in case of look-at) */
+	float							Elevation;					/*! Elevation or longitude (in case of spherical alignment) */
+	float							Azimuth;					/*! Azimuth or latitude (in case of spherical alignment) */
+	float							Offset;						/*! Offset from center (in case of spherical alignment) */
+	vtkSmartPointer<vtkMatrix4x4>	ManualTM;					/*! Manual transformation matrix */
+	bool							RelativeToCamera;			/*! Whether the alignment is relative to the scene camera */
+	bool							UseCameraFocalPoint;		/*! If the alignment is relative to the camera's focal or position */
 };

@@ -20,9 +20,9 @@
 
 #include <vtkDataObject.h>
 
-class vtkErObject;
+class vtkErProp;
 
-class vtkErObjectData : public vtkDataObject, public vtkHostBindableObject
+class vtkErObjectData : public vtkDataObject, public vtkHostBindableProp
 {
 public:
 	static vtkErObjectData* New();
@@ -32,21 +32,21 @@ protected:
 	vtkErObjectData() {};
 	virtual ~vtkErObjectData() {};
 	
-	vtkErObject* Object;
+	vtkErProp* Object;
 
 private:
 	vtkErObjectData(const vtkErObjectData& Other);		// Not implemented.
     void operator = (const vtkErObjectData& Other);		// Not implemented.
 
-	friend class vtkErObject;
+	friend class vtkErProp;
 	friend class vtkErTracer;
 };
 
-class VTK_ER_EXPORT vtkErObject : public vtkErShape
+class VTK_ER_EXPORT vtkErProp : public vtkErShape
 {
 public:
-	static vtkErObject* New();
-	vtkTypeRevisionMacro(vtkErObject, vtkErShape);
+	static vtkErProp* New();
+	vtkTypeRevisionMacro(vtkErProp, vtkErShape);
 
 	enum Ports
 	{
@@ -81,8 +81,8 @@ public:
 	vtkSetMacro(Clip, bool);
 
 protected:
-	vtkErObject();
-	virtual ~vtkErObject();
+	vtkErProp();
+	virtual ~vtkErProp();
 
 	virtual int FillInputPortInformation(int Port, vtkInformation* Info);
 	virtual int FillOutputPortInformation(int Port, vtkInformation* Info);
@@ -93,8 +93,8 @@ protected:
 	virtual int RequestUpdateExtent(vtkInformation* vtkNotUsed(Request), vtkInformationVector** InputVector, vtkInformationVector* vtkNotUsed(OutputVector));
 
 private:
-	vtkErObject(const vtkErObject& Other);			// Not implemented
-    void operator = (const vtkErObject& Other);		// Not implemented
+	vtkErProp(const vtkErProp& Other);			// Not implemented
+    void operator = (const vtkErProp& Other);	// Not implemented
 
 	vtkStdString			Name;
 	bool					Enabled;
