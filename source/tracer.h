@@ -147,7 +147,7 @@ public:
 
 			Volume& Volume = gVolumes[this->VolumeIDs[0]];
 
-//			this->Grid.Build(Volume, this->VolumeProperty.GetOpacity1D());
+			this->Grid.Build(Volume, this->VolumeProperty.GetOpacity1D());
 
 //			this->Octree.SetVolume(Volume.HostVoxels, Volume.Spacing, Volume.BoundingBox, Volume.InvSize, this->VolumeProperty);
 		}

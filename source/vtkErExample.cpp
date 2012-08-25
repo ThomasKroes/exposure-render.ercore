@@ -40,7 +40,7 @@
 #include "vtkErVolumeProperty.h"
 #include "vtkErInteractorStyleTrackballCamera.h"
 
-char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\manix.mhd";
+char gVolumeFile[] = "C:\\Dropbox\\Work\\Data\\Volumes\\engine.mhd";
 
 //#define BACK_PLANE_ON
 #define KEY_LIGHT_ON
@@ -116,7 +116,8 @@ void ConfigureER(vtkRenderer* Renderer)
 
 	Tracer->SetNoiseReduction(false);
 	Tracer->Update();
-	Tracer->SetRenderMode(Enums::StochasticRayCasting);
+	Tracer->SetRenderMode(Enums::StandardRayCasting);
+	
 
 	vtkSmartPointer<vtkVolume> Volume = vtkSmartPointer<vtkVolume>::New();
 	

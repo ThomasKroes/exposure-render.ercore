@@ -129,6 +129,24 @@ public:
 		return true;
 	}
 
+	/*! Determines if point \a P is inside the bounding box
+		@param P World point
+		@return Whether \a P is inside the bounding box
+	*/
+	HOST_DEVICE bool Inside(const Vec3f& P) const
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (P[i] < this->MinP[i])
+				return false;
+
+			if (P[i] > this->MaxP[i])
+				return false;
+		}
+
+		return true;
+	}
+
 	GET_SET_MACRO(HOST_DEVICE, Size, Vec3f);
 	GET_SET_MACRO(HOST_DEVICE, InvSize, Vec3f);
 

@@ -49,121 +49,58 @@ KERNEL void KrnlDvrSimple()
 	
 	ColorXYZAf Result = ColorXYZAf::Black();
 
-
-	// Ray marching
 	float stepSize = 0.0f;
 	
 	int Counter = 0;
 	
-	Vec3f P;
-	
-	float NextT = 0.0f;
+	R.MinT += RNG.Get1() * 0.00001f;
 
-	float T = R.MinT + RNG.Get1() * 0.001f;
-	
 	float Distance = 0.0f;
 
-	while (T <= R.MaxT && Counter < 1000)
+	while (R.MinT < R.MaxT && Counter < 1000)
 	{
-		// Obtain intensity
-	//	stepSize = gStepFactorPrimary;
-	//	const float Intensity = gpVolumes[0](R(R.MinT));// Volume(R(R.MinT));
+		float NextT = 0.0f;
 
-
-		T += 0.000001f;
-
-		// Move along ray
-		//R.MinT += gStepFactorPrimary;
-		
 		int EmptySpace = 0;
 
-		gpTracer->Grid.GetNextBoundary(R.O + R.D * T, Normalize(R.D), NextT, EmptySpace);
+		gpTracer->Grid.GetNextBoundary(R.GetMinP(), R.D, NextT, EmptySpace);
 
-		T += NextT + 0.000001f;
-		Distance += EmptySpace * (NextT + 0.000001f);
+		if (EmptySpace == 1)
+		{
+		}
+		else
+		{
+			/*
+			ColorXYZf Diffuse(0.5f);
 
-		// Get diffuse
-		ColorXYZf Diffuse(0.5f);// = gpTracer->VolumeProperty.GetDiffuse(Intensity);
+			const float Opacity = 0.9f * (NextT * 10.0f);
 
-		// Determine opacity
-		//const float Opacity = gpTracer->GetOpacity(Intensity)  * (gStepFactorPrimary * 200.0f);
-		const float Opacity = 0.9f * EmptySpace * (NextT * 10.0f);
-
-		// Compositing
-        Result[0] = Result[0] + (1.0f - Result[3]) * Opacity * Diffuse[0];
-        Result[1] = Result[1] + (1.0f - Result[3]) * Opacity * Diffuse[1];
-        Result[2] = Result[2] + (1.0f - Result[3]) * Opacity * Diffuse[2];
-        Result[3] = Result[3] + (1.0f - Result[3]) * Opacity;
-
-		//// Early ray termination
-  //      if (Result[3] >= 1.0f)
-		//{
-  //          Result[3]	= 1.0f;
-  //          break;
-  //      }
+			Result[0] = Result[0] + (1.0f - Result[3]) * Opacity * Diffuse[0];
+			Result[1] = Result[1] + (1.0f - Result[3]) * Opacity * Diffuse[1];
+			Result[2] = Result[2] + (1.0f - Result[3]) * Opacity * Diffuse[2];
+			Result[3] = Result[3] + (1.0f - Result[3]) * Opacity;
+			*/
+			Distance += NextT;
+		}
+		
+		R.MinT += NextT + 0.001f;
 
 		++Counter;
     }
 	
-	/*
-	float Opacity = 0.01f * ((Distance) * 1.0f);
-	
-	
-	Result[0] = Counter == 1 ? 0.6f * Distance : 0.0f;//Result[0] + (1.0f - Result[3]) * Opacity * 0.5f;
-	Result[1] = Counter == 2 ? 0.6f * Distance : 0.0f;//Result[1] + (1.0f - Result[3]) * Opacity * 0.5f;
-	Result[2] = Counter == 3 ? 0.6f * Distance : 0.0f;//Result[2] + (1.0f - Result[3]) * Opacity * 0.5f;
-	Result[3] = 255.0f;//Result[3] + (1.0f - Result[3]) * Opacity;
+	ColorXYZf Diffuse(0.5f);
 
-	Result[0] = 0.6f * Distance;//Result[0] + (1.0f - Result[3]) * Opacity * 0.5f;
-	Result[1] = 0.6f * Distance;//Result[1] + (1.0f - Result[3]) * Opacity * 0.5f;
-	Result[2] = 0.6f * Distance;//Result[2] + (1.0f - Result[3]) * Opacity * 0.5f;
-	Result[3] = 255.0f;//Result[3] + (1.0f - Result[3]) * Opacity;
-	*/
+	const float Opacity = 0.9f * (Distance * 2.0f);
 
-	/*
-	if (Counter == 1)
-		DvrSimple = ColorRGBAuc(255, 0, 0, 255);
-	
-	if (Counter == 2)
-		DvrSimple = ColorRGBAuc(0, 255, 0, 255);
+	Result[0] = Result[0] + (1.0f - Result[3]) * Opacity * Diffuse[0];
+	Result[1] = Result[1] + (1.0f - Result[3]) * Opacity * Diffuse[1];
+	Result[2] = Result[2] + (1.0f - Result[3]) * Opacity * Diffuse[2];
+	Result[3] = Result[3] + (1.0f - Result[3]) * Opacity;
 
-	if (Counter == 3)
-		DvrSimple = ColorRGBAuc(0, 0, 255, 255);
-
-	return;
-*/
-	// Output color
 	DvrSimple[0] = Clamp((int)(Result[0] * 255.0f), 0, 255);
 	DvrSimple[1] = Clamp((int)(Result[1] * 255.0f), 0, 255);
 	DvrSimple[2] = Clamp((int)(Result[2] * 255.0f), 0, 255);
 	DvrSimple[3] = 255;//Clamp((int)(Clamp(Result[3], 0.0f, 1.0f) * 255.0f), 0, 255);
-
-	/*
-	if Hit != undefined then
-	(
-	$MinT.pos = Hit.pos
-
-	EPS = 0.0001
-
-	MinT = EPS + distance RayO Hit.pos
-
-	for i = 1 to 6 do
-	(
-	P = RayO + (MinT * RayD)
-
-	D = NextDistance P RayD
-
-	MinT = MinT + D + EPS
-
-	P = RayO + (MinT * RayD)
-
-	Obj = getnodebyname ("Sphere0" + (i  as string))
-
-	if Obj != undefined then
-	Obj.pos = P
-	)
-	)
-	*/
 }
 
 KERNEL void KrnlDvrProgressive()
