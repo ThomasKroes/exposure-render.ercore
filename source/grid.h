@@ -33,7 +33,7 @@ public:
 	/*! Default constructor */
 	HOST Grid() :
 		TimeStamp(),
-		MacroCellSize(16),
+		MacroCellSize(32),
 		Spacing(),
 		Voxels(false, Enums::NearestNeighbour)
 	{
@@ -44,7 +44,7 @@ public:
 	*/
 	HOST Grid(const Grid& Other) :
 		TimeStamp(),
-		MacroCellSize(16),
+		MacroCellSize(32),
 		Spacing(),
 		Voxels(false, Enums::NearestNeighbour)
 	{
