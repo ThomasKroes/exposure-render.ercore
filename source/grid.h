@@ -33,7 +33,7 @@ public:
 	/*! Default constructor */
 	HOST Grid() :
 		TimeStamp(),
-		MacroCellSize(8),
+		MacroCellSize(16),
 		Spacing(),
 		Voxels(false, Enums::NearestNeighbour)
 	{
@@ -44,7 +44,7 @@ public:
 	*/
 	HOST Grid(const Grid& Other) :
 		TimeStamp(),
-		MacroCellSize(8),
+		MacroCellSize(16),
 		Spacing(),
 		Voxels(false, Enums::NearestNeighbour)
 	{
@@ -88,8 +88,9 @@ public:
 			{
 				for (int GridZ = 0; GridZ < GridSize[2]; ++GridZ)
 				{
-					EmptySpace(Vec3i(GridX, GridY, GridZ)) = 0;
+					EmptySpace(Vec3i(GridX, GridY, GridZ)) = 0;//RandomFloat() > 0.5f;
 
+					/*
 					for (int VoxelX = 0; VoxelX < this->GetMacroCellSize(); ++VoxelX)
 					{
 						for (int VoxelY = 0; VoxelY < this->GetMacroCellSize(); ++VoxelY)
@@ -107,6 +108,7 @@ public:
 							}
 						}
 					}
+					*/
 				}
 			}
 		}
@@ -114,12 +116,13 @@ public:
 		this->Voxels = EmptySpace;
 	}
 
-	DEVICE void GetNextBoundary(const Vec3f& Position, const Vec3f& Direction, float& NexT, int& EmptySpace)
+	DEVICE void GetNextBoundary(Vec3f& P, const Vec3f& D, float& NexT, int& EmptySpace)
 	{
+		P += 0.0001f * D;
+
 		Vec3f CellIndex, GridSpaceP;
 		
-		for (int i = 0; i < 3; i++)
-			GridSpaceP[i] = Position[i] - this->BoundingBox.GetMinP()[i];
+		GridSpaceP = P - this->BoundingBox.GetMinP();
 
 		for (int i = 0; i < 3; i++)
 			CellIndex[i] = (int)floor(GridSpaceP[i] / this->Spacing[i]);
@@ -128,27 +131,29 @@ public:
 
 		for (int i = 0; i < 3; i++)
 		{
-			if (Direction[i] > GRID_EPSILON)
+			if (D[i] > GRID_EPSILON)
 			{
-				const float CellP = this->BoundingBox.GetMinP()[i] + ((CellIndex[i] + 1) * this->Spacing[i]);
-				const float D = CellP - GridSpaceP[i];
+				const float WorldSpaceCellP = this->BoundingBox.GetMinP()[i] + ((CellIndex[i] + 1) * this->Spacing[i]);
+				const float Distance = WorldSpaceCellP - P[i];
 
-				T[i] = D / Direction[i];
+				T[i] = Distance / D[i];
 			}
-			else if (Direction[i] < -GRID_EPSILON)
+			else if (D[i] < -GRID_EPSILON)
 			{
-				const float CellP = this->BoundingBox.GetMinP()[i] + (CellIndex[i] * this->Spacing[i]);
-				const float D = CellP - GridSpaceP[i];
+				const float WorldSpaceCellP = this->BoundingBox.GetMinP()[i] + (CellIndex[i] * this->Spacing[i]);
+				const float Distance = WorldSpaceCellP - P[i];
 
-				T[i] = D / Direction[i];
+				T[i] = Distance / D[i];
 			}
 			else
 			{
 				T[i] = 1000.0f;
 			}
+
+			//T[i] /= this->Spacing[i];
 		}
 
-		NexT = fminf(T[0], fminf(T[1], T[2]));
+		NexT = fminf(T[0], fminf(T[1], T[2])) + 0.0001f;
 
 		EmptySpace = tex3D(TexGrid, CellIndex[0], CellIndex[1], CellIndex[2]);
 	}

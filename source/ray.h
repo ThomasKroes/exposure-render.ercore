@@ -76,6 +76,30 @@ public:
 		return this->O + Normalize(this->D) * T;
 	}
 
+	/*! Move ray origin along \a D
+		@param[in] T Distance to move
+	*/
+	HOST_DEVICE void MoveOrigin(const float& T)
+	{
+		this->O	+= this->D * T; 
+	}
+
+	/*! Point at \a MinT
+		@return Point at \a MinT
+	*/
+	HOST_DEVICE Vec3f GetMinP() const
+	{
+		return this->O + this->MinT * this->D;
+	}
+
+	/*! Point at \a MaxT
+		@return Point at \a MaxT
+	*/
+	HOST_DEVICE Vec3f GetMaxP() const
+	{
+		return this->O + this->MaxT * this->D;
+	}
+
 	Vec3f 	O;				/*! Origin */
 	Vec3f 	D;				/*! Direction */
 	float	MinT;			/*! Minimum range */
