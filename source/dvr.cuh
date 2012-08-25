@@ -49,11 +49,9 @@ KERNEL void KrnlDvrSimple()
 	
 	ColorXYZAf Result = ColorXYZAf::Black();
 
-	float stepSize = 0.0f;
-	
 	int Counter = 0;
 	
-	R.MinT += RNG.Get1() * 0.00001f;
+	R.MinT += RNG.Get1() * 0.0001f;
 
 	float Distance = 0.0f;
 
@@ -70,33 +68,41 @@ KERNEL void KrnlDvrSimple()
 		}
 		else
 		{
-			/*
-			ColorXYZf Diffuse(0.5f);
+			float T = R.MinT;
 
-			const float Opacity = 0.9f * (NextT * 10.0f);
+			// Ray marching
+			while (T < R.MinT + NextT)
+			{
+				ColorXYZf Diffuse = gpTracer->VolumeProperty.GetDiffuse(Volume(R(T)));
 
-			Result[0] = Result[0] + (1.0f - Result[3]) * Opacity * Diffuse[0];
-			Result[1] = Result[1] + (1.0f - Result[3]) * Opacity * Diffuse[1];
-			Result[2] = Result[2] + (1.0f - Result[3]) * Opacity * Diffuse[2];
-			Result[3] = Result[3] + (1.0f - Result[3]) * Opacity;
-			*/
-			Distance += NextT;
+				ColorXYZAf Color;
+
+				Color[0] = Diffuse[0];
+				Color[1] = Diffuse[1];
+				Color[2] = Diffuse[2];
+				Color[3] = gpTracer->VolumeProperty.GetOpacity(Volume(R(T)));
+				Color[3] *= gStepFactorPrimary * 200.f;
+
+				Result[0] = Result[0] + (1.0f - Result[3]) * Color[3] * Color[0];
+				Result[1] = Result[1] + (1.0f - Result[3]) * Color[3] * Color[1];
+				Result[2] = Result[2] + (1.0f - Result[3]) * Color[3] * Color[2];
+				Result[3] = Result[3] + (1.0f - Result[3]) * Color[3];
+
+				T += gStepFactorPrimary;
+			}
 		}
 		
-		R.MinT += NextT + 0.001f;
+		if (Result[3] >= 1.0f)
+		{
+			Result[3] = 1.0;
+			break;
+		}
+
+		R.MinT += NextT + 0.0001f;
 
 		++Counter;
     }
 	
-	ColorXYZf Diffuse(0.5f);
-
-	const float Opacity = 0.9f * (Distance * 2.0f);
-
-	Result[0] = Result[0] + (1.0f - Result[3]) * Opacity * Diffuse[0];
-	Result[1] = Result[1] + (1.0f - Result[3]) * Opacity * Diffuse[1];
-	Result[2] = Result[2] + (1.0f - Result[3]) * Opacity * Diffuse[2];
-	Result[3] = Result[3] + (1.0f - Result[3]) * Opacity;
-
 	DvrSimple[0] = Clamp((int)(Result[0] * 255.0f), 0, 255);
 	DvrSimple[1] = Clamp((int)(Result[1] * 255.0f), 0, 255);
 	DvrSimple[2] = Clamp((int)(Result[2] * 255.0f), 0, 255);

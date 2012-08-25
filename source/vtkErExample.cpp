@@ -134,7 +134,7 @@ void CreateVolumeProperty(vtkErTracer* Tracer)
 	const float StepSize = 10.0f;
 
 	VolumeProperty->SetShadows(true);
-	VolumeProperty->SetStepFactorPrimary(2.0f);
+	VolumeProperty->SetStepFactorPrimary(10.0f);
 	VolumeProperty->SetStepFactorShadow(5.0f);
 	VolumeProperty->SetShadingMode(Enums::BrdfOnly);
 	VolumeProperty->SetDensityScale(100);
