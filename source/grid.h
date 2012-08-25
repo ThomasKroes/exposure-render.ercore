@@ -88,9 +88,8 @@ public:
 			{
 				for (int GridZ = 0; GridZ < GridSize[2]; ++GridZ)
 				{
-					EmptySpace(Vec3i(GridX, GridY, GridZ)) = 0;//RandomFloat() > 0.5f;
+					EmptySpace(Vec3i(GridX, GridY, GridZ)) = 1;//RandomFloat() > 0.5f;
 
-					/*
 					for (int VoxelX = 0; VoxelX < this->GetMacroCellSize(); ++VoxelX)
 					{
 						for (int VoxelY = 0; VoxelY < this->GetMacroCellSize(); ++VoxelY)
@@ -104,11 +103,10 @@ public:
 								VoxelCoord[2] = GridZ * this->GetMacroCellSize() + VoxelZ;
 
 								if (Opacity1D.Evaluate(Volume.HostVoxels(VoxelCoord)) > 0.0f)
-									EmptySpace(Vec3i(GridX, GridY, GridZ)) = 1;
+									EmptySpace(Vec3i(GridX, GridY, GridZ)) = 0;
 							}
 						}
 					}
-					*/
 				}
 			}
 		}
